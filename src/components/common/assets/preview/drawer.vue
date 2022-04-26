@@ -95,11 +95,17 @@
                 required: false,
                 default: '',
             },
+            watchGuid: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['closeDrawer', 'update'],
 
         setup(props, { emit }) {
-            const { showDrawer, guid, qualifiedName, data } = toRefs(props)
+            const { showDrawer, guid, qualifiedName, data, watchGuid } =
+                toRefs(props)
 
             const visible = ref(false)
             const drawerData = ref(data.value)
@@ -141,7 +147,18 @@
                 relationAttributes,
             })
 
+            watch(guid, () => {
+                if (!watchGuid.value) return
+
+                if (guid.value) {
+                    fetch()
+                    visible.value = true
+                } else visible.value = false
+            })
+
             watch(showDrawer, () => {
+                if (watchGuid.value) return
+
                 if (
                     (guid.value !== '' || qualifiedName.value !== '') &&
                     showDrawer.value

@@ -54,19 +54,20 @@
                 <PurposeHeader
                     v-model:openEditModal="openEditModal"
                     :persona="selectedPurpose"
+                    @updateStatus="handleEnableDisablePurpose"
                 />
             </template>
             <template #footer>
-                <div style="display: none">
+                <!-- <div style="display: none">
                     <div class="flex items-center justify-between pb-1">
                         <slot name="footerLeft"></slot>
                         <div
                             class="flex items-center justify-end w-full space-x-3"
                         >
-                            <!-- Hi -->
+                        
                         </div>
                     </div>
-                </div>
+                </div> -->
             </template>
             <div class="h-full bg-primary-light">
                 <PurposeBody
@@ -134,7 +135,7 @@
             <!-- persona cards -->
             <div
                 v-if="filteredPurposes && filteredPurposes.length"
-                class="grid grid-cols-4 gap-4 gap-y-6 mt-7"
+                class="grid grid-cols-4 gap-4 gap-y-6 mt-7 pb-7"
             >
                 <PurposeCard
                     v-for="persona in filteredPurposes"
@@ -156,7 +157,7 @@
         <div
             v-else-if="
                 (purposeList === null || purposeList?.length == 0) &&
-                isPurposeError === undefined
+                errorPurpose === undefined
             "
             class="flex flex-col items-center h-full"
         >
@@ -190,7 +191,7 @@
                 </a>
             </div>
         </div>
-        <ErrorView v-else :error="isPurposeError">
+        <ErrorView v-else :error="errorPurpose">
             <div class="mt-3">
                 <a-button
                     data-test-id="try-again"
@@ -211,7 +212,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, onMounted } from 'vue'
+    import { defineComponent, ref, watch, onMounted, h } from 'vue'
     import { useRouter, useRoute } from 'vue-router'
     import ErrorView from '@common/error/index.vue'
     import { storeToRefs } from 'pinia'
@@ -231,10 +232,14 @@
         selectedPurposeId,
         isPurposeListReady,
         isPurposeLoading,
-        isPurposeError,
+        errorPurpose,
         facets,
     } from './composables/usePurposeList'
-    import { isEditing } from './composables/useEditPurpose'
+    import {
+        isEditing,
+        enablePurpose,
+        updateSelectedPersona,
+    } from './composables/useEditPurpose'
     import AddPersonaIllustration from '~/assets/images/empty_state_policyV2.svg'
     import ErrorIllustration from '~/assets/images/error.svg'
     import { useAuthStore } from '~/store/auth'
@@ -242,7 +247,9 @@
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
     import PurposeCard from '@/governance/purposes/discovery/purposeCard.vue'
     import AssetFilters from '@/common/assets/filters/index.vue'
-
+    import { message, Modal } from 'ant-design-vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import useAssetStore from '~/store/asset'
     export default defineComponent({
         name: 'PurposeView',
         components: {
@@ -258,6 +265,7 @@
             AssetFilters,
         },
         setup() {
+            const assetStore = useAssetStore()
             const router = useRouter()
             const route = useRoute()
             const modalVisible = ref(false)
@@ -358,6 +366,80 @@
                     deep: true,
                 }
             )
+
+            const enableDisablePurpose = async (val) => {
+                const messageKey = Date.now()
+                message.loading({
+                    content: `${val ? 'Enabling' : 'Disabling'} purpose ${
+                        selectedPurpose.value.displayName
+                    }`,
+                    duration: 0,
+                    key: messageKey,
+                })
+                try {
+                    await enablePurpose(selectedPurpose.value.id, val)
+                    selectedPurpose.value.enabled = val
+                    message.success({
+                        content: `Purpose ${
+                            selectedPurpose.value.displayName
+                        } ${val ? 'Enabled' : 'Disabled'} `,
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                    const keyObj = val ? 'purpose_enable' : 'purpose_disable'
+                    updateSelectedPersona()
+                    useAddEvent('governance', 'purpose', keyObj)
+                    if (
+                        assetStore.globalState[0] === 'purpose' &&
+                        selectedPurpose.value.id ===
+                            assetStore.globalState[1] &&
+                        !val
+                    ) {
+                        assetStore.setGlobalState(['all'])
+                    }
+                } catch (e) {
+                    message.error({
+                        content: `Failed to ${
+                            val ? 'enable' : 'disable'
+                        } purpose ${selectedPurpose.value.displayName}`,
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                }
+            }
+
+            const handleEnableDisablePurpose = (val) => {
+                if (val) enableDisablePurpose(val)
+                else
+                    Modal.confirm({
+                        title: 'Disable purpose',
+                        class: 'disable-purpose-modal',
+                        content: () => {
+                            return h('div', [
+                                'Are you sure you want to disable purpose',
+                                h('span', [' ']),
+                                h(
+                                    'span',
+                                    {
+                                        class: ['font-bold'],
+                                    },
+                                    [`${selectedPurpose.value.displayName}`]
+                                ),
+                                h('span', '?'),
+                            ])
+                        },
+                        okType: 'danger',
+                        autoFocusButton: null,
+                        okButtonProps: {
+                            type: 'primary',
+                        },
+                        okText: 'Disable',
+                        cancelText: 'Cancel',
+                        async onOk() {
+                            enableDisablePurpose(val)
+                        },
+                    })
+            }
             return {
                 reFetchList,
                 purposeList,
@@ -367,7 +449,7 @@
                 searchTerm,
                 modalVisible,
                 isPurposeLoading,
-                isPurposeError,
+                errorPurpose,
                 // createNewPersona,
                 isEditing,
                 AddPersonaIllustration,
@@ -389,6 +471,7 @@
                 handleResetEvent,
                 NewPolicyIllustration,
                 selectPurpose,
+                handleEnableDisablePurpose,
             }
         },
     })
@@ -406,6 +489,7 @@
         }
         .ant-modal-content {
             height: calc(100%);
+            @apply bg-primary-light;
         }
         .ant-modal-header {
             padding-bottom: 0px;

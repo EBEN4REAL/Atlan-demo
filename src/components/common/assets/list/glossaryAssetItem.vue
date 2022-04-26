@@ -68,19 +68,18 @@
                                 ></CertificateBadge>
                             </div>
                         </div>
-
-                        <div class="flex items-center">
-                            <div
-                                class="flex items-center text-xs text-gray-500"
-                            >
-                                {{ getAnchorName(item) }}
-                            </div>
+                        <div style="max-width: 95%">
+                            <Tooltip
+                                :tooltip-text="`${getAnchorName(item)}`"
+                                :classes="`flex items-center text-xs text-gray-500 w-full`"
+                            />
                         </div>
                     </div>
                 </div>
                 <a-checkbox
                     v-if="checkable && item.typeName === checkableItemType"
                     :checked="isChecked"
+                    :disabled="isCheckboxDisabled"
                 />
             </div>
         </div>
@@ -137,11 +136,17 @@
                 required: false,
                 default: false,
             },
-            checkableItemType:{
-                type:String,
-                required:false,
-                default:()=>'AtlasGlossaryTerm'
-            }
+            isCheckboxDisabled: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+
+            checkableItemType: {
+                type: String,
+                required: false,
+                default: () => 'AtlasGlossaryTerm',
+            },
         },
         emits: ['listItem:check', 'unlinkAsset', 'preview', 'check'],
         setup(props, { emit }) {

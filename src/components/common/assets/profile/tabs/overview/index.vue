@@ -5,9 +5,14 @@
         :readme-edit-permission="readmeEditPermission"
     >
         <template #readme>
-            <Readme
-                :asset="selectedAsset"
-                :is-edit="readmeEditPermission"
+            <AtlanReadme
+                v-model="localReadmeContent"
+                class="flex flex-col bg-white border border-gray-200 rounded-lg"
+                :is-editing-allowed="readmeEditPermission"
+                :handle-save="handleSave"
+                :handle-success="handleSuccess"
+                :handle-failure="handleFailure"
+                :asset-type="selectedAsset.typeName"
                 @saved-changes="
                     () => {
                         savedAllChanges = true
@@ -27,9 +32,14 @@
         :readme-edit-permission="readmeEditPermission"
     >
         <template #readme>
-            <Readme
-                :asset="selectedAsset"
-                :is-edit="readmeEditPermission"
+            <AtlanReadme
+                v-model="localReadmeContent"
+                class="flex flex-col bg-white border border-gray-200 rounded-lg"
+                :is-editing-allowed="readmeEditPermission"
+                :handle-save="handleSave"
+                :handle-success="handleSuccess"
+                :handle-failure="handleFailure"
+                :asset-type="selectedAsset.typeName"
                 @saved-changes="
                     () => {
                         savedAllChanges = true
@@ -49,9 +59,14 @@
         :readme-edit-permission="readmeEditPermission"
     >
         <template #readme>
-            <Readme
-                :asset="selectedAsset"
-                :is-edit="readmeEditPermission"
+            <AtlanReadme
+                v-model="localReadmeContent"
+                class="flex flex-col bg-white border border-gray-200 rounded-lg"
+                :is-editing-allowed="readmeEditPermission"
+                :asset-type="selectedAsset.typeName"
+                :handle-save="handleSave"
+                :handle-success="handleSuccess"
+                :handle-failure="handleFailure"
                 @saved-changes="
                     () => {
                         savedAllChanges = true
@@ -71,9 +86,14 @@
         :readme-edit-permission="readmeEditPermission"
     >
         <template #readme>
-            <Readme
-                :asset="selectedAsset"
-                :is-edit="readmeEditPermission"
+            <AtlanReadme
+                v-model="localReadmeContent"
+                class="flex flex-col bg-white border border-gray-200 rounded-lg"
+                :is-editing-allowed="readmeEditPermission"
+                :asset-type="selectedAsset.typeName"
+                :handle-save="handleSave"
+                :handle-success="handleSuccess"
+                :handle-failure="handleFailure"
                 @saved-changes="
                     () => {
                         savedAllChanges = true
@@ -93,9 +113,14 @@
         :readme-edit-permission="readmeEditPermission"
     >
         <template #readme>
-            <Readme
-                :asset="selectedAsset"
-                :is-edit="readmeEditPermission"
+            <AtlanReadme
+                v-model="localReadmeContent"
+                class="flex flex-col bg-white border border-gray-200 rounded-lg"
+                :is-editing-allowed="readmeEditPermission"
+                :asset-type="selectedAsset.typeName"
+                :handle-save="handleSave"
+                :handle-success="handleSuccess"
+                :handle-failure="handleFailure"
                 @saved-changes="
                     () => {
                         savedAllChanges = true
@@ -137,7 +162,8 @@
         watch,
     } from 'vue'
 
-    import Readme from '@common/widgets/readme/index.vue'
+    import { useConfirmDialog, onClickOutside, until } from '@vueuse/core'
+    import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
     import { assetInterface } from '~/types/assets/asset.interface'
     import SQLOverview from './sql/index.vue'
     import BiOverview from './bi/index.vue'
@@ -145,8 +171,7 @@
     import SaasOverview from './saas/index.vue'
     import GeneralOverview from './general/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import { useConfirmDialog, onClickOutside } from '@vueuse/core'
-    import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
+    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
     export default defineComponent({
         name: 'OverviewTab',
@@ -156,7 +181,6 @@
             GlossaryOverview,
             GeneralOverview,
             SaasOverview,
-            Readme,
         },
         props: {
             selectedAsset: {
@@ -176,6 +200,18 @@
             } = useAssetInfo()
 
             const { selectedAsset } = toRefs(props)
+
+            const { localReadmeContent, handleUpdateReadme, isLoading } =
+                updateAssetAttributes(selectedAsset)
+
+            const handleSave = (editorContent: string) => {
+                handleUpdateReadme()
+                return until(isLoading).toBe(false)
+            }
+
+            const handleSuccess = () => {}
+
+            const handleFailure = (error) => {}
 
             const readmeEditPermission = computed(
                 () =>
@@ -250,6 +286,10 @@
                 confirm,
                 isRevealed,
                 savedAllChanges,
+                localReadmeContent,
+                handleSave,
+                handleSuccess,
+                handleFailure,
             }
         },
     })

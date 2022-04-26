@@ -4,9 +4,8 @@
             <template #title>Start a visual query</template>
 
             <div
-                class="flex items-center mt-0.5"
+                class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
                 @click="addTablePanel"
-                :class="[isBaseTableAdded ? 'cursor-not-allowed' : '']"
             >
                 <AtlanIcon
                     icon="Vqb24"
@@ -74,6 +73,7 @@
     import { addTable } from './composables/usepanels'
     import { assetInterface } from '~/types/assets/asset.interface'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {},
@@ -126,8 +126,14 @@
                 )
             })
             const addTablePanel = () => {
-                if (isBaseTableAdded.value) return
+                // if (isBaseTableAdded.value) return
                 addTable(activeInlineTab, item, inlineTabs)
+                useAddEvent('insights', 'schemaTree', 'itemClick', {
+                    action: 'start_visual_query',
+                    trigger: 'quick_action',
+                    query_tab_id: activeInlineTab.value.key,
+                    asset_type: item.value.typeName,
+                })
             }
 
             return {

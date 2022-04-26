@@ -1,8 +1,7 @@
 <template>
     <div
         ref="editorDiv"
-        class="flex flex-col bg-white border border-gray-200 rounded-lg"
-        :class="isEditMode ? 'editor-open' : 'editor-close'"
+        :class="isEditing ? 'editor-open' : 'editor-close'"
         @transitionend="
             () => {
                 editorDiv?.scrollIntoView({ behavior: 'smooth' })
@@ -20,15 +19,15 @@
                 <a-tooltip
                     placement="top"
                     :title="
-                        !isEdit
+                        !isEditingAllowed
                             ? `You don't have permission to add readme for this asset`
                             : ''
                     "
                     :mouse-enter-delay="0.5"
                 >
                     <a-button
-                        v-if="!localReadmeContent && !isEditMode"
-                        :disabled="!isEdit"
+                        v-if="!localReadmeContent && !isEditing"
+                        :disabled="!isEditingAllowed"
                         class="flex items-center text-primary border-0 shadow-none"
                         type="minimal"
                         @click="handleEditMode"
@@ -41,11 +40,11 @@
                     ></a-tooltip
                 >
 
-                <div v-if="isEdit && isEditMode" class="flex gap-x-2">
+                <div v-if="isEditing && isEditingAllowed" class="flex gap-x-2">
                     <a-button
-                        v-if="!isLoading"
                         class="flex items-center border-0 shadow-none"
                         type="minimal"
+                        :disabled="isSaving"
                         @click="handleCancel"
                         @transitionend.stop="() => {}"
                     >
@@ -55,25 +54,25 @@
                     <a-button
                         class="flex w-28 justify-center items-center"
                         type="primary"
-                        :loading="isLoading"
+                        :loading="isSaving"
                         @click="handleUpdate"
                         @transitionend.stop="() => {}"
                     >
-                        Save</a-button
+                        {{ isSaving ? 'Saving' : 'Save' }}</a-button
                     >
                 </div>
                 <a-tooltip
                     placement="top"
                     :title="
-                        !isEdit
+                        !isEditingAllowed
                             ? `You don't have permission to edit readme for this asset`
                             : ''
                     "
                     :mouse-enter-delay="0.5"
                 >
                     <a-button
-                        v-if="localReadmeContent && !isEditMode"
-                        :disabled="!isEdit"
+                        v-if="localReadmeContent && !isEditing"
+                        :disabled="!isEditingAllowed"
                         class="flex items-center text-primary border-0 shadow-none"
                         type="minimal"
                         @click="handleEditMode"
@@ -88,15 +87,15 @@
             </div>
         </div>
         <div class="border-0 h-full p-6">
-            <Editor
+            <AtlanEditor
                 ref="editor"
                 v-model="localReadmeContent"
                 placeholder="Type '/' for commands"
-                :is-edit-mode="isEditMode"
+                :is-edit-mode="isEditing"
                 :empty-text="
-                    isEditAllowed
-                        ? 'Add a Readme with an overview of your asset.'
-                        : 'Readme hasn\'t been added for this asset.'
+                    isEditingAllowed
+                        ? emptyTextIfEditingAllowed
+                        : emptyTextIfEditingDisallowed
                 "
                 @change="$emit('editing')"
                 @transitionend.stop="() => {}"
@@ -106,75 +105,121 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, PropType, toRefs } from 'vue'
+    import { defineComponent, ref, toRefs } from 'vue'
 
-    import Editor from '@/common/editor/index.vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import { assetInterface } from '~/types/assets/asset.interface'
-    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import { useVModel } from '@vueuse/core'
+    import Editor from '~/modules/editor/index.vue'
 
     export default defineComponent({
         components: {
             Editor,
         },
         props: {
-            isEdit: {
+            isEditingAllowed: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            modelValue: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            encodeContent: {
                 type: Boolean,
                 required: false,
                 default: true,
             },
-            asset: {
-                type: Object as PropType<assetInterface>,
+            emptyTextIfEditingAllowed: {
+                type: String,
+                required: false,
+                default: 'Add a Readme with an overview of your asset.',
+            },
+            emptyTextIfEditingDisallowed: {
+                type: String,
+                required: false,
+                default: "Readme hasn't been added for this asset.",
+            },
+            handleSave: {
+                type: Function,
                 required: true,
             },
+            handleSuccess: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
+            handleFailure: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
         },
-        emits: ['savedChanges', 'editing'],
+        emits: ['savedChanges', 'editing', 'update:modelValue'],
         setup(props, { emit }) {
-            const { asset, isEdit: isEditAllowed } = toRefs(props)
+            const {
+                isEditingAllowed,
+                encodeContent,
+                handleSave,
+                handleSuccess,
+                handleFailure,
+            } = toRefs(props)
+            const content = useVModel(props, 'modelValue', emit)
+            const localReadmeContent = ref(
+                encodeContent.value
+                    ? decodeURIComponent(content.value)
+                    : content.value
+            )
+            const isEditing = ref(false)
+            const isSaving = ref(false)
+
             const editorDiv = ref<HTMLElement | null>(null)
-
-            const { readmeContent, readmeGuid } = useAssetInfo()
-
-            const { handleUpdateReadme, localReadmeContent, isLoading } =
-                updateAssetAttributes(asset)
-
-            const isEditMode = ref(false)
-
             const editor = ref()
 
             const handleEditMode = () => {
-                isEditMode.value = !isEditMode.value
+                isEditing.value = !isEditing.value
                 editor.value?.editor?.commands.focus('end')
             }
 
-            const handleUpdate = () => {
-                handleUpdateReadme()
-                isEditMode.value = false
+            const handleUpdate = async () => {
+                isSaving.value = true
+                content.value = encodeContent.value
+                    ? encodeURIComponent(localReadmeContent.value)
+                    : localReadmeContent.value
+                try {
+                    await handleSave.value(content.value)
+                    handleSuccess?.value()
+                } catch (error) {
+                    handleFailure?.value(error)
+                }
+                isSaving.value = false
+                isEditing.value = false
                 emit('savedChanges')
             }
 
             const handleCancel = () => {
-                if (editor.value) {
-                    editor.value.resetEditor(
-                        decodeURIComponent(readmeContent(asset.value) || '')
-                    )
-                }
-                localReadmeContent.value = readmeContent(asset.value)
-                isEditMode.value = false
+                editor.value?.editor?.commands.setContent(
+                    encodeContent.value
+                        ? decodeURIComponent(content.value)
+                        : content.value
+                )
+                localReadmeContent.value = encodeContent.value
+                    ? decodeURIComponent(content.value)
+                    : content.value
+                isEditing.value = false
                 emit('savedChanges')
             }
 
             return {
-                isLoading,
+                localReadmeContent,
                 handleUpdate,
-                isEditMode,
+                isEditingAllowed,
                 handleEditMode,
                 handleCancel,
                 editor,
-                localReadmeContent,
-                readmeGuid,
-                isEditAllowed,
                 editorDiv,
+                isEditing,
+                isSaving,
             }
         },
     })
@@ -190,9 +235,3 @@
         transition: min-height 0.3s ease-in-out;
     }
 </style>
-
-<route lang="yaml">
-meta:
-    layout: project
-    requiresAuth: true
-</route>

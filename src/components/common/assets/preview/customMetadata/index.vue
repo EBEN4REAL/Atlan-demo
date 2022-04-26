@@ -8,15 +8,14 @@
         class="flex flex-col w-full overflow-hidden gap-y-2"
     >
         <!-- header starts here -->
-        <div
-            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 gap-x-4 group bg-gray-50"
-        >
+        <div class="flex items-center justify-between px-5 py-4 gap-x-4">
             <span class="flex items-center">
                 <PreviewTabsIcon
                     :icon="tab.icon"
                     :image="tab.image"
                     :emoji="tab.emoji"
                     height="h-4"
+                    width="w-4"
                     class="mr-1"
                     :display-mode="true"
                     emoji-size="text-md"
@@ -83,14 +82,11 @@
                     >
                         Cancel
                     </span>
-                    <AtlanButton
+                    <AtlanButton2
                         :disabled="!isEdit"
-                        size="small"
-                        padding="compact"
+                        label="Update"
                         @click="handleUpdate"
-                    >
-                        Update
-                    </AtlanButton>
+                    />
                 </div>
             </div>
         </div>
@@ -274,7 +270,7 @@
                                 <span> haven’t been populated yet. </span>
                             </template>
                         </div>
-                        <AtlanButton
+                        <AtlanButton2
                             v-if="
                                 selectedAssetUpdatePermission(
                                     selectedAsset,
@@ -282,12 +278,10 @@
                                     'ENTITY_UPDATE_BUSINESS_METADATA'
                                 ) && !viewOnly
                             "
-                            color="primary"
-                            padding="compact"
+                            label="Start Editing"
+                            prefixIcon="Edit"
                             @click="() => (readOnly = false)"
-                        >
-                            <AtlanIcon icon="Edit" /> Start Editing
-                        </AtlanButton>
+                        />
                     </div>
                 </template>
                 <!-- showing empty ends here -->
@@ -399,11 +393,18 @@
                 type: Object,
                 required: false,
             },
+            // For the case when we want to direct the user from overview to edit mode
+            readOnlyInCm: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
         setup(props) {
-            const { selectedAsset, data, isDrawer } = toRefs(props)
+            const { selectedAsset, data, readOnlyInCm } = toRefs(props)
 
-            const readOnly = ref(true)
+            const readOnly = ref(readOnlyInCm.value)
+
             const loading = ref(false)
             const showMore = ref(false)
             const viewOnly = ref(data.value.options?.isLocked === 'true')
@@ -628,6 +629,14 @@
                     immediate: true,
                 }
             )
+
+            /*  watch(
+                readOnlyInCm,
+                () => {
+                    readOnly.value = readOnlyInCm.value
+                },
+                { immediate: true }
+            ) */
 
             const hasValue = (a) => {
                 const isMultivalued =

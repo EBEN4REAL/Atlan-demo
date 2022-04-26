@@ -5,7 +5,7 @@
             fullSreenState ? 'height: calc( 100vh - 40px )' : 'height:100vh'
         "
     >
-        <div class="relative flex flex-col bg-gray-light">
+        <div class="relative flex flex-col bg-new-gray-100">
             <div class="flex w-full text-gray">
                 <a-tabs
                     v-model:activeKey="activeInlineTabKey"
@@ -85,10 +85,10 @@
                                     @contextmenu.prevent="showContextMenu"
                                 >
                                     <div
-                                        class="flex items-center text-gray-700"
+                                        class="flex items-center w-full text-gray-700"
                                     >
                                         <span
-                                            class="text-sm truncate inline_tab_label"
+                                            class="w-full text-sm truncate inline_tab_label"
                                             :class="[
                                                 tab.key !== activeInlineTabKey
                                                     ? tabHover === tab.key
@@ -96,8 +96,13 @@
                                                         : 'text-gray-500'
                                                     : '',
                                             ]"
-                                            >{{ tab.label }}</span
                                         >
+                                            <Tooltip
+                                                clamp-percentage="99%"
+                                                :tooltip-text="tab.label"
+                                                :rows="1"
+                                            />
+                                        </span>
                                     </div>
                                 </div>
                                 <template #overlay>
@@ -174,7 +179,7 @@
         <div
             v-if="activeInlineTabKey"
             class="w-full"
-            style="max-height: 100%; min-height: 92%; height: 100%"
+            style="max-height: 100%; min-height: 70%; height: 100%"
             :class="$style.splitspane_playground"
         >
             <splitpanes
@@ -213,9 +218,15 @@
                 </pane>
             </splitpanes>
         </div>
-        <ResultPaneFooter v-if="activeInlineTabKey" />
 
-        <NoActiveInlineTab @handleAdd="handleAdd(false)" v-else />
+        <ResultPaneFooter
+            v-if="
+                activeInlineTabKey &&
+                activeInlineTab.playground.resultsPane.outputPaneSize > 0
+            "
+        />
+
+        <!-- <NoActiveInlineTab @handleAdd="handleAdd(false)" v-else /> -->
         <SaveQueryModal
             v-model:showSaveQueryModal="showSaveQueryModal"
             :saveQueryLoading="saveQueryLoading"
@@ -256,6 +267,8 @@
     import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
     import { useSpiltPanes } from '~/components/insights/common/composables/useSpiltPanes'
     import { useDebounceFn } from '@vueuse/core'
+    import Tooltip from '@/common/ellipsis/index.vue'
+    import insightsStore from '~/store/insights/index'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
@@ -267,6 +280,7 @@
             UnsavedPopover,
             SaveQueryModal,
             ResultPaneFooter,
+            Tooltip,
         },
         props: {
             activeInlineTabKey: {
@@ -279,6 +293,7 @@
         },
         setup(props, { emit }) {
             const route = useRoute()
+            const insights_Store = insightsStore()
             const fullSreenState = inject('fullSreenState') as Ref<boolean>
             const router = useRouter()
             const isSaving = ref(false)
@@ -303,6 +318,9 @@
                 key: undefined,
             })
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const activeResultPreviewTab = inject(
+                'activeResultPreviewTab'
+            ) as Ref<boolean>
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
@@ -335,6 +353,8 @@
             }
 
             const handleAdd = (isVQB) => {
+                activeResultPreviewTab.value = true
+                insights_Store.activePreviewGuid = undefined
                 // const key = String(new Date().getTime())
                 const { generateNewActiveTab } = useActiveTab()
                 const inlineTabData = generateNewActiveTab({
@@ -550,7 +570,21 @@
                 debouncdedHorizontalPane(e)
             }
 
+            const queryExecutionTime = computed(() => {
+                let _time = -1
+
+                const _index = insights_Store.previewTabs.findIndex(
+                    (el) => el.executionTime > -1
+                )
+                _time = _index > -1 ? 100 : -1
+                if (_time > -1) return _time
+
+                return activeInlineTab.value?.playground?.resultsPane?.result
+                    ?.executionTime
+            })
+
             return {
+                queryExecutionTime,
                 onHorizontalResize,
                 horizontalPaneResize,
                 fullSreenState,

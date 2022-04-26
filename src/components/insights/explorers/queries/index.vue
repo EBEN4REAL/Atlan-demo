@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col items-center w-full h-full bg-white query-explorer"
+        class="flex flex-col items-center w-full h-full bg-new-gray-100 query-explorer"
     >
         <div
             v-if="
@@ -20,87 +20,42 @@
                         @toggleCollectionModal="toggleCollectionModal"
                     ></CollectionSelector>
                     <!-- TODO:@rohan: disable items when its in search mode !searchQuery?.length && !totalFilteredCount -->
-                    <a-dropdown
-                        :trigger="['click']"
+                    <InsightsThreeDotMenu
+                        :options="dropdownOptions"
                         class="ml-auto shadow-none h-7"
                         placement="bottomLeft"
+                        :item="item"
                     >
-                        <div
-                            class="flex items-center h-8 px-3 rounded-lg cursor-pointer"
-                            :class="$style.filterButton"
-                            v-auth="[map.CREATE_COLLECTION]"
-                        >
-                            <span class="text-xs font-bold text-gray-700"
-                                >New</span
+                        <template #menuTrigger>
+                            <div
+                                class="flex items-center h-8 px-3 rounded-lg cursor-pointer"
+                                :class="$style.filterButton"
+                                v-auth="[map.CREATE_COLLECTION]"
                             >
-                        </div>
-                        <template #overlay>
-                            <a-menu class="py-1" :class="$style.ctaDropdown">
-                                <a-menu-item
-                                    key="0"
-                                    v-if="hasWritePermission"
-                                    @click="
-                                        () =>
-                                            toggleCreateQueryModal(
-                                                currentSelectedNode
-                                            )
-                                    "
+                                <span class="text-xs font-bold text-gray-700"
+                                    >New</span
                                 >
-                                    <div class="flex items-center px-4 h-9">
-                                        <!-- <AtlanIcon
-                                            icon="NewQuery"
-                                            color="#5277D7"
-                                            class="h-4 mr-2 outline-none hover:text-primary"
-                                        /> -->
-                                        <span>New Query</span>
-                                    </div>
-                                </a-menu-item>
-                                <a-menu-item
-                                    key="1"
-                                    @click="createFolderInput"
-                                    v-if="hasWritePermission"
-                                >
-                                    <div class="flex items-center px-4 h-9">
-                                        <!-- <AtlanIcon
-                                            color="#5277D7"
-                                            icon="NewFolder"
-                                            class="h-4 mr-2 outline-none hover:text-primary"
-                                        /> -->
-                                        <span>New Folder</span>
-                                    </div>
-                                </a-menu-item>
-                                <a-menu-item
-                                    key="1"
-                                    @click="toggleCollectionModal"
-                                >
-                                    <div class="flex items-center px-4 h-9">
-                                        <!-- <AtlanIcon
-                                            icon="CollectionIconSmall"
-                                            class="h-4 mr-2 outline-none hover:text-primary"
-                                        /> -->
-                                        <span>New Collection</span>
-                                    </div>
-                                </a-menu-item>
-
-                                <div
-                                    class="flex items-center m-1 mx-2 noAccess"
-                                    v-if="!hasWritePermission"
-                                >
-                                    <span>
-                                        <AtlanIcon
-                                            icon="WarningIcon"
-                                            class="h-4 mr-2 outline-none"
-                                        />
-                                    </span>
-
-                                    <span class="text-xs text-gray-500"
-                                        >You have view only access, cannot
-                                        create queries and folders.</span
-                                    >
-                                </div>
-                            </a-menu>
+                            </div>
                         </template>
-                    </a-dropdown>
+                        <template #menuFooter>
+                            <div
+                                class="flex items-center m-1 mx-2 noAccess"
+                                v-if="!hasWritePermission"
+                            >
+                                <span>
+                                    <AtlanIcon
+                                        icon="WarningIcon"
+                                        class="h-4 mr-2 outline-none"
+                                    />
+                                </span>
+
+                                <span class="text-xs text-gray-500"
+                                    >You have view only access, cannot create
+                                    queries and folders.</span
+                                >
+                            </div>
+                        </template>
+                    </InsightsThreeDotMenu>
                 </div>
                 <div
                     class="flex flex-row mt-4 space-x-2"
@@ -110,34 +65,37 @@
                         v-model:value="searchQuery"
                         class="h-8 rounded"
                         :class="$style.inputSearch"
-                        placeholder="Search Queries"
+                        placeholder="Search queries"
                     >
+                        <template #prefix>
+                            <AtlanIcon icon="Search" color="#6A7692" />
+                        </template>
                         <template #suffix>
-                            <AtlanIcon icon="Search" color="#6F7590" />
+                            <a-popover trigger="click" placement="bottomLeft">
+                                <a-button
+                                    class="flex items-center justify-center w-6 h-6 p-2 border-none shadow-none hover:bg-new-gray-100"
+                                >
+                                    <template #icon>
+                                        <AtlanIcon
+                                            v-if="totalFilteredCount === 0"
+                                            icon="Filter"
+                                            class="-ml-0.5"
+                                            color="#6A7692"
+                                        />
+                                        <AtlanIcon
+                                            v-else
+                                            icon="FilterDot"
+                                            class="-ml-0.5"
+                                            color="#6A7692"
+                                        />
+                                    </template>
+                                </a-button>
+                                <template #content>
+                                    <QueryFilter @change="onFilterChange" />
+                                </template>
+                            </a-popover>
                         </template>
                     </a-input>
-                    <a-popover trigger="click" placement="bottomLeft">
-                        <a-button
-                            class="flex items-center w-8 h-8 p-2"
-                            :class="$style.filterButton"
-                        >
-                            <template #icon>
-                                <AtlanIcon
-                                    v-if="totalFilteredCount === 0"
-                                    icon="Filter"
-                                    class="-ml-0.5"
-                                />
-                                <AtlanIcon
-                                    v-else
-                                    icon="FilterDot"
-                                    class="-ml-0.5"
-                                />
-                            </template>
-                        </a-button>
-                        <template #content>
-                            <QueryFilter @change="onFilterChange" />
-                        </template>
-                    </a-popover>
                 </div>
             </div>
             <!-- <div v-else style="height: 35%"></div> -->
@@ -145,14 +103,14 @@
             <div class="w-full h-full mt-2" v-if="queryCollections?.length > 0">
                 <div
                     v-if="!searchQuery?.length && !totalFilteredCount"
-                    class="relative w-full px-4 pt-0 pb-6 mt-2 overflow-y-auto"
+                    class="relative w-full px-2 pt-0 pb-6 mt-2 overflow-y-auto"
                     :style="
                         fullSreenState
                             ? 'height: calc( 100vh - 140px )'
-                            : 'height: calc( 100vh - 120px )'
+                            : 'height: calc( 100vh - 170px )'
                     "
                 >
-                    <div class="w-full h-full bg-white">
+                    <div class="w-full h-full bg-new-gray-100">
                         <query-tree
                             v-if="!queryCollectionsLoading"
                             @toggleCreateQueryModal="toggleCreateQueryModal"
@@ -322,11 +280,9 @@
     // import SaveQueryModal from '~/components/insights/playground/editor/saveQuery/index.vue'
     import LoadingView from '@common/loaders/section.vue'
     import QueryTreeItem from './queryTreeItem.vue'
-    import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useAssetStore from '~/store/asset'
     import { storeToRefs } from 'pinia'
     import useAssetInfo from '~/composables/asset/useAssetInfo'
-    import { assetInterface } from '~/types/assets/asset.interface'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
     import QueryFilter from './queryFilter.vue'
@@ -336,6 +292,8 @@
     import ErrorView from '@common/error/index.vue'
     import { isValid } from '~/utils/isValid'
     import map from '~/constant/accessControl/map'
+    import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
+    import { MenuItem, SubMenu } from 'ant-design-vue'
 
     export default defineComponent({
         name: 'QueryExplorer',
@@ -350,6 +308,7 @@
             LoadingView,
             QueryTreeItem,
             CollectionSelector,
+            InsightsThreeDotMenu,
             SaveQueryModal: defineAsyncComponent(
                 () =>
                     import(
@@ -960,6 +919,12 @@
                     // console.log('query saveQueryData: ', saveQueryData)
                     if (data) {
                         setTimeout(async () => {
+                            setCollectionsDataInInlineTab(
+                                activeInlineTab,
+                                inlineTabs,
+                                saveQueryData.collection,
+                                data?.mutatedEntities?.UPDATE[0]?.guid
+                            )
                             await refetchNode(
                                 saveQueryData.parentGuid ??
                                     getRelevantTreeData().parentGuid.value,
@@ -1114,6 +1079,41 @@
             })
             // console.log(queryCollectionsError.value, 'queryCollectionsError')
 
+            const dropdownOptions = computed(() => {
+                return [
+                    {
+                        title: 'New query',
+                        key: 'newQuery',
+                        class: '',
+                        disabled: false,
+                        component: MenuItem,
+                        hide: computed(() => !hasWritePermission.value),
+                        handleClick: () => {
+                            toggleCreateQueryModal(currentSelectedNode)
+                        },
+                    },
+                    {
+                        title: 'New folder',
+                        key: 'newFolder',
+                        component: MenuItem,
+                        class: '',
+                        disabled: false,
+                        hide: computed(() => !hasWritePermission.value),
+                        handleClick: createFolderInput,
+                    },
+                    {
+                        title: 'New collection',
+
+                        key: 'collection',
+                        component: MenuItem,
+                        class: '',
+                        disabled: false,
+                        hide: false,
+                        handleClick: toggleCollectionModal,
+                    },
+                ]
+            })
+
             return {
                 isValid,
                 refreshQueryTree,
@@ -1174,6 +1174,7 @@
                 nodeError,
                 errorNode,
                 refetchNode,
+                dropdownOptions,
             }
         },
     })
@@ -1209,14 +1210,15 @@
         border-radius: 8px !important;
     }
     :global(.ant-input) {
-        color: #6f7590 !important;
+        @apply text-gray-700 !important;
     }
     input::placeholder {
-        color: #6f7590 !important;
+        @apply text-new-gray-600 !important;
     }
     .filterButton {
         background: #ffffff;
-        border: 1px solid #e6e6eb;
+        border: 1px solid;
+        @apply border-new-gray-300 !important;
         box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
         border-radius: 8px;
     }

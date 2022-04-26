@@ -122,15 +122,12 @@
                         </a-menu-item>
                     </a-menu></template
                 >
-                <AtlanButton
-                    size="sm"
+                <AtlanButton2
+                    color="secondary"
                     class="px-2 mx-1 text-gray-700 bg-transparent border-none"
-                    padding="compact"
                 >
-                    <div class="flex items-center">
-                        <AtlanIcon icon="QuestionRound" class="h-6" />
-                    </div>
-                </AtlanButton>
+                    <AtlanIcon icon="QuestionRound" class="h-6" />
+                </AtlanButton2>
             </a-dropdown>
             <!-- <atlan-icon icon="Search" class="h-5 mr-3" />
 
@@ -160,7 +157,8 @@
     import useAssetStore from '~/store/asset'
     import useHelpWidget from '~/composables/helpCenter/useHelpWidget'
     import { helpCenterList } from '~/constant/navigation/helpCentre'
-
+    import { usePersonaStore } from '~/store/persona'
+    import { usePurposeStore } from '~/store/purpose'
     export default defineComponent({
         name: 'Navigation Menu',
         components: {
@@ -179,6 +177,8 @@
         },
         emits: ['toggleNavbar', 'openNavbar'],
         setup(props, { emit }) {
+            const personaStore = usePersonaStore()
+            const purposeStore = usePurposeStore()
             const { page } = useVModels(props, emit)
             const tenantStore = useTenantStore()
             const currentRoute = useRoute()
@@ -224,9 +224,33 @@
             const dirtyTimestamp = ref(`dirty_${Date.now().toString()}`)
 
             watch(
-                () => assetStore.globalState,
-                (newValue) => {
-                    globalState.value = newValue
+                () => [
+                    assetStore.globalState,
+                    personaStore.list,
+                    purposeStore.list,
+                ],
+                ([newValue, persona, purpose]) => {
+                    let payload = newValue
+                    if (payload[0] === 'persona') {
+                        const finded = persona.find(
+                            (el) => el.id === payload[1]
+                        )
+                        const enable = finded?.enabled || false
+                        if (!enable) {
+                            assetStore.setGlobalState(['all'])
+                        }
+                    }
+                    if (payload[0] === 'purpose') {
+                        const finded = purpose.find(
+                            (el) => el.id === payload[1]
+                        )
+                        const enable = finded?.enabled || false
+                        if (!enable) {
+                            assetStore.setGlobalState(['all'])
+                        }
+                    }
+                    // console.log(personaStore.list, ' <sdsdsdsd')
+                    globalState.value = payload
                     dirtyTimestamp.value = `dirty_${Date.now().toString()}`
                 },
                 {
@@ -256,27 +280,16 @@
             })
 
             const pageName = computed(() => {
-                if (currentRoute.path.startsWith('/assets')) {
-                    return 'Assets'
-                }
-                if (currentRoute.path.startsWith('/glossary')) {
-                    return 'Glossary'
-                }
-                if (currentRoute.path.startsWith('/insights')) {
-                    return 'Insights'
-                }
-                if (currentRoute.path.startsWith('/workflows')) {
+                if (currentRoute.path.startsWith('/assets')) return 'Assets'
+                if (currentRoute.path.startsWith('/glossary')) return 'Glossary'
+                if (currentRoute.path.startsWith('/insights')) return 'Insights'
+                if (currentRoute.path.startsWith('/workflows'))
                     return 'Workflow Center'
-                }
-                if (currentRoute.path.startsWith('/workflows')) {
-                    return 'Workflow Center'
-                }
-                if (currentRoute.path.startsWith('/governance')) {
+                if (currentRoute.path.startsWith('/governance'))
                     return 'Governance Center'
-                }
-                if (currentRoute.path.startsWith('/admin')) {
+                if (currentRoute.path.startsWith('/admin'))
                     return 'Admin Center'
-                }
+                return 'Atlan'
             })
 
             const handleGlobalStateChange = () => {

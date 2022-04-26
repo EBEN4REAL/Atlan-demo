@@ -30,10 +30,53 @@ export const requestTypeIcon: Record<RequestType, keyof typeof iconMap> = {
     purpose_policy_access: 'Link',
     persona_access: 'Link',
 }
+export const requestTypeEventMap = {
+    attach_classification: {
+        requestType: 'classification',
+        action: 'add',
+    },
+    userDescription: {
+        requestType: 'userDescription',
+        action: 'edit',
+    },
+    certificateStatus: {
+        requestType: 'certificateStatus',
+        action: 'edit',
+    },
+    term_link: {
+        requestType: 'term',
+        action: 'add',
+    },
+    ownerUsers: {
+        requestType: 'ownerUsers',
+        action: 'add',
+    },
+    ownerGroups: {
+        requestType: 'ownerGroups',
+        action: 'add',
+    },
+    create_term:{
+        requestType:'create_term',
+        action:'create'
+    },
+    create_glossary:{
+        requestType:'create_glossary',
+        action:'create'
+    },
+    create_category:{
+        requestType:'create_category',
+        action:'create'
+    },
+    name:{
+        requestType:'name',
+        action:'edit'
+    }
+}
 
 export const attributeCopyMapping: Record<string, string> = {
     certificateStatus: 'Certificate',
     userDescription: 'Description',
+    name: 'Name',
 }
 
 export const typeCopyMapping: Record<string, string> = {
@@ -42,9 +85,20 @@ export const typeCopyMapping: Record<string, string> = {
     create_glossary: 'Create Glossary',
     create_category: 'Create Category',
     create_term: 'Create Term',
-    bm_attribute: 'Update',
+    bm_attribute: 'Update custom metadata',
     term_link: 'Link Term',
     attach_classification: 'Link Classification',
+    certificateStatus: 'Certificate',
+    ownerUsers: 'Owner',
+    userDescription: 'Description',
+    name: 'Name',
+}
+
+export const destinationAttributeMapping: Record<string, string> = {
+    ownerUsers: 'Owner',
+    userDescription: 'Description',
+    name: 'Name',
+    certificateStatus: 'Certificate',
 }
 
 export const requestTypeTabList: { id: string; value: RequestType[] }[] = [
@@ -64,4 +118,32 @@ export const requestTypeTabList: { id: string; value: RequestType[] }[] = [
         value: ['create_typedef', 'attach_classification'],
     },
     { id: 'Business metadata', value: ['bm_attribute'] },
+]
+
+export const listStatus = [
+    {
+        name: 'All',
+        key: 'all',
+        color: '#6D6DDA',
+    },
+    {
+        name: 'Pending',
+        key: 'active',
+        color: '#FFB119',
+        icon: 'Clock',
+        class: 'text-yellow-500',
+    },
+    {
+        name: 'Approved',
+        key: 'approved',
+        color: '#6D6DDA',
+        icon: 'Check',
+        class: 'text-success check-icon',
+    },
+    {
+        name: 'Rejected',
+        key: 'rejected',
+        color: '#DC5252',
+        icon: 'CrossCircle',
+    },
 ]

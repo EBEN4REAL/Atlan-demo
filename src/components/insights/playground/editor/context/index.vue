@@ -4,154 +4,41 @@
     >
         <!-- <div class="flex items-center mr-3" v-if="activeInlineTab?.queryId"> -->
         <div class="flex items-center mr-3">
-            <PopoverAsset
-                :item="{
-                    typeName: 'Query',
-                    attributes: activeInlineTab?.attributes,
-                }"
-                mouseEnterDelay="0.6"
-                placement="bottomLeft"
+            <div
                 v-if="activeInlineTab?.queryId && activeInlineTab?.attributes"
+                class="flex items-center transition rounded-sm"
+                style="max-width: 16rem"
             >
-                <template #extraHeaders>
-                    <div
-                        class="flex w-full item-center"
-                        v-if="
-                            activeInlineTab?.attributes?.parent?.typeName ===
-                            'Collection'
+                <div class="mt-1">
+                    <AtlanIcon
+                        :icon="
+                            getEntityStatusIcon(
+                                showVQB ? 'vqb' : 'query',
+                                activeInlineTab?.status
+                            )
                         "
-                    >
-                        <div class="flex items-center w-full">
-                            <div
-                                class="w-1 h-1 mx-2 -mt-0.5 rounded-full"
-                                style="background-color: #c4c4c4"
-                            ></div>
-                            <div class="flex items-center w-full h-full">
-                                <div
-                                    class="relative w-4 h-4 mb-1 mr-1 overflow-hidden"
-                                >
-                                    <AtlanIcon
-                                        v-if="
-                                            activeInlineTab?.attributes?.parent
-                                                ?.typeName === 'Folder'
-                                        "
-                                        icon="FolderClosed"
-                                        class="w-4 h-4 mb-2"
-                                    />
-
-                                    <span
-                                        v-else
-                                        class="w-4 h-4 mr-1 -mt-1 text-sm"
-                                        >{{
-                                            activeInlineTab?.attributes?.parent
-                                                ?.attributes?.icon
-                                                ? activeInlineTab?.attributes
-                                                      ?.parent?.attributes?.icon
-                                                : '🗃'
-                                        }}</span
-                                    >
-                                </div>
-
-                                <!-- <span>{{
-                                    activeInlineTab?.attributes?.parent
-                                        ?.attributes?.name
-                                }}</span> -->
-
-                                <span class="w-11/12">
-                                    <Tooltip
-                                        clampPercentage="99%"
-                                        :tooltip-text="
-                                            activeInlineTab?.attributes?.parent
-                                                ?.attributes?.name
-                                        "
-                                        :rows="1"
-                                    />
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div
-                        class="flex w-full item-center"
-                        v-if="
-                            activeInlineTab?.attributes?.parent?.typeName ===
-                            'Folder'
-                        "
-                    >
-                        <div class="flex items-center w-full">
-                            <div
-                                class="w-1 h-1 mx-2 rounded-full -mt-0.5"
-                                style="background-color: #c4c4c4"
-                            ></div>
-                            <div class="flex items-center w-full h-full">
-                                <div
-                                    class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
-                                >
-                                    <AtlanIcon
-                                        icon="CollectionIconSmall"
-                                        class="h-4 mb-2"
-                                    />
-                                    {{ activeInlineTab?.attributes }}
-                                </div>
-
-                                <!-- <span>{{ collectionName }}</span> -->
-
-                                <span class="w-11/12">
-                                    <Tooltip
-                                        :tooltip-text="collectionName"
-                                        :rows="1"
-                                        clampPercentage="99%"
-                                    />
-                                </span>
-                            </div>
-                        </div>
-                        <!-- <div class="flex items-center">
-                            <div
-                                class="w-1 h-1 mx-2 rounded-full -mt-0.5"
-                                style="background-color: #c4c4c4"
-                            ></div>
-                            <div class="flex items-center h-full">
-                                <div
-                                    class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
-                                >
-                                    <AtlanIcon
-                                        icon="FolderClosed"
-                                        class="h-4 mb-2"
-                                    />
-                                </div>
-
-                                <span>{{
-                                    activeInlineTab?.attributes?.parent
-                                        ?.attributes?.name
-                                }}</span>
-                            </div>
-                        </div> -->
-                    </div>
-                </template>
-
-                <template #button> </template>
-
-                <div
-                    class="flex items-center transition rounded-sm hover:bg-gray-light"
-                    style="max-width: 16rem"
-                >
-                    <div class="mt-1">
-                        <AtlanIcon
-                            :icon="
-                                getEntityStatusIcon(
-                                    showVQB ? 'vqb' : 'query',
-                                    activeInlineTab?.status
-                                )
-                            "
-                            class="w-4 h-4 my-auto mr-1 -mt-0.5"
-                        ></AtlanIcon>
-                    </div>
-                    <Tooltip
-                        :tooltip-text="`${activeInlineTab.label}`"
-                        :classes="'w-full mt-0.5 mr-1 text-base text-gray-700 '"
-                        tooltipColor="#363636"
-                    />
+                        class="w-4 h-4 my-auto mr-1 -mt-0.5"
+                    ></AtlanIcon>
                 </div>
-            </PopoverAsset>
+
+                <input
+                    v-if="renameQueryFieldActive"
+                    ref="editableQueryField"
+                    :value="queryNameDirty"
+                    :size="queryNameDirty.length"
+                    class="w-full pr-1 mt-1 mr-1 text-base text-gray-700 border-none outline-none"
+                    style="max-width: 95%"
+                    @input="updateQueryNameDirty"
+                    :readonly="readOnly"
+                />
+                <Tooltip
+                    v-else
+                    :tooltip-text="`${activeInlineTab.label}`"
+                    :classes="'w-full mt-0.5 mr-1 text-base text-gray-700'"
+                    tooltip-color="#363636"
+                    @click="handleRenameQuery"
+                />
+            </div>
 
             <div v-else class="flex items-center pl-3" style="max-width: 16rem">
                 <div class="mt-1">
@@ -168,7 +55,7 @@
                 <Tooltip
                     :tooltip-text="`${activeInlineTab.label}`"
                     :classes="'w-full mt-0.5 mr-1 text-base text-gray-700'"
-                    tooltipColor="#363636"
+                    tooltip-color="#363636"
                 />
             </div>
 
@@ -191,7 +78,7 @@
                         size="sm"
                         color="secondary"
                         padding="compact"
-                        class="flex items-center justify-between h-7 ml-2 border-gray-300 group"
+                        class="flex items-center justify-between ml-2 border-gray-300 h-7 group"
                         :class="isUpdating ? 'px-4.5' : 'px-2'"
                         :disabled="
                             activeInlineTab.isSaved && activeInlineTab.queryId
@@ -249,7 +136,7 @@
                         size="sm"
                         color="secondary"
                         padding="compact"
-                        class="flex items-center h-7 px-3 ml-2 border-gray-300"
+                        class="flex items-center px-3 ml-2 border-gray-300 h-7"
                         @click="$emit('onClickSaveQuery')"
                     >
                         <div
@@ -270,20 +157,20 @@
         <div class="flex items-center">
             <a-popover
                 trigger="click"
-                @visibleChange="onPopoverVisibleChange"
                 placement="bottomRight"
                 :class="$style.context_popover"
-                :overlayStyle="{
+                :overlay-style="{
                     paddingTop: '0px',
                 }"
+                @visibleChange="onPopoverVisibleChange"
             >
                 <template #content>
                     <div class="p-4" style="width: 332px">
                         <Connector
-                            class=""
-                            :filterSourceIds="BItypes"
-                            :isLeafNodeSelectable="false"
                             v-model:data="connectorsData"
+                            class=""
+                            :filter-source-ids="BItypes"
+                            :is-leaf-node-selectable="false"
                             :item="{
                                 id: 'connector',
                                 label: 'Connector',
@@ -317,31 +204,36 @@
                 >
                     <div class="flex items-center">
                         <AtlanIcon
+                            v-if="readOnly"
                             icon="Lock"
                             class="w-4 h-4 mr-1"
-                            v-if="readOnly"
                         />
                         <img
-                            v-if="connectionName"
+                            v-if="
+                                connectionName &&
+                                getConnectorImage(connectorAsset?.id).includes(
+                                    '/'
+                                )
+                            "
                             :src="getConnectorImage(connectorAsset?.id)"
                             class="w-4 h-4 mr-1"
                             style="min-width: 1rem"
                         />
                     </div>
                     <div
-                        class="flex items-center"
                         v-if="!activeInlineTab?.assetSidebar?.isVisible"
+                        class="flex items-center"
                     >
                         <div class="flex items-center">
                             <div v-if="connectionName">
                                 <div
-                                    class="flex items-center"
                                     v-if="
                                         activeInlineTab?.explorer?.schema
                                             ?.connectors?.attributeValue !==
                                         activeInlineTab?.playground?.editor
                                             ?.context?.attributeValue
                                     "
+                                    class="flex items-center"
                                 >
                                     <div class="text-gray-700">
                                         {{ connectionName }}
@@ -363,7 +255,7 @@
                                 >Select Connector</span
                             >
                         </div>
-                        <div class="flex items-center" v-if="connectionName">
+                        <div v-if="connectionName" class="flex items-center">
                             <!-- <div class="mx-1">/</div> -->
                             <!-- <AtlanIcon
                             class="w-4 h-4 mr-1 -mt-0.5"
@@ -389,8 +281,8 @@
                             <!-- <div class="mx-1">/</div> -->
                         </div>
                         <div
-                            class="flex items-center"
                             v-if="connectionName && databaseName"
+                            class="flex items-center"
                         >
                             <!-- <AtlanIcon
                             class="w-4 h-4 mr-1 -mt-0.5"
@@ -451,7 +343,7 @@
                                 :edit-permission="isQueryRunning !== 'loading'"
                             >
                                 <AtlanBtn
-                                    class="flex items-center h-7 px-3 button-shadow bg-primary"
+                                    class="flex items-center px-3 h-7 button-shadow bg-primary"
                                     size="sm"
                                     color="primary"
                                     padding="compact"
@@ -524,9 +416,14 @@
         watch,
         computed,
         ComputedRef,
+        toRaw,
+        nextTick,
     } from 'vue'
-    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import StatusBadge from '@common/badge/status/index.vue'
+    import { useTimeAgo } from '@vueuse/core'
+    import { storeToRefs } from 'pinia'
+    import { message } from 'ant-design-vue'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { SourceList } from '~/constant/source'
     import Connector from '~/components/insights/common/connector/connector.vue'
     import ThreeDotMenu from '~/components/insights/playground/editor/threeDotMenu/index.vue'
@@ -535,9 +432,7 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import AtlanBtn from '~/components/UI/button.vue'
-    import { useTimeAgo } from '@vueuse/core'
     import { useConnectionStore } from '~/store/connection'
-    import { storeToRefs } from 'pinia'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import map from '~/constant/accessControl/map'
     import Tooltip from '@/common/ellipsis/index.vue'
@@ -546,6 +441,9 @@
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
     import { useAuthStore } from '~/store/auth'
     import Shortcut from '@/common/popover/shortcut.vue'
+    import { Insights } from '~/services/meta/insights/index'
+    import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'EditorContext',
@@ -579,12 +477,17 @@
                 getConnectorName,
                 getConnectionQualifiedName,
             } = useConnector()
+            const { modifyActiveInlineTab } = useInlineTab()
             const popoverVisible = ref(false)
 
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
+            const refreshQueryTree = inject<
+                (guid: string, type: 'query' | 'Folder') => void
+            >('refreshQueryTree', () => {})
+            const updateAssetCheck = inject('updateAssetCheck') as Ref<Boolean>
             // const permissions = inject('permissions') as ComputedRef<any>
 
             const connectorsData: Ref<connectorsWidgetInterface> = ref(
@@ -606,7 +509,7 @@
 
             const BItypes = getBISourceTypes()
 
-            let userHasPermission = computed(() => {
+            const userHasPermission = computed(() => {
                 permissions.value.indexOf('CREATE_COLLECTION') >= 0
             })
 
@@ -625,9 +528,7 @@
                     ? false
                     : isQueryCreatedByCurrentUser.value
                     ? false
-                    : hasQueryWritePermission.value
-                    ? false
-                    : true
+                    : !hasQueryWritePermission.value
             )
 
             const store = useConnectionStore()
@@ -635,21 +536,20 @@
             const connectorName = computed(() =>
                 getConnectorName(connectorsData.value.attributeValue)
             )
-            const getConnectorImage = (sourceid) => {
-                return store.getConnectorImageMapping[sourceid?.toLowerCase()]
-            }
+            const getConnectorImage = (sourceid) =>
+                store.getConnectorImageMapping[sourceid?.toLowerCase()]
 
             const connectionName = computed(() => {
                 // console.log('store list: ', store.getList)
-                let data = getConnectionQualifiedName(
+                const data = getConnectionQualifiedName(
                     connectorsData.value.attributeValue
                 )
 
-                let connectionData = store.getList.find(
+                const connectionData = store.getList.find(
                     (connection) =>
                         connection?.attributes?.qualifiedName === data
                 )
-                let name = connectionData?.attributes?.name
+                const name = connectionData?.attributes?.name
                 // console.log('connection data: ', connectionData)
                 return name
             })
@@ -660,18 +560,16 @@
                 getSchemaName(connectorsData.value.attributeValue)
             )
 
-            const connectorAsset = computed(() => {
-                return SourceList.find(
-                    (source) => source.id === connectorName.value
-                )
-            })
+            const connectorAsset = computed(() =>
+                SourceList.find((source) => source.id === connectorName.value)
+            )
 
             const queryCollections = inject('queryCollections') as ComputedRef<
                 QueryCollection[] | undefined
             >
 
             const collectionName = computed(() => {
-                let col = queryCollections.value?.find(
+                const col = queryCollections.value?.find(
                     (col) =>
                         col.attributes.qualifiedName ===
                         activeInlineTab.value.attributes.collectionQualifiedName
@@ -691,7 +589,9 @@
             const onPopoverVisibleChange = () => {
                 popoverVisible.value = !popoverVisible.value
             }
-
+            const queryNameDirty = ref(
+                activeInlineTab.value.label
+            ) as Ref<string>
             /* Watchers for updating the connectors when activeinlab change */
             watch(
                 activeInlineTab,
@@ -704,6 +604,8 @@
                             connectorsData.value =
                                 activeInlineTab.value?.playground?.editor?.context
                         }
+                        queryNameDirty.value = activeInlineTab.value
+                            ?.label as string
                     } else {
                         connectorsData.value = {
                             attributeName: undefined,
@@ -713,10 +615,146 @@
                 },
                 { immediate: true }
             )
-            const showVQB = computed(() => {
-                return activeInlineTab?.value?.playground?.isVQB
-            })
+            const showVQB = computed(
+                () => activeInlineTab?.value?.playground?.isVQB
+            )
 
+            const renameQueryFieldActive = ref(false)
+
+            const editableQueryField = ref(null)
+
+            const renameQuery = () => {
+                if (
+                    queryNameDirty.value !== activeInlineTab.value.label &&
+                    queryNameDirty.value
+                ) {
+                    const updatedAttributes = {
+                        ...activeInlineTab.value.attributes,
+                        name: queryNameDirty.value,
+                    }
+                    // make api call
+                    const { data, error, isLoading } =
+                        Insights.CreateQueryFolder(
+                            {
+                                entity: {
+                                    attributes: updatedAttributes,
+                                    typeName: 'Query',
+                                },
+                            },
+                            {}
+                        )
+                    // handle error
+                    watch(
+                        error,
+                        () => {
+                            if (isLoading.value === false) {
+                                if (error.value !== undefined) {
+                                    queryNameDirty.value = activeInlineTab.value
+                                        .label as string
+                                    message.error({
+                                        content: `Query rename failed`,
+                                    })
+                                }
+                                renameQueryFieldActive.value = false
+                            }
+                        },
+                        { immediate: true }
+                    )
+
+                    // update state
+                    watch(data, () => {
+                        message.success('Query renamed successfully')
+                        if (data.value !== undefined) {
+                            updateAssetCheck.value = true
+                            const parentGuid =
+                                activeInlineTab?.value?.attributes?.parent
+                                    ?.guid ?? ''
+
+                            refreshQueryTree(parentGuid, 'query')
+
+                            if (activeInlineTab?.value?.attributes?.name) {
+                                const activeInlineTabCopy: activeInlineTabInterface =
+                                    JSON.parse(
+                                        JSON.stringify(
+                                            toRaw(activeInlineTab.value)
+                                        )
+                                    )
+                                activeInlineTabCopy.attributes.name =
+                                    queryNameDirty.value
+                                activeInlineTabCopy.label = queryNameDirty.value
+
+                                if (
+                                    activeInlineTabCopy?.assetSidebar?.assetInfo
+                                        ?.attributes?.__guid ===
+                                    activeInlineTabCopy?.attributes?.__guid
+                                ) {
+                                    activeInlineTabCopy.assetSidebar.assetInfo.attributes.name =
+                                        queryNameDirty.value
+                                    activeInlineTabCopy.assetSidebar.assetInfo.displayText =
+                                        queryNameDirty.value
+                                }
+                                if (
+                                    data.value?.mutatedEntities?.UPDATE
+                                        ?.length > 0
+                                ) {
+                                    activeInlineTabCopy.updateTime =
+                                        data.value?.mutatedEntities?.UPDATE[0].updateTime
+                                    activeInlineTabCopy.updatedBy =
+                                        data.value?.mutatedEntities?.UPDATE[0].updatedBy
+                                }
+                                modifyActiveInlineTab(
+                                    activeInlineTabCopy,
+                                    tabs,
+                                    activeInlineTabCopy.isSaved,
+                                    true
+                                )
+                            }
+                            useAddEvent(
+                                'insights',
+                                'query',
+                                'renamed',
+                                undefined
+                            )
+                            renameQueryFieldActive.value = false
+                        }
+                    })
+                }
+            }
+
+            const handleRenameQuery = () => {
+                queryNameDirty.value = activeInlineTab.value?.label as string
+                renameQueryFieldActive.value = true
+                nextTick(() => {
+                    if (editableQueryField.value) {
+                        editableQueryField.value.addEventListener(
+                            'keydown',
+                            (e) => {
+                                if (e.key === 'Escape') {
+                                    renameQueryFieldActive.value = false
+                                    queryNameDirty.value =
+                                        activeInlineTab.value.label
+                                    // queryNameDirty.value = ''
+                                }
+                                if (e.key === 'Enter') {
+                                    renameQuery()
+                                    // queryNameDirty.value = ''
+                                }
+                            }
+                        )
+                        editableQueryField.value.addEventListener(
+                            'blur',
+                            () => {
+                                renameQuery()
+                                // queryNameDirty.value = ''
+                            }
+                        )
+                        editableQueryField?.value?.focus()
+                    }
+                })
+            }
+            const updateQueryNameDirty = (e) => {
+                queryNameDirty.value = e?.target?.value
+            }
             return {
                 getConnectorImage,
                 showVQB,
@@ -744,6 +782,11 @@
                 editorContentSelectionState,
                 collectionName,
                 BItypes,
+                queryNameDirty,
+                renameQueryFieldActive,
+                handleRenameQuery,
+                editableQueryField,
+                updateQueryNameDirty,
             }
         },
     })

@@ -1,9 +1,19 @@
 export const actions = {
-    setNodesColumnList(nodeId, columns?, offset?, total?) {
+    setCyclicRelation(relStr) {
+        if (this.cyclicRelations.includes(relStr)) return
+        this.cyclicRelations.push(relStr)
+    },
+    setPortToSelect(port) {
+        this.portToSelect = port
+    },
+    setMergedLineageData(lineage) {
+        this.mergedLineageData = lineage
+    },
+    setNodesPortsList(nodeId, ports?, offset?, total?) {
         if (nodeId) {
-            this.nodesColumnList[nodeId] = { columns, offset, total }
+            this.nodesPortsList[nodeId] = { ports, offset, total }
         } else {
-            this.nodesColumnList = {}
+            this.nodesPortsList = {}
         }
     },
     setPortLineage(portId, lineage?) {

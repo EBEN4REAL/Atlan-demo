@@ -1,14 +1,17 @@
-import snowflake from '~/assets/images/source/snowflake.png'
-import tableau from '~/assets/images/source/tableau.png'
-import redshift from '~/assets/images/source/redshift.png'
-import postgres from '~/assets/images/source/postgres.png'
-import athena from '~/assets/images/source/athena.png'
-import databricks from '~/assets/images/source/databricks.png'
-import powerbi from '~/assets/images/source/powerbi.png'
-import bigquery from '~/assets/images/source/bigquery.png'
-import looker from '~/assets/images/source/looker.png'
-import mysql from '~/assets/images/source/mysql.png'
-import glue from '~/assets/images/source/glue.png'
+import {
+    snowflake,
+    tableau,
+    redshift,
+    postgres,
+    athena,
+    databricks,
+    powerbi,
+    bigquery,
+    looker,
+    mysql,
+    mssql,
+    glue,
+} from './icons'
 
 /* This is a mapping of the asset types. */
 export const getNodeTypeText = {
@@ -40,8 +43,8 @@ export const getNodeTypeText = {
     LookerProject: 'Project',
     // Tableau
     TableauDatasource: 'Datasource',
-    TableauCalculatedField: 'Calculated Field',
-    TableauDatasourceField: 'Datasource Field',
+    TableauCalculatedField: 'CalculatedField',
+    TableauDatasourceField: 'DatasourceField',
     TableauDashboard: 'Dashboard',
     TableauWorksheet: 'Worksheet',
     TableauWorkbook: 'Workbook',
@@ -63,6 +66,7 @@ export const getNodeSourceImage = {
     bigquery,
     looker,
     mysql,
+    mssql,
     glue,
 }
 
@@ -96,4 +100,55 @@ export const getSchema = (entity) => {
         entity.uniqueAttributes?.qualifiedName?.split('/')
     if (item[0] === 'default') return item[4]
     return item[3]
+}
+
+export const isCyclicEdge = (mergedLineageData, source, target) => {
+    const filtered = mergedLineageData.value.relations.filter((rel) => {
+        const { fromEntityId, toEntityId } = rel
+        if (
+            (fromEntityId === source || fromEntityId === target) &&
+            (toEntityId === source || toEntityId === target)
+        )
+            return true
+
+        return false
+    })
+
+    const conditionSet = new Set()
+    filtered.forEach((rel) => {
+        const { fromEntityId, toEntityId } = rel
+        conditionSet.add(`${fromEntityId}@${toEntityId}`)
+    })
+    const conditionArr = Array.from(conditionSet)
+
+    if (conditionArr.length === 2) return true
+    return false
+}
+
+export const getFilteredRelations = (relations) => {
+    const relsSet = new Set()
+    const newRels = []
+    relations.forEach((rel) => {
+        const { processId, fromEntityId, toEntityId } = rel
+        const entry = `${fromEntityId}@${toEntityId}`
+
+        if (!relsSet.has(entry)) {
+            const arr = relations.filter((x) => {
+                const { fromEntityId: from, toEntityId: to } = x
+                if (entry === `${from}@${to}`) return true
+                return false
+            })
+
+            relsSet.add(entry)
+
+            newRels.push({
+                processId,
+                fromEntityId,
+                toEntityId,
+                isDup: !!(arr.length > 1),
+            })
+        }
+    })
+
+    return newRels
 }

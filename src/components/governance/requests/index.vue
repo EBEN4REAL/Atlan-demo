@@ -472,15 +472,23 @@
                     createdBy,
                     // typeName,
                 }
+                if(!status?.length){
+                    delete filterMerge.status
+                }
                 delete filterMerge.destinationQualifiedName
-                if (facetsValue.hierarchy?.connectorName) {
+                if (facetsValue?.hierarchy?.connectorName) {
                     filterMerge.destinationQualifiedName =
                         facetsValue.hierarchy?.connectorName
                 }
-                if (facetsValue.hierarchy?.connectionQualifiedName) {
+                if (facetsValue?.hierarchy?.connectionQualifiedName) {
                     filterMerge.destinationQualifiedName =
                         facetsValue.hierarchy?.connectionQualifiedName
                 }
+                if (facetsValue?.hierarchy?.attributeValue) {
+                    filterMerge.destinationQualifiedName =
+                        facetsValue.hierarchy?.attributeValue
+                }
+
                 if (facetsValue.__traitNames) {
                     const filterClasification = []
                     facetsValue.__traitNames?.classifications?.forEach((el) => {
@@ -498,7 +506,6 @@
             }
             const handleResetEvent = () => {
                 filters.value = {
-                    status: 'active' as RequestStatus,
                     request_type: [],
                 }
                 connectorsData.value = {
@@ -637,7 +644,7 @@
         }
     }
     .button-close-drawer-request {
-        left: 18% !important;
+        left: 260px !important;
         top: 12px;
     }
     .governance-request {

@@ -71,19 +71,38 @@
                             >•</span
                         >
                         <span
-                            v-if="policy.users.length > 0"
+                            v-if="policy.users.length > 0 || policy.allUsers"
                             class="font-semibold text-gray-500"
                         >
                             <a-tooltip placement="top">
                                 <template #title>
                                     {{
-                                        policy.users.length > 1
+                                        (policy.users.length === 1 &&
+                                            policy.users[0] === 'all-users') ||
+                                        policy.allUsers
+                                            ? 'All Users'
+                                            : policy.users.length > 1
                                             ? `${policy.users.length} Users`
                                             : `${policy.users.length} User`
                                     }}
                                 </template>
-                                <AtlanIcon icon="User" class="-mt-1" />
-                                {{ policy.users.length }}
+                                <AtlanIcon
+                                    :icon="
+                                        (policy.users.length === 1 &&
+                                            policy.users[0] === 'all-users') ||
+                                        policy.allUsers
+                                            ? 'Group'
+                                            : 'User'
+                                    "
+                                    class="-mt-1"
+                                />
+                                {{
+                                    (policy.users.length === 1 &&
+                                        policy.users[0] === 'all-users') ||
+                                    policy.allUsers
+                                        ? 'All'
+                                        : policy.users.length
+                                }}
                             </a-tooltip>
                         </span>
                     </div>

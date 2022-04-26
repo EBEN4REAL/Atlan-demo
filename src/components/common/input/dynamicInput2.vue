@@ -31,7 +31,7 @@
         "
         v-model="localValue"
         class="flex-grow shadow-none"
-        placeholder="Press Enter to add"
+        placeholder="Type & press return to add"
         :data-type="dataType"
         @change="handleInputChange"
     />
@@ -40,6 +40,7 @@
         v-model:value="localValue"
         :maxlength="max || 50"
         placeholder="Enter a URL..."
+        type="url"
         @change="handleInputChange"
     ></a-input>
     <a-input
@@ -177,17 +178,20 @@
             else if (localValue.value == null) localValue.value = undefined // set to undefined else placeholder won't appear
 
             const handleInputChange = (v) => {
+                let finalValue
                 if (
                     props.dataType.toLowerCase() === 'date' ||
                     props.dataType.toLowerCase() === 'datetime'
                 ) {
                     const date = localValue.value
                     // ? reset miliseconds to 000 in case of date
-                    modelValue.value = Math.floor(date.valueOf() / 1000) * 1000
+                    finalValue = Math.floor(date.valueOf() / 1000) * 1000
                 } else {
-                    modelValue.value = localValue.value
+                    finalValue = localValue.value
                 }
-                emit('change')
+                modelValue.value = finalValue
+
+                emit('change', finalValue)
             }
 
             // const disabledDate = (current: Dayjs) =>

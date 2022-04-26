@@ -9,33 +9,35 @@ import useLineageStore from '~/store/lineage'
 
 /** COMPOSABLES */
 import useGraph from './useGraph'
-import useTransformGraph from './useTransformGraph'
+
+/** UTILS */
+import { isCyclicEdge, getFilteredRelations } from './util.js'
+import useGetNodes from './useGetNodes'
 
 export default async function useComputeGraph({
     graph,
     graphLayout,
     lineage,
-    searchItems,
     currZoom,
     isComputeDone,
-    emit,
 }) {
-    // const { DagreLayout } = window.layout
     const lineageStore = useLineageStore()
-    lineageStore.nodesColumnList = {}
-    lineageStore.columnsLineage = {}
+    lineageStore.cyclicRelations = []
+    lineageStore.portToSelect = {}
+    lineageStore.mergedLineageData = {}
+    lineageStore.nodesPortsList = {}
+    lineageStore.portLineage = {}
 
     const model = ref(null)
     const edges = ref([])
     const nodes = ref([])
     const mergedLineageData = ref({})
 
-    const { createNodeData, createEdgeData } = useGraph()
-
-    const { fit } = useTransformGraph(graph, emit)
+    const { createNodeData, createEdgeData } = useGraph(graph)
 
     mergedLineageData.value = { ...lineage.value }
-    searchItems.value = []
+    lineageStore.setMergedLineageData(mergedLineageData.value)
+
     model.value = null
     edges.value = []
     nodes.value = []
@@ -64,7 +66,7 @@ export default async function useComputeGraph({
     const createNodesFromEntityMap = (data, hasBase = true) => {
         const lineageData = { ...data }
 
-        const { relations, childrenCounts, baseEntityGuid } = lineageData
+        const { relations, baseEntityGuid } = lineageData
 
         const getAsset = (id) => lineageData.guidEntityMap[id]
 
@@ -199,21 +201,11 @@ export default async function useComputeGraph({
 
             const { nodeData } = createNodeData(
                 ent,
-                relations,
-                childrenCounts,
                 hasBase ? baseEntityGuid : null
             )
 
-            const searchItem = ent
-            if (ent.typeName !== 'vpNode') searchItems.value.push(searchItem)
-
             nodes.value.push(nodeData)
         })
-
-        // if (Object.keys(columnEntity).length)
-        //     Object.entries(columnEntity).forEach(([parentGuid, columns]) => {
-        //         // lineageStore.setNodesColumnList(parentGuid, columns)
-        //     })
     }
 
     createNodesFromEntityMap(lineage.value)
@@ -246,8 +238,10 @@ export default async function useComputeGraph({
             })
         })
 
-        lineageData.relations.forEach((x) => {
-            const { fromEntityId: from, toEntityId: to, processId } = x
+        const newRels = getFilteredRelations(lineageData.relations)
+
+        newRels.forEach((rel) => {
+            const { fromEntityId: from, toEntityId: to, processId } = rel
 
             if (from === to) return
 
@@ -261,24 +255,17 @@ export default async function useComputeGraph({
 
             let edgeExtraData = {}
             const styles = {
-                stroke: '#aaaaaa',
+                stroke: '#B2B8C7',
             }
 
-            const fromAndToId = `${from}@${to}`
+            if (isCyclicEdge(mergedLineageData, from, to)) {
+                styles.stroke = '#ff4848'
+                edgeExtraData = { ...edgeExtraData, isCyclicEdge: true }
 
-            edges.value.forEach((y, index) => {
-                const fromTo = y.id.split('/')[1]
+                lineageStore.setCyclicRelation(`${from}@${to}`)
+            }
 
-                if (fromTo === fromAndToId) {
-                    edgeExtraData = { isDup: true }
-                    edges.value.splice(index, 1)
-                    return
-                }
-
-                const [fromTwo, toTwo] = fromTo.split('@')
-                if (toTwo === from && fromTwo === to)
-                    edgeExtraData = { ...edgeExtraData, isCyclicEdge: true }
-            })
+            edgeExtraData = { ...edgeExtraData, isDup: !!rel?.isDup }
 
             const relation = {
                 id: `${processId}/${from}@${to}`,
@@ -288,8 +275,6 @@ export default async function useComputeGraph({
                 targetPort: `${to}-invisiblePort`,
             }
 
-            if (x.type) relation.type = x.type
-
             const { edgeData } = createEdgeData(relation, edgeExtraData, styles)
             edges.value.push(edgeData)
         })
@@ -297,8 +282,92 @@ export default async function useComputeGraph({
 
     createNodeEdges(lineage.value)
 
+    /* createColCTAPorts */
+    const createColCTAPorts = () => {
+        const { relations, baseEntityGuid } = mergedLineageData.value
+
+        const { predecessors, successors } = useGetNodes(graph, baseEntityGuid)
+
+        const isCollapsible = (id) =>
+            !!relations.find((x) => x.fromEntityId === id) &&
+            !!relations.find((x) => x.toEntityId === id)
+
+        graph.value.freeze('createColCTAPorts')
+        graph.value.getNodes().forEach((node) => {
+            const isColNode = isCollapsible(node.id)
+
+            if (
+                (isColNode && successors.includes(node.id)) ||
+                (baseEntityGuid === node.id && successors.length)
+            ) {
+                const id = `${node.id}-ctaPortRight-coll`
+                node.updateData({
+                    ctaPortRightIcon: 'col',
+                    ctaPortRightId: id,
+                })
+            }
+
+            if (
+                (isColNode && predecessors.includes(node.id)) ||
+                (baseEntityGuid === node.id && predecessors.length)
+            ) {
+                const id = `${node.id}-ctaPortLeft-coll`
+                node.updateData({
+                    ctaPortLeftIcon: 'col',
+                    ctaPortLeftId: id,
+                })
+            }
+        })
+        graph.value.unfreeze('createColCTAPorts')
+    }
+
+    /* createHoPaCTAPorts */
+    const createHoPaCTAPorts = () => {
+        const { relations, childrenCounts } = mergedLineageData.value
+
+        const checkNode = (id, prop) => {
+            let res = true
+            relations.forEach((x) => {
+                if (x[prop] === id) res = false
+            })
+            return res
+        }
+
+        const hasHoPa = (id) => {
+            let res = false
+            const isRootNode = checkNode(id, 'toEntityId')
+            const isLeafNode = checkNode(id, 'fromEntityId')
+            if (isRootNode) res = !!childrenCounts?.[id]?.INPUT
+            if (isLeafNode) res = !!childrenCounts?.[id]?.OUTPUT
+            return res
+        }
+
+        graph.value.freeze('createHoPaCTAPorts')
+        graph.value.getNodes().forEach((node) => {
+            const isHoPaNode = hasHoPa(node.id)
+            const isRootNode = checkNode(node.id, 'toEntityId')
+            const isLeafNode = checkNode(node.id, 'fromEntityId')
+
+            if ((isRootNode || isLeafNode) && isHoPaNode) {
+                const pos = isLeafNode ? 'ctaPortRight' : 'ctaPortLeft'
+                const id = `${node.id}-${pos}-hoPa`
+                if (pos === 'ctaPortRight')
+                    node.updateData({
+                        ctaPortRightIcon: 'exp',
+                        ctaPortRightId: id,
+                    })
+                if (pos === 'ctaPortLeft')
+                    node.updateData({
+                        ctaPortLeftIcon: 'exp',
+                        ctaPortLeftId: id,
+                    })
+            }
+        })
+        graph.value.unfreeze('createHoPaCTAPorts')
+    }
+
     /* Render */
-    const renderLayout = (registerAllListeners) => {
+    const renderLayout = () => {
         model.value = graphLayout.value?.layout({
             edges: edges.value,
             nodes: nodes.value,
@@ -310,10 +379,10 @@ export default async function useComputeGraph({
             rankdir: 'LR',
             controlPoints: true,
             nodesepFunc() {
-                return 20
+                return 40
             },
             ranksepFunc() {
-                return 190
+                return 250
             },
             preset: {
                 nodes: model.value?.nodes?.map((node) => ({
@@ -323,39 +392,21 @@ export default async function useComputeGraph({
             },
         })
 
-        graph.value.getNodes().forEach((n) => {
-            const ctaEle = document.getElementById(`node-${n.id}-hoPaCTA`)
-            const cell = graph.value.getCellById(n.id)
-            const isRootNode = graph.value.isRootNode(cell)
-            const isLeafNode = graph.value.isLeafNode(cell)
-            if (isRootNode || isLeafNode) return
-            ctaEle?.remove()
-        })
-
-        if (typeof registerAllListeners === 'function') registerAllListeners()
+        createColCTAPorts()
+        createHoPaCTAPorts()
     }
-    renderLayout(null)
+    renderLayout()
     isComputeDone.value = true
 
     /* Transformations */
-    fit(lineage.value.baseEntityGuid)
+    const cell = graph.value.getCellById(lineage.value.baseEntityGuid)
+    graph.value.scrollToCell(cell)
+    graph.value.scale(0.7)
+
     currZoom.value = `${(graph.value.zoom() * 100).toFixed(0)}%`
 
     /* addSubGraph */
-    const addSubGraph = (data, registerAllListeners) => {
-        const newData = { ...data }
-
-        createNodesFromEntityMap(newData, false)
-        createNodeEdges(newData)
-
-        renderLayout(registerAllListeners)
-
-        const assetGuidToFit = Object.keys(newData.guidEntityMap).find(
-            (x) => x !== newData.baseEntityGuid
-        )
-        const cell = graph.value.getCellById(assetGuidToFit)
-        graph.value.scrollToCell(cell, { animation: { duration: 600 } })
-
+    const addSubGraph = (data) => {
         if (!Object.keys(mergedLineageData.value).length)
             mergedLineageData.value = lineage.value
 
@@ -400,6 +451,22 @@ export default async function useComputeGraph({
             guidEntityMap,
             relations,
         }
+        lineageStore.setMergedLineageData(mergedLineageData.value)
+
+        const newData = { ...data }
+
+        createNodesFromEntityMap(newData, false)
+        createNodeEdges(newData)
+        renderLayout()
+
+        const assetGuidToFit = Object.keys(newData.guidEntityMap).find(
+            (x) =>
+                x !== newData.baseEntityGuid &&
+                graph.value.getNodes().find((y) => y.id === x)
+        )
+        const cellToFit = graph.value.getCellById(assetGuidToFit)
+
+        graph.value.scrollToCell(cellToFit, { animation: { duration: 600 } })
     }
 
     return {

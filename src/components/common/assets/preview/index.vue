@@ -136,6 +136,22 @@
                             assetTypeLabel(selectedAsset) ||
                             selectedAsset.typeName
                         }}
+                        <span
+                            v-if="
+                                ['SalesforceObject'].includes(
+                                    selectedAsset.typeName
+                                ) && isCustom(selectedAsset)
+                            "
+                            >(custom)</span
+                        >
+                        <span
+                            v-if="
+                                ['TableauDatasource'].includes(
+                                    selectedAsset.typeName
+                                ) && isPublished(selectedAsset)
+                            "
+                            >(Published)</span
+                        >
                     </div>
                 </div>
                 <a-button-group>
@@ -224,53 +240,82 @@
             tab-position="right"
             :destroy-inactive-tab-pane="true"
         >
-            <a-tab-pane
+            <template
                 v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
-                :key="index"
-                :destroy-inactive-tab-pane="true"
-                :disabled="isScrubbed(selectedAsset) && tab.scrubbed"
-                :class="index === activeKey ? 'flex flex-col' : ''"
             >
-                <template #tab>
-                    <PreviewTabsIcon
-                        :title="tab.tooltip"
-                        :icon="tab.icon"
-                        :image="tab.image"
-                        :emoji="tab.emoji"
-                        :active-icon="tab.activeIcon"
-                        :is-active="activeKey === index"
-                        :is-scrubbed="isScrubbed(selectedAsset) && tab.scrubbed"
-                        @click="onClickTabIcon(tab)"
+                <a-tab-pane
+                    v-if="
+                        tab.component === 'Jira' && !jiraAppInstalled
+                            ? false
+                            : true
+                    "
+                    :key="index"
+                    :destroy-inactive-tab-pane="true"
+                    :disabled="isScrubbed(selectedAsset) && tab.scrubbed"
+                    :class="index === activeKey ? 'flex flex-col' : ''"
+                >
+                    <template #tab>
+                        <div class="flex flex-col">
+                            <PreviewTabsIcon
+                                :title="tab.tooltip"
+                                :icon="tab.icon"
+                                :image="tab.image"
+                                :emoji="tab.emoji"
+                                height="h-5"
+                                width="w-5"
+                                :active-icon="tab.activeIcon"
+                                :is-active="activeKey === index"
+                                :is-scrubbed="
+                                    isScrubbed(selectedAsset) && tab.scrubbed
+                                "
+                                @click="onClickTabIcon(tab)"
+                            >
+                                <template #label>
+                                    <span
+                                        class="tracking-tight text-gray-500 leading-none mt-0.5"
+                                        style="font-size: 11px"
+                                        >{{ trimText(tab.name) }}
+                                    </span></template
+                                ></PreviewTabsIcon
+                            >
+                        </div>
+                    </template>
+                    <NoAccess
+                        v-if="isScrubbed(selectedAsset) && tab.scrubbed"
                     />
-                </template>
-                <NoAccess v-if="isScrubbed(selectedAsset) && tab.scrubbed" />
-                <component
-                    :is="tab.component"
-                    v-else-if="tab.component"
-                    :key="selectedAsset.guid"
-                    :ref="
-                        (el) => {
-                            if (el) tabChildRef[index] = el
-                        }
-                    "
-                    :selected-asset="selectedAsset"
-                    :is-drawer="isDrawer"
-                    :read-permission="!isScrubbed(selectedAsset)"
-                    :edit-permission="
-                        selectedAssetUpdatePermission(selectedAsset, isDrawer)
-                    "
-                    :tab="tab"
-                    :data="tab.data"
-                    :collection-data="{
-                        collectionInfo,
-                        hasCollectionReadPermission,
-                        hasCollectionWritePermission,
-                        isCollectionCreatedByCurrentUser,
-                    }"
-                ></component>
-            </a-tab-pane>
+                    <component
+                        :is="tab.component"
+                        v-else-if="tab.component"
+                        :key="selectedAsset.guid"
+                        :ref="
+                            (el) => {
+                                if (el) tabChildRef[index] = el
+                            }
+                        "
+                        :is-scrubbed="isScrubbed(selectedAsset)"
+                        :selected-asset="selectedAsset"
+                        :is-drawer="isDrawer"
+                        :read-permission="!isScrubbed(selectedAsset)"
+                        :edit-permission="
+                            selectedAssetUpdatePermission(
+                                selectedAsset,
+                                isDrawer
+                            )
+                        "
+                        :tab="tab"
+                        :data="tab.data"
+                        :read-only-in-cm="readOnlyInCm"
+                        :collection-data="{
+                            collectionInfo,
+                            hasCollectionReadPermission,
+                            hasCollectionWritePermission,
+                            isCollectionCreatedByCurrentUser,
+                        }"
+                    ></component>
+                </a-tab-pane>
+            </template>
             <template #moreIcon>
-                <div class="flex">
+                <div class="flex justify-center">
                     <AtlanIcon
                         icon="KebabMenuHorizontal"
                         class="text-primary"
@@ -317,6 +362,8 @@
         resourceId,
         disableSlackAsk,
     } from '~/composables/integrations/slack/useAskAQuestion'
+    import { issuesCount } from '~/composables/integrations/jira/useJiraTickets'
+    import integrationStore from '~/store/integrations/index'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -355,6 +402,16 @@
             ),
             linkedAssets: defineAsyncComponent(
                 () => import('./linkedAssets/linkedAssetsWrapper.vue')
+            ),
+            Jira: defineAsyncComponent(
+                () =>
+                    import('@/common/assets/preview/integrations/jira/jira.vue')
+            ),
+            SlackResourcesTab: defineAsyncComponent(
+                () =>
+                    import(
+                        '@/common/assets/preview/resources/slackResourcesWrapper.vue'
+                    )
             ),
             SlackAskButton,
         },
@@ -395,6 +452,8 @@
             const actions = computed(() =>
                 getAllowedActions(selectedAsset.value)
             )
+            const readOnlyInCm = ref(true)
+
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
             provide('sidebarPage', page)
@@ -435,6 +494,8 @@
                 isScrubbed,
                 assetTypeImage,
                 selectedAssetUpdatePermission,
+                isCustom,
+                isPublished,
             } = useAssetInfo()
 
             const activeKey = ref(0)
@@ -491,21 +552,35 @@
                 { debounce: 100, immediate: true }
             )
 
-            const switchTab = (asset, tabName: string) => {
+            const switchTab = (
+                asset,
+                tabName: string,
+                enableEditinCM = false
+            ) => {
+                if (enableEditinCM) {
+                    readOnlyInCm.value = false
+                }
+
                 const idx = getPreviewTabs(asset, isProfile.value).findIndex(
                     (tl) => tl.name === tabName
                 )
                 if (idx > -1) activeKey.value = idx
+
+                // After a while change back to read state as the same component is being used for other CM tabs
+
+                setTimeout(() => {
+                    readOnlyInCm.value = true
+                }, 1000)
             }
 
             provide('switchTab', switchTab)
 
-            watch(
+            debouncedWatch(
                 drawerActiveKey,
                 (newVal) => {
                     switchTab(selectedAsset.value, newVal)
                 },
-                { immediate: true }
+                { debounce: 200, immediate: true }
             )
 
             const router = useRouter()
@@ -515,6 +590,10 @@
                 switch (key) {
                     case 'open':
                         router.push(getProfilePath(selectedAsset.value))
+                        useAddEvent('discovery', 'cta_action', 'clicked', {
+                            action: 'open_asset',
+                            asset_type: selectedAsset.value.typeName,
+                        })
                         break
                     case 'query':
                         // router.push(getAssetQueryPath(selectedAsset.value))
@@ -531,6 +610,10 @@
                         selectedAsset.value
                     )}&openVQB=${openVQB}`
                 )
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: !openVQB ? 'sql_query' : 'vqb_query',
+                    asset_type: selectedAsset.value.typeName,
+                })
             }
 
             const showCTA = (action) =>
@@ -579,6 +662,9 @@
             const updateList = inject('updateList', () => ({}))
             const updateDrawerList = inject('updateDrawerList', () => ({}))
 
+            const store = integrationStore()
+            const { tenantJiraStatus, tenantSlackStatus } = toRefs(store)
+
             /** whenever resource ID is fetched, refresh the asset to load the generated resource, then switch tab */
             watch(resourceId, () => {
                 const id = ref(selectedAsset.value.guid)
@@ -591,12 +677,40 @@
                         updateDrawerList(asset.value)
                     } else updateList(asset.value)
 
-                    if (resourceId.value)
-                        switchTab(selectedAsset.value, 'Resources')
+                    if (resourceId.value) {
+                        if (tenantSlackStatus.value.configured)
+                            switchTab(selectedAsset.value, 'Slack')
+                        else switchTab(selectedAsset.value, 'Resources')
+                    }
                 })
             })
+            const trimText = (text) => {
+                if (text?.length > 9) {
+                    return `${text?.substring(0, 6)}...`
+                }
+                return text
+            }
+
+            const {
+                count,
+                isReady: countReady,
+                mutate,
+            } = issuesCount(false, false)
+
+            watch(
+                () => tenantJiraStatus.value.configured,
+                (v) => {
+                    if (v) mutate()
+                },
+                { immediate: true }
+            )
+
+            const jiraAppInstalled = computed(
+                () => countReady?.value && !!count.value
+            )
 
             return {
+                jiraAppInstalled,
                 disableSlackAsk,
                 tabChildRef,
                 activeKey,
@@ -643,11 +757,14 @@
                 hasCollectionWritePermission,
                 isCollectionCreatedByCurrentUser,
                 handleQueryAction,
+                readOnlyInCm,
+                isCustom,
+                isPublished,
+                trimText,
             }
         },
     })
 </script>
-
 <style lang="less" module>
     .previewtab {
         &:global(.ant-tabs-right) {
@@ -655,22 +772,24 @@
                 width: 48px !important;
                 @apply ml-0 !important;
             }
-            :global(.ant-tabs-tab) {
-                padding: 3px 8px !important;
 
+            :global(> .ant-tabs-nav .ant-tabs-tab) {
+                padding: 6px 8px !important;
                 @apply justify-center;
+                @apply mt-2 !important;
+                &:global(.ant-tabs-tab-active) {
+                    @apply bg-primary-menu;
+                }
             }
 
-            :global(.ant-tabs-tab:first-child) {
-                padding: 3px 8px !important;
-                @apply mt-3 !important;
-
+            :global(> .ant-tabs-nav .ant-tabs-tab:first-child) {
+                padding: 6px 8px !important;
+                @apply mt-1 !important;
                 @apply justify-center;
             }
 
             :global(.ant-tabs-content) {
                 @apply px-0 h-full !important;
-
                 :global(.ant-tabs-tab:first-child) {
                     @apply mt-0 !important;
                 }
@@ -684,7 +803,6 @@
                 @apply pb-0 !important;
                 @apply h-full !important;
             }
-
             :global(.ant-tabs-content-holder) {
                 @apply h-full !important;
             }

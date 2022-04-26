@@ -2,9 +2,10 @@
     <a-form-item name="slack">
         <template #label>
             {{ label }}
-            <a-popover v-if="popOverContent">
+            <a-popover v-if="popOverContent || $slots?.popupContent">
                 <template #content>
-                    <div class="p-3 text-gray-500 w-52">
+                    <slot v-if="$slots?.popupContent" name="popupContent" />
+                    <div v-else class="p-3 text-gray-500 w-52">
                         <PopOverContent :content="popOverContent" />
                     </div>
                 </template>

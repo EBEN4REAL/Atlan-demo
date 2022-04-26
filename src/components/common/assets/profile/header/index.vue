@@ -101,6 +101,14 @@
                                 "
                                 >(custom)</span
                             >
+                            <span
+                                v-if="
+                                    ['TableauDatasource'].includes(
+                                        item.typeName
+                                    ) && isPublished(item)
+                                "
+                                >(Published)</span
+                            >
                         </div>
                         <div
                             v-else
@@ -241,7 +249,14 @@
                                     icon="DatabaseGray"
                                     class="mr-1 mb-0.5"
                                 />
-                                <div class="tracking-tight text-gray-500">
+                                <div
+                                    @click="
+                                        handleOpenDrawer(
+                                            databaseQualifiedName(item)
+                                        )
+                                    "
+                                    class="tracking-tight text-gray-500 border-b border-gray-400 border-dashed cursor-pointer hover:text-primary hover:border-gray-500"
+                                >
                                     {{ databaseName(item) }}
                                 </div>
                             </div>
@@ -258,7 +273,14 @@
                                     icon="SchemaGray"
                                     class="mr-1 mb-0.5"
                                 />
-                                <div class="tracking-tight text-gray-500">
+                                <div
+                                    @click="
+                                        handleOpenDrawer(
+                                            schemaQualifiedName(item)
+                                        )
+                                    "
+                                    class="tracking-tight text-gray-500 border-b border-gray-400 border-dashed cursor-pointer hover:text-primary hover:border-gray-500"
+                                >
                                     {{ schemaName(item) }}
                                 </div>
                             </div>
@@ -278,7 +300,7 @@
                         assetType(item) !== 'Connection' &&
                         connectorName(item) !== 'glue'
                     "
-                    title="Query"
+                    title=""
                 >
                     <QueryDropdown
                         v-if="
@@ -293,7 +315,13 @@
                             <a-button
                                 class="flex items-center justify-center p-2"
                             >
-                                <AtlanIcon icon="Query" />
+                                <div class="flex items-center">
+                                    <AtlanIcon
+                                        icon="Query"
+                                        class="mr-1 -mt-0.5 text-primary"
+                                    />
+                                    <span class="">Query </span>
+                                </div>
                             </a-button>
                         </template>
                     </QueryDropdown>
@@ -304,7 +332,13 @@
                         class="flex items-center justify-center p-2"
                         @click="handleClick"
                     >
-                        <AtlanIcon icon="Query" />
+                        <div class="flex items-center">
+                            <AtlanIcon
+                                icon="Query"
+                                class="mr-1 -mt-0.5 text-primary"
+                            />
+                            <span class="">Query </span>
+                        </div>
                     </a-button>
                 </a-tooltip>
 
@@ -333,23 +367,21 @@
                 <template v-if="!disableSlackAsk">
                     <SlackAskButton :asset="item" />
                 </template>
+                <!--  3 dot menus for GTC -->
                 <AssetMenu
-                    @edit="handleEdit"
+                    :delete-permission="
+                        selectedAssetUpdatePermission(
+                            item,
+                            false,
+                            'ENTITY_DELETE'
+                        )
+                    "
                     :asset="item"
                     :edit-permission="selectedAssetUpdatePermission(item)"
+                    @edit="handleEdit"
                 >
                     <a-button
-                        v-if="
-                            isGTC(item) &&
-                            checkAccess(
-                                [
-                                    map.DELETE_TERM,
-                                    map.DELETE_GLOSSARY,
-                                    map.DELETE_CATEGORY,
-                                ],
-                                'or'
-                            )
-                        "
+                        v-if="isGTC(item)"
                         block
                         class="flex items-center justify-center p-2"
                     >
@@ -373,6 +405,12 @@
             </a-button-group>
         </div>
     </div>
+    <AssetDrawer
+        :show-drawer="drawerVisible"
+        :qualifiedName="qfToFetch"
+        @closeDrawer="handleCloseDrawer"
+        :drawerActiveKey="drawerActiveKey"
+    />
 </template>
 
 <script lang="ts">
@@ -399,7 +437,12 @@
     import QueryDropdown from '@/common/query/queryDropdown.vue'
     import Name from '@/glossary/common/name.vue'
     import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
+    import AssetDrawer from '@common/assets/preview/drawer.vue'
     import { disableSlackAsk } from '~/composables/integrations/slack/useAskAQuestion'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import useGTCPermissions, {
+        fetchGlossaryPermission,
+    } from '~/composables/glossary/useGTCPermissions'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -412,6 +455,7 @@
             Tooltip,
             QueryDropdown,
             Name,
+            AssetDrawer,
         },
         props: {
             item: {
@@ -459,15 +503,18 @@
                 webURL,
                 sourceURL,
                 isCustom,
+                isPublished,
                 assetPermission,
+                databaseQualifiedName,
+                schemaQualifiedName,
             } = useAssetInfo()
 
             const entityTitle = ref(title(item.value))
             const router = useRouter()
+            const drawerActiveKey = ref('Relations')
 
             const goToInsights = (openVQB) => {
                 // router.push(getAssetQueryPath(asset))
-
                 const URL =
                     `http://` +
                     window.location.host +
@@ -475,11 +522,18 @@
                     `&openVQB=${openVQB}`
 
                 window.open(URL, '_blank')?.focus()
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: !openVQB ? 'sql_query' : 'vqb_query',
+                    asset_type: item.value.typeName,
+                })
             }
 
             const handleClick = () => {
                 // router.push(getAssetQueryPath(asset))
-
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 'sql_query',
+                    asset_type: item.value.typeName,
+                })
                 const URL =
                     `http://` +
                     window.location.host +
@@ -513,6 +567,10 @@
                 } else {
                     window.open(sourceURL(item.value), '_blank').focus()
                 }
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 'open_in_source',
+                    asset_type: item.value.typeName,
+                })
             }
 
             /*  whenever(and(Escape, notUsingInput), (v) => {
@@ -531,7 +589,44 @@
                 console.log(val)
             }
 
+            const drawerVisible = ref(false)
+            const qfToFetch = ref('')
+
+            const handleOpenDrawer = (qfName) => {
+                drawerVisible.value = true
+                qfToFetch.value = qfName
+            }
+
+            const handleCloseDrawer = () => {
+                drawerVisible.value = false
+                qfToFetch.value = ''
+            }
+
+            // * permissions for glossary to check against the glossary and not category or term,
+            // * there providing the anchor (i.e glossary) to the fetchGlossaryPermission fn
+            // ! should we use entity update and remove permission of the term or category itself?
+            // const glossary = computed(() => {
+            //     if (item.value.typeName === 'AtlasGlossary') return item.value
+            //     if (
+            //         ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
+            //             item.value.typeName
+            //         )
+            //     )
+            //         return item.value.attributes.anchor
+            //     return null
+            // })
+            // const {
+            //     entityUpdatePermission: glossaryUpdatePermission,
+            //     entityDeletePermission: glossaryDeletePermission,
+            //     fetch,
+            // } = fetchGlossaryPermission(glossary)
+            //  ANCHOR
+            // if (glossary.value) fetch()
+
             return {
+                // glossary,
+                // glossaryUpdatePermission,
+                // glossaryDeletePermission,
                 disableSlackAsk,
                 title,
                 getConnectorImage,
@@ -576,6 +671,14 @@
                 isCustom,
                 handleNameUpdate,
                 entityTitle,
+                isPublished,
+                databaseQualifiedName,
+                schemaQualifiedName,
+                handleOpenDrawer,
+                drawerVisible,
+                qfToFetch,
+                handleCloseDrawer,
+                drawerActiveKey,
             }
         },
     })

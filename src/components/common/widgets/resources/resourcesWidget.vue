@@ -3,7 +3,7 @@
         <template v-if="minimal">
             <template v-if="resources?.length">
                 <div
-                    class="flex justify-between px-5 py-2 border-b border-gray-200 gap-x-6 bg-gray-50"
+                    class="flex items-center justify-between px-5 pt-4 gap-x-6"
                 >
                     <span class="flex items-center">
                         <PreviewTabsIcon
@@ -14,7 +14,7 @@
                             class="mb-0.5"
                         />
                         <span class="ml-1 font-semibold text-gray-500">
-                            Resources
+                            {{ tab.title || tab.name }}
                         </span>
                     </span>
                     <div class="flex-grow"></div>
@@ -33,9 +33,9 @@
         </template>
 
         <template v-else>
-            <div class="flex justify-between px-5 pt-5 gap-x-6">
+            <div class="flex justify-between p-4 border-b gap-x-6">
                 <div>
-                    <AtlanIcon icon="Resources2" class="w-auto h-8 mr-3" />
+                    <AtlanIcon icon="Link" class="w-auto h-4 mr-3" />
                     <span class="text-base font-bold text-gray">
                         Resources
                     </span>
@@ -53,35 +53,48 @@
                 </template>
                 <AddResource v-if="!readOnly" @add="addCallback">
                     <template #trigger>
-                        <AtlanButton
-                            class="flex-none px-2"
-                            size="sm"
-                            color="secondary"
-                            padding="compact"
+                        <a-button
+                            class="flex items-center border-0 shadow-none text-primary"
+                            type="minimal"
                         >
-                            <AtlanIcon icon="Add" class="text-gray-400" />
-                        </AtlanButton>
+                            <AtlanIcon icon="Add" class="w-auto h-4 mr-1" />Add
+                        </a-button>
                     </template>
                 </AddResource>
             </div>
         </template>
-        <section :class="{ 'overflow-y-auto': resources?.length }">
+        <section
+            :class="{
+                'overflow-y-auto': resources?.length,
+                'flex items-center justify-center flex-grow':
+                    !resources?.length,
+            }"
+            class=""
+        >
             <template v-if="!resources?.length">
                 <template v-if="$slots?.placeholder">
-                    <slot name="placeholder" />
                     <div>
-                        <AddResource @add="addCallback">
-                            <template #trigger>
-                                <AtlanButton class="mx-auto"
-                                    >Add Resource</AtlanButton
-                                >
-                            </template>
-                        </AddResource>
+                        <slot name="placeholder" />
+                        <div class="mt-10">
+                            <AddResource @add="addCallback">
+                                <template #trigger>
+                                    <AtlanButton2
+                                        class="mx-auto"
+                                        size="large"
+                                        :label="
+                                            isSlackTab
+                                                ? 'Add Slack thread'
+                                                : 'Add Resource'
+                                        "
+                                    />
+                                </template>
+                            </AddResource>
+                        </div>
                     </div>
                 </template>
                 <div
                     v-else
-                    class="flex flex-col items-center justify-center h-40 gap-y-6"
+                    class="flex flex-col items-center justify-center h-48 gap-y-6"
                 >
                     <div class="w-24">
                         <AtlanIcon
@@ -90,7 +103,7 @@
                             class="w-full h-full"
                         />
                     </div>
-                    <p class="w-1/3 text-sm text-center">
+                    <p class="w-3/4 text-sm text-center">
                         {{ placeholder }}
                     </p>
                 </div>
@@ -115,11 +128,13 @@
                             "
                             :link="l"
                             class="h-full"
+                            :assetType="assetType"
                         />
                         <SlackPreview
                             v-else
                             :ref="`SlackPreview-${x}`"
                             :link="l"
+                            :assetType="assetType"
                         />
                     </div>
                     <template
@@ -186,6 +201,11 @@
             required: false,
             default: '',
         },
+        assetType: {
+            type: String,
+            required: false,
+            default: '',
+        },
         placeholder: {
             type: String,
             required: true,
@@ -198,6 +218,7 @@
         tab: {
             type: Object,
             required: false,
+            default: () => ({}),
         },
     })
     const emit = defineEmits(['add', 'update', 'remove'])
@@ -213,6 +234,7 @@
         removeStatus,
         entityName,
         readOnly,
+        tab,
     } = toRefs(props)
 
     const addCallback = (r) => emit('add', r)
@@ -227,6 +249,10 @@
     provide('removeStatus', removeStatus)
     provide('entityName', entityName)
     provide('readOnly', readOnly)
+    provide('tab', tab)
+    const isSlackTab = computed(
+        () => tab.value.component === 'SlackResourcesTab'
+    )
 
     const store = integrationStore()
     const { tenantSlackStatus, userSlackStatus } = toRefs(store)

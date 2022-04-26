@@ -9,7 +9,7 @@
         <!-- Main content: Use Label if present or use slot for custom stuff -->
         <span
             v-if="label"
-            class="text-sm leading-none"
+            class="text-sm leading-none mt-0.5"
             :class="{ 'font-bold': bold }"
             >{{ label }}</span
         >
@@ -36,7 +36,7 @@
         props: {
             color: {
                 type: String as PropType<
-                    'primary' | 'secondary' | 'light' | 'minimal' | 'danger'
+                    'primary' | 'secondary' | 'link' | 'danger'
                 >,
                 default: () => 'primary',
                 required: false,
@@ -122,6 +122,16 @@
 
             &:hover:not(:disabled) {
                 color: #3c64cd;
+            }
+        }
+
+        &.danger {
+            @apply bg-error border-error;
+            @apply text-white;
+
+            &:hover:not(:disabled) {
+                background-color: #e03a3a;
+                border-color: #e03a3a;
             }
         }
 

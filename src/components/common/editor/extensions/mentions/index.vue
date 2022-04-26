@@ -18,9 +18,9 @@
 </template>
 
 <script lang="ts">
-    import UserMention from '@common/editor/extensions/mentions/user.vue'
-    import GroupMention from '@common/editor/extensions/mentions/group.vue'
     import { ref, toRefs } from 'vue'
+    import UserMention from './user.vue'
+    import GroupMention from './group.vue'
 
     export default {
         name: 'MentionList',

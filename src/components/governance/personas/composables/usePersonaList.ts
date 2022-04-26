@@ -4,7 +4,7 @@ import usePersona from '~/composables/persona/usePersona'
 import { Persona } from '~/services/service/persona'
 
 const personaStore = usePersonaStore()
-const { updatePersona: handleUpdateList } = personaStore
+const { updatePersona: handleUpdateList, errorPersona } = personaStore
 const { getList: personaList } = toRefs(personaStore)
 const {
     mutate: reFetchList,
@@ -31,6 +31,7 @@ export {
     isPersonaLoading,
     isPersonaError,
     handleUpdateList,
+    errorPersona
 }
 // Selected Persona Details
 export const selectedPersonaId = ref('')
@@ -55,10 +56,11 @@ export const searchTerm = ref('')
 export const facets = ref({})
 export const filteredPersonas = computed(() => {
     let result = personaList.value
-    const { hierarchy, owners, permissions } = facets.value
+    const { hierarchy, owners, permissions, glossaries } = facets.value
     const hasFilters =
         !!searchTerm.value ||
         !!Object.keys(hierarchy || {}).length ||
+        !!Object.keys(glossaries || {}).length ||
         !!(owners?.ownerUsers?.length || owners?.ownerGroups?.length) ||
         !!permissions?.length
     if (searchTerm.value) {
@@ -72,11 +74,6 @@ export const filteredPersonas = computed(() => {
     }
 
     if (hierarchy) {
-        console.log(
-            'usePersonaList hierarchy',
-            { ...hierarchy },
-            hierarchy?.connectorName
-        )
         result = result.filter((persona) => {
             const metadataPolicies = persona?.metadataPolicies || []
             const dataPolicies = persona?.dataPolicies || []
@@ -130,9 +127,27 @@ export const filteredPersonas = computed(() => {
             metadataPolicies.forEach((policy) => {
                 personaPerms = [...personaPerms, ...policy.actions]
             })
-            console.log('personaPerms', personaPerms)
-            let found = personaPerms.some((permission) =>
+            const found = personaPerms.some((permission) =>
                 permissions.includes(permission)
+            )
+            return found
+        })
+    }
+    if (glossaries && Object.keys(glossaries).length) {
+       
+        result = result.filter((persona) => {
+            if(!persona.glossaryPolicies || !persona?.glossaryPolicies?.length){
+                return false
+            }
+            const found = persona.glossaryPolicies.some((item) => {
+                let check = false
+                glossaries.forEach(el => {
+                    if(item.glossaryQualifiedNames.includes(el)){
+                        check = true
+                    }
+                });
+                return check
+                }
             )
             return found
         })

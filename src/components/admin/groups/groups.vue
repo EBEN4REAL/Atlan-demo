@@ -81,7 +81,7 @@
                 :row-class-name="
                     (r, i) =>
                         showPreview && selectedGroupId === r.id
-                            ? 'bg-primary-light'
+                            ? $style.fixSelectedRowBG
                             : ''
                 "
                 @change="handleTableChange"
@@ -361,6 +361,7 @@
     import Pagination from '@/common/list/pagination.vue'
     import Avatar from '~/components/common/avatar/index.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'GroupList',
@@ -648,6 +649,7 @@
                                         duration: 1.5,
                                         key: messageKey,
                                     } as any)
+                                    useAddEvent('admin', 'group', 'deleted')
                                 } else if (
                                     error &&
                                     error.value &&
@@ -704,6 +706,15 @@
                                         : 'marked'
                                 } as default`
                             )
+                            useAddEvent('admin', 'group', 'updated', {
+                                users_count: group.memberCount,
+                                has_slack_channel_added:
+                                    group.attributes?.channels?.some((c) =>
+                                        c?.includes('slack')
+                                    ) || false,
+                                is_default: group.isDefault === 'true',
+                                has_description: !!group.description,
+                            })
                             cancelTokenSource.value = null
                             getGroupList()
                         } else if (error && error.value) {
@@ -780,6 +791,19 @@
         max-height: 170px;
     }
 </style>
+
+<style lang="less" module>
+    .fixSelectedRowBG {
+        @apply bg-gray-100;
+        :global(.ant-table-cell.ant-table-cell-fix-left.ant-table-cell-fix-left-last) {
+            @apply bg-gray-100;
+        }
+        td {
+            @apply bg-gray-100 hover:bg-gray-100 !important;
+        }
+    }
+</style>
+
 <route lang="yaml">
 meta:
     layout: default

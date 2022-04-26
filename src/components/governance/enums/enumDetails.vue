@@ -1,14 +1,14 @@
 <template>
     <div class="h-full bg-white rounded">
         <div v-if="!isNew" class="flex flex-col px-4 py-3 border-b">
-            <div class="flex items-center justify-between">
-                <div>
+            <div class="flex items-center gap-x-10">
+                <div class="flex-grow overflow-hidden">
                     <p class="text-xl">
-                        {{ selectedEnum.name }}
+                        <SimpleEllipsis :text="selectedEnum.name" />
                     </p>
-                    <p class="text-gray-500">{{ selectedEnum.description }}</p>
+                    <!-- <p class="text-gray-500">{{ selectedEnum.description }}</p> -->
                 </div>
-                <div>
+                <div class="justify-end">
                     <a-button
                         v-if="!isEditing && !viewOnly"
                         v-auth="map.UPDATE_ENUM"
@@ -18,20 +18,22 @@
                     >
                         <AtlanIcon icon="Edit" class="h-4"></AtlanIcon>
                     </a-button>
-                    <a-button
-                        v-if="isEditing"
-                        class="mr-4 rounded-md ant-btn"
-                        @click="discardChanges"
-                    >
-                        Cancel
-                    </a-button>
-                    <a-button
-                        v-if="isEditing"
-                        class="rounded-md ant-btn ant-btn-primary"
-                        @click="saveChanges"
-                    >
-                        Save
-                    </a-button>
+                    <div v-if="isEditing" class="w-40">
+                        <a-button
+                            v-if="isEditing"
+                            class="mr-4 rounded-md ant-btn"
+                            @click="discardChanges"
+                        >
+                            Cancel
+                        </a-button>
+                        <a-button
+                            v-if="isEditing"
+                            class="rounded-md ant-btn ant-btn-primary"
+                            @click="saveChanges"
+                        >
+                            Save
+                        </a-button>
+                    </div>
                 </div>
             </div>
             <div
@@ -83,9 +85,12 @@
     import map from '~/constant/accessControl/map'
     import { useTypedefStore } from '~/store/typedef'
     import MultiInput from '@/common/input/customizedTagInput.vue'
+    import SimpleEllipsis from '@/common/ellipsis/simpleEllipsis.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {
+            SimpleEllipsis,
             MultiInput,
             CreateUpdateInfo,
         },
@@ -138,6 +143,9 @@
                 const updatedEnum =
                     state?.value?.enumDefs?.length && state.value.enumDefs[0]
                 store.updateEnum(updatedEnum)
+                useAddEvent('governance', 'options', 'updated', {
+                    title: updatedEnum.name,
+                })
             }
 
             // FIXME: May be simplified

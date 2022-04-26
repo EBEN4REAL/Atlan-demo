@@ -12,6 +12,7 @@ import useUpdateGtcEntity from '~/composables/glossary/useUpdateGtcEntity'
 import useLoadGlossaryTreeData from '~/composables/glossary/useLoadGlossaryTreeData'
 import useGtcEntity from '~/composables/glossary/useGtcEntity'
 import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+import { fetchGlossaryPermission } from '~/composables/glossary/useGTCPermissions'
 
 // types
 import { Glossary, Category, Term } from '~/types/glossary/glossary.interface'
@@ -93,6 +94,7 @@ const useGlossaryTree = ({
     const allKeys = ref<string[]>([])
     const treeData = ref<TreeDataItem[]>([])
     const nodeToParentKeyMap: Record<string, 'root' | string | string[]> = {}
+    const hasPermissionToDnD = ref(true)
     const defaultBody = ref({})
     const updateList = inject('updateList')
     const generateBody = () => {
@@ -112,11 +114,22 @@ const useGlossaryTree = ({
             suppressLogs: true,
         }
     }
-
     const { data, mutate, isLoading, error, isReady } = useIndexSearch<
         Category | Term
     >(defaultBody, dependentKey, false, false, 1)
 
+    const sortTermsAndCategories = (children) => {
+        children.sort((a, b) => {
+            if (a?.displayText?.toLowerCase() < b?.displayText?.toLowerCase())
+                return -1
+            if (a?.displayText?.toLowerCase() > b?.displayText?.toLowerCase())
+                return 1
+            return 0
+        })
+        const terms = children?.filter(el=>el?.typeName==='AtlasGlossaryTerm')
+        const categories = children?.filter(el=>el?.typeName==='AtlasGlossaryCategory')
+        return [ ...categories, ...terms]
+    }
     const onLoadData = async (treeNode: any) => {
         treeNode.dataRef.isLoading = true
         treeNode.dataRef.isError = null
@@ -196,7 +209,7 @@ const useGlossaryTree = ({
                                     treeNode?.dataRef?.guid
                             }
                         })
-                        treeNode.dataRef.children.push(...map)
+                        treeNode.dataRef.children.push(...sortTermsAndCategories(map))
                         loadedKeys.value.push(treeNode.dataRef.key)
                         checkAndAddLoadMoreNode({
                             response: data.value,
@@ -316,7 +329,7 @@ const useGlossaryTree = ({
                                 }
                             })
                             treeNode.dataRef.children = []
-                            treeNode.dataRef.children.push(...map)
+                            treeNode.dataRef.children.push(...sortTermsAndCategories(map))
                             loadedKeys.value.push(treeNode.dataRef.key)
 
                             checkAndAddLoadMoreNode({
@@ -469,7 +482,7 @@ const useGlossaryTree = ({
                                 `${defaultGlossaryQf}_${el.attributes?.qualifiedName}`
                             )
                         })
-                        treeData.value = data.value?.entities.map((i) => ({
+                       const rootTermsAndCategories= data.value?.entities.map((i) => ({
                             ...i,
                             id: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
                             key: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
@@ -480,11 +493,8 @@ const useGlossaryTree = ({
                                     : false,
                             disabled: disabledGuids.includes(i.guid),
                         }))
-                        treeData.value.sort((a, b) => {
-                            if (a.typeName === 'AtlasGlossaryTerm') return 1
-                            return -1
-                        })
-                        checkAndAddLoadMoreNode({
+                        treeData.value=sortTermsAndCategories(rootTermsAndCategories)
+                       checkAndAddLoadMoreNode({
                             response: data.value,
                             parentGuid: 'root',
                             parentKey: 'root',
@@ -514,7 +524,7 @@ const useGlossaryTree = ({
         }
     }
 
-    const { getAnchorQualifiedName } = useAssetInfo()
+    const { getAnchorQualifiedName, getAnchorGuid } = useAssetInfo()
 
     const recursivelyAddOrDeleteNode = async (
         asset,
@@ -1055,7 +1065,7 @@ const useGlossaryTree = ({
             title: `Confirm changes`,
             okText: 'Confirm',
             cancelButtonProps: { type: 'default' },
-            okButtonProps: { type: 'primary', class:'bg-primary' },
+            okButtonProps: { type: 'primary', class: 'bg-primary' },
             maskClosable: true,
             keyboard: true,
             cancelText: 'Cancel',
@@ -1078,8 +1088,36 @@ const useGlossaryTree = ({
         })
     }
 
+    // handles start of drag event
+    // being used to evaluate permissions
+    const dragStart = ({ event, node }) => {
+        hasPermissionToDnD.value = true
+        console.log(node)
+        const parentGlossary = computed(() => {
+            return {
+                guid: getAnchorGuid(node?.dataRef),
+                typeName: 'AtlasGlossary',
+            }
+        })
+        const { entityUpdatePermission, fetch, isEvaluating } =
+            fetchGlossaryPermission(parentGlossary, false)
+        fetch()
+        const updatePermission = () => {
+            console.log(entityUpdatePermission.value)
+            if (entityUpdatePermission !== undefined)
+                hasPermissionToDnD.value = entityUpdatePermission.value
+        }
+        updatePermission()
+        watch(entityUpdatePermission, () => {
+            updatePermission()
+        })
+    }
+
     const dragAndDropNode = ({ event, node, dragNode, dragNodesKeys }) => {
-        console.log(node, dragNode, event)
+        if (!hasPermissionToDnD.value) {
+            message.error(`You don't have permission to perform this action`)
+            return
+        }
         let nodeParentGlossaryGuid
         if (node?.typeName === 'AtlasGlossary')
             nodeParentGlossaryGuid = node?.guid
@@ -1364,7 +1402,10 @@ const useGlossaryTree = ({
                 if (node.children && node.children.length) {
                     const index =
                         node.children.findIndex((child) => {
-                            return child?.attributes?.name === name && child?.typeName==='AtlasGlossaryCategory'
+                            return (
+                                child?.attributes?.name === name &&
+                                child?.typeName === 'AtlasGlossaryCategory'
+                            )
                         }) ?? 0
                     nameExists = index > -1
                 }
@@ -1394,7 +1435,9 @@ const useGlossaryTree = ({
         } else {
             const index =
                 treeData.value.findIndex(
-                    (child) => child?.attributes.name === name && child?.typeName==='AtlasGlossaryCategory'
+                    (child) =>
+                        child?.attributes.name === name &&
+                        child?.typeName === 'AtlasGlossaryCategory'
                 ) ?? 0
             nameExists = index > -1
         }
@@ -1437,6 +1480,7 @@ const useGlossaryTree = ({
         nodeToParentKeyMap,
         allKeys,
         checkDuplicateCategoryNames,
+        dragStart,
     }
 }
 

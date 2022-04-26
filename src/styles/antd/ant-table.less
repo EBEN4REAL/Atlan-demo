@@ -41,10 +41,7 @@
         .ant-table-cell-fix-right {
             @apply bg-white;
         }
-
     }
-
-    
 }
 
 .query-access-logs-table {
@@ -71,9 +68,8 @@
 }
 
 .column-table {
-    .ant-table-header {
-        max-height: 40px !important;
-        height: 40px !important;
+    .ant-table-header th {
+        overflow-wrap: normal !important;
     }
     .ant-table-thead tr th {
         @apply text-gray-700 !important;

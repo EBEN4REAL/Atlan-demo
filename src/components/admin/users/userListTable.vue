@@ -12,7 +12,9 @@
         :show-sorter-tooltip="false"
         :row-class-name="
             (r, i) =>
-                isPreview && selectedUserId === r.id ? 'bg-primary-light' : ''
+                isPreview && selectedUserId === r.id
+                    ? $style.fixSelectedRowBG
+                    : ''
         "
         @change="handleTableChange"
     >
@@ -87,7 +89,6 @@
                 }"
                 @click="
                     () => {
-                        if (!user.emailVerified) return
                         emit('showUserPreviewDrawer', user)
                     }
                 "
@@ -100,10 +101,7 @@
                     avatar-shape="circle"
                     class="mr-2"
                 />
-                <div
-                    class="max-w-full truncate"
-                    :class="!user.emailVerified ? '' : 'cursor-pointer'"
-                >
+                <div class="max-w-full truncate cursor-pointer">
                     <span v-if="user.emailVerified" class="text-primary">{{
                         nameCase(user.name) || '-'
                     }}</span>
@@ -208,9 +206,7 @@
                         </div>
                     </div>
                 </template>
-                <div
-                    class="text-left cursor-pointer text-primary hover:underline"
-                >
+                <div class="text-left cursor-pointer text-primary">
                     {{
                         user?.personas?.length > 1
                             ? user?.personas?.length + ' personas'
@@ -694,6 +690,18 @@
         // width: auto;
         height: auto;
         max-height: 170px;
+    }
+</style>
+
+<style lang="less" module>
+    .fixSelectedRowBG {
+        @apply bg-gray-100;
+        :global(.ant-table-cell.ant-table-cell-fix-left.ant-table-cell-fix-left-last) {
+            @apply bg-gray-100;
+        }
+        td {
+            @apply bg-gray-100 hover:bg-gray-100 !important;
+        }
     }
 </style>
 

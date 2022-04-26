@@ -18,11 +18,7 @@
                 >
                     <div class="flex items-center">
                         <AtlanIcon icon="CopyOutlined" class="m-0 mr-2" />
-                        <p class="p-0 m-0">
-                            Copy
-                            {{ assetTypeLabel[entity?.typeName] }}
-                            profile link
-                        </p>
+                        <p class="p-0 m-0">Copy link</p>
                     </div>
                 </a-menu-item>
                 <a-menu-item
@@ -33,25 +29,51 @@
                 >
                     <div class="flex items-center">
                         <AtlanIcon icon="CopyOutlined" class="m-0 mr-2" />
-                        <p class="p-0 m-0">
-                            Copy
-                            {{ assetTypeLabel[entity?.typeName] }}
-                            name
-                        </p>
+                        <p class="p-0 m-0">Copy name</p>
                     </div>
                 </a-menu-item>
-
+                <!-- entity update -->
                 <a-menu-item v-if="showGtcCrud" key="edit" @click="closeMenu">
-                    <div
-                        class="flex items-center"
-                        @click="$emit('edit', entity)"
-                    >
-                        <AtlanIcon icon="Pencil" class="m-0 mr-2" />
-                        <p class="p-0 m-0">Rename</p>
-                    </div>
+                    <template v-if="entityUpdatePermission">
+                        <div
+                            class="flex items-center"
+                            @click="$emit('edit', entity)"
+                        >
+                            <AtlanIcon icon="Pencil" class="m-0 mr-2" />
+                            <p class="p-0 m-0">Rename</p>
+                        </div>
+                    </template>
+                    <template v-else-if="role?.toLowerCase() === 'guest'">
+                        <a-tooltip
+                            placement="right"
+                            title="You don't have permission to perform this action"
+                        >
+                            <div
+                                :class="'cursor-not-allowed text-gray-500'"
+                                class="flex items-center"
+                            >
+                                <AtlanIcon icon="Pencil" class="m-0 mr-2" />
+                                <p class="p-0 m-0">Rename</p>
+                            </div>
+                        </a-tooltip>
+                    </template>
+                    <template v-else>
+                        <RenameModal
+                            :entityType="entity?.typeName"
+                            :entityTitle="entity?.attributes?.name"
+                            :selected-asset="entity"
+                        >
+                            <template #trigger>
+                                <div class="flex items-center">
+                                    <AtlanIcon icon="Pencil" class="m-0 mr-2" />
+                                    <p class="p-0 m-0">Rename</p>
+                                </div>
+                            </template>
+                        </RenameModal>
+                    </template>
                 </a-menu-item>
-
-                <div v-auth="map.CREATE_CATEGORY">
+                <!-- entity create -->
+                <div>
                     <a-menu-item
                         v-if="
                             showGtcCrud &&
@@ -60,27 +82,54 @@
                         key="add"
                         @click="closeMenu"
                     >
-                        <AddGtcModal
-                            entityType="AtlasGlossaryCategory"
-                            :glossaryName="glossaryName"
-                            :categoryName="categoryName"
-                            @add="handleAdd"
-                            :glossary-qualified-name="glossaryQualifiedName"
-                            :categoryGuid="categoryId"
+                        <template
+                            v-if="
+                                role?.toLowerCase() === 'guest' &&
+                                !createPermission
+                            "
                         >
-                            <template #trigger>
-                                <div class="flex items-center">
+                            <a-tooltip
+                                placement="right"
+                                title="You don't have permission to perform this action"
+                            >
+                                <div
+                                    :class="'cursor-not-allowed text-gray-500'"
+                                    class="flex items-center"
+                                >
                                     <AtlanIcon
                                         icon="Category"
                                         class="m-0 mr-2"
                                     />
                                     <p class="p-0 m-0">Add Category</p>
                                 </div>
-                            </template>
-                        </AddGtcModal>
+                            </a-tooltip>
+                        </template>
+
+                        <template v-else>
+                            <AddGtcModal
+                                entityType="AtlasGlossaryCategory"
+                                :glossaryName="glossaryName"
+                                :categoryName="categoryName"
+                                @add="handleAdd"
+                                :glossary-qualified-name="glossaryQualifiedName"
+                                :categoryGuid="categoryId"
+                                :createPermission="createPermission"
+                            >
+                                <template #trigger>
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Category"
+                                            class="m-0 mr-2"
+                                        />
+                                        <p class="p-0 m-0">Add Category</p>
+                                    </div>
+                                </template>
+                            </AddGtcModal>
+                        </template>
                     </a-menu-item>
                 </div>
-                <div v-auth="map.CREATE_TERM">
+                <!-- entity create -->
+                <div>
                     <a-menu-item
                         v-if="
                             showGtcCrud &&
@@ -89,32 +138,50 @@
                         key="add"
                         @click="closeMenu"
                     >
-                        <AddGtcModal
-                            entityType="AtlasGlossaryTerm"
-                            :glossaryName="glossaryName"
-                            :categoryName="categoryName"
-                            @add="handleAdd"
-                            :glossary-qualified-name="glossaryQualifiedName"
-                            :categoryGuid="categoryId"
+                        <template
+                            v-if="
+                                role?.toLowerCase() === 'guest' &&
+                                !createPermission
+                            "
                         >
-                            <template #trigger>
-                                <div class="flex items-center">
+                            <a-tooltip
+                                placement="right"
+                                title="You don't have permission to perform this action"
+                            >
+                                <div
+                                    :class="'cursor-not-allowed text-gray-500'"
+                                    class="flex items-center"
+                                >
                                     <AtlanIcon icon="Term" class="m-0 mr-2" />
                                     <p class="p-0 m-0">Add Term</p>
                                 </div>
-                            </template>
-                        </AddGtcModal>
+                            </a-tooltip>
+                        </template>
+                        <template v-else>
+                            <AddGtcModal
+                                entityType="AtlasGlossaryTerm"
+                                :glossaryName="glossaryName"
+                                :categoryName="categoryName"
+                                @add="handleAdd"
+                                :glossary-qualified-name="glossaryQualifiedName"
+                                :categoryGuid="categoryId"
+                                :createPermission="createPermission"
+                            >
+                                <template #trigger>
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Term"
+                                            class="m-0 mr-2"
+                                        />
+                                        <p class="p-0 m-0">Add Term</p>
+                                    </div>
+                                </template>
+                            </AddGtcModal>
+                        </template>
                     </a-menu-item>
                 </div>
-                <div
-                    v-auth="
-                        entity?.typeName === 'AtlasGlossaryTerm'
-                            ? map.DELETE_TERM
-                            : entity?.typeName === 'AtlasGlossaryCategory'
-                            ? map.DELETE_CATEGORY
-                            : map.DELETE_GLOSSARY
-                    "
-                >
+                <!-- entity delete -->
+                <div>
                     <a-menu-divider
                         v-if="
                             showGtcCrud &&
@@ -127,22 +194,41 @@
                         key="archive"
                         @click="closeMenu"
                     >
-                        <RemoveGTCModal
-                            :entityType="entity.typeName"
-                            :entity="entity"
-                            @delete="handleDelete"
-                            :redirect="shouldRedirect"
-                        >
-                            <template #trigger>
-                                <div class="flex items-center">
+                        <template v-if="entityDeletePermission">
+                            <RemoveGTCModal
+                                :entityType="entity.typeName"
+                                :entity="entity"
+                                @delete="handleDelete"
+                                :redirect="shouldRedirect"
+                            >
+                                <template #trigger>
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Trash"
+                                            class="m-0 mr-2 text-red-700"
+                                        />
+                                        <p class="p-0 m-0">Archive</p>
+                                    </div>
+                                </template>
+                            </RemoveGTCModal>
+                        </template>
+                        <template v-else>
+                            <a-tooltip
+                                placement="right"
+                                title="You don't have permission to perform this action"
+                            >
+                                <div
+                                    :class="'cursor-not-allowed text-gray-500'"
+                                    class="flex items-center"
+                                >
                                     <AtlanIcon
                                         icon="Trash"
-                                        class="m-0 mr-2 text-red-700"
+                                        class="m-0 mr-2 text-red-200"
                                     />
                                     <p class="p-0 m-0">Archive</p>
                                 </div>
-                            </template>
-                        </RemoveGTCModal>
+                            </a-tooltip>
+                        </template>
                     </a-menu-item>
                 </div>
             </a-menu>
@@ -172,12 +258,14 @@
     // import Categories from '@/glossary/common/categories.vue'
     import ModalHeader from '@/glossary/modal/modalHeader.vue'
     import BulkUploadModal from '@/glossary/modal/bulkUploadModal.vue'
+    import RenameModal from '@/glossary/modal/renameModal.vue'
 
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
     // composables
     // import useDeleteGlossary from '~/components/glossary/composables/useDeleteGlossary'
+    import whoami from '~/composables/user/whoami'
     import {
         Glossary,
         Category,
@@ -185,6 +273,7 @@
     } from '~/types/glossary/glossary.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import map from '~/constant/accessControl/map'
+    import { fetchGlossaryPermission } from '~/composables/glossary/useGTCPermissions'
 
     export default defineComponent({
         components: {
@@ -196,6 +285,7 @@
             RemoveGTCModal,
             ModalHeader,
             BulkUploadModal,
+            RenameModal,
         },
         props: {
             entity: {
@@ -258,7 +348,9 @@
             } = toRefs(props)
             const isVisible = ref(false)
             const isModalVisible = ref<boolean>(false)
+            const isRenameModalOpen = ref<boolean>(false)
             const route = useRoute()
+            const { role } = whoami()
             const shouldRedirect = computed(
                 () => route?.params?.id === props?.entity?.guid
             ) // Should the page be redirect on deletion of the entity
@@ -325,7 +417,42 @@
                 closeMenu()
             }
 
+            // permissions
+            // ? evaluate permission for glossary are checked against their glossary of any child, hence parse the glossary from category or  term
+            const glossary = computed(() => {
+                if (entity.value.typeName === 'AtlasGlossary')
+                    return entity.value
+                if (
+                    ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
+                        entity.value.typeName
+                    )
+                )
+                    return entity.value.attributes.anchor
+                return null
+            })
+
+            const {
+                termAddPermission,
+                categoryAddPermission,
+                entityUpdatePermission,
+                entityDeletePermission,
+                createPermission,
+                fetch,
+            } = fetchGlossaryPermission(glossary)
+
+            // ? when action dropdown opens, fetch all permissions, if not fetched already
+            watch(isVisible, (v) => {
+                if (v && glossary.value) {
+                    fetch()
+                }
+            })
+
             return {
+                termAddPermission,
+                categoryAddPermission,
+                entityUpdatePermission,
+                entityDeletePermission,
+                createPermission,
                 assetTypeLabel,
                 isVisible,
                 isModalVisible,
@@ -348,6 +475,7 @@
                 map,
                 handleCopyProfileLink,
                 handleCopyName,
+                role,
             }
         },
     })

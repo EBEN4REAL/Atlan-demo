@@ -25,16 +25,14 @@
             </p>
         </div>
 
-        <AtlanButton
+        <AtlanButton2
             class="mt-6 font-bold w-36"
-            size="lg"
-            color="primary"
-            padding="compact"
+            size="large"
+            label="Create a collection"
+            suffixIcon="ArrowRight"
+            bold
             @click="handleClick"
-        >
-            Create a collection
-            <AtlanIcon icon="ArrowRight" class="inline" />
-        </AtlanButton>
+        />
     </div>
 </template>
 

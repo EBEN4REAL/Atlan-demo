@@ -8,7 +8,10 @@
         placeholder="Resources is the place to document all knowledge
                     around the asset"
         :read-only="!linkEditPermission"
-        :entity-name="selectedAsset.displayText"
+        :entity-name="
+            selectedAsset.displayText || selectedAsset.attributes.qualifiedName
+        "
+        :assetType="selectedAsset.typeName"
         @add="handleAdd"
         @update="handleUpdate"
         @remove="handleRemove"
@@ -20,20 +23,16 @@
 </template>
 
 <script setup lang="ts">
-    import {
-        defineComponent,
-        PropType,
-        computed,
-        toRefs,
-        defineAsyncComponent,
-        ref,
-    } from 'vue'
-    import { whenever } from '@vueuse/core'
+    import { PropType, computed, toRefs, ref, inject } from 'vue'
+    import { whenever, watchOnce } from '@vueuse/core'
     import ResourcesWidget from '@/common/widgets/resources/resourcesWidget.vue'
     import Placeholder from '@/common/assets/preview/resources/placeholder.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import { getDomain } from '~/utils/url'
+    import integrationStore from '~/store/integrations/index'
+    import { resourceId } from '~/composables/integrations/slack/useAskAQuestion'
 
     const props = defineProps({
         selectedAsset: {
@@ -49,10 +48,8 @@
 
     const { selectedAsset, isDrawer } = toRefs(props)
     const resourcesWidget = ref()
-    const hhh = () => {
-        console.log(resourcesWidget.value)
-        resourcesWidget?.addModalRef?.showModal()
-    }
+    const store = integrationStore()
+    const { tenantSlackStatus } = toRefs(store)
 
     const { links, selectedAssetUpdatePermission, assetPermission } =
         useAssetInfo()
@@ -66,6 +63,10 @@
 
     // eslint-disable-next-line arrow-body-style
     const resources = computed(() => {
+        if (tenantSlackStatus.value.configured)
+            return links(selectedAsset.value).filter(
+                (l) => getDomain(l.attributes.link) !== 'slack.com'
+            )
         return links(selectedAsset.value)
     })
 
@@ -78,6 +79,7 @@
                 'Link'
             ) && assetPermission('CREATE_LINK')
     )
+    const switchTab = inject('switchTab') as Function
 
     const addStatus = ref('')
     const handleAdd = async (link) => {
@@ -85,8 +87,23 @@
         try {
             localResource.value.title = link.attributes.name
             localResource.value.link = link.attributes.link
-            await handleAddResource()
+            const res = await handleAddResource()
             addStatus.value = 'success'
+            // ? if the created link is slack , redirect to slack tab
+            if (
+                getDomain(link.attributes.link) === 'slack.com' &&
+                tenantSlackStatus.value.configured
+            )
+                watchOnce(
+                    () => links(selectedAsset.value),
+                    () => {
+                        switchTab(selectedAsset.value, 'Slack')
+                        const createdResourceGuid =
+                            res?.mutatedEntities?.CREATE[0]?.guid
+                        if (createdResourceGuid)
+                            resourceId.value = createdResourceGuid
+                    }
+                )
         } catch (error) {
             addStatus.value = 'error'
         }

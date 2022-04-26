@@ -81,7 +81,7 @@
     import { ref, watch, toRefs, defineComponent } from 'vue'
     import { NodeViewWrapper, nodeViewProps } from '@tiptap/vue-3'
     import { getNameInitials, getNameInTitleCase } from '~/utils/string'
-    import SectionLoader from '@/common/loaders/section.vue'
+    import SectionLoader from '@common/loaders/section.vue'
     import useUploadImage from '~/composables/image/uploadImage'
 
     export default defineComponent({

@@ -1,7 +1,7 @@
 <template>
     <div data-test-id="owners-popover">
         <a-popover
-            v-if="editPermission"
+            v-if="showPopover"
             v-model:visible="isEdit"
             :placement="placementPos"
             :overlay-class-name="$style.ownerPopover"
@@ -11,12 +11,56 @@
             @visibleChange="handleVisibleChange"
         >
             <template #content>
-                <div v-if="editPermission" class="">
-                    <OwnerFacets
-                        ref="ownerInputRef"
-                        v-model="localValue"
-                        :show-none="false"
-                    ></OwnerFacets>
+                <div v-if="showPopover">
+                    <div
+                        v-if="!editPermission && role !== 'Guest'"
+                        class="px-3 py-2 mx-4 mb-3 bg-gray-100"
+                    >
+                        You don't have edit access. Suggest owners and
+                        <span class="cursor-pointer text-primary">
+                            <a-popover placement="rightBottom">
+                                <template #content>
+                                    <AdminList></AdminList>
+                                </template>
+                                <span>Admins</span>
+                            </a-popover>
+                        </span>
+                        can review your request.
+                    </div>
+
+                    <div class="">
+                        <OwnerFacets
+                            v-if="editPermission"
+                            ref="ownerInputRef"
+                            v-model="localValue"
+                            :show-none="false"
+                            :enableTabs="enableTabs"
+                            @change="handleChangeData"
+                        ></OwnerFacets>
+
+                        <OwnerFacets
+                            v-else
+                            ref="ownerInputRef"
+                            v-model="newOwners"
+                            :show-none="false"
+                            :disabledValues="localValue"
+                        ></OwnerFacets>
+                    </div>
+
+                    <!-- Uncomment for request creation -->
+                    <div
+                        v-if="!editPermission && role !== 'Guest'"
+                        class="flex items-center justify-end mx-2 mt-5 space-x-2"
+                    >
+                        <a-button @click="handleCancelRequest">Cancel</a-button>
+                        <a-button
+                            type="primary"
+                            :loading="requestLoading"
+                            @click="handleRequest"
+                            class="bg-primary"
+                            >Submit Request</a-button
+                        >
+                    </div>
                 </div>
             </template>
         </a-popover>
@@ -25,9 +69,10 @@
             :class="{ '-ml-1': !showAddBtn }"
         >
             <a-tooltip
+                v-if="showAddBtn"
                 placement="left"
                 :title="
-                    !editPermission
+                    !editPermission && role === 'Guest'
                         ? `You don't have permission to add owners to this asset`
                         : ''
                 "
@@ -41,7 +86,7 @@
                 >
                     <a-button
                         v-if="showAddBtn"
-                        :disabled="!editPermission"
+                        :disabled="role === 'Guest' && !editPermission"
                         shape="circle"
                         size="small"
                         class="text-center shadow"
@@ -51,11 +96,7 @@
                         }"
                         @click="() => (isEdit = true)"
                     >
-                        <span
-                            ><AtlanIcon
-                                icon="Add"
-                                class="h-3"
-                            ></AtlanIcon></span
+                        <span> <AtlanIcon icon="Add" class="h-3" /> </span
                     ></a-button>
                 </Shortcut>
             </a-tooltip>
@@ -74,6 +115,7 @@
                     ></UserPill>
                 </PopOverUser>
             </template>
+            <slot name="users"></slot>
 
             <template v-for="name in localValue?.ownerGroups" :key="name">
                 <PopOverGroup :item="name">
@@ -91,11 +133,13 @@
                 v-if="
                     !showAddBtn &&
                     localValue?.ownerGroups?.length < 1 &&
-                    localValue?.ownerUsers?.length < 1
+                    localValue?.ownerUsers?.length < 1 &&
+                    showEmptyOwner
                 "
-                class="text-gray-600"
-                >No owners assigned</span
+                class="ml-1 text-gray-600"
             >
+                No owners assigned
+            </span>
         </div>
     </div>
 </template>
@@ -109,6 +153,7 @@
         toRefs,
         PropType,
         watch,
+        defineAsyncComponent,
     } from 'vue'
 
     // Utils
@@ -119,12 +164,13 @@
         useVModels,
         whenever,
     } from '@vueuse/core'
+    import { message } from 'ant-design-vue'
 
     // Components
     import UserPill from '@/common/pills/user.vue'
     import GroupPill from '@/common/pills/group.vue'
     import OwnerFacets from '@/common/facet/owners/index.vue'
-    import AtlanIcon from '../../icon/atlanIcon.vue'
+    import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
     import PopOverGroup from '@/common/popover/user/groups.vue'
     import Shortcut from '@/common/popover/shortcut.vue'
@@ -133,6 +179,8 @@
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import { useGroupPreview } from '~/composables/group/showGroupPreview'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { useCreateRequests } from '~/composables/requests/useCreateRequests'
+    import whoami from '~/composables/user/whoami.ts'
 
     // Types
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -147,8 +195,15 @@
             PopOverUser,
             PopOverGroup,
             Shortcut,
+            AdminList: defineAsyncComponent(
+                () => import('@/common/info/adminList.vue')
+            ),
         },
         props: {
+            enableTabs: {
+                type: Array as PropType<Array<any>>,
+                default: () => ['users', 'groups'],
+            },
             editPermission: {
                 type: Boolean,
                 required: false,
@@ -193,13 +248,23 @@
                 required: false,
                 default: true,
             },
+            showPopover: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
             align: {
                 type: Object,
                 required: false,
                 default: () => ({}),
             },
+            showEmptyOwner: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'changeData'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const { selectedAsset, inProfile, editPermission } = toRefs(props)
@@ -207,7 +272,11 @@
             const localValue = ref(modelValue.value)
 
             const { ownerGroups, ownerUsers } = useAssetInfo()
-
+            const requestLoading = ref()
+            const { role } = whoami()
+            const existingOwnerUsers = ref(ownerUsers(selectedAsset.value))
+            const existingOwnerGroups = ref(ownerGroups(selectedAsset.value))
+            const newOwners = ref()
             const isEdit = ref(false)
 
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
@@ -230,7 +299,9 @@
 
             const handleChange = () => {
                 modelValue.value = localValue.value
-                emit('change')
+                if (!props.editPermission) {
+                    handleRequest()
+                } else emit('change')
             }
 
             const handleDeleteUser = (username) => {
@@ -270,7 +341,7 @@
 
             whenever(and(Escape), () => {
                 if (isEdit.value) {
-                    handleChange()
+                    if (props.editPermission) handleChange()
                     isEdit.value = false
                 }
             })
@@ -283,7 +354,7 @@
                         ownerFacetRef.value?.forceFocus()
                     }
                 }
-                if (!visible) {
+                if (!visible && props.editPermission) {
                     handleChange()
                 }
             }
@@ -293,6 +364,70 @@
                 localValue.value.ownerGroups = ownerGroups(selectedAsset.value)
             })
 
+            const handleRequest = () => {
+                newOwners.value.ownerUsers =
+                    newOwners.value?.ownerUsers?.filter((el) => {
+                        if (!existingOwnerUsers.value?.find((i) => i === el)) {
+                            return el
+                        }
+                    })
+
+                newOwners.value.ownerGroups =
+                    newOwners.value?.ownerGroups?.filter((el) => {
+                        if (!existingOwnerGroups.value?.find((i) => i === el)) {
+                            return el
+                        }
+                    })
+                if (
+                    !newOwners.value?.ownerUsers?.length &&
+                    !newOwners?.value?.ownerGroups?.length
+                ) {
+                    newOwners.value.ownerUsers = ownerUsers(selectedAsset.value)
+                    newOwners.value.ownerGroups = ownerGroups(
+                        selectedAsset.value
+                    )
+
+                    return
+                }
+                const {
+                    error: requestError,
+                    isLoading: isRequestLoading,
+                    isReady: requestReady,
+                } = useCreateRequests({
+                    assetGuid: selectedAsset.value?.guid,
+                    assetQf: selectedAsset.value?.attributes?.qualifiedName,
+                    assetType: selectedAsset.value?.typeName,
+                    requestType: 'ownerUsers',
+                    ownerUsers: newOwners?.value?.ownerUsers,
+                    ownerGroups: newOwners?.value?.ownerGroups,
+                })
+                whenever(requestError, () => {
+                    if (requestError.value) {
+                        message.error(`Request failed`)
+                        isEdit.value = false
+                        requestLoading.value = false
+                    }
+                })
+                whenever(requestReady, () => {
+                    if (requestReady.value) {
+                        message.success(`Request raised`)
+                        isEdit.value = false
+                        newOwners.value.ownerUsers = ownerUsers(
+                            selectedAsset.value
+                        )
+                        newOwners.value.ownerGroups = ownerGroups(
+                            selectedAsset.value
+                        )
+                        requestLoading.value = isRequestLoading.value
+                    }
+                })
+            }
+            const handleCancelRequest = () => {
+                isEdit.value = false
+            }
+            const handleChangeData = () => {
+                emit('changeData', localValue)
+            }
             return {
                 ownerGroups,
                 ownerUsers,
@@ -306,6 +441,12 @@
                 isEdit,
                 ownerFacetRef,
                 setLocalValue,
+                role,
+                requestLoading,
+                handleRequest,
+                handleCancelRequest,
+                newOwners,
+                handleChangeData,
             }
         },
     })

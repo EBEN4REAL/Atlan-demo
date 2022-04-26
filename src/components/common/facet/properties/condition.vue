@@ -152,6 +152,16 @@
             const handleOperatorChange = () => {
                 condition.value.operand = attribute.value.name
                 condition.value.operator = localCondition.value.operator
+                if (
+                    ['isNotNull', 'isNull'].includes(
+                        localCondition.value.operator
+                    ) &&
+                    localCondition.value.value
+                ) {
+                    // ? delete the value key (i.e reset) if the operator is valueless,
+                    delete localCondition.value.value
+                    delete condition.value.value
+                }
                 if (['date', 'datetime'].includes(dataType.value.toLowerCase()))
                     condition.value.value = milisecondsAdjust(
                         condition.value.value,

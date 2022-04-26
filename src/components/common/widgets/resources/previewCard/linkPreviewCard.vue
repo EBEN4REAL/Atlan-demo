@@ -1,8 +1,11 @@
 <template>
-    <div class="p-2 border rounded cursor-pointer hover:bg-gray-100">
-        <div class="flex justify-between h-full">
+    <div
+        class="flex flex-col flex-grow p-2 overflow-hidden border rounded cursor-pointer hover:bg-gray-100"
+        :class="shouldHighlight ? 'animate-yellow' : ''"
+    >
+        <div class="flex justify-between flex-grow h-full overflow-hidden">
             <div
-                class="flex items-center flex-1"
+                class="flex items-center flex-1 overflow-hidden"
                 style=""
                 @click="openLink(link.attributes.link)"
             >
@@ -30,19 +33,13 @@
                         />
                     </div>
                 </div>
-                <div class="flex flex-col w-full">
-                    <a
-                        :href="`${link.attributes.link}`"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        <Tooltip
-                            :tooltip-text="
-                                link.attributes.name || link.attributes.link
-                            "
-                            classes="hover:text-primary font-bold cursor-pointer hover:underline"
-                        />
-                    </a>
+                <div class="flex flex-col w-full overflow-hidden">
+                    <Tooltip
+                        :tooltip-text="
+                            link.attributes.name || link.attributes.link
+                        "
+                        classes="hover:text-primary font-bold cursor-pointer hover:underline"
+                    />
                     <div
                         v-if="
                             link.attributes.__modifiedBy &&
@@ -84,27 +81,65 @@
 </template>
 
 <script setup lang="ts">
-    import { PropType, ref, provide, toRefs, inject } from 'vue'
-    import { useTimeAgo } from '@vueuse/core'
+    import { PropType, ref, computed, toRefs, inject } from 'vue'
+    import { useTimeAgo, whenever } from '@vueuse/core'
     import { getDomain } from '~/utils/url'
     import { Link } from '~/types/resources.interface'
     import Tooltip from '@/common/ellipsis/index.vue'
     import CardActions from '@/common/widgets/resources/misc/cardActionMenu.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { resourceId } from '~/composables/integrations/slack/useAskAQuestion'
 
     const props = defineProps({
         link: {
             type: Object as PropType<Link>,
             required: true,
         },
+        assetType: {
+            type: String,
+            required: false,
+            default: '',
+        },
     })
 
     const defaultIcon = ref(false)
-
     const readOnly = inject('readOnly')
+    const { link } = toRefs(props)
 
     const openLink = (url) => {
         if (url) window.open(url)
+        useAddEvent('discovery', 'resource', 'clicked', {
+            domain: getDomain(url),
+            asset_type: props.assetType,
+        })
     }
+
+    const shouldHighlight = computed(() => resourceId.value === link.value.guid)
+
+    whenever(
+        shouldHighlight,
+        () => {
+            setTimeout(() => {
+                resourceId.value = ''
+            }, 3000)
+        },
+        { immediate: true }
+    )
 </script>
 
-<style scoped></style>
+<style lang="less" scoped>
+    .animate-yellow {
+        animation: animateYellow 3s ease;
+    }
+    @keyframes animateYellow {
+        0% {
+            @apply bg-yellow-100;
+        }
+        20% {
+            @apply bg-yellow-100;
+        }
+        100% {
+            @apply bg-white;
+        }
+    }
+</style>

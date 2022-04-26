@@ -25,6 +25,9 @@
                 <div class="mt-6">
                     <PopularQueries />
                 </div>
+                <div class="mt-6 mb-6">
+                    <MyRaisedRequests />
+                </div>
 
                 <!--section>
                 <YourOrgs />
@@ -42,9 +45,6 @@
             <section>
                 <RecentAnnouncements />
             </section>
-            <!-- <section>
-                <PopularQueries />
-            </section> -->
         </aside>
     </div>
 </template>
@@ -66,6 +66,7 @@
     import RecentResources from '@/home/main/recentResources.vue'
     import RecentAnnouncements from '@/home/main/recentAnnouncements.vue'
     import PopularQueries from '@/home/main/popoularQueries.vue'
+    import MyRaisedRequests from '~/components/home/main/myRaisedRequests.vue'
 
     export default defineComponent({
         name: 'HomePage',
@@ -80,6 +81,7 @@
             RecentResources,
             RecentAnnouncements,
             PopularQueries,
+            MyRaisedRequests,
         },
         props: {},
         setup() {

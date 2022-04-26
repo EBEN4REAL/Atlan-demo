@@ -5,10 +5,11 @@
         :overlay-style="{ maxWidth: width }"
         :color="tooltipColor"
         :overlay-class-name="tooltipColor === 'white' ? 'tooltip-black' : ''"
-        :mouseLeaveDelay="mouseLeaveDelay"
+        :mouse-leave-delay="mouseLeaveDelay"
+        :mouse-enter-delay="mouseEnterDelay"
     >
         <template v-if="truncated" #title>
-            <div v-linkified class="">
+            <div v-linkified class="whitespace-pre-wrap">
                 {{ tooltipText }}
             </div>
         </template>
@@ -29,8 +30,9 @@
                             onEllipsis: () => (truncated = !truncated),
                         }"
                         :content="tooltipText"
-                    /> </router-link
-            ></template>
+                    />
+                </router-link>
+            </template>
             <template v-else>
                 <a-typography-paragraph
                     :class="classes"
@@ -89,11 +91,16 @@
                 required: false,
                 default: '95%',
             },
-            mouseLeaveDelay:{
+            mouseLeaveDelay: {
                 type: Number,
                 required: false,
                 default: 0.1,
-            }
+            },
+            mouseEnterDelay: {
+                type: Number,
+                required: false,
+                default: 0.1,
+            },
         },
         setup(props) {
             const truncated = ref<boolean>(false)

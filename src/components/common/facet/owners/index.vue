@@ -68,6 +68,7 @@
                 :query-text="queryText"
                 :select-user-key="selectUserKey"
                 :group-id="groupId"
+                :disabledKeys="disabledValues?.ownerUsers"
                 @change="handleChange"
             ></Users>
             <Groups
@@ -76,7 +77,9 @@
                 v-model="localValue.ownerGroups"
                 :query-text="queryText"
                 :select-group-key="selectGroupKey"
+                :disabledKeys="disabledValues?.ownerGroups"
                 :user-id="userId"
+                @change="handleChange"
             ></Groups>
         </div>
         <div v-if="showNone" class="px-4 pt-1">
@@ -179,6 +182,10 @@
                 default: false,
                 required: false,
             },
+            disabledValues: {
+                type: Object,
+                required:false,
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -239,8 +246,11 @@
                 } else if (localValue.value.ownerGroups?.length === 0) {
                     delete localValue.value.ownerGroups
                 }
-                modelValue.value = localValue.value
-                emit('change', localValue.value)
+
+                if (modelValue.value !== localValue.value) {
+                    modelValue.value = localValue.value
+                    emit('change', localValue.value)
+                }
             })
             const ownerSearchRef: Ref<null | HTMLInputElement> = ref(null)
             const { start } = useTimeoutFn(() => {
@@ -260,6 +270,7 @@
                 modelValue.value = localValue.value
                 emit('change')
             }
+
             return {
                 groupRef,
                 usersRef,

@@ -44,27 +44,27 @@
             wrap-class-name="persona-modal"
             :centered="true"
             :mask-closable="true"
+            :footer="null"
             @cancel="closePersonaViewModal"
         >
             <template #title>
                 <PersonaHeader
                     v-model:openEditModal="openEditModal"
                     :persona="selectedPersona"
-                    class=""
+                    @updateStatus="handleEnableDisablePersona"
                 />
             </template>
-            <template #footer>
+            <!-- <template #footer>
                 <div style="display: none">
                     <div class="flex items-center justify-between pb-1">
                         <slot name="footerLeft"></slot>
                         <div
                             class="flex items-center justify-end w-full space-x-3"
                         >
-                            <!-- Hi -->
                         </div>
                     </div>
                 </div>
-            </template>
+            </template> -->
             <div class="h-full bg-primary-light">
                 <PersonaBody
                     v-model:persona="selectedPersona"
@@ -131,7 +131,7 @@
             <!-- persona cards -->
             <div
                 v-if="filteredPersonas && filteredPersonas.length"
-                class="grid grid-cols-4 gap-4 gap-y-6 mt-7"
+                class="grid grid-cols-4 gap-4 gap-y-6 mt-7 pb-7"
             >
                 <PersonaCard
                     v-for="persona in filteredPersonas"
@@ -155,7 +155,7 @@
         <div
             v-else-if="
                 (personaList === null || personaList?.length == 0) &&
-                isPersonaError === undefined
+                errorPersona === undefined
             "
             class="flex flex-col items-center h-full"
         >
@@ -187,7 +187,7 @@
                 </a>
             </div>
         </div>
-        <ErrorView v-else :error="isPersonaError">
+        <ErrorView v-else :error="errorPersona">
             <div class="mt-3">
                 <a-button
                     data-test-id="try-again"
@@ -208,11 +208,11 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, onMounted, computed } from 'vue'
+    import { defineComponent, ref, watch, onMounted, h } from 'vue'
     import ErrorView from '@common/error/index.vue'
     import { storeToRefs } from 'pinia'
     import { useRoute, useRouter } from 'vue-router'
-    import AtlanBtn from '@/UI/button.vue'
+    import { message, Modal } from 'ant-design-vue'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ExplorerLayout from '@/admin/explorerLayout.vue'
     import PersonaBody from './personaBody.vue'
@@ -226,12 +226,12 @@
         selectedPersona,
         selectedPersonaId,
         isPersonaLoading,
-        isPersonaError,
+        errorPersona,
         isPersonaListReady,
         personaList,
         facets,
     } from './composables/usePersonaList'
-    import { isEditing } from './composables/useEditPersona'
+    import { isEditing, enablePersona } from './composables/useEditPersona'
     import AddPersonaIllustration from '~/assets/images/empty_state_personaV2.svg'
     import DetailPolicy from './overview/detailPolicy.vue'
     import usePermissions from '~/composables/auth/usePermissions'
@@ -240,7 +240,8 @@
     import AssetFilters from '@/common/assets/filters/index.vue'
     import { personaFilter } from '~/constant/filters/logsFilter'
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
-
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import useAssetStore from '~/store/asset'
     export default defineComponent({
         name: 'PersonaView',
         components: {
@@ -257,6 +258,7 @@
             AssetFilters,
         },
         setup() {
+            const assetStore = useAssetStore()
             const router = useRouter()
             const route = useRoute()
             const modalVisible = ref(false)
@@ -282,7 +284,6 @@
             const whitelistedConnectionIds = ref([])
 
             const selectPersona = (persona) => {
-                console.log('selectPersona', persona)
                 selectedPersonaId.value = persona.id
             }
 
@@ -366,6 +367,82 @@
                     deep: true,
                 }
             )
+            const enableDisablePersona = async (val) => {
+                const messageKey = Date.now()
+                // enableDisableLoading.value = true
+                message.loading({
+                    content: `${val ? 'Enabling' : 'Disabling'} persona ${
+                        selectedPersona.value.displayName
+                    }`,
+                    duration: 0,
+                    key: messageKey,
+                })
+                try {
+                    await enablePersona(selectedPersona.value.id, val)
+                    selectedPersona.value.enabled = val
+                    message.success({
+                        content: `Persona ${
+                            selectedPersona.value.displayName
+                        } ${val ? 'Enabled' : 'Disabled'} `,
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+
+                    // assetStore.setGlobalState(['persona', id])
+                    const keyObj = val ? 'persona_enable' : 'persona_disable'
+                    useAddEvent('governance', 'persona', keyObj)
+                    if (
+                        assetStore.globalState[0] === 'persona' &&
+                        selectedPersona.value.id ===
+                            assetStore.globalState[1] &&
+                        !val
+                    ) {
+                        assetStore.setGlobalState(['all'])
+                    }
+                    // enableDisableLoading.value = false
+                } catch (e) {
+                    message.error({
+                        content: `Failed to ${
+                            val ? 'enable' : 'disable'
+                        } persona ${selectedPersona.value.displayName}`,
+                        duration: 1.5,
+                        key: messageKey,
+                    })
+                    // enableDisableLoading.value = false
+                }
+            }
+            const handleEnableDisablePersona = (val) => {
+                selectedPersona.value.enabled = !val
+                if (!selectedPersona.value.enabled) enableDisablePersona(val)
+                else
+                    Modal.confirm({
+                        title: 'Disable persona',
+                        class: 'disable-persona-modal',
+                        content: () =>
+                            h('div', [
+                                'Are you sure you want to disable persona',
+                                h('span', [' ']),
+                                h(
+                                    'span',
+                                    {
+                                        class: ['font-bold'],
+                                    },
+                                    [`${selectedPersona.value.displayName}`]
+                                ),
+                                h('span', '?'),
+                            ]),
+                        okType: 'danger',
+                        autoFocusButton: null,
+                        okButtonProps: {
+                            type: 'primary',
+                        },
+                        okText: 'Disable',
+                        cancelText: 'Cancel',
+                        async onOk() {
+                            enableDisablePersona(val)
+                        },
+                    })
+            }
             return {
                 reFetchList,
                 filteredPersonas,
@@ -375,7 +452,7 @@
                 modalVisible,
                 // createNewPersona,
                 isPersonaLoading,
-                isPersonaError,
+                errorPersona,
                 isEditing,
                 AddPersonaIllustration,
                 modalDetailPolicyVisible,
@@ -396,6 +473,7 @@
                 handleResetEvent,
                 NewPolicyIllustration,
                 personaList,
+                handleEnableDisablePersona,
             }
         },
     })
@@ -412,6 +490,7 @@
         }
         .ant-modal-content {
             height: calc(100%);
+            @apply bg-primary-light;
         }
         .ant-modal-header {
             padding-bottom: 0px;

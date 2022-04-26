@@ -43,6 +43,7 @@
                     v-model="localDescription"
                     :selected-asset="asset"
                     :edit-permission="false"
+                    :read-only="true"
                     :in-profile="true"
                     class="-ml-1"
                     @change="handleChangeDescription"
@@ -62,6 +63,7 @@
                         :edit-permission="false"
                         :in-profile="true"
                         :show-add-btn="false"
+                        :show-popover="false"
                         @change="handleChangeCertificate"
                     />
                 </div>
@@ -113,7 +115,7 @@
             Rows: defineAsyncComponent(() => import('./types/rows.vue')),
             Columns: defineAsyncComponent(() => import('./types/columns.vue')),
             Categories: defineAsyncComponent(
-                () => import('@common/input/categories/categories.vue')
+                () => import('@common/input/categories/categories2.vue')
             ),
             Definition: defineAsyncComponent(
                 () => import('./types/definition.vue')

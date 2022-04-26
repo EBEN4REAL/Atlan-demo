@@ -1,12 +1,44 @@
+/* eslint-disable no-nested-ternary */
 import {
     getNodeSourceImage,
     getSource,
     getSchema,
     getNodeTypeText,
 } from './util.js'
-import { iconPlus, iconVerified, iconDraft, iconDeprecated } from './icons'
-import CaretDown from '~/assets/images/icons/caret-down.svg?url'
-
+import {
+    iconVerified,
+    iconDraft,
+    iconDeprecated,
+    iconCaretDown,
+    iconCaretUp,
+    iconLoader,
+    iconLoaderFixed,
+    iconPrimary,
+    iconForeign,
+    iconInformation,
+    iconIssue,
+    iconWarning,
+    iconExpand,
+    iconCollapse,
+    array,
+    boolean,
+    date,
+    noIcon,
+    expand,
+    float1,
+    geography,
+    number,
+    string,
+    struct,
+    variant,
+    blob,
+    spatial,
+    bits,
+    super1,
+    lookup,
+    enum1,
+    percent,
+} from './icons'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
@@ -15,66 +47,101 @@ interface EdgeStyle {
     arrowSize?: number
 }
 
-const checkNode = (relations, id, mode) => {
-    const prop = mode === 'leaf' ? 'fromEntityId' : 'toEntityId'
-    let res = true
-    relations.forEach((x) => {
-        if (x[prop] === id) res = false
-    })
-    return res
+const announcementTypeIcons = {
+    information: iconInformation,
+    issue: iconIssue,
+    warning: iconWarning,
 }
 
-const hasCTA = (relations, childrenCounts, id) => {
-    let res = false
-    const isRootNode = checkNode(relations, id, 'root')
-    const isLeafNode = checkNode(relations, id, 'leaf')
-    if (isRootNode) res = !!childrenCounts?.[id]?.INPUT
-    if (isLeafNode) res = !!childrenCounts?.[id]?.OUTPUT
-    return res
+const certificateStatusIcons = {
+    VERIFIED: iconVerified,
+    DRAFT: iconDraft,
+    DEPRECATED: iconDeprecated,
+}
+
+const portDataTypeIcons = {
+    array,
+    boolean,
+    date,
+    noIcon,
+    expand,
+    float1,
+    geography,
+    number,
+    string,
+    struct,
+    variant,
+    blob,
+    spatial,
+    bits,
+    super1,
+    lookup,
+    enum1,
+    percent,
+}
+
+const columnKeyTypeIcons = {
+    isPrimary: iconPrimary,
+    isForeign: iconForeign,
+}
+
+const portsLabelMap = {
+    Table: 'columns',
+    View: 'columns',
+    TableauDatasource: 'fields',
+}
+
+const getPortsCTALabel = (typeName, portsCount, highlightPorts) => {
+    const label = portsLabelMap[typeName]
+    return portsCount || portsCount === 0
+        ? `${portsCount} ${label}`
+        : // : highlightPorts
+          // ? `${label}`
+          `view ${label}`
 }
 
 export default function useGraph(graph) {
-    const createNodeData = (
-        entity,
-        relations,
-        childrenCounts,
-        baseEntityGuid,
-        dataObj = {}
-    ) => {
+    const createNodeData = (entity, baseEntityGuid, dataObj = {}) => {
         const { title } = useAssetInfo()
         const { guid, typeName, attributes } = entity
         const typeNameComputed = getNodeTypeText[typeName] || typeName
         const certificateStatus = attributes?.certificateStatus
-        let status = ''
+        const announcementType = attributes?.announcementType
+        const status = certificateStatusIcons[certificateStatus] || ''
+        const flag = announcementTypeIcons[announcementType] || ''
         const displayText = title(entity)
         const source = getSource(entity)
         const schemaName = getSchema(entity)
         const img = getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
-        const isRootNode = checkNode(relations, guid, 'root')
-        const isLeafNode = checkNode(relations, guid, 'leaf')
-        const isCtaNode = hasCTA(relations, childrenCounts, guid)
         const isVpNode = typeName === 'vpNode'
-
-        if (certificateStatus) {
-            switch (certificateStatus) {
-                case 'VERIFIED':
-                    status = iconVerified
-                    break
-                case 'DRAFT':
-                    status = iconDraft
-                    break
-                default:
-                    status = iconDeprecated
-            }
-        }
+        const isNodeWithPorts = [
+            'Table',
+            'View',
+            'MaterialisedView',
+            'TableauDatasource',
+        ].includes(typeName)
 
         const computedData = {
             id: guid,
-            isSelectedNode: null,
-            isHighlightedNode: null,
+            ports: [],
+            portsCount: null,
+            portsListExpanded: false,
+            portsListLoading: false,
+            portItemLoading: false,
+            portShowMoreLoading: false,
+            selectedPortId: '',
+            isSelectedNode: false,
+            isHighlightedNode: false,
             isGrayed: false,
+            highlightPorts: false,
             hiddenCount: 0,
+            ctaPortRightIcon: '',
+            ctaPortRightId: '',
+            ctaPortRightLoading: false,
+            ctaPortLeftIcon: '',
+            ctaPortLeftId: '',
+            ctaPortLeftLoading: false,
             ...dataObj,
         }
 
@@ -84,10 +151,9 @@ export default function useGraph(graph) {
             source,
             isBase,
             entity,
-            isCtaNode,
             isVpNode,
             width: 270,
-            height: isVpNode ? 50 : 70,
+            height: isVpNode ? 50 : 100,
             shape: 'html',
             data: computedData,
             html: {
@@ -96,66 +162,212 @@ export default function useGraph(graph) {
                     const totalHidden = isVpNode
                         ? data?.hiddenCount || entity.attributes.hiddenCount
                         : 0
+
+                    const portsList = () => {
+                        let res = ''
+                        data?.ports.forEach((port) => {
+                            if (port.typeName !== 'showMorePort') {
+                                const {
+                                    isPrimary,
+                                    isForeign,
+                                    announcementType: aType,
+                                } = port.attributes
+
+                                const text =
+                                    port.displayText.charAt(0).toUpperCase() +
+                                    port.displayText.slice(1).toLowerCase()
+
+                                const dataType = dataTypeCategoryList.find(
+                                    (d) =>
+                                        d.type.includes(
+                                            port.attributes?.dataType?.toUpperCase()
+                                        )
+                                )?.imageText
+
+                                const isSelectedPort =
+                                    data?.selectedPortId === port.guid
+                                const isHighlightedPort = data?.highlightPorts
+
+                                res += `
+                                <div id="${port.guid}" iscolitem="${
+                                    port.guid
+                                }" class="node-port flex justify-between items-center relative 
+                                ${isSelectedPort ? 'selected-port' : ''}
+                                ${isHighlightedPort ? 'highlighted-port' : ''}">
+                                    <div class="flex items-center truncate">
+                                        ${portDataTypeIcons[dataType] || ''}
+                                        <span title="${text}" class="truncate flex-grow-0 flex-shrink">${text}</span> 
+                                    </div>
+                                    <div class="flex items-center">
+                                        ${
+                                            isPrimary
+                                                ? `<span class="ml-2">
+                                                    ${columnKeyTypeIcons.isPrimary}
+                                                  </span>`
+                                                : ''
+                                        }
+                                        ${
+                                            isForeign
+                                                ? `<span class= "ml-2" >
+                                                    ${columnKeyTypeIcons.isForeign}
+                                                    </span>`
+                                                : ''
+                                        }
+                                        ${
+                                            aType
+                                                ? `<span class="ml-2 node-announcement">
+                                                    ${announcementTypeIcons[aType]}
+                                                   </span>`
+                                                : ''
+                                        }
+                                    </div>
+                                    ${
+                                        data?.portItemLoading && isSelectedPort
+                                            ? `<div class="absolute right-2 w-5 h-5">
+                                            ${iconLoader}
+                                        </div>`
+                                            : ''
+                                    }
+                                </div>`
+                            } else
+                                res += `
+                                <div iscolshowmore="true" class="node-port flex justify-center text-new-blue-400 items-center pl-2">
+                                    <span> Show more ${
+                                        portsLabelMap[typeName]
+                                    } </span>
+                                    ${
+                                        data?.portShowMoreLoading
+                                            ? `<div class="w-5 h-5 ml-2">
+                                        ${iconLoader}
+                                    </div>`
+                                            : ''
+                                    }
+                                 </div>`
+                        })
+                        return res
+                    }
+
                     // prettier-ignore
                     return `
                 <div class="flex items-center">
-                    <div id="${guid}" class="lineage-node group ${isVpNode ? 'isVpNode' : ''} 
-                    ${data?.isSelectedNode === data?.id? 'isSelectedNode': ''}
-                    ${data?.isHighlightedNode === data?.id? 'isHighlightedNode': ''}
-                    ${data?.isGrayed ? 'isGrayed' : ''} ${isBase ? 'isBase' : ''}">
+                    <div  
+                        id="node-${guid}"
+                        class="lineage-node 
+                        ${isVpNode ? 'isVpNode' : ''}   
+                        ${isNodeWithPorts ? 'isNodeWithPorts' : ''}
+                        ${data?.portsListExpanded ? 'isExpandedNode' : ''}
+                        ${isBase ? 'isBase' : ''} 
+                        ${data?.isSelectedNode ? 'isSelectedNode' : ''}
+                        ${data?.isHighlightedNode ? 'isHighlightedNode' : ''}
+                        ${data?.isGrayed ? 'isGrayed' : ''} ">
+                        
                         <div class=" ${isBase ? 'inscr' : 'hidden'}">BASE</div>
+
                         ${
                             isVpNode
-                                ? `<span class="font-bold text-primary">Load ${totalHidden > 4 ? 4 : totalHidden} more</span>${totalHidden > 4 ?  `<span class="text-gray-500">(out of ${totalHidden})</span>`: ''}`
-                                : `<div class="popover group-hover:visible group-hover:bottom-20 group-hover:opacity-100 group-hover:delay-1000">
-                                ${displayText}
-                            </div>
-                            <div>
-                                <div class="node-text">
-                                    <span class="relative z-50 block ">
-                                        <div class="absolute right-0 justify-end hidden w-6 group-hover:flex caret-bg">${
-                                            ['Table', 'View'].includes(typeName)
-                                                ? `<img class="node-caret h-6 w-6" src="${CaretDown}">`
-                                                : ''
-                                        }
-                                        </div>
-                                    </span>
+                                ? `<span class="font-bold text-primary leading-none">Load 
+                                    ${
+                                        totalHidden > 4 ? 4 : totalHidden
+                                    } more</span>
+                                    ${
+                                        totalHidden > 4
+                                            ? `<span class="text-gray-500 leading-none">(out of 
+                                            ${totalHidden})</span>`
+                                            : ''
+                                    }`
+                                : `
+                            <div class="lineage-node__content">
+                                <div class="node-text group">
                                     <div class="flex items-center gap-x-1">
-                                        <span class="truncate node-title group-hover:underline">${displayText}</span>
-                                        <span class="flex-none mr-1">${status}</span>
+                                        <span title="${displayText}" class="truncate node-title">${displayText}</span>
+                                        <span class="flex-none ml-1">${status}</span>
+                                        <span class="flex-none ml-1 node-announcement">${flag}</span>
+
                                     </div>
                                 </div>
                                 <div class="node-meta">
-                                    <img class="node-meta__source" src="${img}" />
-                                    <div class="truncate node-meta__text isTypename">${typeNameComputed}</div>
-                                    <div class="node-meta__text">
+                                    <span class="mb-0.5">${img}</span>
+                                    <div class="truncate node-meta__text isTypename">
+                                        ${typeNameComputed}
+                                    </div>
+                                    <div class="node-meta__text node-schema">
                                         ${
-                                            ['Table', 'View'].includes(
-                                                typeName
-                                            ) && schemaName
+                                            isNodeWithPorts && schemaName
                                                 ? 'in'
                                                 : ''
                                         }
                                     </div>
-                                    <div class="node-meta__text text-gray  truncate ${
-                                        ['Table', 'View'].includes(typeName)
-                                            ? ''
-                                            : 'hidden'
-                                    }">
+                                    <div class="node-meta__text node-schema text-gray  truncate 
+                                        ${isNodeWithPorts ? '' : 'hidden'}">
                                         ${schemaName || ''}
                                     </div>
+                                </div>  
+                            </div>
+                            <div class="lineage-node__ports 
+                                    ${isNodeWithPorts ? '' : 'hidden'}">
+                                <div iscollist="true" class="lineage-node__ports-cta">
+                                    <div class="flex items-center">
+                                        <span class="mr-2">
+                                            ${getPortsCTALabel(
+                                                typeName,
+                                                data?.portsCount,
+                                                data?.highlightPorts
+                                            )}
+                                        </span>
+                                        <span>
+                                            ${
+                                                data?.portsListExpanded
+                                                    ? iconCaretUp
+                                                    : iconCaretDown
+                                            } 
+                                        </span>
+                                    </div>
+                                    <div class="w-5 h-5">
+                                        ${
+                                            data?.portsListLoading
+                                                ? iconLoader
+                                                : ''
+                                        }
+                                    </div>
                                 </div>
+                                <div class="lineage-node__ports-list 
+                                    ${data?.ports.length ? '' : 'hidden'}">
+                                        ${portsList()}
+                                </div>
+                            </div>
+                            ${
+                                data?.ctaPortLeftIcon
+                                    ? `<div isctaleft="${
+                                          data?.ctaPortLeftId
+                                      }" class="ctaPortLeft">
+                               ${
+                                   data?.ctaPortLeftLoading
+                                       ? iconLoaderFixed
+                                       : data?.ctaPortLeftIcon === 'col'
+                                       ? iconCollapse
+                                       : iconExpand
+                               }
                             </div>`
+                                    : ''
+                            }
+                            ${
+                                data?.ctaPortRightIcon
+                                    ? `<div isctaright="${
+                                          data?.ctaPortRightId
+                                      }" class="ctaPortRight">
+                                ${
+                                    data?.ctaPortRightLoading
+                                        ? iconLoaderFixed
+                                        : data?.ctaPortRightIcon === 'col'
+                                        ? iconCollapse
+                                        : iconExpand
+                                }
+                            </div>`
+                                    : ''
+                            }
+                            `
                         }
-
                     </div>
-                    ${(isRootNode || isLeafNode) && isCtaNode
-                        ?   `<div id="node-${guid}-hoPaCTA" style="position: absolute;z-index: 99;" class="${isRootNode ? 'l-m20px' : 'r-m20px'} 
-                                node-hoPaCTA h-6 w-6 bg-gray-400 text-white rounded-full flex justify-center items-center cursor-pointer">
-                                ${iconPlus}
-                            </div>` : ''
-                    } 
-                    
                 </div>`
                 },
                 shouldComponentUpdate(node) {
@@ -164,6 +376,44 @@ export default function useGraph(graph) {
             },
             ports: {
                 groups: {
+                    ctaPortLeft: {
+                        position: { name: 'left' },
+                        markup: [
+                            {
+                                tagName: 'circle',
+                                selector: 'portBody',
+                            },
+                        ],
+                        attrs: {
+                            portBody: {
+                                r: 14,
+                                strokeWidth: 0,
+                                stroke: '#000000',
+                                fill: '#000000',
+                                width: 1,
+                                height: 1,
+                            },
+                        },
+                    },
+                    ctaPortRight: {
+                        position: { name: 'right' },
+                        markup: [
+                            {
+                                tagName: 'circle',
+                                selector: 'portBody',
+                            },
+                        ],
+                        attrs: {
+                            portBody: {
+                                r: 14,
+                                strokeWidth: 0,
+                                stroke: '#000000',
+                                fill: '#000000',
+                                width: 1,
+                                height: 1,
+                            },
+                        },
+                    },
                     invisiblePort: {
                         markup: [
                             {
@@ -174,86 +424,30 @@ export default function useGraph(graph) {
                         attrs: {
                             portBody: {
                                 width: 268,
-                                height: 60,
+                                height: 70,
                                 strokeWidth: 1,
                                 stroke: 'none',
                                 fill: 'none',
-                                event: 'port:click',
-                                y: -30,
+                                y: isVpNode ? -40 : -50,
                                 x: 1,
                             },
                         },
                     },
-                    // ctaPort: {
-                    //     markup: [
-                    //         {
-                    //             tagName: 'rect',
-                    //             selector: 'portBody',
-                    //         },
-                    //         {
-                    //             tagName: 'text',
-                    //             selector: 'portNameLabel',
-                    //         },
-                    //     ],
-                    //     attrs: {
-                    //         portBody: {
-                    //             width: 268,
-                    //             height: 40,
-                    //             strokeWidth: 1,
-                    //             stroke: '#e6e6eb',
-                    //             fill: '#ffffff',
-                    //             event: 'port:click',
-                    //             y: -11,
-                    //         },
-                    //         portNameLabel: {
-                    //             ref: 'portBody',
-                    //             refX: 36,
-                    //             refY: 12,
-                    //             fontSize: 16,
-                    //             fill: '#3e4359',
-                    //             event: 'port:click',
-                    //         },
-                    //     },
-                    //     position: 'erPortPosition',
-                    // },
-                    columnList: {
+                    portsList: {
                         markup: [
                             {
                                 tagName: 'rect',
                                 selector: 'portBody',
                             },
-                            {
-                                tagName: 'text',
-                                selector: 'portNameLabel',
-                            },
-                            {
-                                tagName: 'image',
-                                selector: 'portImage',
-                            },
                         ],
                         attrs: {
                             portBody: {
                                 width: 268,
-                                height: 40,
+                                height: 42,
                                 strokeWidth: 1,
-                                stroke: '#e6e6eb',
-                                fill: '#ffffff',
-                                event: 'port:click',
-                                y: -11,
-                            },
-                            portNameLabel: {
-                                ref: 'portBody',
-                                refX: 36,
-                                refY: 12,
-                                fontSize: 16,
-                                fill: '#3e4359',
-                                event: 'port:click',
-                            },
-                            portImage: {
-                                ref: 'portBody',
-                                refX: 12,
-                                refY: 12,
-                                event: 'port:click',
+                                stroke: '#000000',
+                                fill: '#000000',
+                                x: 1,
                             },
                         },
                         position: 'erPortPosition',
@@ -269,79 +463,21 @@ export default function useGraph(graph) {
             },
         }
 
+        if (!isNodeWithPorts) nodeData.ports.items = [nodeData.ports.items[0]]
+
         return { nodeData }
     }
 
-    const addNode = async (relations, childrenCounts, entity, data = {}) => {
+    const addNode = async (entity, data = {}) => {
         const graphNodes = graph.value.getNodes()
         const baseEntityGuid = graphNodes.find((x) => x.store.data.isBase).id
-        const { nodeData } = createNodeData(
-            entity,
-            relations,
-            childrenCounts,
-            baseEntityGuid,
-            data
-        )
+        const { nodeData } = createNodeData(entity, baseEntityGuid, data)
         graph.value.addNode(nodeData)
-    }
-
-    const createShowMorePortData = (node) => {
-        const portData = {
-            id: `${node.id}-showMorePort`,
-            group: 'columnList',
-            attrs: {
-                portBody: {
-                    // event: 'showMorePort:click',
-                    rx: 4,
-                },
-                portNameLabel: {
-                    text: 'Show more columns',
-                    // event: 'showMorePort:click',
-                    fill: '#5277d7',
-                },
-            },
-        }
-
-        return { portData }
-    }
-
-    const createPortData = (item) => {
-        let text =
-            item.displayText.charAt(0).toUpperCase() +
-            item.displayText.slice(1).toLowerCase()
-        const dataType = dataTypeCategoryList.find((d) =>
-            d.type.includes(item.attributes?.dataType?.toUpperCase())
-        )?.imageText
-
-        if (text.length > 23) text = `${text.slice(0, 23)}...`
-
-        const portData = {
-            id: item.guid,
-            group: 'columnList',
-            entity: item,
-            attrs: {
-                portBody: {},
-                portNameLabel: {
-                    text,
-                },
-                portImage: {
-                    href: `/dataType/${dataType || 'empty'}.svg`,
-                    width: 16,
-                    height: 16,
-                },
-            },
-        }
-        return { portData }
     }
 
     const createEdgeData = (relation, data = {}, styles: EdgeStyle = {}) => {
         const isDup = data?.isDup
         const isCyclicEdge = data?.isCyclicEdge
-
-        // const stroke = relation.id.includes('vpNode')
-        //     ? '#ffffff00'
-        //     : styles?.stroke
-
         const stroke = styles?.stroke
 
         const edgeData = {
@@ -385,7 +521,7 @@ export default function useGraph(graph) {
                 ],
                 attrs: {
                     label: {
-                        fill: relation?.type === 'related' ? '#3e4359' : 'none',
+                        fill: relation?.type === 'related' ? '#374151' : 'none',
                         fontSize: 14,
                         textAnchor: 'middle',
                         textVerticalAnchor: 'middle',
@@ -432,12 +568,12 @@ export default function useGraph(graph) {
         }
     }
 
-    const addEdge = (relation, styles: EdgeStyle = {}) => {
+    const addEdge = (relation, styles: EdgeStyle = {}, data = {}) => {
         const graphEdges = graph.value.getEdges()
         const edge = graphEdges.find((x) => x.id === relation.id)
         if (edge) return edge
 
-        const { edgeData } = createEdgeData(relation, {}, styles)
+        const { edgeData } = createEdgeData(relation, data, styles)
 
         const createdEdge = graph.value.addEdge(edgeData)
 
@@ -447,8 +583,6 @@ export default function useGraph(graph) {
     return {
         createNodeData,
         addNode,
-        createPortData,
-        createShowMorePortData,
         createEdgeData,
         addEdge,
     }

@@ -8,7 +8,7 @@ export default function useInsightsTabList(): {
     const tabList: TabInterface[] = [
         {
             id: 'schema',
-            name: 'Schema',
+            name: 'Explorer',
             component: 'schema',
             icon: 'Schema2',
             isVisible: true,
@@ -16,7 +16,7 @@ export default function useInsightsTabList(): {
         },
         {
             id: 'queries',
-            name: 'Queries',
+            name: 'Collections',
             component: 'queries',
             icon: 'CollectionIconLarge',
             isVisible: true,
@@ -40,10 +40,10 @@ export default function useInsightsTabList(): {
         },
         {
             id: 'schedule',
-            name: 'Schedule',
+            name: 'Schedules',
             component: 'schedule',
-            icon: undefined,
-            isVisible: false,
+            icon: 'Schedule24',
+            isVisible: true,
             title: 'Schedule',
         },
     ]

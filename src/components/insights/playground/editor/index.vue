@@ -348,25 +348,38 @@
                                 @click="togglePane"
                                 @mouseout="recordTooltipPresence"
                             >
-                                <div
-                                    class="p-1 rounded cursor-pointer hover:bg-gray-200 group text-primary"
-                                    :class="{
-                                        'bg-primary-light': resultPaneActive,
-                                    }"
-                                    @mouseout="recordTooltipPresence"
+                                <a-tooltip
+                                    placement="topRight"
+                                    color="#363636"
+                                    :mouse-enter-delay="
+                                        lastTooltipPresence !== undefined
+                                            ? 0.1
+                                            : 0.5
+                                    "
                                 >
-                                    <AtlanIcon
-                                        :icon="
-                                            resultPaneActive
-                                                ? 'OutputpaneTriggerFilled'
-                                                : 'OutputpaneTrigger'
-                                        "
-                                        class="w-4 h-4 text-gray-500 outline-none"
+                                    <template #title>Toggle output</template>
+                                    <div
+                                        class="p-1 rounded cursor-pointer hover:bg-gray-200 group text-primary"
                                         :class="{
-                                            'stroke-current': !resultPaneActive,
+                                            'bg-primary-light':
+                                                resultPaneActive,
                                         }"
-                                    />
-                                </div>
+                                        @mouseout="recordTooltipPresence"
+                                    >
+                                        <AtlanIcon
+                                            :icon="
+                                                resultPaneActive
+                                                    ? 'OutputpaneTriggerFilled'
+                                                    : 'OutputpaneTrigger'
+                                            "
+                                            class="w-4 h-4 text-gray-500 outline-none"
+                                            :class="{
+                                                'stroke-current':
+                                                    !resultPaneActive,
+                                            }"
+                                        />
+                                    </div>
+                                </a-tooltip>
                             </div>
                             <div
                                 class="ml-2"
@@ -469,6 +482,7 @@
     import { useAuthStore } from '~/store/auth'
     import { storeToRefs } from 'pinia'
     import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
+    import insightsStore from '~/store/insights/index'
 
     const Monaco = defineAsyncComponent(() => import('./monaco/monaco.vue'))
 
@@ -502,6 +516,7 @@
                 ADJACENT_TOOLTIP_DELAY,
                 lastTooltipPresence,
             } = useTooltipDelay()
+            const insights_Store = insightsStore()
 
             // const permissions = inject('permissions') as ComputedRef<any>
             // TODO: will be used for HOTKEYs
@@ -555,6 +570,9 @@
                 'activeInlineTabKey'
             ) as Ref<string>
             const editorInstance = inject('editorInstance') as Ref<any>
+            const activeResultPreviewTab = inject(
+                'activeResultPreviewTab'
+            ) as Ref<boolean>
             const monacoInstance = inject('monacoInstance') as Ref<any>
             const setEditorInstanceFxn = inject('setEditorInstance') as Function
             const saveQueryLoading = ref(false)
@@ -583,6 +601,10 @@
             const activeTabCollection = inject(
                 'activeTabCollection'
             ) as ComputedRef
+
+            const refreshSchedulesWorkflowTab = inject(
+                'refreshSchedulesWorkflowTab'
+            ) as Ref<Function>
 
             // toRaw(editorInstance.value).updateOptions({
             //     readOnly: hasQueryWritePermission ? false : true,
@@ -656,6 +678,8 @@
             )
 
             function toggleRun() {
+                activeResultPreviewTab.value = true
+                insights_Store.activePreviewGuid = undefined
                 const activeInlineTabKeyCopy = activeInlineTabKey.value
 
                 const tabIndex = inlineTabs.value.findIndex(
@@ -837,6 +861,10 @@
                 const queryId = activeInlineTab.value?.queryId
                 if (queryId) {
                     await updateQuery()
+                    debugger
+                    // for updating the schedule query tab
+                    if (refreshSchedulesWorkflowTab.value)
+                        refreshSchedulesWorkflowTab.value(true)
                     refetchQueryNode.value = {
                         guid: queryId,
                     }

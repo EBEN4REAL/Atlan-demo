@@ -64,6 +64,8 @@ export const AssetAttributes = [
     'ownerGroups',
     'adminUsers',
     'adminGroups',
+    'viewerGroups',
+    'viewerUsers',
     'meanings',
     'readme',
     'rawQuery',
@@ -83,7 +85,6 @@ export const AssetAttributes = [
     'parentQualifiedName',
     'collectionQualifiedName',
     'parent',
-    'queries',
     'externalLocation',
     'externalLocationFormat',
     'sql',
@@ -127,6 +128,7 @@ export const AssetAttributes = [
     'inlineHelpText',
     'picklistValues',
     'formula',
+    'isPublished',
 ]
 
 export const SQLAttributes = [
@@ -137,6 +139,8 @@ export const SQLAttributes = [
     'tableName',
     'viewName',
     'databaseName',
+    'databaseQualifiedName',
+    'schemaQualifiedName',
     'dataType',
     'definition',
     'isPrimary',
@@ -148,7 +152,10 @@ export const SQLAttributes = [
     'isDist',
     'table',
     'view',
+    'tablePartition',
+    'materialisedView',
     'database',
+    'atlanSchema',
     'tableCount',
     'viewsCount',
 ]
@@ -178,7 +185,11 @@ export const AssetRelationAttributes = [
     '__createdBy',
 ]
 
-export const DefaultRelationAttributes = ['name', 'qualifiedName']
+export const DefaultRelationAttributes = [
+    'name',
+    'qualifiedName',
+    'certificateStatus',
+]
 
 // For just asset list display
 export const MinimalAttributes = [
@@ -188,6 +199,7 @@ export const MinimalAttributes = [
     'displayDescription',
     'userDescription',
     'certificateStatus',
+    'certificateUpdatedBy',
     'connectorName',
     'connectionName',
     'connectionQualifiedName',
@@ -231,11 +243,15 @@ export const MinimalAttributes = [
     'tableName',
     'viewName',
     'databaseName',
+    'databaseQualifiedName',
+    'schemaQualifiedName',
     'dataType',
     'definition',
     'isPrimary',
     'table',
     'view',
+    'tablePartition',
+    'materialisedView',
     'database',
     'tableCount',
     'viewsCount',
@@ -247,6 +263,7 @@ export const MinimalAttributes = [
     'isForeign',
     'isDist',
     'order',
+    'isPublished',
 ]
 
 export const BasicSearchAttributes = [
@@ -325,24 +342,25 @@ export const BasicSearchAttributes = [
 export const LineageAttributes = [
     // General
     'qualifiedName',
-    'name',
-    'displayName',
     'certificateStatus',
-    'link',
+    'announcementType',
+    'name',
+    // SQL - For when a column assets appears top level
+    'table',
+    'view',
+]
+
+export const LineageAttributesPortLevel = [
+    // General
+    'qualifiedName',
+    'certificateStatus',
+    'announcementType',
     'dataType',
-    'columnCount',
-    'rowCount',
-    // BI Relationships
-    'workspace',
-    'report',
-    'dashboard',
-    'model',
-    'folder',
-    'project',
+    'isPrimary',
+    'isForeign',
     // SQL
     'table',
     'view',
-    '__customAttributes',
 ]
 
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

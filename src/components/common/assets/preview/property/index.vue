@@ -1,8 +1,6 @@
 <template>
     <div class="flex flex-col w-full h-full pb-4">
-        <div
-            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
-        >
+        <div class="flex items-center justify-between px-5 py-4">
             <span class="flex items-center">
                 <PreviewTabsIcon
                     :icon="tab.icon"
@@ -14,7 +12,7 @@
                 <span class="ml-1 font-semibold text-gray-500">Properties</span>
             </span>
         </div>
-        <div class="flex flex-col px-5 pt-3 overflow-auto gap-y-5">
+        <div class="flex flex-col px-5 pt-0 overflow-auto gap-y-5">
             <div
                 v-if="
                     sourceUpdatedBy(selectedAsset) ||
@@ -180,7 +178,21 @@
                 >
                 <div class="flex flex-col">
                     <div class="flex">
-                        <PopOverUser :item="modifiedBy(selectedAsset)">
+                        <template
+                            v-if="
+                                modifiedBy(selectedAsset)?.startsWith(
+                                    'service-account-apikey-'
+                                )
+                            "
+                        >
+                            <div
+                                class="flex items-center py-1 pl-2 pr-2 text-sm text-gray-700 bg-white border rounded-full gap-x-1"
+                            >
+                                <AtlanIcon icon="Key" class="h-3" />
+                                <div class="">API key</div>
+                            </div>
+                        </template>
+                        <PopOverUser v-else :item="modifiedBy(selectedAsset)">
                             <UserPill
                                 :username="modifiedBy(selectedAsset)"
                                 @click="
@@ -247,7 +259,21 @@
 
                 <div class="flex flex-col">
                     <div class="flex">
-                        <PopOverUser :item="createdBy(selectedAsset)">
+                        <template
+                            v-if="
+                                createdBy(selectedAsset)?.startsWith(
+                                    'service-account-apikey-'
+                                )
+                            "
+                        >
+                            <div
+                                class="flex items-center py-1 pl-2 pr-2 text-sm text-gray-700 bg-white border rounded-full gap-x-1"
+                            >
+                                <AtlanIcon icon="Key" class="h-3" />
+                                <div class="">API key</div>
+                            </div>
+                        </template>
+                        <PopOverUser v-else :item="createdBy(selectedAsset)">
                             <UserPill
                                 :username="createdBy(selectedAsset)"
                                 @click="

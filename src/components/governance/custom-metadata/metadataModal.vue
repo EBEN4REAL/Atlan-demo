@@ -13,19 +13,17 @@
                     <p class="p-0 m-0">Create more</p>
                 </div>
                 <div class="flex-grow"></div>
-                <a-button class="border-0" @click="visible = false"
-                    >Cancel</a-button
-                >
-                <AtlanButton
-                    color="primary"
-                    padding="compact"
-                    size="sm"
+                <AtlanButton2
+                    color="secondary"
+                    label="Cancel"
+                    @click="visible = false"
+                />
+                <AtlanButton2
+                    :label="isEdit ? 'Update' : 'Create'"
                     :loading="loading"
                     :disabled="!form.displayName"
                     @click="handleAddBusinessMetadata"
-                >
-                    {{ isEdit ? 'Update' : 'Create' }}
-                </AtlanButton>
+                />
             </div>
         </template>
         <div class="h-32 p-4 space-y-2">
@@ -151,7 +149,10 @@
                 if (props.isEdit) {
                     store.updateCustomMetadata(serviceResponse[0])
                     store.tickForceRevalidate()
-                    message.success('Metadata updated')
+                    message.success({
+                        content: 'Metadata updated',
+                        duration: 2,
+                    })
                 } else {
                     store.appendCustomMetadata(serviceResponse)
                     store.tickForceRevalidate()
@@ -160,7 +161,9 @@
                 }
                 console.log('analytics props.isEdit', props.isEdit)
                 const eventName = props.isEdit ? 'updated' : 'created'
-                useAddEvent('governance', 'custom_metadata', eventName)
+                useAddEvent('governance', 'custom_metadata', eventName, {
+                    title: serviceResponse[0].displayName,
+                })
             }
 
             const handleUpdateBMResponse = (apiResponse: Ref) => {

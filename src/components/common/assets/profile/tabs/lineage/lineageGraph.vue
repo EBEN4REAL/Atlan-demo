@@ -14,13 +14,6 @@
             <span class="mt-1 text-sm">Rendering graph...</span>
         </div>
 
-        <!-- Graph Process Loader -->
-        <AtlanLoader
-            v-if="loaderCords.x"
-            class="absolute h-5 opacity-70"
-            :style="`left: ${offsetLoaderCords.x}px; top: ${offsetLoaderCords.y}px; z-index: 999`"
-        />
-
         <!-- Graph Container -->
         <div style="display: flex">
             <div ref="graphContainer" style="flex: 1"></div>
@@ -50,8 +43,8 @@
 
         <!-- AssetDrawer -->
         <AssetDrawer
+            :watch-guid="true"
             :guid="selectedAsset?.guid || ''"
-            :show-drawer="!!selectedAsset?.guid"
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
             :show-close-btn="false"
@@ -70,7 +63,6 @@
         onUnmounted,
         provide,
         inject,
-        computed,
     } from 'vue'
 
     /** COMPONENTS */
@@ -90,7 +82,7 @@
             LineageFooter,
             AssetDrawer,
         },
-        setup(_, { emit }) {
+        setup() {
             /** INJECTIONS */
             const lineage = inject('lineage')
             const selectedAsset = inject('selectedAsset')
@@ -100,47 +92,32 @@
             /** DATA */
             const graphHeight = ref(0)
             const graphWidth = ref(0)
-            const resetSelections = ref(false)
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
             const lineageContainer = ref({})
             const graph = ref({})
             const graphLayout = ref({})
             const showMinimap = ref(false)
-            const searchItems = ref([])
-            const loaderCords = ref({})
             const currZoom = ref('...')
             const isComputeDone = ref(false)
             const drawerActiveKey = ref('Overview')
             const guidToSelectOnGraph = ref('')
             const selectedTypeInRelationDrawer = ref('__all')
-            let removeListeners = () => {}
-
-            /** COMPUTED */
-            const offsetLoaderCords = computed(() => {
-                const isFullScr = !!document.fullscreenElement
-                return {
-                    x: isFullScr
-                        ? loaderCords.value.x
-                        : (loaderCords.value.x || 0) - 25,
-                    y: isFullScr
-                        ? loaderCords.value.y
-                        : (loaderCords.value.y || 0) - 148,
-                }
-            })
 
             /** METHODS */
             // onSelectAsset
             const onSelectAsset = (item, selectOnGraph = false) => {
                 if (typeof control === 'function')
                     control('selectedAsset', item)
+
+                if (!item) return
+
                 if (selectOnGraph) guidToSelectOnGraph.value = item?.guid
             }
 
             // onCloseDrawer
             const onCloseDrawer = () => {
                 onSelectAsset(null)
-                resetSelections.value = true
             }
 
             // handleDrawerUpdate
@@ -174,18 +151,14 @@
                     graph,
                     graphLayout,
                     lineage,
-                    searchItems,
                     currZoom,
                     isComputeDone,
-                    emit,
                 })
 
                 // useEventGraph
-                const { registerAllListeners } = useEventGraph({
+                useEventGraph({
                     graph,
-                    loaderCords,
                     currZoom,
-                    searchItems,
                     preferences,
                     guidToSelectOnGraph,
                     mergedLineageData,
@@ -198,11 +171,9 @@
                     addSubGraph,
                     renderLayout,
                 })
-                removeListeners = registerAllListeners
             }
 
             /** PROVIDERS */
-            provide('searchItems', searchItems)
             provide('onSelectAsset', onSelectAsset)
             provide('selectedTypeInRelation', selectedTypeInRelationDrawer)
 
@@ -217,10 +188,7 @@
 
             onUnmounted(() => {
                 isComputeDone.value = false
-                if (Object.keys(graph.value).length) {
-                    if (typeof removeListeners === 'function') removeListeners()
-                    graph.value.dispose()
-                }
+                if (Object.keys(graph.value).length) graph.value.dispose()
             })
 
             return {
@@ -228,11 +196,9 @@
                 graph,
                 graphHeight,
                 graphWidth,
-                offsetLoaderCords,
                 selectedAsset,
                 currZoom,
                 showMinimap,
-                loaderCords,
                 drawerActiveKey,
                 isComputeDone,
                 lineageContainer,
@@ -252,14 +218,6 @@
 </style>
 
 <style lang="less">
-    .l-m20px {
-        left: -20px;
-    }
-
-    .r-m20px {
-        right: -20px;
-    }
-
     @keyframes ant-line {
         to {
             stroke-dashoffset: -1000;
@@ -284,43 +242,11 @@
 
         // Legend
         &-legend {
-            bottom: 1rem;
+            bottom: 1.5rem;
             left: 1.5rem;
             position: absolute;
             z-index: 9;
             background: #ffffff;
-
-            &__item {
-                display: flex;
-                align-items: center;
-                margin-bottom: 0.8rem;
-
-                &:last-child {
-                    margin-bottom: 0;
-                }
-
-                & > span {
-                    font-size: 0.8rem;
-
-                    &:first-child {
-                        margin-right: 1rem;
-                        width: 2rem;
-                        height: 3px;
-
-                        &#upstream {
-                            background: #bed9a3;
-                        }
-
-                        &#downstream {
-                            background: #f1a183;
-                        }
-
-                        &#selected {
-                            background: #2351cc;
-                        }
-                    }
-                }
-            }
         }
 
         // Control
@@ -368,55 +294,158 @@
 
         // Non-Process Nodes
         &-node {
-            padding: 10px 8px 0px 10px;
             font-size: 16px;
-            border: 1px solid #e6e6eb;
-            border-radius: 4px;
+            border: 1.5px solid #e0e4eb;
             background-color: #ffffff;
+            border-radius: 6px;
             width: 270px;
-            height: 70px;
             cursor: pointer;
             outline: 0 !important;
-            @apply transition-all duration-300;
-
-            &:hover {
-                @apply shadow-lg;
-            }
+            z-index: 9999 !important;
 
             &__content {
-                display: flex;
-                align-items: center;
+                padding: 10px 8px 10px 16px;
+                z-index: 9999 !important;
+
+                &:hover {
+                    border-radius: 5px;
+                    background-color: #f6f8fd;
+                }
+            }
+
+            &__ports {
+                background-color: #f9fafb;
+                border-top: 1px solid #e0e4eb;
+                border-bottom-right-radius: 5px;
+                border-bottom-left-radius: 5px;
+                z-index: 9999 !important;
+
+                &-cta {
+                    @apply pl-4 pr-2 flex justify-between items-center;
+                    color: #3c71df;
+                    height: 2.5rem;
+                    z-index: 9999 !important;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+
+                &-list {
+                    @apply bg-white;
+                    margin: 0 10px 0px 10px;
+                    border: 1px solid #e0e4eb;
+                    border-bottom-width: 0px;
+                    border-radius: 6px;
+                    color: #3e4359 !important;
+                    z-index: 9999 !important;
+
+                    & .node-port {
+                        @apply pl-3 pr-2 py-2;
+                        border: 1px solid transparent;
+                        border-bottom: 1px solid #e0e4eb;
+                        box-sizing: border-box;
+                        margin-top: -1px;
+                        z-index: 1;
+
+                        &.selected-port {
+                            color: #3c71df;
+                            border-color: #3c71df;
+                            background-color: #ebf1ff;
+                            z-index: 999;
+
+                            &:hover {
+                                background-color: #ebf1ff;
+                                border-top: 1px solid #3c71df;
+                            }
+                        }
+
+                        &.highlighted-port {
+                            color: #3c71df;
+                            border-color: #3c71df;
+                            background-color: #ffffff;
+                            z-index: 999;
+
+                            &:hover {
+                                background-color: #ffffff;
+                                border-top: 1px solid #3c71df;
+                            }
+                        }
+
+                        &:hover {
+                            background-color: #f6f8fd;
+                            border-top: 1px solid #e0e4eb;
+                            z-index: 1;
+                        }
+
+                        &:first-child {
+                            border-top-right-radius: 5px;
+                            border-top-left-radius: 5px;
+                        }
+
+                        &:last-child {
+                            border-bottom-right-radius: 5px;
+                            border-bottom-left-radius: 5px;
+                        }
+                    }
+                }
             }
 
             &.isVpNode {
                 @apply rounded-full bg-white flex items-center justify-center gap-x-2;
-                height: 48px !important;
+                height: 40px !important;
                 padding: unset !important;
             }
 
             & .popover {
-                @apply invisible opacity-0 absolute bottom-16 left-0 py-1 px-2 text-sm;
-                @apply delay-75 transition-all;
-                @apply rounded-md shadow-md bg-black bg-opacity-70 text-white;
+                @apply opacity-0 absolute bottom-20 left-0 py-1 px-2 text-xs transition-opacity rounded-md shadow-md bg-black bg-opacity-70 text-white;
+            }
+
+            & .ctaPortRight {
+                @apply absolute bg-white h-8 w-8 rounded-full flex justify-center items-center;
+                border-width: 1.5px;
+                border-style: solid;
+                border-color: inherit;
+                top: 19px !important;
+                right: -15px !important;
+                z-index: 9999 !important;
+
+                &:hover {
+                    background-color: #f6f8fd;
+                }
+            }
+
+            & .ctaPortLeft {
+                @apply absolute bg-white h-8 w-8 rounded-full flex justify-center items-center;
+                border-width: 1.5px;
+                border-style: solid;
+                border-color: inherit;
+                top: 19px !important;
+                left: -15px !important;
+                z-index: 9999 !important;
+
+                &:hover {
+                    background-color: #f6f8fd;
+                }
             }
 
             &.isBase {
                 border-top-left-radius: 0;
-                border: 1px solid #5277d7 !important;
+                border: 1.5px solid #3c71df !important;
                 background-color: #ffffff !important;
 
                 &.isSelectedNode {
-                    border: 1px solid #5277d7 !important;
+                    border: 1.5px solid #3c71df !important;
                 }
 
                 .inscr {
                     line-height: 22px;
                     background: #ffffff;
-                    color: #5277d7;
+                    color: #3c71df;
                     position: fixed;
-                    border: 1px solid #5277d7;
+                    border: 1.5px solid #3c71df;
                     border-bottom: 0;
-                    top: -26px;
+                    top: -27px;
                     padding: 3px 8px 0px 8px;
                     left: 0;
                     border-top-right-radius: 4px;
@@ -458,16 +487,15 @@
                 }
 
                 &__source {
-                    width: 1rem;
-                    height: 1rem;
-                    margin-bottom: 0.2rem;
-                    margin-right: 2px;
+                    width: 14px;
+                    height: 14px;
+                    margin-bottom: 2px;
                 }
             }
         }
 
         .isGrayed {
-            border: 1px solid #e6e6eb;
+            border: 1.5px solid #e0e4eb;
 
             .node-text {
                 color: #6f7590 !important;
@@ -479,24 +507,31 @@
         }
 
         .isSelectedNode {
-            border: 1px solid #5277d7 !important;
-            background-color: #f4f6fd !important;
-            @apply text-primary;
+            border: 1.5px solid #3c71df !important;
+            background-color: #ebf1ff !important;
+            color: #3c71df;
+
             & .node-title {
-                @apply text-primary;
+                color: #3c71df;
             }
             & .caret-bg {
                 background: linear-gradient(
                     270deg,
-                    #f4f6fd 0%,
-                    #f4f6fd 84.68%,
+                    #f6f8fd 0%,
+                    #f6f8fd 84.68%,
                     rgba(255, 255, 255, 0) 103.12%
                 ) !important;
             }
         }
 
+        .isExpandedNode {
+            & .lineage-node__ports {
+                padding-bottom: 10px !important;
+            }
+        }
+
         .isHighlightedNode {
-            border: 1px solid #5277d7;
+            border: 1.5px solid #3c71df;
             background-color: #ffffff;
         }
 
@@ -512,5 +547,12 @@
                 rgba(255, 255, 255, 0) 103.12%
             );
         }
+
+        // .node-columnListLoader {
+        //     position: absolute;
+        //     z-index: 99;
+        //     left: 115px !important;
+        //     top: 15px !important;
+        // }
     }
 </style>

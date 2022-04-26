@@ -46,6 +46,42 @@
                     </span>
                 </div> -->
             </div>
+            <div
+                v-if="policy.updatedBy || policy.createdBy"
+                class="flex items-center px-6 py-4 text-sm text-gray-700 bg-gray-200"
+            >
+                <AtlanIcon icon="DateTime" class="mr-1 text-gray-700" />
+                {{ policy.updatedBy ? 'Last updated by' : 'Created by' }}
+                <AtlanIcon
+                    v-if="
+                        (policy.updatedBy || policy.createdBy)?.startsWith(
+                            'service-account-apikey-'
+                        )
+                    "
+                    class="h-3 mx-1"
+                    icon="Key"
+                />
+                <Avatar
+                    v-else
+                    :image-url="imageUrl(policy.updatedBy || policy.createdBy)"
+                    :allow-upload="false"
+                    :avatar-name="policy.updatedBy || policy.createdBy"
+                    :avatar-size="16"
+                    :avatar-shape="'circle'"
+                    class="mx-1 bg-primary-light"
+                />
+
+                {{
+                    (policy.updatedBy || policy.createdBy)?.startsWith(
+                        'service-account-apikey-'
+                    )
+                        ? 'API key'
+                        : policy.updatedBy || policy.createdBy
+                }}
+                <div class="ml-1">
+                    {{ useTimeAgo(policy.updatedAt || policy.createdAt).value }}
+                </div>
+            </div>
             <div class="mt-4">
                 <div class="px-4">
                     <div class="relative mt-2 bg-white shadow-section">
@@ -93,12 +129,25 @@
                         </div>
                     </div>
                     <div class="relative mt-4 bg-white shadow-section">
-                        <div
-                            class="p-3 text-sm font-bold text-gray-700 border-b"
-                        >
-                            Users and Groups<span class="ml-1 text-red-500"
-                                >*</span
+                        <div class="flex justify-between p-3 border-b">
+                            <div class="text-sm font-bold text-gray-700">
+                                Users and Groups<span class="ml-1 text-red-500"
+                                    >*</span
+                                >
+                            </div>
+                            <div
+                                v-if="!allUser"
+                                class="cursor-pointer"
+                                @click="addAllUser"
                             >
+                                <span class="text-sm text-primary">
+                                    Include all users
+                                </span>
+                                <AtlanIcon
+                                    icon="Add"
+                                    class="w-4 h-4 -mt-1 text-primary"
+                                />
+                            </div>
                         </div>
                         <div class="relative p-3 overflow-y-scroll max-h-52">
                             <Owners
@@ -112,8 +161,29 @@
                                 :edit-permission="true"
                                 :read-only="false"
                                 :destroy-tooltip-on-hide="true"
+                                :show-add-btn="!allUser"
+                                :show-empty-owner="false"
                                 @change="handleOwnersChange"
-                            />
+                                @changeData="allUser = ''"
+                            >
+                                <template #users>
+                                    <div
+                                        v-if="allUser"
+                                        class="flex items-center justify-between w-24 px-2 py-1 border border-gray-200 rounded-full"
+                                        :class="'hover:bg-primary-light cursor-pointer ml-2'"
+                                    >
+                                        <span class="asset-name">
+                                            All users
+                                        </span>
+
+                                        <AtlanIcon
+                                            icon="Cross"
+                                            class="h-3 ml-3 text-red-500 rotate-45"
+                                            @click="allUser = ''"
+                                        />
+                                    </div>
+                                </template>
+                            </Owners>
                             <div
                                 v-if="rules.users.show"
                                 class="mt-2 text-xs text-red-500"
@@ -377,6 +447,7 @@
         toRefs,
         computed,
     } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
     import AtlanBtn from '@/UI/button.vue'
     import { selectedPersonaDirty } from './composables/useEditPurpose'
     import Owners from '~/components/common/input/owner/index.vue'
@@ -386,6 +457,7 @@
     // import DataMaskingSelector from './policies/dataMaskingSelector.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
     // import useScopeService from './composables/useScopeService'
+    import Avatar from '~/components/common/avatar/index.vue'
 
     export default defineComponent({
         name: 'AddPolicy',
@@ -394,6 +466,7 @@
             ManagePermission,
             DataMaskingSelector,
             Owners,
+            Avatar,
         },
         props: {
             type: {
@@ -445,17 +518,16 @@
             // const { scopeList } = useScopeService().listScopes('persona')
             const { scopeList } = useScopeService().listScopes('purpose')
             const policyType = ref('')
+            const allUser = ref('all-users')
             const refOwners = ref()
             const isShow = ref(false)
             const policyNameRef = ref()
             const { showDrawer, type, isEdit, selectedPolicy } = toRefs(props)
             const policy = ref({})
-            const isAddAll = ref(false)
             const selectedOwnersData = ref({
                 ownerUsers: [],
                 ownerGroups: [],
             })
-
             const rules = ref({
                 policyName: {
                     text: 'Enter a policy name!',
@@ -470,8 +542,19 @@
                     show: false,
                 },
             })
+            const addAllUser = () => {
+                const objOwner = {
+                    ownerUsers: [],
+                    ownerGroups: [],
+                }
+                refOwners.value.setLocalValue(objOwner)
+                allUser.value = 'all-users'
+                selectedOwnersData.value = objOwner
+                rules.value.users.show = false
+                policy.value.users = []
+                policy.value.groups = []
+            }
             const initPolicy = () => {
-                isAddAll.value = false
                 rules.value = {
                     policyName: {
                         text: 'Enter a policy name!',
@@ -491,10 +574,21 @@
                     policy.value = { ...selectedPolicy.value }
                     policyType.value = selectedPolicy.value?.type
                     const objOwner = {
-                        ownerUsers: selectedPolicy.value?.users,
+                        ownerUsers:
+                            selectedPolicy?.value?.users?.length === 1 &&
+                            selectedPolicy?.value?.users[0] === 'all-users'
+                                ? []
+                                : selectedPolicy.value?.users,
                         ownerGroups: selectedPolicy.value?.groups,
                     }
                     selectedOwnersData.value = objOwner
+                    if (
+                        (selectedPolicy?.value?.users?.length !== 1 ||
+                            selectedPolicy?.value?.users[0] !== 'all-users') &&
+                        !selectedPolicy?.value?.allUsers
+                    ) {
+                        allUser.value = ''
+                    }
                     if (refOwners.value) {
                         refOwners.value.setLocalValue(objOwner)
                     }
@@ -575,6 +669,7 @@
                     rules.value.policyName.show = true
                 } else if (
                     policy.value.users.length === 0 &&
+                    !allUser.value &&
                     policy.value.groups.length === 0
                 ) {
                     rules.value.users.show = true
@@ -584,7 +679,13 @@
                 ) {
                     rules.value.metadata.show = true
                 } else {
-                    emit('save', policyType.value, policy.value, isEdit.value)
+                    const newPayload = {
+                        ...policy.value,
+                        users: allUser.value ? [] : policy.value.users,
+                        groups: allUser.value ? [] : policy.value.groups,
+                        allUsers: !!allUser.value,
+                    }
+                    emit('save', policyType.value, newPayload, isEdit.value)
                 }
             }
             const selectedPermission = computed(() => {
@@ -654,13 +755,17 @@
                 if (
                     selectedOwnersData.value?.ownerUsers?.length +
                         selectedOwnersData.value?.ownerGroups?.length <
-                    1
+                        1 &&
+                    !allUser.value
                 ) {
                     rules.value.users.show = true
                 } else {
                     rules.value.users.show = false
                 }
             }
+            const imageUrl = (username: any) =>
+                `${window.location.origin}/api/service/avatars/${username}`
+
             return {
                 selectedPersonaDirty,
                 rules,
@@ -669,7 +774,6 @@
                 isShow,
                 handleToggleManage,
                 handleSavePermission,
-                isAddAll,
                 handleClose,
                 resetPolicy,
                 handleSave,
@@ -681,6 +785,10 @@
                 selectedOwnersData,
                 handleOwnersChange,
                 refOwners,
+                imageUrl,
+                useTimeAgo,
+                allUser,
+                addAllUser,
             }
         },
     })

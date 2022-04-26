@@ -59,6 +59,7 @@
     import EnumDetails from './enumDetails.vue'
     import { useAddEnums } from './composables/useModifyEnums'
     import MultiInput from '@/common/input/customizedTagInput.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'AddEnumModal',
@@ -112,12 +113,15 @@
             // FIXME: May be simplified
             watch([updateError, isReady], () => {
                 if (isReady && state.value.enumDefs.length) {
-                    message.success('Enumeration added.')
+                    message.success('Option has been created')
                     context.emit('add', state.value.enumDefs[0])
                     context.emit('close')
+                    useAddEvent('governance', 'options', 'created', {
+                        title: form.value.name,
+                    })
                 }
                 if (updateError.value) {
-                    message.error('Failed to add your enum.')
+                    message.error('Failed to create Ooption.')
                     console.error(updateError.value)
                     errorMessage.value =
                         updateError.value?.response?.data?.errorMessage || ''

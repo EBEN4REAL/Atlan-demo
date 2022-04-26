@@ -25,7 +25,9 @@ export default function usePersona(immediate = true) {
                 'enabled',
                 'resources',
                 'attributes',
+                'glossaryPolicies',
             ],
+            apikeys: true,
         },
         {
             immediate,
@@ -35,8 +37,14 @@ export default function usePersona(immediate = true) {
     )
     const personaStore = usePersonaStore()
     watch(data, () => {
-        personaStore.setList(data.value?.records)
+        personaStore.setList(data.value?.records || [])
         // console.log(tenantStore.tenantRaw)
+    })
+    watch(error, (newErr) => {
+        if (newErr) {
+            personaStore.setList([])
+            personaStore.setErrorPersona(newErr)
+        }
     })
     return {
         data,

@@ -87,12 +87,18 @@
             const initialLoad = ref(true)
             const baseEntityDataFromStore = ref(assetStore.getSelectedAsset)
             const selectedAsset = ref(null)
-            const preferences = ref({ showArrow: false })
+            const preferences = ref({
+                showArrow: false,
+                showSchema: true,
+                showAnnouncement: true,
+                showLegend: false,
+            })
             const config = computed(() => ({
                 depth: depth.value,
                 guid: guid.value,
                 direction: direction.value,
                 hideProcess: true,
+                allowDeletedProcess: false,
                 entityFilters: {
                     attributeName: '__state',
                     operator: 'eq',

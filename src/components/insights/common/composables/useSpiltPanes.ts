@@ -6,16 +6,16 @@ export const explorerPaneSize = ref(24.5)
 export const minExplorerSize = ref(0)
 export const maxExplorerSize = ref(24.5)
 export const currentNormalExplorerSize = ref(24.5)
-export const outputPaneSize = ref(27.3)
+export const outputPaneSize = ref(34)
 const { syncInlineTabsInLocalStorage } = useLocalStorageSync()
 
 export function useSpiltPanes(activeInlineTab?: activeInlineTabInterface) {
     /* ---- Panes  ----- */
     /* TODO: Collapse panes if it reach  threshold */
-    const EXPLORER_WIDTH = 333 // in px
+    const EXPLORER_WIDTH = 350 // in px
     const ASSET_SIDEBAR_WIDTH = 420 // in px
-    const MIN_EXPLORER_WIDTH = 300 // in px
-    const MAX_EXPLORER_WIDTH = 390 // in px
+    const MIN_EXPLORER_WIDTH = 320 // in px
+    const MAX_EXPLORER_WIDTH = 530 // in px
     const explorerThreshold = 10
     const explorerPaneCollapsed = ref(false)
     const assetSidebarThreshold = 10

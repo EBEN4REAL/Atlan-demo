@@ -1,8 +1,6 @@
 <template>
     <div class="flex flex-col h-full overflow-y-hidden">
-        <div
-            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
-        >
+        <div class="flex items-center justify-between px-5 py-4">
             <span class="flex items-center">
                 <PreviewTabsIcon
                     :icon="tab.icon"
@@ -21,12 +19,31 @@
             />
         </div>
 
-        <div class="px-5 pb-4 mt-3">
+        <div class="px-5 pb-4 mt-0">
             <ActivityTypeSelect
                 v-model="activityType"
-                :typeName="selectedAsset.typeName"
+                :type-name="selectedAsset.typeName"
                 @change="handleActivityTypeChange"
             ></ActivityTypeSelect>
+        </div>
+        <div
+            v-if="
+                [
+                    'Table',
+                    'View',
+                    'TablePartition',
+                    'MaterialisedView',
+                ].includes(selectedAsset.typeName)
+            "
+            class="px-5 pb-4 mt-0"
+        >
+            <ChildActivity
+                v-model="childActivity"
+                type-name="Column"
+                placeholder="Filter by column"
+                :selectedAsset="selectedAsset"
+                @change="handleChildActivitySelect"
+            ></ChildActivity>
         </div>
         <div
             v-if="auditList.length === 0 && isLoading"
@@ -40,7 +57,7 @@
             v-else-if="auditList.length > 0"
             class="flex-grow pt-3 overflow-y-auto"
         >
-            <a-timeline class="mx-5" :key="item.guid">
+            <a-timeline :key="item.guid" class="mx-5">
                 <a-timeline-item v-for="(log, index) in auditList" :key="index">
                     <template #dot>
                         <div v-if="log?.action === 'BUSINESS_ATTRIBUTE_UPDATE'">
@@ -75,6 +92,7 @@
                         <ActivityType
                             v-if="getAuditEventComponent(log)?.component"
                             :data="getAuditEventComponent(log)"
+                            :type-name="selectedAsset.typeName"
                         />
                         <template v-else>
                             <span class="font-bold">Metadata</span> updated
@@ -91,7 +109,12 @@
                     <div
                         v-if="
                             log.entityId !== item.guid &&
-                            ['Table', 'View'].includes(item.typeName)
+                            [
+                                'Table',
+                                'View',
+                                'TablePartition',
+                                'MaterialisedView',
+                            ].includes(item.typeName)
                         "
                         class="flex items-center mt-1 text-gray-700"
                     >
@@ -205,7 +228,7 @@
                 empty-screen="NoAssetsFound"
                 image-class="h-44"
                 desc="No logs found"
-                descClass="text-center text-sm"
+                desc-class="text-sm text-center"
             />
         </div>
     </div>
@@ -230,6 +253,7 @@
     import ActivityType from './activityType.vue'
     import { useAssetAuditSearch } from '~/composables/discovery/useAssetAuditSearch'
     import ActivityTypeSelect from '@/common/select/activityType.vue'
+    import ChildActivity from '@/common/select/childActivity.vue'
     import { activityTypeMap } from '~/constant/activityType'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { default as glossaryLabel } from '@/glossary/constants/assetTypeLabel'
@@ -247,6 +271,7 @@
             ActivityTypeSelect,
             Tooltip,
             PreviewTabsIcon,
+            ChildActivity,
         },
 
         props: {
@@ -272,12 +297,21 @@
 
             const activityType = ref('all')
 
+            const childActivity = ref()
+
             const facets = ref()
             const facetsGTC = ref()
             const termAndCategoriesList = ref()
             const { certificateStatus, title } = useAssetInfo()
 
-            if (['Table', 'View'].includes(item.value.typeName)) {
+            if (
+                [
+                    'Table',
+                    'View',
+                    'TablePartition',
+                    'MaterialisedView',
+                ].includes(item.value.typeName)
+            ) {
                 facets.value = {
                     entityQualifiedName: item.value.attributes.qualifiedName,
                 }
@@ -449,6 +483,25 @@
                     quickChange()
                 }
             }
+
+            const handleChildActivitySelect = () => {
+                if (childActivity.value) {
+                    facets.value = {
+                        ...facets.value,
+                        entityQualifiedName: childActivity.value,
+                    }
+                } else {
+                    facets.value = {
+                        ...facets.value,
+                        entityQualifiedName:
+                            item.value.attributes.qualifiedName,
+                    }
+                }
+
+                offset.value = 0
+                quickChange()
+            }
+
             watch(isReady, () => {
                 // fetch children terms and categories for glossary wide activity
                 if (
@@ -472,6 +525,7 @@
                 limit,
                 offset,
                 preference,
+                childActivity,
                 facets,
                 auditList,
                 getAuditEventComponent,
@@ -484,6 +538,7 @@
                 activityType,
                 activityTypeMap,
                 handleActivityTypeChange,
+                handleChildActivitySelect,
                 glossaryLabel,
                 getTermsAndCategoriesDetail,
                 getEntityStatusIcon,

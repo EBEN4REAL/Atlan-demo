@@ -1,95 +1,30 @@
 <template>
-    <div class="p-4 mt-5 bg-white border border-gray-200 rounded">
-        <div class="flex items-center justify-between">
-            <div>
-                <AtlanIcon icon="Readme" class="w-auto h-8 mr-3" />
-                <span class="text-base font-bold text-gray"> Readme </span>
-            </div>
-            <div>
-                <a-button
-                    v-if="!isEditMode"
-                    class="flex items-center"
-                    type="primary"
-                    :loading="loadingSave || isLoading"
-                    @click="isEditMode = true"
-                >
-                    <AtlanIcon
-                        icon="Edit"
-                        class="w-auto h-4 mr-1"
-                        :class="{
-                            'ml-2': loadingSave || isLoading,
-                        }"
-                    />
-                    {{ readMe ? 'Edit' : 'Add a readme' }}
-                </a-button>
-                <template v-else-if="isEditMode">
-                    <a-button v-if="!loadingSave" @click="handleCancelEdit"
-                        >Cancel</a-button
-                    >
-                    <a-button
-                        :loading="loadingSave || isLoading"
-                        type="primary"
-                        class="ml-2"
-                        @click="handleSave"
-                    >
-                        <AtlanIcon
-                            v-if="!loadingSave && !isLoading"
-                            icon="Edit"
-                            class="w-auto h-4 mr-1"
-                            :class="{
-                                'ml-2': loadingSave || isLoading,
-                            }"
-                        />
-                        {{
-                            loadingSave || isLoading ? 'Saving' : 'Save'
-                        }}</a-button
-                    >
-                </template>
-            </div>
-        </div>
-        <!-- <div v-if="!isLoading" class="mt-2"> -->
-        <div class="relative">
-            <div
-                v-if="!editorValue && !isEditMode"
-                class="absolute top-0 z-10 my-2 text-sm text-gray-500"
-            >
-                <!-- {{
-                    isEditMode
-                        ? 'Add a README with an overview of your asset.'
-                        : `Readme hasn't been added for this asset.`
-                }} -->
-                Add a README with an overview of your persona.
-            </div>
-            <Editor
-                ref="editor"
-                v-model="editorValue"
-                placeholder="Type '/' for commands"
-                :is-edit-mode="isEditMode"
-                class="py-2"
-            />
-        </div>
-        <!-- </div> -->
-        <!-- <div v-else class="h-12" /> -->
+    <div class="mt-3 bg-white border border-gray-200 rounded">
+        <AtlanReadme
+            v-model="editorValue"
+            :is-editing-allowed="true"
+            empty-text-if-editing-allowed="Add a README with an overview of your persona."
+            empty-text-if-editing-disallowed="Add a README with an overview of your persona."
+            asset-type="Purpose"
+            :handle-save="handleSave"
+            :handle-success="handleSuccess"
+            :handle-failure="handleFailure"
+        />
     </div>
 </template>
 
 <script lang="ts">
-    import { watch, ref, toRefs, onMounted, computed } from 'vue'
+    import { watch, ref, toRefs } from 'vue'
     import { message } from 'ant-design-vue'
-    import Editor from '@/common/editor/index.vue'
     // import { Files } from '~/services/service/files/index'
     import {
         savePersona,
-        updateSelectedPersona,
         updatedSelectedData,
     } from '../composables/useEditPurpose'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default {
-        name: 'PerposeReadme',
-        components: {
-            Editor,
-        },
+        name: 'PurposeReadme',
         props: {
             purpose: {
                 type: Object,
@@ -97,149 +32,49 @@
             },
         },
         emits: ['addReadme'],
-        setup(props, { emit }) {
+        setup(props) {
             const { purpose } = toRefs(props)
-            const readMe = computed(() => {
-                if (decodeURIComponent(purpose.value.readme) === '<p></p>') {
-                    return ''
-                }
-                return purpose.value.readme || ''
-            })
+            const editorValue = ref(purpose.value.readme || '')
             const editor = ref()
-            const isEditMode = ref(false)
-            const loadingSave = ref(false)
-            const editorValue = ref('')
             const isLoading = ref(false)
-            // const defaultValueEditor = ref({})
-            // const resetEditor = () => {
-            //     const editorValueDefault = readMe.value
-            //         ? Object.keys(defaultValueEditor.value).length
-            //             ? defaultValueEditor.value
-            //             : ''
-            //         : ''
-            //     editor.value.resetEditor(decodeURIComponent(editorValueDefault))
-            //     editorValue.value = editorValueDefault
-            // }
-            // const mutateReadme = () => {
-            //     isLoading.value = true
-            //     const {
-            //         data,
-            //         isLoading: loadingMutate,
-            //         mutate,
-            //     } = Files.GetFile({
-            //         id: readMe.value,
-            //         // name: '7b0254b4-2a6b-4325-85aa-f55ac6db0f70.htm',
-            //     })
-            //     mutate()
-            //     watch(loadingMutate, () => {
-            //         isLoading.value = loadingMutate.value
-            //     })
-            //     watch(data, () => {
-            //         editorValue.value = data.value
-            //         defaultValueEditor.value = data.value
-            //         resetEditor()
-            //         isLoading.value = false
-            //     })
-            // }
-            // const fetchReadme = () => {
-            //     loadingSave.value = false
-            //     isLoading.value = false
-            //     if (readMe.value) {
-            //         mutateReadme()
-            //     }
-            // }
-            const handleSetValueEditor = () => {
-                editor.value.resetEditor(decodeURIComponent(readMe.value || ''))
-                editorValue.value = decodeURIComponent(readMe.value || '')
-            }
             watch(purpose, () => {
-                handleSetValueEditor()
-                // fetchReadme()
+                editorValue.value = purpose.value.readme || ''
             })
-            onMounted(() => {
-                handleSetValueEditor()
-                // fetchReadme()
-            })
-            const handleCancelEdit = () => {
-                isEditMode.value = false
-                editor.value.resetEditor(decodeURIComponent(readMe.value || ''))
-                editorValue.value = decodeURIComponent(readMe.value || '')
-                // editor.value.resetEditor(decodeURIComponent(data.value || ''))
-                // editorValue.value = data.value || ''
+
+            const handleUpdatePurposeReadme = (dataEditor) => {
+                const payload = { ...purpose.value }
+                return savePersona({
+                    ...payload,
+                    readme: dataEditor,
+                })
             }
 
-            const handleUpdatePueposeReadme = async (dataEditor) => {
-                try {
-                    const payload = { ...purpose.value }
-                    // delete payload.dataPolicies
-                    // delete payload.metadataPolicies
-                    await savePersona({
-                        ...payload,
-                        readme: dataEditor,
-                    })
-                    updatedSelectedData({
-                        id: payload.id,
-                        readme: dataEditor,
-                    })
-                    // updateSelectedPersona()
-                    loadingSave.value = false
-                    isEditMode.value = false
-                    useAddEvent('governance', 'purpose', 'readme_updated', {})
-                } catch (error) {
-                    loadingSave.value = false
-                    isEditMode.value = false
-                    message.error(
-                        error?.response?.data?.message ||
-                            'Some error occured...Please try again later.'
-                    )
-                }
+            const handleSuccess = () => {
+                updatedSelectedData({
+                    id: purpose.value.id,
+                    readme: editorValue.value,
+                })
+                // updateSelectedPersona()
+                useAddEvent('governance', 'purpose', 'readme_updated', {})
+                message.success('The Readme was successfully updated.')
             }
-            const handleAddReadMe = () => {
-                handleUpdatePueposeReadme(editorValue.value)
-                // const { data: dataFile } = Files.CreateFile(editorValue.value)
-                // watch(dataFile, () => {
-                //     const idFile = dataFile.value.id
-                //     handleUpdatePueposeReadme(idFile)
-                //     loadingSave.value = false
-                // })
-            }
-            const handleUpdateReadme = () => {
-                handleUpdatePueposeReadme(editorValue.value)
-                // const {
-                //     data: dataFile,
-                //     isLoading: loadingUpdate,
-                //     error,
-                // } = Files.UpdateFile(editorValue.value, readMe.value)
-                // watch(error, () => {
-                //     resetEditor()
-                //     loadingSave.value = false
-                //     message.error(
-                //         error?.response?.data?.message ||
-                //             'Some error occured...Please try again later.'
-                //     )
-                // })
-                // watch(dataFile, () => {
-                //     loadingSave.value = false
-                // })
+
+            const handleFailure = (error) => {
+                message.error(
+                    error?.response?.data?.message ||
+                        'Some error occured...Please try again later.'
+                )
             }
             const handleSave = () => {
-                loadingSave.value = true
-                if (readMe.value) {
-                    handleUpdateReadme()
-                } else {
-                    handleAddReadMe()
-                }
+                handleUpdatePurposeReadme(editorValue.value)
             }
             return {
                 isLoading,
-                handleAddReadMe,
-                handleCancelEdit,
-                isEditMode,
                 editorValue,
                 editor,
-                loadingSave,
-                readMe,
                 handleSave,
+                handleSuccess,
+                handleFailure,
             }
         },
     }

@@ -94,6 +94,7 @@
                                     :classification="classif"
                                     :mouse-enter-delay="mouseEnterDelay"
                                     @mouse-entered="enteredPill"
+                                    @mouse-left="leftPill"
                                 >
                                     <ClassificationPill
                                         :name="classif.name"
@@ -122,12 +123,19 @@
                         <!-- Terms -->
                         <template v-else-if="column.key === 'terms'">
                             <div class="flex flex-wrap items-center gap-x-1">
-                                <TermPill
+                                <GlossaryPopover
                                     v-for="(term, idx) in text.slice(0, 2)"
                                     :key="idx"
-                                    :term="term"
-                                    :allow-delete="false"
-                                />
+                                    :term="{ guid: term.termGuid }"
+                                    :mouse-enter-delay="termMouseEnterDelay"
+                                >
+                                    <TermPill
+                                        :term="term"
+                                        :allow-delete="false"
+                                        @mouseenter="termEnteredPill"
+                                        @mouseleave="termLeftPill"
+                                    />
+                                </GlossaryPopover>
                                 <span
                                     v-if="text.length - 2 > 0"
                                     class="text-sm text-gray-500"
@@ -153,24 +161,18 @@
 
             <!-- Footer CTA -->
             <div class="flex justify-end w-full gap-x-4">
-                <AtlanButton
-                    padding="compact"
-                    size="sm"
+                <AtlanButton2
+                    label="Close"
                     color="secondary"
                     @click="$emit('update:visible', false)"
-                >
-                    Close
-                </AtlanButton>
+                />
 
-                <AtlanButton
-                    padding="compact"
-                    size="sm"
+                <AtlanButton2
+                    label="Download"
                     :disabled="columnsData.length === 0 || !isReady"
                     :loading="isLoading"
                     @click="downloadImpactedAssets"
-                >
-                    Download
-                </AtlanButton>
+                />
             </div>
         </div>
     </a-modal>
@@ -207,6 +209,7 @@
     import AtlanButton from '@/UI/button.vue'
     import { downloadFile } from '~/utils/library/download'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import GlossaryPopover from '@common/popover/glossary/index.vue'
 
     /** LINEAGE PARAMETERS */
     const depth = 21
@@ -215,6 +218,7 @@
     export default defineComponent({
         name: 'LineageImpactModal',
         components: {
+            GlossaryPopover,
             TermPill,
             ClassificationPill,
             CertificateBadge,
@@ -291,6 +295,7 @@
                     direction,
                     guid: guid.value,
                     hideProcess: true,
+                    allowDeletedProcess: false,
                     attributes: AssetAttributes,
                 }))
             )
@@ -381,7 +386,13 @@
 
             /** We only trigger the re-fetch when the modal is opened */
             whenever(visible, getImpactedAssets)
-            const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
+            const { mouseEnterDelay, enteredPill, leftPill } =
+                useMouseEnterDelay()
+            const {
+                mouseEnterDelay: termMouseEnterDelay,
+                enteredPill: termEnteredPill,
+                leftPill: termLeftPill,
+            } = useMouseEnterDelay()
 
             return {
                 enteredPill,
@@ -423,6 +434,10 @@
                     },
                 ],
                 classificationPopoverMouseEnterDelay,
+                termMouseEnterDelay,
+                termEnteredPill,
+                termLeftPill,
+                leftPill,
             }
         },
     })

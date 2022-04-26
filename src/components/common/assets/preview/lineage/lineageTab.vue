@@ -7,9 +7,7 @@
             :asset-name="assetName"
             style="z-index: 600"
         />
-        <div
-            class="flex items-center justify-between px-5 py-2 border-b border-gray-200 bg-gray-50"
-        >
+        <div class="flex items-center justify-between px-5 pt-4 pb-2">
             <span class="flex items-center">
                 <PreviewTabsIcon
                     :icon="tab.icon"
@@ -39,7 +37,7 @@
 
         <RaisedTab
             v-model:active="direction"
-            class="mx-5 mt-4"
+            class="mx-5 mt-0"
             :data="streams"
         />
 
@@ -81,7 +79,6 @@
 
     // import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     // import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-    // import PreferenceSelector from '@/assets/preference/index.vue'
 
     // import AssetFilters from '@/common/assets/filters/index.vue'
     // import AssetList from '@/common/assets/list/index.vue'
@@ -153,6 +150,7 @@
                 depth: depth.value,
                 guid: guid.value,
                 hideProcess: true,
+                allowDeletedProcess: false,
                 entityFilters: {
                     attributeName: '__state',
                     operator: 'eq',

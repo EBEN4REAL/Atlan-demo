@@ -18,11 +18,29 @@
                     :class="$style.editable"
                     @click="handleEdit"
                 >
-                    <span
+                    <!--  <span
                         v-if="!isEdit && description(selectedAsset)"
+                        v-linkified="{
+                            className: 'text-primary',
+                            target: '_blank',
+                        }"
                         class="break-words whitespace-pre-wrap"
                         >{{ description(selectedAsset) }}</span
+                    > -->
+                    <a-typography-paragraph
+                        v-if="!isEdit && description(selectedAsset)"
+                        class="break-words whitespace-pre-wrap"
+                        :ellipsis="{
+                            rows: 5,
+                            expandable: true,
+                            symbol: 'more',
+                            onExpand: (e) => {
+                                e.stopPropagation()
+                            },
+                        }"
+                        :content="description(selectedAsset)"
                     >
+                    </a-typography-paragraph>
                     <span
                         v-else-if="!isEdit && description(selectedAsset) === ''"
                         class="text-gray-600"
@@ -37,8 +55,24 @@
                         @blur="handleBlur"
                         @keyup.esc="handleCancel"
                     ></a-textarea>
-                </div></div
-        ></Shortcut>
+                </div>
+            </div>
+            <div
+                v-if="!editPermission && role !== 'Guest' && isEdit"
+                class="px-3 py-2 mt-3 bg-gray-100"
+            >
+                You don't have edit access. Suggest a new Description and
+                <span class="cursor-pointer text-primary">
+                    <a-popover placement="rightBottom">
+                        <template #content>
+                            <AdminList></AdminList>
+                        </template>
+                        <span>Admins</span>
+                    </a-popover>
+                </span>
+                can review your request.
+            </div>
+        </Shortcut>
         <p
             v-if="descriptionRef !== null"
             class="mt-1 text-xs text-right text-gray-500"
@@ -65,6 +99,7 @@
         ref,
         toRefs,
         watchEffect,
+        defineAsyncComponent,
     } from 'vue'
     import {
         and,
@@ -74,13 +109,21 @@
         useVModels,
         whenever,
     } from '@vueuse/core'
+    import { message } from 'ant-design-vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import Shortcut from '@/common/popover/shortcut.vue'
+    import whoami from '~/composables/user/whoami'
+    import { useCreateRequests } from '~/composables/requests/useCreateRequests'
 
     export default defineComponent({
         name: 'DescriptionWidget',
-        components: { Shortcut },
+        components: {
+            Shortcut,
+            AdminList: defineAsyncComponent(
+                () => import('@/common/info/adminList.vue')
+            ),
+        },
         props: {
             modelValue: {
                 type: String,
@@ -101,6 +144,11 @@
                 required: false,
                 default: false,
             },
+            readOnly: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
@@ -108,9 +156,11 @@
             const { editPermission, selectedAsset, inProfile } = toRefs(props)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
+            const { role } = whoami()
             const descriptionRef: Ref<null | HTMLInputElement> = ref(null)
 
             const { description } = useAssetInfo()
+            const descriptionSnapshot = ref(modelValue.value)
 
             /**
              * A utility function to update the model value, and emit a `change`
@@ -118,7 +168,8 @@
              */
             const handleChange = () => {
                 modelValue.value = localValue.value
-                emit('change')
+                if (editPermission.value) emit('change')
+                else handleRequest()
             }
 
             const { d, enter, shift } = useMagicKeys()
@@ -139,10 +190,43 @@
             }
 
             const handleEdit = () => {
-                if (editPermission?.value) {
+                if (
+                    !props.readOnly &&
+                    (role.value !== 'Guest' || editPermission.value)
+                ) {
                     isEdit.value = true
                     start()
                 }
+            }
+
+            const handleRequest = () => {
+                if (descriptionSnapshot.value === localValue.value) {
+                    return
+                }
+                const {
+                    error: requestError,
+                    isLoading: isRequestLoading,
+                    isReady: requestReady,
+                } = useCreateRequests({
+                    assetGuid: selectedAsset.value?.guid,
+                    assetQf: selectedAsset.value?.attributes?.qualifiedName,
+                    assetType: selectedAsset.value?.typeName,
+                    userDescription: localValue.value,
+                    requestType: 'userDescription',
+                })
+                whenever(requestError, () => {
+                    if (requestError.value) {
+                        message.error(`Request failed`)
+                        isEdit.value = false
+                    }
+                })
+                whenever(requestReady, () => {
+                    if (requestReady.value) {
+                        message.success(`Request raised`)
+                        isEdit.value = false
+                        descriptionSnapshot.value = localValue.value
+                    }
+                })
             }
 
             const handleCancel = () => {
@@ -163,6 +247,9 @@
                     activeElement.value?.attributes?.contenteditable?.value !==
                         'true'
             )
+            const handleCancelRequest = () => {
+                isEdit.value = false
+            }
 
             whenever(
                 and(d, notUsingInput, !inProfile.value, editPermission.value),
@@ -192,6 +279,8 @@
                 description,
                 isMac,
                 handleCancel,
+                role,
+                handleCancelRequest,
             }
         },
     })

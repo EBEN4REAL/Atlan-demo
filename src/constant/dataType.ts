@@ -169,7 +169,7 @@ export const dataTypeCategoryList = [
         label: 'Enum',
         type: ['Picklist', 'Multipicklist', 'ENUM'],
         image: enum2,
-        imageText: 'enum',
+        imageText: 'enum1',
     },
     {
         id: 'geography',
@@ -190,7 +190,7 @@ export const dataTypeCategoryList = [
         label: 'super',
         type: ['Super'],
         image: Super,
-        imageText: 'super',
+        imageText: 'super1',
     },
     {
         id: 'bits',

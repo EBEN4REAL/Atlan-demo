@@ -1,33 +1,5 @@
 <template>
     <div id="fullScreenId" class="flex h-full overflow-x-hidden">
-        <!--Sidebar navigation pane start -->
-        <div class="bg-white border-r sidebar-nav">
-            <template v-for="tab in tabsList" :key="tab.id">
-                <a-tooltip placement="right" color="#363636">
-                    <template #title> {{ tab.title }} </template>
-
-                    <div
-                        class="relative flex flex-col items-center text-xs sidebar-nav-icon"
-                        @click="() => changeTab(tab)"
-                    >
-                        <AtlanIcon
-                            v-if="tab?.icon"
-                            :icon="`${tab.icon}`"
-                            class="w-6 h-6"
-                            :color="
-                                activeTabId === tab.id ? '#5277D7' : '#6f7590'
-                            "
-                        />
-                        <div
-                            class="absolute top-0 right-0 h-full"
-                            style="width: 3px"
-                            :class="activeTabId === tab.id ? 'bg-primary' : ''"
-                        ></div>
-                    </div>
-                </a-tooltip>
-            </template>
-        </div>
-        <!--Sidebar navigation pane end -->
         <div ref="splitpaneRef" :class="$style.splitpane_insights">
             <splitpanes
                 class="parent_splitpanes"
@@ -45,41 +17,65 @@
                     :min-size="minExplorerSize"
                     class="relative explorer_splitpane vertical_pane"
                 >
-                    <!--explorer pane start -->
-                    <div
-                        :class="
-                            activeTab.component === 'schema' ? 'z-30' : 'z-10'
-                        "
-                        class="absolute h-full full-width"
+                    <a-tabs
+                        v-model:activeKey="activeTabId"
+                        :class="$style.previewtab"
+                        :style="'height: calc(100%)'"
+                        tab-position="top"
                     >
-                        <Schema />
-                    </div>
-                    <div
-                        :class="
-                            activeTab.component === 'queries' ? 'z-30' : 'z-10'
-                        "
-                        class="absolute h-full full-width"
-                    >
-                        <Queries
-                            :reset="resetTree"
-                            :reset-query-tree="resetQueryTree"
-                            :reset-parent-guid="resetParentGuid"
-                            :reset-type="resetType"
-                            :refresh-query-tree="refreshQueryTree"
-                        />
-                    </div>
-                    <div
-                        :class="
-                            activeTab.component === 'variables'
-                                ? 'z-30'
-                                : 'z-10'
-                        "
-                        class="absolute h-full full-width"
-                    >
-                        <!-- <Variables /> -->
-                        <History />
-                    </div>
-                    <!--explorer pane end -->
+                        <a-tab-pane
+                            v-for="tab in tabsList"
+                            :key="tab.id"
+                            :destroy-inactive-tab-pane="false"
+                            :class="
+                                tab.id === activeTabId ? 'flex flex-col' : ''
+                            "
+                        >
+                            <template #tab>
+                                <div
+                                    class="flex flex-row items-center px-3 py-1 flex-grow-1"
+                                    :class="
+                                        tab.id === activeTabId
+                                            ? 'active-tab-indicator'
+                                            : ''
+                                    "
+                                >
+                                    <AtlanIcon
+                                        v-if="tab?.icon"
+                                        :icon="`${tab.icon}`"
+                                        class="w-4 h-4"
+                                        :color="
+                                            activeTabId === tab.id
+                                                ? '#225BD2'
+                                                : '#6A7692'
+                                        "
+                                        @click="() => changeTab(tab)"
+                                    />
+                                    <div
+                                        :class="
+                                            activeTabId === tab.id
+                                                ? 'active-tab'
+                                                : 'inactive-tab'
+                                        "
+                                        class="nav-text"
+                                    >
+                                        {{ tab.name }}
+                                    </div>
+                                </div>
+                            </template>
+                            <keep-alive>
+                                <component
+                                    :is="tab.component"
+                                    :key="tab.id"
+                                    :reset="resetTree"
+                                    :reset-query-tree="resetQueryTree"
+                                    :reset-parent-guid="resetParentGuid"
+                                    :reset-type="resetType"
+                                    :refresh-query-tree="refreshQueryTree"
+                                ></component>
+                            </keep-alive>
+                        </a-tab-pane>
+                    </a-tabs>
                 </pane>
                 <pane
                     :size="
@@ -117,6 +113,7 @@
 <script lang="ts">
     import {
         defineComponent,
+        defineAsyncComponent,
         ref,
         computed,
         watch,
@@ -131,10 +128,6 @@
     import { useRoute, useRouter } from 'vue-router'
     import Playground from '~/components/insights/playground/index.vue'
     import AssetSidebar from '~/components/insights/assetSidebar/index.vue'
-    import Schema from './explorers/schema/index.vue'
-    import Queries from './explorers/queries/index.vue'
-    import History from './explorers/history/index.vue'
-    import Schedule from './explorers/schedule.vue'
 
     import useInsightsTabList from './common/composables/useTabList'
     import { useLocalStorageSync } from './common/composables/useLocalStorageSync'
@@ -162,6 +155,8 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
     import { useQuery } from '~/components/insights/common/composables/useQuery'
+    import insightsStore from '~/store/insights/index'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
     import { instances } from '~/components/insights/playground/editor/monaco/useMonaco'
@@ -176,13 +171,27 @@
         components: {
             Playground,
             AssetSidebar,
-            Schema,
-            Queries,
-            History,
-            Schedule,
+            schema: defineAsyncComponent(
+                () => import('./explorers/schema/index.vue')
+            ),
+            queries: defineAsyncComponent(
+                () => import('./explorers/queries/index.vue')
+            ),
+            schedule: defineAsyncComponent(
+                () => import('./explorers/schedule/index.vue')
+            ),
+            history: defineAsyncComponent(
+                () => import('./explorers/history/index.vue')
+            ),
         },
         props: {},
         setup(props) {
+            // insights Store initialization
+            const store = insightsStore()
+            const UrlDetectedAsset = ref()
+            const lastPreviewTabElement = ref()
+            const refreshSchedulesWorkflowTab = ref()
+            const activeKey = ref(0)
             const observer = ref()
             const splitpaneRef = ref()
             const showcustomToolBar = ref(false) // custom variables toolbar
@@ -202,6 +211,7 @@
                 'isCollectionCreated'
             ) as Ref<Boolean>
             const collectionSelectorChange = ref(false)
+            const activeResultPreviewTab = ref(false)
 
             const {
                 MIN_EXPLORER_WIDTH,
@@ -211,7 +221,7 @@
                 assetSidebarPaneSize,
                 paneResize,
             } = useSpiltPanes()
-            const { getDetectQueryTab } = useQuery()
+            const { getDetectQueryTab, getAssetInfo } = useQuery()
             const route = useRoute()
             // TODO: will be used for HOTKEYs
             const {
@@ -240,6 +250,7 @@
             const schemaNameFromURL = inject('schemaNameFromURL')
             const tableNameFromURL = inject('tableNameFromURL')
             const columnNameFromURL = inject('columnNameFromURL')
+            const assetGuidFromURL = inject('assetGuidFromURL')
 
             const openVQB = inject('openVQB')
 
@@ -268,7 +279,7 @@
                 activeInlineTab,
                 inlineTabAdd,
                 modifyActiveInlineTabEditor,
-            } = useInlineTab(undefined, !savedQueryGuidFromURL.value)
+            } = useInlineTab(undefined, true)
 
             const { openSavedQueryInNewTab } = useSavedQuery(
                 tabsArray,
@@ -361,6 +372,9 @@
             */
 
             const provideData: provideDataInterface = {
+                lastPreviewTabElement,
+                activeResultPreviewTab,
+                activeExplorerTabId: activeTabId,
                 showcustomToolBar,
                 activeInlineTab,
                 queryCollections,
@@ -391,6 +405,8 @@
                 updateAssetCheck,
                 collectionSelectorChange,
                 refetchQueryNode,
+                refreshSchedulesWorkflowTab,
+                UrlDetectedAsset,
             }
             useProvide(provideData)
             /*-------------------------------------*/
@@ -542,6 +558,20 @@
                 })
 
                 inlineTabAdd(queryTab, tabsArray, activeInlineTabKey)
+                const callbackFunc = (asset: assetInterface) => {
+                    UrlDetectedAsset.value = asset
+                    // setting tab to schema explorer
+
+                    if (activeTabId.value !== 'schema') {
+                        activeTabId.value = 'schema'
+                    }
+                }
+                getAssetInfo({
+                    assetGuidFromURL,
+                    tabsArray,
+                    key: queryTab.key,
+                    cb: callbackFunc,
+                })
                 let vqb = openVQB === 'true' ? true : false
                 const activeInlineTabKeyCopy = activeInlineTabKey.value
 
@@ -569,7 +599,11 @@
                 )
             }
 
-            const fetchQueryCollections = () => {
+            const fetchQueryCollections = ({
+                selectOneByDefault,
+            }: {
+                selectOneByDefault: boolean
+            }) => {
                 const { data, error, isLoading, mutate } = getQueryCollections()
                 refetchQueryCollection.value = mutate
                 queryCollectionsLoading.value = true
@@ -592,14 +626,16 @@
                                     path: `insights`,
                                 })
                             }
+                            if (selectOneByDefault) {
+                                selectFirstCollectionByDefault(
+                                    queryCollections.value,
+                                    activeInlineTab,
+                                    tabsArray,
+                                    isCollectionCreated,
+                                    collectionGuidFromURL
+                                )
+                            }
 
-                            selectFirstCollectionByDefault(
-                                queryCollections.value,
-                                activeInlineTab,
-                                tabsArray,
-                                isCollectionCreated,
-                                collectionGuidFromURL
-                            )
                             queryCollectionsError.value = undefined
                         } else {
                             queryCollectionsLoading.value = false
@@ -628,7 +664,7 @@
                         el.style.transition = 'width .2s ease-out'
                     })
                 }, 100)
-                fetchQueryCollections()
+                fetchQueryCollections({ selectOneByDefault: true })
                 window.addEventListener('keydown', _keyListener)
 
                 if (
@@ -730,6 +766,7 @@
             // provide('resetQueryTree', resetQueryTree)
 
             return {
+                activeKey,
                 minExplorerSize,
                 maxExplorerSize,
                 splitpaneRef,
@@ -755,15 +792,22 @@
     })
 </script>
 <style lang="less" module>
+    html {
+        --duration: 0.1s;
+        --durationAnimation: 0.2s;
+    }
+
     .splitpane_insights {
         :global(.splitpanes__splitter) {
-            background-color: #fff;
+            @apply bg-new-gray-100;
+            // background-color: #fff;
             -webkit-box-sizing: border-box;
             box-sizing: border-box;
             position: relative;
             -ms-flex-negative: 0;
             z-index: 3 !important;
             flex-shrink: 0;
+            @apply border-new-gray-300;
         }
         :global(.splitpanes--vertical .splitpanes__pane) {
             transition: none;
@@ -824,6 +868,67 @@
             }
         }
     }
+    .previewtab {
+        &:global(.ant-tabs-top) {
+            :global(.ant-tabs-nav) {
+                margin: 0 !important;
+                height: 40px !important;
+                order: 0 !important;
+                // min-width: 60px !important;
+                // @apply border-r border-b border-gray-300  !important;
+            }
+            :global(.ant-tabs-nav-wrap) {
+                justify-content: center;
+                position: relative;
+                top: -1px;
+                width: 100%;
+            }
+
+            :global(.ant-tabs-nav::before) {
+                @apply border-new-gray-300 !important;
+            }
+            :global(.ant-tabs-nav-list .ant-tabs-tab:not(:first-child)) {
+                // margin-left: 16px !important;
+                margin-left: 0 !important;
+            }
+            :global(.ant-tabs-nav-list) {
+                display: flex;
+                position: relative;
+                align-items: center;
+
+                justify-content: center;
+                width: 100%;
+                @apply px-8;
+            }
+
+            :global(.ant-tabs-ink-bar) {
+                // display: none;
+                @apply bg-white rounded-md;
+                height: 28px;
+                bottom: 6px;
+                z-index: -1;
+                box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.16);
+                transition: width var(--durationAnimation),
+                    left var(--durationAnimation),
+                    right var(--durationAnimation);
+            }
+
+            :global(.ant-tabs-tab) {
+                flex-grow: 1;
+                display: flex;
+                position: relative;
+                align-items: center;
+                justify-content: center;
+                min-width: 30%;
+
+                // When query history tab or any other tab comes in to make total tab count 4
+                // min-width: 20%;
+            }
+            :global(.ant-tabs-tab-active) {
+                flex-grow: 2.2;
+            }
+        }
+    }
 </style>
 <style lang="less" scoped>
     // .placeholder {
@@ -836,10 +941,10 @@
         height: calc(100vh - 3rem);
     }
     .parent_splitpanes {
-        width: calc(100vw - 3.75rem - 60px);
+        width: calc(100vw - 3.75rem);
     }
     .explorer_splitpane {
-        background-color: white;
+        @apply bg-new-gray-100;
     }
     .sidebar-nav-icon {
         padding-top: 16px;
@@ -847,7 +952,7 @@
     }
     .sidebar-nav {
         /* 60px */
-        width: 3.75rem;
+        width: 120px;
     }
     .show-assetsidebar {
         // width: calc(100vw - 3.75rem - 420px);
@@ -860,6 +965,44 @@
     }
     .assetSidebar {
         z-index: 51 !important;
+    }
+    .active-tab-indicator {
+        // @apply bg-white rounded-md;
+        // box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.16);
+    }
+    .active-tab {
+        display: block;
+        margin-left: 6px;
+        position: relative;
+        // top: 0.5px !important;
+        color: #225bd2;
+        @apply h-5;
+        // animation: fadeIn ease 1s;
+    }
+    .inactive-tab {
+        display: none;
+        color: #6a7692;
+        animation: fadeOut ease 2s;
+    }
+
+    .nav-text {
+        animation: fadeIn ease var(--durationAnimation);
+    }
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+    @keyframes fadeOut {
+        0% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+        }
     }
 </style>
 

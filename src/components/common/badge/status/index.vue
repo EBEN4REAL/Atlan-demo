@@ -5,7 +5,7 @@
                 <component :is="icons" class="w-auto h-4 -mt-0.5" />
             </span>
 
-            <p v-if="showLabel" class="mb-0 ml-1.5">{{ label }}</p>
+            <p v-if="showLabel" class="mb-0 ml-1">{{ label }}</p>
         </div>
 
         <div v-else class="flex items-center">

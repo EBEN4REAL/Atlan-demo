@@ -10,6 +10,7 @@
         class="flex items-center justify-center h-full"
     >
         <AddGtcModal
+            v-if="termAddPermission"
             entityType="AtlasGlossaryTerm"
             @add="reInitTree"
             :glossary-qualified-name="defaultGlossary"
@@ -25,6 +26,12 @@
                 </div>
             </template>
         </AddGtcModal>
+        <template v-else>
+            <EmptyView
+                empty-screen="EmptyGlossary"
+                desc="No terms found"
+            ></EmptyView>
+        </template>
     </div>
     <div v-else-if="treeData.length === 0 && !isLoading && checkable">
         <EmptyView
@@ -52,6 +59,8 @@
         @check="onCheck"
         :blockNode="true"
         @drop="dragAndDropNode"
+        @dragend="dragEnd"
+        @dragstart="dragStart"
         :multiple="true"
     >
         <template #switcherIcon>
@@ -59,14 +68,24 @@
         </template>
 
         <template #title="entity">
-            <GlossaryTreeItem
-                :item="entity"
-                :checkable="checkable"
-                :class="treeItemClass"
-                :is-animating="isTreeNodeAnimating"
-                @addSelectedKey="handleAddSelectedKey"
-                @changeEditMode="handleChangeEditMode"
-            />
+            <GlossaryPopover
+                :passing-fetched-term="true"
+                :fetched-term="entity"
+                :is-fetched-term-loading="false"
+                placement="right"
+                :mouse-enter-delay="mouseEnterDelay"
+            >
+                <GlossaryTreeItem
+                    :item="entity"
+                    :checkable="checkable"
+                    :class="treeItemClass"
+                    :is-animating="isTreeNodeAnimating"
+                    @addSelectedKey="handleAddSelectedKey"
+                    @changeEditMode="handleChangeEditMode"
+                    @mouseenter="enteredPill"
+                    @mouseleave="leftPill"
+                />
+            </GlossaryPopover>
         </template>
     </a-tree>
 </template>
@@ -94,9 +113,12 @@
     import useGlossaryTree from '~/composables/glossary2/useGlossaryTree'
     import useGlossaryStore from '~/store/glossary'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import GlossaryPopover from '@common/popover/glossary/index.vue'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
 
     export default defineComponent({
         components: {
+            GlossaryPopover,
             GlossaryTreeItem,
             Actions,
             AddGtcModal,
@@ -127,6 +149,10 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            termAddPermission: {
+                type: Boolean,
+                required: true,
             },
             checkedGuids: {
                 type: Object as PropType<string[]>,
@@ -182,6 +208,7 @@
                 nodeToParentKeyMap,
                 allKeys,
                 checkDuplicateCategoryNames,
+                dragStart,
             } = useGlossaryTree({
                 emit,
                 parentGlossaryQualifiedName: defaultGlossary,
@@ -207,7 +234,11 @@
             // }
 
             const addGTCNode = (asset, entity = {}) => {
-                console.log(asset?.typeName, asset?.attributes?.anchor?.guid, 'add')
+                console.log(
+                    asset?.typeName,
+                    asset?.attributes?.anchor?.guid,
+                    'add'
+                )
                 glossaryStore.updateAssetCount(
                     asset?.typeName,
                     asset?.attributes?.anchor?.guid,
@@ -304,10 +335,14 @@
             const handleChangeEditMode = (val) => {
                 isDraggable.value = !val
             }
+
             provide('addGTCNode', addGTCNode)
             provide('deleteGTCNode', deleteGTCNode)
             provide('treeData', treeData)
             provide('checkDuplicateCategoryNames', checkDuplicateCategoryNames)
+            const { enteredPill, mouseEnterDelay, leftPill } =
+                useMouseEnterDelay()
+
             return {
                 onLoadData,
                 loadedKeys,
@@ -342,6 +377,10 @@
                 parentGlossary,
                 isDraggable,
                 handleChangeEditMode,
+                dragStart,
+                enteredPill,
+                mouseEnterDelay,
+                leftPill,
             }
         },
     })

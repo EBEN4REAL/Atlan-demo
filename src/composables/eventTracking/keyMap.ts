@@ -1,10 +1,87 @@
+import {
+    NAME_OF_EVENTS,
+    README_TRIGGERS,
+} from '~/modules/editor/analytics/useTrackEvent'
+
+interface BLOCK_README_EVENT_INTERFACE {
+    assetType: string
+    blockType: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    embedService?: string
+}
+
+interface BLOCK_README_EVENT_RETURN_INTERFACE {
+    asset_type: string
+    block_type: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    embed_service?: string
+}
+
+interface FORMATTING_README_EVENT_INTERFACE {
+    assetType: string
+    markType: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    alignment?: string
+}
+
+interface FORMATTING_README_EVENT_RETURN_INTERFACE {
+    asset_type: string
+    mark_type: NAME_OF_EVENTS
+    trigger: README_TRIGGERS
+    alignment?: string
+}
+
+interface EMBED_README_EVENT_INTERFACE {
+    assetType: string
+    application: string
+    trigger: README_TRIGGERS
+}
+
+interface EMBED_README_EVENT_RETURN_INTERFACE {
+    asset_type: string
+    application: string
+    trigger: README_TRIGGERS
+}
+
 const keyMap = {
     discovery: {
         filter: {
             changed: {
                 action: 'discovery_filter_changed',
-                properties: (props) => ({
-                    type: props.type,
+                properties: (props: {
+                    type: string
+                    property?: string
+                    value?: string
+                    operator?: string
+                }) => ({
+                    ...props,
+                }),
+            },
+        },
+        cta_action: {
+            clicked: {
+                action: 'discovery_cta_action_clicked',
+                properties: (props: {
+                    action:
+                        | 'open_asset'
+                        | 'vqb_query'
+                        | 'sql_query'
+                        | 'copy_link'
+                        | 'open_in_source'
+                    asset_type: string
+                }) => ({
+                    ...props,
+                }),
+            },
+        },
+        view_preference: {
+            changed: {
+                action: 'discovery_view_preference_changed',
+                properties: (props: {
+                    visible: boolean
+                    preference: 'description' | 'terms' | 'classifications'
+                }) => ({
+                    ...props,
                 }),
             },
         },
@@ -32,6 +109,14 @@ const keyMap = {
                 properties: (props) => ({
                     click_index: props.click_index,
                     keyboard_shortcut: !!props.keyboard_shortcut,
+                }),
+            },
+            // when someone clicks schema or database to set it as filter
+            filter_context_changed: {
+                action: 'discovery_asset_card_filter_context_changed',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    hierarchy_type: props.hierarchy_type,
                 }),
             },
         },
@@ -97,6 +182,13 @@ const keyMap = {
                     asset_type: props.asset_type,
                 }),
             },
+            suggestion_applied: {
+                action: 'discovery_metadata_suggestion_applied',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    suggestion_index: props.index,
+                }),
+            },
         },
         announcement: {
             created: {
@@ -132,6 +224,13 @@ const keyMap = {
                     asset_type: props.asset_type,
                 }),
             },
+            clicked: {
+                action: 'discovery_resource_clicked',
+                properties: (props) => ({
+                    domain: props.domain,
+                    asset_type: props.asset_type,
+                }),
+            },
             deleted: {
                 action: 'discovery_resource_deleted',
             },
@@ -162,6 +261,25 @@ const keyMap = {
             updated: {
                 action: 'discovery_readme_updated',
                 properties: (props) => ({ asset_type: props.asset_type }),
+            },
+        },
+        display_preference: {
+            changed: {
+                action: 'discovery_display_preference_changed',
+                properties: (props: {
+                    visible: boolean
+                    preference: 'description' | 'terms' | 'classifications'
+                }) => ({
+                    ...props,
+                }),
+            },
+        },
+        sort: {
+            changed: {
+                action: 'discovery_sort_changed',
+                properties: (props: { sort_type: string }) => ({
+                    ...props,
+                }),
             },
         },
     },
@@ -246,6 +364,39 @@ const keyMap = {
                 }),
             },
         },
+        schemaTree: {
+            itemClick: {
+                action: 'insights_schema_explorer_tree_item_clicked',
+                properties: (props) => ({
+                    action: props?.action,
+                    trigger: props?.trigger,
+                    query_tab_id: props?.query_tab_id,
+                    asset_type: props?.asset_type,
+                }),
+            },
+        },
+        previewTabs: {
+            previewTabClose: {
+                action: 'insights_preview_tabs_closed',
+                properties: (props) => ({
+                    query_tab_id: props?.query_tab_id,
+                    click_index: props?.click_index,
+                }),
+            },
+            previewTabSwitched: {
+                action: 'insights_preview_tabs_switched',
+                properties: (props) => ({
+                    click_index: props?.click_index,
+                    previous_index: props?.previous_index,
+                }),
+            },
+            previewTabRightClickAction: {
+                action: 'insights_preview_tabs_right_click_action',
+                properties: (props) => ({
+                    action: props?.action,
+                }),
+            },
+        },
         collection: {
             created: {
                 action: 'insights_collection_created',
@@ -278,9 +429,15 @@ const keyMap = {
         persona: {
             created: {
                 action: 'governance_persona_created',
+                properties: (props) => ({
+                    title: props.title,
+                }),
             },
             deleted: {
                 action: 'governance_persona_deleted',
+                properties: (props) => ({
+                    title: props.title,
+                }),
             },
             policy_added: {
                 action: 'governance_persona_policy_added',
@@ -321,13 +478,31 @@ const keyMap = {
             resource_deleted: {
                 action: 'persona_resource_deleted',
             },
+            cm_preferences: {
+                action: 'persona_preferences_cm_toggled',
+                properties: (props) => ({
+                    state: props.state,
+                }),
+            },
+            persona_enable: {
+                action: 'governance_persona_enabled',
+            },
+            persona_disable: {
+                action: 'governance_persona_disabled',
+            },
         },
         purpose: {
             created: {
                 action: 'governance_purpose_created',
+                properties: (props) => ({
+                    title: props.title,
+                }),
             },
             deleted: {
                 action: 'governance_purpose_deleted',
+                properties: (props) => ({
+                    title: props.title,
+                }),
             },
             policy_added: {
                 action: 'governance_purpose_policy_added',
@@ -337,6 +512,7 @@ const keyMap = {
                     denied: !!props.denied,
                     user_count: props.user_count,
                     group_count: props.group_count,
+                    all_users_enabled: !!props.all_users_enabled,
                 }),
             },
             policy_updated: {
@@ -347,6 +523,7 @@ const keyMap = {
                     denied: !!props.denied,
                     user_count: props.user_count,
                     group_count: props.group_count,
+                    all_users_enabled: !!props.all_users_enabled,
                 }),
             },
             policy_deleted: {
@@ -370,6 +547,12 @@ const keyMap = {
             resource_deleted: {
                 action: 'purpose_resource_deleted',
             },
+            purpose_enable: {
+                action: 'governance_purpose_enabled',
+            },
+            purpose_disable: {
+                action: 'governance_purpose_disabled',
+            },
         },
         classification: {
             created: {
@@ -385,27 +568,40 @@ const keyMap = {
         custom_metadata: {
             created: {
                 action: 'governance_custom_metadata_created',
+                properties: (props) => ({
+                    title: props.title,
+                }),
             },
             updated: {
                 action: 'governance_custom_metadata_updated',
+                properties: (props) => ({
+                    title: props.title,
+                }),
             },
             deleted: {
                 action: 'governance_custom_metadata_deleted',
+                properties: (props) => ({
+                    title: props.title,
+                }),
             },
             property_added: {
                 action: 'governance_custom_metadata_property_added',
                 properties: (props) => ({
+                    title: props.title,
                     data_type: props.data_type,
                     multi_value: !!props.multi_value,
                     allow_filtering: !!props.allow_filtering,
+                    show_in_overview: !!props.show_in_overview,
                 }),
             },
             property_updated: {
                 action: 'governance_custom_metadata_property_updated',
                 properties: (props) => ({
+                    title: props.title,
                     data_type: props.data_type,
                     multi_value: !!props.multi_value,
                     allow_filtering: !!props.allow_filtering,
+                    show_in_overview: !!props.show_in_overview,
                 }),
             },
             property_reordered: {
@@ -416,11 +612,37 @@ const keyMap = {
             searched: {
                 action: 'governance_requests_searched',
             },
+            created: {
+                action: 'governance_requests_created',
+                properties: (props) => ({
+                    request_type: props.request_type,
+                    asset_type: props.asset_type,
+                    count: props.count,
+                    actions: props.action,
+                }),
+            },
             resolved: {
                 action: 'governance_requests_resolved',
                 properties: (props) => ({
                     // approve/decline
                     action: props.action,
+                    request_type: props.request_type,
+                    widget_type: props.widget_type,
+                }),
+            },
+        },
+
+        options: {
+            created: {
+                action: 'governance_options_created',
+                properties: (props: { title: string }) => ({
+                    ...props,
+                }),
+            },
+            updated: {
+                action: 'governance_options_updated',
+                properties: (props: { title: string }) => ({
+                    ...props,
                 }),
             },
         },
@@ -463,6 +685,100 @@ const keyMap = {
                 }),
             },
         },
+        sso: {
+            added: {
+                action: 'admin_sso_added',
+                properties: (props: { alias: string }) => ({
+                    ...props,
+                }),
+            },
+            updated: {
+                action: 'admin_sso_updated',
+                properties: (props: {
+                    enforced_sso: boolean
+                    enabled: boolean
+                }) => ({
+                    ...props,
+                }),
+            },
+            removed: {
+                action: 'admin_sso_removed',
+                properties: (props: { alias: string }) => ({
+                    ...props,
+                }),
+            },
+        },
+        user: {
+            added: {
+                // add invitation
+                action: 'admin_user_added',
+                properties: (props: { count: number }) => ({
+                    ...props,
+                }),
+            },
+            enabled: {
+                // enable user
+                action: 'admin_user_enabled',
+            },
+            removed: {
+                // revoke invitation o disable users
+                action: 'admin_user_removed',
+                properties: (props: { status: string }) => ({
+                    ...props,
+                }),
+            },
+            // updated: {
+            //     action: 'admin_user_updated',
+            //     properties: (props: {
+            //         action: 'enabled' | 'disabled' | 'groups_updated',
+            //         groups_count?: number
+            //     }) => ({
+            //         ...props,
+            //     }),
+            // },
+        },
+        group: {
+            created: {
+                // create group
+                action: 'admin_group_created',
+                properties: (props: {
+                    users_count: number
+                    has_slack_channel_added: boolean
+                    is_default: boolean
+                    has_description: boolean
+                }) => ({
+                    ...props,
+                }),
+            },
+            deleted: {
+                action: 'admin_group_deleted',
+            },
+            updated: {
+                action: 'admin_group_updated',
+                properties: (props: {
+                    users_count: number
+                    has_slack_channel_added: boolean
+                    is_default: boolean
+                    has_description: boolean
+                }) => ({
+                    ...props,
+                }),
+            },
+        },
+        labs: {
+            feature_enabled: {
+                action: 'admin_labs_feature_enabled',
+                properties: (props) => ({
+                    feature: props.feature,
+                }),
+            },
+            feature_disabled: {
+                action: 'admin_labs_feature_disabled',
+                properties: (props) => ({
+                    feature: props.feature,
+                }),
+            },
+        },
     },
     integration: {
         slack: {
@@ -489,8 +805,117 @@ const keyMap = {
             },
             share_channels_updated: {
                 action: 'integration_slack_share_channels_updated',
-                properties: (props: { channel_count: string }) => ({
+                properties: (props: {
+                    channel_count: string
+                    workflow_alert_channel_present: boolean
+                }) => ({
                     ...props,
+                }),
+            },
+        },
+        jira: {
+            issue_created: {
+                action: 'integration_jira_issue_created',
+                properties: (props: {
+                    asset_type: string
+                    issue_type: boolean
+                }) => ({
+                    ...props,
+                }),
+            },
+            issue_linked: {
+                action: 'integration_jira_issue_linked',
+                properties: (props: {
+                    asset_type: string
+                    selected_issue_count: number
+                    total_issue_count: number
+                }) => ({
+                    ...props,
+                }),
+            },
+            issue_link_opened: {
+                action: 'integration_jira_issue_link_opened',
+            },
+            issue_unlinked: {
+                action: 'integration_jira_issue_unlinked',
+                properties: (props: { asset_type: string }) => ({
+                    ...props,
+                }),
+            },
+            issue_searched: {
+                action: 'integration_jira_issue_searched',
+                properties: (props: { asset_type: string }) => ({
+                    ...props,
+                }),
+            },
+            config_updated: {
+                action: 'integration_jira_config_updated',
+                properties: (props: { default_project_present: Boolean }) => ({
+                    ...props,
+                }),
+            },
+        },
+    },
+    readme: {
+        block: {
+            added: {
+                action: 'readme_block_added',
+                properties: ({
+                    assetType,
+                    blockType,
+                    trigger,
+                    embedService,
+                }: BLOCK_README_EVENT_INTERFACE): BLOCK_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    block_type: blockType,
+                    trigger,
+                    ...(embedService && {
+                        embed_service: embedService,
+                    }),
+                }),
+            },
+        },
+        formatting: {
+            added: {
+                action: 'readme_formatting_added',
+                properties: ({
+                    assetType,
+                    markType,
+                    trigger,
+                    alignment,
+                }: FORMATTING_README_EVENT_INTERFACE): FORMATTING_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    mark_type: markType,
+                    trigger,
+                    ...(alignment && {
+                        alignment,
+                    }),
+                }),
+            },
+        },
+        embed: {
+            added: {
+                action: 'readme_embed_added',
+                properties: ({
+                    assetType,
+                    application,
+                    trigger,
+                }: EMBED_README_EVENT_INTERFACE): EMBED_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    application,
+                    trigger,
+                }),
+            },
+            open_cta_clicked: {
+                action: 'readme_embed_open_cta_clicked',
+                properties: ({
+                    assetType,
+                    application,
+                    trigger,
+                }: EMBED_README_EVENT_INTERFACE): EMBED_README_EVENT_RETURN_INTERFACE => ({
+                    asset_type: assetType,
+                    application,
+                    trigger,
                 }),
             },
         },

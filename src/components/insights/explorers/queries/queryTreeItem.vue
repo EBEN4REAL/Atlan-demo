@@ -1,9 +1,9 @@
 <template>
     <div
+        :id="`${item.qualifiedName}`"
         class="h-8"
         :class="`w-full group ${item.qualifiedName}`"
         :data-test-id="item?.guid"
-        :id="`${item.qualifiedName}`"
     >
         <!-- {{ errorNode }} -->
 
@@ -29,60 +29,30 @@
                                 >{{ title(item) }}</span
                             >
                             <div
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                                 :id="`${item.qualifiedName}-menu`"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                             >
-                                <a-dropdown
-                                    :trigger="['click']"
+                                <InsightsThreeDotMenu
                                     @click.stop="() => {}"
-                                    @visibleChange="addBackground"
+                                    :options="dropdownFolderOptions"
+                                    :item="item"
                                 >
-                                    <div class="px-2" v-if="hasWritePermission">
-                                        <AtlanIcon
-                                            icon="KebabMenuHorizontal"
-                                            class="w-4 h-4 my-auto"
-                                        ></AtlanIcon>
-                                    </div>
-                                    <template #overlay>
-                                        <a-menu>
-                                            <!-- RENAME FOLDER PERMISSIONS -->
-                                            <a-menu-item
-                                                key="rename"
-                                                @click="renameFolder"
-                                                >Rename folder</a-menu-item
+                                    <template #menuTrigger>
+                                        <div
+                                            class="pl-1"
+                                            v-if="hasWritePermission"
+                                        >
+                                            <div
+                                                class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
                                             >
-                                            <a-menu-item
-                                                key="newQuery"
-                                                @click="newQuery"
-                                                >New query</a-menu-item
-                                            >
-
-                                            <a-menu-item
-                                                key="ChangeFolder"
-                                                @click="
-                                                    () => {
-                                                        removeBackground()
-                                                        showFolderPopover = true
-                                                    }
-                                                "
-                                                >Move folder</a-menu-item
-                                            >
-                                            <!-- DELETE FOLDER PERMISSIONS -->
-                                            <a-menu-item
-                                                key="deleteFolder"
-                                                class="text-red-600"
-                                                @click="
-                                                    () => {
-                                                        removeBackground()
-                                                        showDeletePopover = true
-                                                    }
-                                                "
-                                                >Delete folder</a-menu-item
-                                            >
-                                        </a-menu>
-                                        <!-- --------------------- -->
+                                                <AtlanIcon
+                                                    icon="KebabMenuHorizontal"
+                                                    class="w-4 h-4 my-auto"
+                                                ></AtlanIcon>
+                                            </div>
+                                        </div>
                                     </template>
-                                </a-dropdown>
+                                </InsightsThreeDotMenu>
                             </div>
                         </div>
                     </div>
@@ -96,140 +66,17 @@
                 </div>
                 <!------------------------------->
                 <!-- Popover Allowed -->
+
                 <PopoverAsset
+                    v-else-if="item.typeName === 'Query'"
                     :item="item"
                     placement="right"
-                    mouseEnterDelay="0.6"
-                    v-else-if="item.typeName === 'Query'"
+                    mouse-enter-delay="0.6"
+                    @previewAsset="openSidebar"
                 >
-                    <template #extraHeaders>
-                        <div
-                            class="flex w-full item-center"
-                            v-if="
-                                item?.attributes?.parent?.typeName ===
-                                'Collection'
-                            "
-                        >
-                            <div class="flex items-center w-full">
-                                <div
-                                    class="w-1 h-1 mx-2 rounded-full -mt-0.5"
-                                    style="background-color: #c4c4c4"
-                                ></div>
-                                <div class="flex items-center w-full h-full">
-                                    <div
-                                        class="relative w-4 h-4 mb-1 mr-1 overflow-hidden"
-                                    >
-                                        <AtlanIcon
-                                            v-if="
-                                                item?.attributes?.parent
-                                                    ?.typeName === 'Folder'
-                                            "
-                                            icon="FolderClosed"
-                                            class="w-4 h-4 mb-2"
-                                        />
-
-                                        <span
-                                            v-else
-                                            class="w-4 h-4 mr-1 -mt-1 text-sm"
-                                            >{{
-                                                item?.attributes?.parent
-                                                    ?.attributes?.icon
-                                                    ? item?.attributes?.parent
-                                                          ?.attributes?.icon
-                                                    : '🗃'
-                                            }}</span
-                                        >
-                                    </div>
-
-                                    <span class="w-11/12">
-                                        <Tooltip
-                                            clampPercentage="99%"
-                                            :tooltip-text="
-                                                item?.attributes?.parent
-                                                    ?.attributes?.name
-                                            "
-                                            :rows="1"
-                                        />
-                                    </span>
-
-                                    <!-- <span></span> -->
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            class="flex w-full item-center"
-                            v-if="
-                                item?.attributes?.parent?.typeName === 'Folder'
-                            "
-                        >
-                            <div class="flex items-center w-full">
-                                <div
-                                    class="w-1 h-1 mx-2 rounded-full -mt-0.5"
-                                    style="background-color: #c4c4c4"
-                                ></div>
-                                <div class="flex items-center w-full h-full">
-                                    <div
-                                        class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
-                                    >
-                                        <AtlanIcon
-                                            icon="CollectionIconSmall"
-                                            class="w-4 h-4 mb-2"
-                                        />
-                                    </div>
-
-                                    <!-- <span>{{ collectionName }}</span> -->
-
-                                    <span class="w-11/12">
-                                        <Tooltip
-                                            :tooltip-text="collectionName"
-                                            :rows="1"
-                                            clampPercentage="99%"
-                                        />
-                                    </span>
-                                </div>
-                            </div>
-                            <!-- <div class="flex items-center">
-                                <div
-                                    class="w-1 h-1 mx-2 rounded-full -mt-0.5"
-                                    style="background-color: #c4c4c4"
-                                ></div>
-                                <div class="flex items-center h-full">
-                                    <div
-                                        class="relative w-4 h-4 mb-0.5 mr-1 overflow-hidden"
-                                    >
-                                        <AtlanIcon
-                                            icon="FolderClosed"
-                                            class="h-4 mb-2"
-                                        />
-                                    </div>
-
-                                    <span>{{
-                                        item?.attributes?.parent?.attributes
-                                            ?.name
-                                    }}</span>
-                                </div>
-                            </div> -->
-                        </div>
-                    </template>
-
-                    <template #button>
-                        <AtlanBtn
-                            class="flex-none px-0"
-                            size="sm"
-                            color="minimal"
-                            padding="compact"
-                            style="height: fit-content"
-                            @click="openSidebar"
-                        >
-                            <span class="text-primary whitespace-nowrap">
-                                Show Preview</span
-                            >
-                            <AtlanIcon icon="ArrowRight" class="text-primary" />
-                        </AtlanBtn>
-                    </template>
                     <div
-                        class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                         :id="`${item.qualifiedName}`"
+                        class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                     >
                         <div class="parent-ellipsis-container py-1.5 w-11/12">
                             <AtlanIcon
@@ -253,12 +100,12 @@
                             >
 
                             <div
-                                class="absolute flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                                class="absolute flex items-center text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                                 :class="[
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                        : 'bg-gradient-to-l from-gray-light via-gray-light',
-                                    hasWritePermission ? 'right-8' : 'right-0',
+                                        : 'bg-gradient-to-l from-tree-light-color via-tree-light-color',
+                                    hasWritePermission ? 'right-7' : 'right-0',
                                 ]"
                             >
                                 <div
@@ -268,126 +115,63 @@
                                 >
                                     <a-tooltip color="#363636" placement="top">
                                         <template #title>Run Query</template>
-
-                                        <AtlanIcon
-                                            icon="Play"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : ''
-                                            "
-                                            class="w-4 h-4 my-auto outline-none"
-                                        ></AtlanIcon>
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        >
+                                            <AtlanIcon
+                                                icon="Play"
+                                                class="w-4 h-4 my-auto outline-none"
+                                            ></AtlanIcon>
+                                        </div>
                                     </a-tooltip>
                                 </div>
 
                                 <div
-                                    class="pl-2"
+                                    class="pl-1"
                                     @click.stop="
                                         () => actionClick('info', item)
                                     "
-                                    :data-test-id="'insert-in-editor'"
                                 >
                                     <a-tooltip color="#363636" placement="top">
                                         <template #title
                                             >Open preview sidebar</template
                                         >
-                                        <AtlanIcon
-                                            icon="SidebarSwitch"
-                                            :class="
-                                                item?.selected
-                                                    ? 'tree-light-color'
-                                                    : ''
-                                            "
-                                            class="w-4 h-4 my-auto outline-none"
-                                        ></AtlanIcon>
+                                        <div
+                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        >
+                                            <AtlanIcon
+                                                icon="SidebarSwitch"
+                                                class="w-4 h-4 my-auto outline-none"
+                                            ></AtlanIcon>
+                                        </div>
                                     </a-tooltip>
                                 </div>
                             </div>
                             <div
-                                class="absolute top-0 flex items-center h-full text-gray-500 opacity-0 right-2 margin-align-top group-hover:opacity-100"
                                 :id="`${item.qualifiedName}-menu`"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                                @click.stop="() => {}"
                             >
-                                <a-dropdown
-                                    :trigger="['click']"
-                                    @click.stop="() => {}"
-                                    @visibleChange="addBackground"
+                                <InsightsThreeDotMenu
+                                    :options="dropdownQueryOptions"
+                                    :item="item"
                                 >
-                                    <div class="pl-2" v-if="hasWritePermission">
-                                        <AtlanIcon
-                                            icon="KebabMenuHorizontal"
-                                            class="w-4 h-4 my-auto"
-                                        ></AtlanIcon>
-                                    </div>
-                                    <template #overlay>
-                                        <a-menu class="py-2">
-                                            <a-menu-item
-                                                class="px-4 py-2 text-sm"
-                                                key="rename"
-                                                @click="renameFolder"
-                                                >Rename query</a-menu-item
+                                    <template #menuTrigger>
+                                        <div
+                                            class="pl-1"
+                                            v-if="hasWritePermission"
+                                        >
+                                            <div
+                                                class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
                                             >
-
-                                            <a-menu-item
-                                                key="edit"
-                                                class="px-4 py-2 text-sm"
-                                                @click="
-                                                    () => {
-                                                        removeBackground()
-                                                        actionClick(
-                                                            'info',
-                                                            item
-                                                        )
-                                                    }
-                                                "
-                                                >Edit query</a-menu-item
-                                            >
-
-                                            <a-menu-item
-                                                key="ChangeFolder"
-                                                class="px-4 py-2 text-sm"
-                                                @click="
-                                                    () => {
-                                                        removeBackground()
-                                                        showFolderPopover = true
-                                                    }
-                                                "
-                                                >Move query</a-menu-item
-                                            >
-                                            <a-menu-item
-                                                key="duplicate"
-                                                class="px-4 py-2 text-sm"
-                                                @click="
-                                                    () => {
-                                                        removeBackground()
-                                                        actionClick(
-                                                            'duplicate',
-                                                            item
-                                                        )
-                                                    }
-                                                "
-                                                >Duplicate query</a-menu-item
-                                            >
-                                            <a-menu-item
-                                                key="shareQuery"
-                                                class="px-4 py-2 text-sm"
-                                                @click="copyURL"
-                                                >Copy link</a-menu-item
-                                            >
-                                            <a-menu-item
-                                                key="deleteFolder"
-                                                class="px-4 py-2 text-sm text-red-600"
-                                                @click="
-                                                    () => {
-                                                        removeBackground()
-                                                        showDeletePopover = true
-                                                    }
-                                                "
-                                                >Delete query</a-menu-item
-                                            >
-                                        </a-menu>
+                                                <AtlanIcon
+                                                    icon="KebabMenuHorizontal"
+                                                    class="w-4 h-4 my-auto"
+                                                ></AtlanIcon>
+                                            </div>
+                                        </div>
                                     </template>
-                                </a-dropdown>
+                                </InsightsThreeDotMenu>
                             </div>
                         </div>
                     </div>
@@ -399,10 +183,10 @@
         <template #content> -->
     <TreeDeletePopover
         :item="item"
+        :is-saving="isDeleteLoading"
+        :show-delete-popover="showDeletePopover"
         @cancel="showDeletePopover = false"
         @delete="() => delteItem(item?.typeName)"
-        :isSaving="isDeleteLoading"
-        :showDeletePopover="showDeletePopover"
     />
     <!-- </template>
     </a-popover> -->
@@ -436,14 +220,29 @@
         </template>
     </a-popover> -->
 
+    <a-modal
+        :visible="scheduleQueryModal"
+        :footer="null"
+        :closable="false"
+        width="700px"
+        :destroyOnClose="true"
+    >
+        <ScheduleQuery
+            :item="item"
+            v-model:scheduleQueryModal="scheduleQueryModal"
+            style="min-height: 610px"
+            class="rounded-lg"
+        />
+    </a-modal>
+
     <a-popover :visible="showFolderPopover" placement="rightTop">
         <template #content>
             <div>
                 <QueryFolderSelector
                     :connector="currentConnector"
-                    :savedQueryType="savedQueryType"
+                    :saved-query-type="savedQueryType"
+                    :selected-new-folder="item"
                     @folderChange="getSelectedFolder"
-                    :selectedNewFolder="item"
                 />
 
                 <div class="flex justify-end w-full pt-1 pb-4 pr-4">
@@ -457,8 +256,8 @@
                     <a-button
                         class="px-5 text-sm rounded"
                         type="primary"
-                        @click="changeFolder(item)"
                         :loading="isUpdating"
+                        @click="changeFolder(item)"
                         >Move</a-button
                     >
                 </div>
@@ -481,11 +280,14 @@
         computed,
     } from 'vue'
 
+    import StatusBadge from '@common/badge/status/index.vue'
+    import { useRoute, useRouter } from 'vue-router'
+    import Tooltip from '@common/ellipsis/index.vue'
+    import { message } from 'ant-design-vue'
     import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
     import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
     import { useAccess } from '~/components/insights/common/composables/useAccess'
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
-    import StatusBadge from '@common/badge/status/index.vue'
     import TreeDeletePopover from '~/components/insights/common/treeDeletePopover.vue'
     import QueryFolderSelector from './queryFolderSelector2.vue'
 
@@ -498,7 +300,6 @@
 
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import { useInlineTab } from '~/components/insights/common/composables/useInlineTab'
-    import { useRoute, useRouter } from 'vue-router'
     import { useSavedQuery } from '~/components/insights/explorers/composables/useSavedQuery'
     import { useEditor } from '~/components/insights/common/composables/useEditor'
     import AtlanBtn from '@/UI/button.vue'
@@ -506,6 +307,7 @@
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
     import { LINE_ERROR_NAMES } from '~/components/insights/common/constants'
     import Tooltip from '@common/ellipsis/index.vue'
+    import ScheduleQuery from '~/components/insights/explorers/queries/schedule/index.vue'
 
     // vqb icons
     import Vqb from '~/assets/images/icons/Vqb.svg?raw'
@@ -518,6 +320,8 @@
     import QueryVerified from '~/assets/images/icons/query-verified.svg?raw'
     import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg?raw'
     import QueryDraft from '~/assets/images/icons/query-draft.svg?raw'
+    import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
+    import { MenuItem, SubMenu } from 'ant-design-vue'
 
     const {
         inlineTabRemove,
@@ -531,8 +335,6 @@
         setErrorDecorations,
     } = useEditor()
 
-    import { message } from 'ant-design-vue'
-
     export default defineComponent({
         components: {
             StatusBadge,
@@ -541,6 +343,8 @@
             PopoverAsset,
             AtlanBtn,
             Tooltip,
+            InsightsThreeDotMenu,
+            ScheduleQuery,
         },
         props: {
             item: {
@@ -604,6 +408,7 @@
 
             const route = useRoute()
             const router = useRouter()
+            const scheduleQueryModal = ref(false)
 
             const inlineTabs = inject('inlineTabs') as Ref<
                 activeInlineTabInterface[]
@@ -635,7 +440,7 @@
             const updateAssetCheck = inject('updateAssetCheck') as Ref<Boolean>
 
             const collectionName = computed(() => {
-                let col = queryCollections.value?.find(
+                const col = queryCollections.value?.find(
                     (col) =>
                         col.attributes.qualifiedName ===
                         item.value.attributes.collectionQualifiedName
@@ -669,7 +474,7 @@
                 'activeInlineTabKey'
             ) as Ref<string>
 
-            //add comment
+            // add comment
             const { openSavedQueryInNewTabAndRun, duplicateSavedQuery } =
                 useSavedQuery(inlineTabs, activeInlineTab, activeInlineTabKey)
 
@@ -746,7 +551,7 @@
                             closeAssetSidebar(activeInlineTab.value)
                         } else {
                             const activeInlineTabCopy: activeInlineTabInterface =
-                                Object.assign({}, activeInlineTab.value)
+                                { ...activeInlineTab.value }
 
                             // console.log('query entity1: ', t)
                             activeInlineTabCopy.assetSidebar.assetInfo =
@@ -786,8 +591,8 @@
             const editorInstance = inject('editorInstance') as Ref<any>
             const monacoInstance = inject('monacoInstance') as Ref<any>
 
-            let el1 = document.getElementById(`${item.value.qualifiedName}`)
-            let el2 = document.getElementById(
+            const el1 = document.getElementById(`${item.value.qualifiedName}`)
+            const el2 = document.getElementById(
                 `${item.value.qualifiedName}-menu`
             )
 
@@ -825,8 +630,10 @@
 
             const addBackground = (visible) => {
                 console.log('element: ', visible)
-                let el1 = document.getElementById(`${item.value.qualifiedName}`)
-                let el2 = document.getElementById(
+                const el1 = document.getElementById(
+                    `${item.value.qualifiedName}`
+                )
+                const el2 = document.getElementById(
                     `${item.value.qualifiedName}-menu`
                 )
 
@@ -840,8 +647,10 @@
             }
 
             const removeBackground = () => {
-                let el1 = document.getElementById(`${item.value.qualifiedName}`)
-                let el2 = document.getElementById(
+                const el1 = document.getElementById(
+                    `${item.value.qualifiedName}`
+                )
+                const el2 = document.getElementById(
                     `${item.value.qualifiedName}-menu`
                 )
                 if (el1) {
@@ -868,21 +677,21 @@
                 )
                 input.classList.add(`${item.value.qualifiedName}-rename-input`)
 
-                let div = document.createElement('div')
+                const div = document.createElement('div')
                 div.classList.add('flex', 'items-center', 'active-input', 'h-8')
 
-                let folderCloseSvg =
+                const folderCloseSvg =
                     '<span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.49951 2H3.49951C2.94723 2 2.49951 2.44772 2.49951 3V11.5C2.49951 12.0523 2.94723 12.5 3.49951 12.5H11.4995C12.0518 12.5 12.4995 12.0523 12.4995 11.5V5C12.4995 4.44772 12.0518 4 11.4995 4H7.49951C6.94723 4 6.49951 3.55228 6.49951 3C6.49951 2.44772 6.0518 2 5.49951 2Z" fill="white" stroke="#5277D7"/><path d="M13.3266 6H2.61167C2.01741 6 1.55428 6.51516 1.61731 7.10607L2.20398 12.6061C2.2582 13.1144 2.68711 13.5 3.19833 13.5H12.4466C12.9379 13.5 13.3564 13.1431 13.4341 12.658L14.3141 7.15799C14.4113 6.55041 13.9419 6 13.3266 6Z" fill="white" stroke="#5277D7"/></svg></span>'
 
-                let folderOpenSvg =
+                const folderOpenSvg =
                     '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.49951 2H3.49951C2.94723 2 2.49951 2.44771 2.49951 3V12.3C2.49951 12.8523 2.94723 13.3 3.49951 13.3H11.4995C12.0518 13.3 12.4995 12.8523 12.4995 12.3V5C12.4995 4.44772 12.0518 4 11.4995 4H7.49951C6.94723 4 6.49951 3.55228 6.49951 3C6.49951 2.44772 6.0518 2 5.49951 2Z" fill="white" stroke="#5277D7"/><path d="M14.3433 7H5.48612C5.07234 7 4.7013 7.25483 4.55277 7.64102L2.822 12.141C2.57008 12.796 3.05357 13.5 3.75535 13.5H12.6125C13.0263 13.5 13.3973 13.2452 13.5459 12.859L15.2766 8.35898C15.5286 7.70398 15.0451 7 14.3433 7Z" fill="white" stroke="#5277D7"/></svg>'
 
-                let folderSvg = expandedKeys.value.find(
+                const folderSvg = expandedKeys.value.find(
                     (key) => key === item.value.key
                 )
                     ? folderOpenSvg
                     : folderCloseSvg
-                let querySvg =
+                const querySvg =
                     '<span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="#5277D7"/><path d="M4 6L6 8L4 10" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11H12" stroke="#5277D7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
                 let iconName: string = getEntityStatusIcon(
                     assetType(item.value),
@@ -983,14 +792,14 @@
                                     activeInlineTab?.value.queryId ===
                                         item?.value.guid
                                 ) {
-                                    let activeInlineTabCopy: activeInlineTabInterface =
+                                    const activeInlineTabCopy: activeInlineTabInterface =
                                         JSON.parse(
                                             JSON.stringify(
                                                 toRaw(activeInlineTab.value)
                                             )
                                         )
                                     activeInlineTabCopy.attributes.name =
-                                        input.value
+                                        newName
                                     activeInlineTabCopy.label = newName
 
                                     if (
@@ -1121,14 +930,14 @@
                                     activeInlineTab?.value.queryId ===
                                         item?.value.guid
                                 ) {
-                                    let activeInlineTabCopy: activeInlineTabInterface =
+                                    const activeInlineTabCopy: activeInlineTabInterface =
                                         JSON.parse(
                                             JSON.stringify(
                                                 toRaw(activeInlineTab.value)
                                             )
                                         )
                                     activeInlineTabCopy.attributes.name =
-                                        input.value
+                                        newName
                                     activeInlineTabCopy.label = newName
 
                                     if (
@@ -1206,6 +1015,14 @@
                 })
             }
 
+            const toggleScheduleQueryModal = (
+                e: any,
+                cancel: boolean | undefined
+            ) => {
+                if (cancel) {
+                } else scheduleQueryModal.value = !scheduleQueryModal.value
+            }
+
             let isDeleteLoading = ref(false)
 
             const pushGuidToURL = (guid: string | undefined) => {
@@ -1220,8 +1037,8 @@
             }
 
             const delteItem = (type: 'Query' | 'Folder') => {
-                let key = item.value.guid
-                let parentGuid = item?.value?.attributes?.parent?.guid
+                const key = item.value.guid
+                const parentGuid = item?.value?.attributes?.parent?.guid
                 console.log('delete item: ', item)
                 const { data, error, isLoading } = Insights.DeleteEntity(
                     item.value.guid,
@@ -1353,7 +1170,7 @@
                 }
             }
 
-            let selectedFolder = ref(null)
+            const selectedFolder = ref(null)
 
             const getSelectedFolder = (folder) => {
                 if (folder) {
@@ -1369,8 +1186,8 @@
 
             const changeFolder = (item: any) => {
                 // console.log('item to move: ', item)
-                let previousParentGuId = item.attributes.parent.guid
-                let selectedParentGuid = selectedFolder?.value?.guid
+                const previousParentGuId = item.attributes.parent.guid
+                const selectedParentGuid = selectedFolder?.value?.guid
 
                 // console.log('entity item parent: ', previousParentGuId)
                 // console.log('entity selected folder: ', selectedParentGuid)
@@ -1508,8 +1325,9 @@
 
             const openSidebar = () => {
                 removeBackground()
-                const activeInlineTabCopy: activeInlineTabInterface =
-                    Object.assign({}, activeInlineTab.value)
+                const activeInlineTabCopy: activeInlineTabInterface = {
+                    ...activeInlineTab.value,
+                }
                 activeInlineTabCopy.assetSidebar.assetInfo = item.value
                 activeInlineTabCopy.assetSidebar.isVisible = true
                 openAssetSidebar(activeInlineTabCopy, 'not_editor')
@@ -1517,17 +1335,129 @@
 
             const copyURL = () => {
                 removeBackground()
-                const URL =
-                    window.location.host +
-                    window.location.pathname +
-                    `?id=` +
-                    item?.value?.guid
+                const URL = `${
+                    window.location.host + window.location.pathname
+                }?id=${item?.value?.guid}`
                 copyToClipboard(URL)
                 message.success('Link Copied!')
                 useAddEvent('insights', 'query', 'link_copied', undefined)
             }
 
+            const dropdownQueryOptions = [
+                {
+                    title: 'Schedule',
+                    key: 'schedule',
+                    class: '',
+                    component: MenuItem,
+                    disabled: false,
+                    handleClick: toggleScheduleQueryModal,
+                },
+                {
+                    title: 'Copy link',
+                    key: 'copyLink',
+                    class: 'border-b border-gray-300',
+                    component: MenuItem,
+                    disabled: false,
+                    handleClick: copyURL,
+                },
+                {
+                    title: 'Duplicate',
+                    key: 'duplicate',
+                    class: '',
+                    disabled: false,
+                    component: MenuItem,
+                    handleClick: ({ item }) => {
+                        actionClick('duplicate', item)
+                    },
+                },
+                {
+                    title: 'Move Query',
+
+                    key: 'move',
+                    class: 'border-b border-gray-300',
+                    component: MenuItem,
+                    disabled: false,
+                    handleClick: () => {
+                        showFolderPopover.value = true
+                    },
+                },
+                {
+                    title: 'Rename',
+
+                    key: 'rename',
+                    class: '',
+                    component: MenuItem,
+                    disabled: false,
+                    handleClick: renameFolder,
+                },
+                {
+                    title: 'Edit',
+
+                    key: 'edit',
+                    class: 'border-b border-gray-300',
+                    component: MenuItem,
+                    disabled: false,
+                    handleClick: ({ item }) => {
+                        actionClick('info', item)
+                    },
+                },
+                {
+                    title: 'Delete',
+
+                    key: 'delete',
+                    class: 'text-red-600',
+                    component: MenuItem,
+                    disabled: false,
+                    handleClick: () => {
+                        showDeletePopover.value = true
+                    },
+                },
+            ]
+            const dropdownFolderOptions = [
+                {
+                    title: 'Rename folder',
+                    key: 'rename',
+                    class: '',
+                    disabled: false,
+                    component: MenuItem,
+                    handleClick: renameFolder,
+                },
+                {
+                    title: 'New query',
+                    key: 'newQuery',
+                    component: MenuItem,
+                    class: '',
+                    disabled: false,
+                    handleClick: newQuery,
+                },
+                {
+                    title: 'Move folder',
+                    key: 'moveFolder',
+                    component: MenuItem,
+                    class: 'border-b border-gray-300',
+                    disabled: false,
+                    handleClick: () => {
+                        showFolderPopover.value = true
+                    },
+                },
+                {
+                    title: 'Delete folder',
+
+                    key: 'delete',
+                    class: 'text-red-600',
+                    component: MenuItem,
+                    disabled: false,
+                    handleClick: () => {
+                        showDeletePopover.value = true
+                    },
+                },
+            ]
+
             return {
+                dropdownFolderOptions,
+                dropdownQueryOptions,
+                scheduleQueryModal,
+                toggleScheduleQueryModal,
                 evaluatePermisson,
                 permissions,
                 canUserDeleteFolder,
@@ -1588,14 +1518,14 @@
     }
     /* Tree selection actions bg change */
     .tree-light-color {
-        background-color: #dbe9fe;
+        @apply bg-new-gray-300;
     }
     .via-tree-light-color {
-        --tw-gradient-stops: var(--tw-gradient-from), #dbe9fe,
+        --tw-gradient-stops: var(--tw-gradient-from), #eff1f5,
             var(--tw-gradient-to, rgba(244, 246, 253, 0)) !important;
     }
     .from-tree-light-color {
-        --tw-gradient-from: #dbe9fe !important;
+        --tw-gradient-from: #eff1f5 !important;
     }
     .parent-ellipsis-container {
         display: flex;

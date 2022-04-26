@@ -167,6 +167,7 @@
     import Pagination from '@/common/list/pagination.vue'
     import useRoles from '~/composables/roles/useRoles'
     import useUserStore from '~/store/users'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'UsersView',
@@ -339,7 +340,9 @@
                     closePreview()
                 } else {
                     setUserUniqueAttribute(user.id)
-                    openPreview(null, activeTab)
+                    if (user.status_object.status.toLowerCase() === 'invited')
+                        openPreview({ blacklisted: ['assets'] }, activeTab)
+                    else openPreview({}, activeTab)
                     selectedUserId.value = user.id
                 }
             }
@@ -452,6 +455,9 @@
                         reloadTable()
                         // update user type aggregations in filter dropdown
                         userTypeAgg.value = getUserTypeAggregations().value
+                        useAddEvent('admin', 'user', 'removed', {
+                            status: 'Invited',
+                        })
                     } else if (error && error.value) {
                         message.error({
                             key: 'remoke_invite',
@@ -488,6 +494,14 @@
                                 }`,
                                 duration: 2,
                             })
+                            if (user.enabled)
+                                useAddEvent('admin', 'user', 'removed', {
+                                    status: user.status_object.status,
+                                })
+                            else
+                                useAddEvent('admin', 'user', 'enabled', {
+                                    status: user.status_object.status,
+                                })
                             // update user type aggregations in filter dropdown
                             userTypeAgg.value = getUserTypeAggregations().value
                         } else if (error && error.value) {

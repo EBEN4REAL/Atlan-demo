@@ -89,6 +89,7 @@
                                     <AtlanButton2
                                         class="mx-auto"
                                         size="large"
+                                        prefixIcon="Add"
                                         :label="
                                             isSlackTab
                                                 ? 'Add Slack thread'

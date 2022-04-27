@@ -155,8 +155,10 @@ export default function useFacetUsers(
             // reseting the list if user has does a server search else this messes up the list index
             const filters = JSON.parse(params.value?.get('filter'))?.$and
             // as email verified filter is always applied, need to check if more than 1 is applied istead
-            if (filters?.length > 1) {
+            if(!config.noFilterPending && filters?.length > 1){
                 params.value.set('filter', '{"$and":[{"emailVerified":true}]}')
+            }
+            if (filters?.length > 1) {
                 mutate()
             }
         }
@@ -178,7 +180,7 @@ export default function useFacetUsers(
                 'filter',
                 JSON.stringify({
                     $and: [
-                        { emailVerified: true },
+                        ...(config.noFilterPending ? [] :[{ emailVerified: true }]),
                         {
                             $or: [
                                 { firstName: { $ilike: `%${value}%` } },

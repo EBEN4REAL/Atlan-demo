@@ -307,6 +307,7 @@
                             useAddEvent('admin', 'user', 'added', {
                                 count: emails.value.length,
                             })
+                            emails.value = [{ ...allRoles.member }]
                         } else if (error && error.value) {
                             // Since there might be errors associated with more
                             // than one email address, we display all of them.

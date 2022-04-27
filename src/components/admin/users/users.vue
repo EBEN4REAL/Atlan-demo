@@ -39,7 +39,7 @@
 
                         <AtlanButton2
                             color="secondary"
-                            :prefixIcon="
+                            :prefix-icon="
                                 filtersLength > 0 ? 'FilterDot' : 'Filter'
                             "
                             :label="`Filters
@@ -58,7 +58,7 @@
                     <AtlanButton2
                         v-if="loginWithEmail"
                         label="Invite Users"
-                        prefixIcon="AddUser"
+                        prefix-icon="AddUser"
                         @click="handleInviteUsers"
                     />
                 </div>
@@ -74,7 +74,7 @@
                     <AtlanButton2
                         color="secondary"
                         label="Try again"
-                        prefixIcon="Retry"
+                        prefix-icon="Retry"
                         @click="getUserList"
                     />
                 </div>
@@ -131,7 +131,6 @@
 
         <a-modal
             :visible="showInviteUserModal"
-            :destroy-on-close="true"
             :footer="null"
             :closable="false"
             :width="470"

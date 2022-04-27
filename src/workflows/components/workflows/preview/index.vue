@@ -115,7 +115,7 @@
             <div
                 v-if="
                     packageType(item) === 'connector' &&
-                    featureEnabledMap.value[WORKFLOW_CENTER_V2]
+                    featureEnabledMap[WORKFLOW_CENTER_V2]
                 "
                 class="px-5 space-y-1.5 text-sm"
             >

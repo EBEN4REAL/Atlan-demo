@@ -4,7 +4,7 @@
         :class="{ 'items-center justify-center': status }"
     >
         <template v-if="!status">
-            <div class="flex items-center px-5 py-4">
+            <div v-if="!isEdit" class="flex items-center px-5 py-4">
                 <a-tooltip
                     :mouseEnterDelay="1"
                     placement="bottomLeft"

@@ -12,9 +12,9 @@
                     </a-tooltip>
                 </template>
                 <div
+                    v-else
                     class="bg-gray-200 rounded-sm cursor-default"
                     :class="getRunClass(index)"
-                    v-else
                 ></div>
             </template>
         </div>
@@ -65,7 +65,7 @@
                         tempStatus === 'Failed' ||
                         tempStatus === 'Error'
                     ) {
-                        return 'bg-red-500 opacity-75 p-1'
+                        return 'bg-red-500 opacity-75 p-1 w-3 h-3'
                     } else if (tempStatus === 'Running') {
                         return 'bg-primary opacity-75 animate-pulse p-1 w-3 h-3'
                     } else {

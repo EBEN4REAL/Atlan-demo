@@ -1,5 +1,5 @@
 <template>
-    <div class="flex h-full overflow-y-hidden">
+    <div class="flex h-full overflow-y-hidden bg-white">
         <Loader v-if="isLoading" />
         <div
             v-else-if="!isLoading && error"
@@ -8,40 +8,48 @@
             <ErrorView />
         </div>
 
-        <div
-            v-else-if="configMap"
-            class="flex-1 h-full overflow-y-hidden bg-white"
-        >
-            <!-- <Setup
-                :workflowTemplate="packageObject"
-                :workflowObject="workflowObject"
-                :configMap="configMapParsed"
-                :isEdit="true"
-                :defaultValue="getGlobalArguments(workflowObject)"
-            ></Setup> -->
+        <template v-else-if="configMap">
             <Config
+                v-if="featureEnabledMap[WORKFLOW_CENTER_V2]"
                 :workflow-template="packageObject"
                 :workflow-object="workflowObject"
                 :config-map="configMapParsed"
                 :default-value="getGlobalArguments(workflowObject)"
             />
-        </div>
+            <template v-else>
+                <Setup
+                    :workflowTemplate="packageObject"
+                    :workflowObject="workflowObject"
+                    :configMap="configMapParsed"
+                    :isEdit="true"
+                    :defaultValue="getGlobalArguments(workflowObject)"
+                />
+                <Preview :item="packageObject" mode="package" />
+            </template>
+        </template>
     </div>
 </template>
 
 <script lang="ts">
     // Vue
     import { defineComponent, computed, inject, toRefs } from 'vue'
-    import Setup from '~/workflowsv2/components/marketplace/setup/setup.vue'
+    import Setup from '~/workflows/components/packages/setup/index.vue'
     import Config from '~/workflowsv2/components/profile/config.vue'
     import { useConfigMapByName } from '~/workflows/composables/package/useConfigMapByName'
     import Loader from '@/common/loaders/page.vue'
     import ErrorView from '@/common/error/discover.vue'
+    import Preview from '~/workflows/components/workflows/preview/index.vue'
+
     import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
+
+    import {
+        featureEnabledMap,
+        WORKFLOW_CENTER_V2,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'WorkflowConfig',
-        components: { Setup, Loader, ErrorView, Config },
+        components: { Setup, Loader, ErrorView, Config, Preview },
         // mixins: [WorkflowMixin],
         props: {
             workflowObject: {
@@ -97,6 +105,8 @@
                 error,
                 configMapParsed,
                 getGlobalArguments,
+                featureEnabledMap,
+                WORKFLOW_CENTER_V2,
             }
         },
     })

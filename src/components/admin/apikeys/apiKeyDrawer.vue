@@ -87,7 +87,7 @@
                         </template>
                     </a-popover>
                 </div>
-                <div class="mb-4" v-if="!apiKeyDirty.id">
+                <div v-if="!apiKeyDirty.id" class="mb-4">
                     <div class="mb-2 mr-2 text-gray-500">Expiry</div>
                     <a-dropdown :trigger="['click']">
                         <a-button
@@ -142,17 +142,17 @@
                                                 </div>
                                             </template>
                                             <div
-                                                @click.stop="() => {}"
                                                 class="flex flex-col items-center py-2 pb-0.5 border-t border-300 hover:text-primary"
+                                                @click.stop="() => {}"
                                             >
                                                 <div
                                                     class="flex items-center justify-start w-full mb-2"
                                                 >
                                                     <a-radio
+                                                        :value="'custom'"
                                                         @click="
                                                             showDatePicker = true
                                                         "
-                                                        :value="'custom'"
                                                         >Custom</a-radio
                                                     >
                                                 </div>
@@ -168,7 +168,7 @@
                                                             validityDate
                                                         "
                                                         format="YYYY-MM-DD"
-                                                        :allowClear="true"
+                                                        :allow-clear="true"
                                                         :disabled-date="
                                                             disabledDate
                                                         "
@@ -227,12 +227,12 @@
                     <AtlanButton2
                         label="Download"
                         color="secondary"
-                        prefixIcon="Download"
+                        prefix-icon="Download"
                         @click="handleDownload"
                     />
 
                     <AtlanButton2
-                        prefixIcon="CopyOutlined"
+                        prefix-icon="CopyOutlined"
                         label="Copy"
                         @click="handleCopy"
                     />
@@ -252,7 +252,7 @@
                 <AtlanButton2
                     color="danger"
                     label="Delete"
-                    prefixIcon="Delete"
+                    prefix-icon="Delete"
                     @click="isDeletePopoverVisible = true"
                 />
 
@@ -278,7 +278,7 @@
                                 :loading="deleteAPIKeyLoading"
                                 :disabled="deleteAPIKeyLoading"
                                 color="danger"
-                                prefixIcon="Delete"
+                                prefix-icon="Delete"
                                 :label="
                                     deleteAPIKeyLoading ? 'Deleting' : 'Delete'
                                 "
@@ -298,7 +298,7 @@
 
                 <AtlanButton2
                     :loading="createUpdateLoading"
-                    :disabled="createUpdateLoading"
+                    :disabled="disabledButtonSaveUpdate"
                     :label="
                         createUpdateLoading
                             ? apiKeyDirty.id
@@ -325,7 +325,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, watch } from 'vue'
+    import { computed, defineComponent, ref, watch, toRefs } from 'vue'
     import dayjs, { Dayjs } from 'dayjs'
     import relativeTime from 'dayjs/plugin/relativeTime'
     import { useVModels } from '@vueuse/core'
@@ -371,6 +371,7 @@
         },
         emits: ['updateAPIKey', 'createAPIKey', 'closeDrawer'],
         setup(props, { emit }) {
+            const { createUpdateLoading, apiKey } = toRefs(props)
             const apiKeyDirty = ref({})
             const nameEmptyOnSubmit = ref(false)
             const addPersonaPopoverVisible = ref(false)
@@ -409,7 +410,7 @@
                     nameEmptyOnSubmit.value = true
                     return
                 }
-                //calculate validity seconds from validityDate in case of custom
+                // calculate validity seconds from validityDate in case of custom
                 if (validity.value === 'never') {
                     const validityUnixEpoch =
                         dayjs().unix() + DEFAULT_VALIDITY_IN_SECONDS
@@ -512,18 +513,57 @@
                     dayjs(current) > dayjs.unix(validityUnixEpoch).endOf('day')
                 )
             }
-            /* Following computed properties are reqd. only for displaying expiry date of existing API Key*/
+            /* Following computed properties are reqd. only for displaying expiry date of existing API Key */
             const validityDateStringRelative = computed(() => {
-                if (validityDate && validityDate.value) {
+                if (validityDate.value && validityDate.value) {
                     return capitalizeFirstLetter(validityDate.value.fromNow())
                 }
                 return ''
             })
             const validityDateString = computed(() => {
-                if (validityDate && validityDate.value) {
+                if (validityDate.value && validityDate.value) {
                     return formatDateTime(validityDate.value.format())
                 }
                 return ''
+            })
+            const comparePersona = (personasLocal, personasProp) => {
+                if (!personasLocal.length && !personasProp.length) {
+                    return true
+                }
+                if (personasLocal.length !== personasProp.length) {
+                    return false
+                }
+                if (personasLocal.length === personasProp.length) {
+                    let count = 0
+                    personasLocal.forEach((el) => {
+                        const finded = personasProp.find(
+                            (elc) => el.id === elc.id
+                        )
+                        if (finded) {
+                            count += 1
+                        }
+                    })
+                    if (personasLocal.length === count) {
+                        return true
+                    }
+                }
+                return false
+            }
+            const disabledButtonSaveUpdate = computed(() => {
+                if (
+                    apiKeyDirty.value.id &&
+                    apiKeyDirty.value.displayName ===
+                        apiKey.value.displayName &&
+                    apiKeyDirty.value.description ===
+                        apiKey.value.description &&
+                    comparePersona(
+                        apiKeyDirty.value.personas,
+                        apiKey.value.personas
+                    )
+                ) {
+                    return true
+                }
+                return createUpdateLoading.value
             })
             return {
                 apiKeyDirty,
@@ -545,6 +585,7 @@
                 showDatePicker,
                 validityDateStringRelative,
                 validityDateString,
+                disabledButtonSaveUpdate,
             }
         },
     })

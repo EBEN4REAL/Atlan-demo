@@ -92,7 +92,9 @@
                         :name="classification.name"
                         :display-name="classification?.displayName"
                         :is-propagated="isPropagated(classification)"
-                        :allow-delete="allowDelete"
+                        :allow-delete="
+                            allowDelete && !isPropagated(classification)
+                        "
                         :color="classification.options?.color"
                         @delete="handleDeleteClassification"
                         :created-by="classification?.createdBy"
@@ -243,7 +245,7 @@
 
             const handleDeleteClassification = (name) => {
                 localValue.value = localValue.value.filter(
-                    (i) => i.typeName !== name
+                    (i) => i.typeName !== name || isPropagated(i)
                 )
                 selectedValue.value = {
                     classifications: modelValue.value
@@ -376,14 +378,6 @@
                 requestLoading.value = false
             }
             const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
-
-            watch(
-                selectedValue,
-                () => console.log('hello', selectedValue.value),
-                {
-                    immediate: true,
-                }
-            )
 
             return {
                 localValue,

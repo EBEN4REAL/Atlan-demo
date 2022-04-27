@@ -41,6 +41,7 @@
                         class="inputHeight"
                         placeholder="Email"
                         @keyup.enter="onAddNewUser"
+                        @change="duplicateEmail = []"
                     >
                     </a-input>
                     <a-select
@@ -60,6 +61,12 @@
                             <span class="capitalize">{{ role.name }}</span>
                         </a-select-option>
                     </a-select>
+                </div>
+                <div
+                    v-if="duplicateEmail.includes(index)"
+                    class="mt-1 text-xs text-error"
+                >
+                    duplicate email
                 </div>
                 <div
                     v-if="emails.length > 1"
@@ -188,7 +195,7 @@
         setup(props, context) {
             const defaultRoleOnAdd = ref('member')
             const { roleList } = useRoles()
-
+            const duplicateEmail = ref([])
             const emails = ref([{ ...allRoles.member }])
             const loading = ref(false)
             const isSubmitInvites = computed(() => {
@@ -215,6 +222,7 @@
                 if (newInput) newInput.focus()
             })
             const deleteUserInput = (index) => {
+                duplicateEmail.value = []
                 emails.value.splice(index, 1)
                 if (!emails.value.length) {
                     emails.value = [{ ...allRoles.member }]
@@ -229,7 +237,6 @@
             watch(
                 emails,
                 (newVal, oldVal) => {
-                    console.log(newVal.length, oldVal.length)
                     if (newVal.length !== oldVal.length)
                         nextTick(() => {
                             const newInput = document.getElementById(
@@ -284,8 +291,25 @@
                     )
                 return !invalidFields.length
             }
+            const checkDuplicate = () => {
+                const duplicateIndex = []
+                emails.value.forEach((el, i) => {
+                    const filtered = emails.value.filter(
+                        (elc) => elc.value === el.value
+                    )
+                    if (filtered.length >= 2) {
+                        duplicateIndex.push(i)
+                    }
+                })
+                duplicateEmail.value = duplicateIndex
+                if (duplicateIndex.length) {
+                    return true
+                }
+                return false
+            }
             const handleSubmit = async (event) => {
                 // event.preventDefault() // no need to handle not in a form or lin
+                if (checkDuplicate()) return
                 const allValidEmails = validateEmails()
                 if (!allValidEmails) return
                 const requestPayload = ref({
@@ -342,6 +366,7 @@
                 STATES,
                 state,
                 groupList,
+                duplicateEmail,
             }
         },
         data() {

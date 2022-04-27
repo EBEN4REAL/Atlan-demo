@@ -159,10 +159,6 @@ export default function useEventGraph({
         return res
     }
 
-    // isNodeRendered
-    const isNodeRendered = (nodeId) =>
-        graph.value.getNodes().find((x) => x.id === nodeId)
-
     // isNodeHidden
     const isNodeHidden = (nodeId, returnBoolean) => {
         let res = {
@@ -1187,10 +1183,8 @@ export default function useEventGraph({
             selectedPortId.value &&
             (isNodePortInCurrPortLineage(node.id) ||
                 activeNodesToggled.value[node.id])
-        ) {
-            // controlToggleOfActiveNode(node)
+        )
             return
-        }
 
         if (isExpandedNode(node.id)) {
             removePorts(node)
@@ -1291,103 +1285,6 @@ export default function useEventGraph({
                 })
 
         node.toFront()
-    }
-
-    // isSelectedPortNode
-    const isSelectedPortNode = (nodeId) => {
-        const selectedPortNode = getPortNode(selectedPortId.value)
-        return selectedPortNode?.id === nodeId
-    }
-
-    // controlToggleOfActiveNode
-    const controlToggleOfActiveNode = (node) => {
-        if (!activeNodesToggled.value[node.id]) {
-            const { ports } = node.getData()
-
-            activeNodesToggled.value[node.id] = {
-                ports,
-                newEdgesId: [],
-                portsEdges: [],
-            }
-
-            const graphEdges = graph.value.getEdges()
-            const newEdgesIdSet = new Set()
-
-            ports.forEach((port) => {
-                if (!port.guid) return
-
-                const portsEdges = graphEdges.filter((edge) =>
-                    edge.id.includes(port.guid)
-                )
-
-                portsEdges.forEach((edge) => {
-                    const [_, processId, sourceTarget] = edge.id.split('/')
-                    const [source, target] = sourceTarget.split('@')
-                    const invisiblePort = `${node.id}-invisiblePort`
-                    let newSource = source
-                    let newTarget = target
-                    if (source === port.guid) newSource = invisiblePort
-                    if (target === port.guid) newTarget = invisiblePort
-                    const newEdgeId = `port/${processId}/${newSource}@${newTarget}`
-
-                    newEdgesIdSet.add(newEdgeId)
-
-                    const newRelation = {
-                        fromEntityId: newSource,
-                        toEntityId: newTarget,
-                        processId,
-                    }
-
-                    if (newTarget.includes('invisible'))
-                        addPortEdge(newRelation, {}, 'port>node')
-                    else if (newSource.includes('invisible'))
-                        addPortEdge(newRelation, {}, 'node>port')
-                    else addPortEdge(newRelation, {}, 'port>port')
-                })
-                activeNodesToggled.value[node.id].portsEdges.push(...portsEdges)
-            })
-
-            activeNodesToggled.value[node.id].newEdgesId =
-                Array.from(newEdgesIdSet)
-
-            if (isSelectedPortNode(node.id)) removePorts(node)
-            else removePorts(node, { portsCount: null })
-
-            resetNodeTranslatedNodes(node)
-            return
-        }
-
-        if (activeNodesToggled.value[node.id]) {
-            const { portsEdges, ports } = activeNodesToggled.value[node.id]
-
-            if (isSelectedPortNode(node.id)) addPorts(node, ports)
-            else {
-                addPorts(node, ports, { portsCount: null })
-                removeShowMorePort(node)
-            }
-
-            translateSubsequentNodes(node)
-            portsEdges.forEach((edge) => {
-                const [_, processId, sourceTarget] = edge.id.split('/')
-                const [source, target] = sourceTarget.split('@')
-                const relation = {
-                    fromEntityId: source,
-                    toEntityId: target,
-                    processId,
-                }
-                if (target.includes('invisible'))
-                    addPortEdge(relation, {}, 'port>node')
-                else if (source.includes('invisible'))
-                    addPortEdge(relation, {}, 'node>port')
-                else addPortEdge(relation, {}, 'port>port')
-            })
-
-            activeNodesToggled.value[node.id].newEdgesId.forEach((edgeId) => {
-                const cell = graph.value.getCellById(edgeId)
-                if (cell) cell.remove()
-            })
-            delete activeNodesToggled.value[node.id]
-        }
     }
 
     // controlEdgeAnimation

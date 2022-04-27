@@ -246,13 +246,18 @@
                     (i) => i.typeName !== name
                 )
                 selectedValue.value = {
-                    classifications: localValue.value.map((i) => i.typeName),
+                    classifications: modelValue.value
+                        .filter((i) => !isPropagated(i))
+                        .map((j) => j.typeName),
                 }
                 handleChange()
             }
 
             const handleSelectedChange = () => {
-                localValue.value = []
+                localValue.value = modelValue.value.filter((i) =>
+                    isPropagated(i)
+                )
+
                 selectedValue.value.classifications?.forEach((i) => {
                     if (
                         !localValue.value.find(
@@ -270,7 +275,9 @@
 
                 if (!props.editPermission) {
                     newClassifications.value = localValue.value
-                    localValue.value = []
+                    localValue.value = modelValue.value.filter((i) =>
+                        isPropagated(i)
+                    )
                 }
             }
 
@@ -288,7 +295,9 @@
             watch(modelValue, () => {
                 localValue.value = modelValue.value
                 selectedValue.value = {
-                    classifications: localValue.value.map((i) => i.typeName),
+                    classifications: modelValue.value
+                        .filter((i) => !isPropagated(i))
+                        .map((j) => j.typeName),
                 }
             })
 

@@ -10,7 +10,7 @@
             @click="$emit('switchTab')"
         >
             <span class="">
-                <AtlanIcon icon="Slack" class="h-4" /> Slack threads
+                <AtlanIcon icon="Slack" class="h-4" /> Slack Threads
             </span>
             <span
                 class="p-1 rounded group-hover:bg-new-gray-300 bg-new-gray-200 text-new-gray-600"

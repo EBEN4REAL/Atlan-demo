@@ -223,7 +223,7 @@
                             tenantSlackStatus.value.configured &&
                             isSlackLink.value &&
                             isTab.value
-                                ? 'Slack thread'
+                                ? 'Slack Thread'
                                 : 'resource'
                         } "${localResource.value.title}"`,
                         duration: 1.5,
@@ -240,7 +240,7 @@
                         tenantSlackStatus.value.configured &&
                         isSlackLink.value &&
                         isTab.value
-                            ? 'Slack thread'
+                            ? 'Slack Thread'
                             : 'resource'
                     } "${localResource.value.title}"`,
                     duration: 1.5,
@@ -255,7 +255,7 @@
             if (localResource.value.title)
                 message.success({
                     content: `Successfully updated ${
-                        isSlackTab.value ? 'Slack thread' : 'resource'
+                        isSlackTab.value ? 'Slack Thread' : 'resource'
                     } "${localResource.value.title}"`,
                     duration: 1.5,
                     key: 'update',
@@ -267,7 +267,7 @@
             if (localResource.value.title)
                 message.error({
                     content: `Failed to update ${
-                        isSlackTab.value ? 'Slack thread' : 'resource'
+                        isSlackTab.value ? 'Slack Thread' : 'resource'
                     } "${localResource.value.title}"`,
                     duration: 1.5,
                     key: 'errorUpdate',

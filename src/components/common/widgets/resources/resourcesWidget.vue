@@ -92,7 +92,7 @@
                                         prefixIcon="Add"
                                         :label="
                                             isSlackTab
-                                                ? 'Add Slack thread'
+                                                ? 'Add Slack Thread'
                                                 : 'Add Resource'
                                         "
                                     />

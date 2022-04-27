@@ -22,6 +22,7 @@ export const getNodeTypeText = {
     Process: 'Process',
     Table: 'Table',
     View: 'View',
+    MaterialisedView: 'MaterialisedView',
     // PowerBI
     PowerBIDashboard: 'Dashboard',
     PowerBIDataflow: 'Dataflow',

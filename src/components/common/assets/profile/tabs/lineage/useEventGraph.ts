@@ -93,6 +93,7 @@ export default function useEventGraph({
         const portsLabelMap = {
             Table: 'column',
             View: 'column',
+            MaterialisedView: 'column',
             TableauDatasource: 'field',
         }
         return portsLabelMap[typeName]

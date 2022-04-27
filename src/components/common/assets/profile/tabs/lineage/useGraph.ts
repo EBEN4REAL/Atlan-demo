@@ -95,6 +95,7 @@ const columnKeyTypeIcons = {
 const portsLabelMap = {
     Table: 'columns',
     View: 'columns',
+    MaterialisedView: 'columns',
     TableauDatasource: 'fields',
 }
 

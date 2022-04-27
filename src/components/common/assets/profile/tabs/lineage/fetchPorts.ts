@@ -2,7 +2,6 @@ import { computed, ref } from 'vue'
 import bodybuilder from 'bodybuilder'
 import { assetInterface } from '~/types/assets/asset.interface'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
-import { getNodeTypeText } from './util'
 import { LineageAttributesPortLevel } from '~/constant/projection'
 
 export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
@@ -11,6 +10,12 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
         View: 'Column',
         MaterialisedView: 'Column',
         TableauDatasource: ['TableauDatasourceField', 'TableauCalculatedField'],
+    }
+    const nodeTypeNameMap = {
+        Table: 'Table',
+        View: 'View',
+        MaterialisedView: 'View',
+        TableauDatasource: 'TableauDatasource',
     }
     const base = bodybuilder()
     const attributes = LineageAttributesPortLevel
@@ -38,7 +43,7 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
         },
         {
             id: 'parent',
-            key: `${getNodeTypeText[typeName].toLowerCase()}QualifiedName`,
+            key: `${nodeTypeNameMap[typeName].toLowerCase()}QualifiedName`,
             value: qualifiedName,
             type: 'must',
             prop:

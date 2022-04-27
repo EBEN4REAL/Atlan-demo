@@ -1,5 +1,5 @@
 <template>
-    <div class="px-5 bg-white rounded-lg">
+    <div class="px-5 bg-white border rounded-lg border-new-gray-300">
         <div class="flex items-center h-16 gap-x-3">
             <span class="text-sm font-bold leading-6 tracking-widest"
                 >WORKFLOW RUN HISTORY</span

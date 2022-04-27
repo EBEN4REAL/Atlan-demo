@@ -1,44 +1,52 @@
 <template>
     <div class="flex w-full h-full overflow-hidden">
-        <div
-            class="flex-grow px-5 py-5 space-y-4 overflow-y-scroll border-r lg:px-10 xl:px-16"
-        >
+        <div class="flex flex-col py-5 border-r">
             <div
-                v-for="(step, index) in steps"
-                :key="`form_${index}`"
-                class="px-4 py-3 border rounded-lg shadow-sm"
+                class="flex flex-col flex-grow px-5 pb-4 space-y-4 overflow-y-scroll border-b lg:px-10 xl:px-16"
             >
-                <div v-if="!['connection', 'credential'].includes(step.id)">
-                    <p class="text-base font-bold capitalize text-new-gray-800">
-                        {{ step.title }}
-                    </p>
-                    <a-divider class="mt-3 mb-2" />
-                </div>
-                <DynamicForm
-                    v-model="modelValue"
+                <div
+                    v-for="(step, index) in steps"
                     :key="`form_${index}`"
-                    :config="localConfigMap"
-                    :current-step="step"
-                    :workflow-template="workflowTemplate"
-                    label-align="left"
-                    :is-edit="true"
-                    class="mx-auto"
-                />
-            </div>
-            <div
-                v-if="allowSchedule(workflowObject) && false"
-                class="px-4 py-3 border rounded-lg shadow-sm"
-            >
-                <div class="flex items-center">
-                    <span class="text-base font-bold text-new-gray-800">
-                        Enable Schedule
-                    </span>
-                    <a-switch v-model:checked="cronEnabled" class="ml-auto" />
+                    class="px-4 py-3 border rounded-lg shadow-sm"
+                >
+                    <div v-if="!['connection', 'credential'].includes(step.id)">
+                        <p
+                            class="text-base font-bold capitalize text-new-gray-800"
+                        >
+                            {{ step.title }}
+                        </p>
+                        <a-divider class="mt-3 mb-2" />
+                    </div>
+                    <DynamicForm
+                        v-model="modelValue"
+                        :key="`form_${index}`"
+                        :config="localConfigMap"
+                        :current-step="step"
+                        :workflow-template="workflowTemplate"
+                        label-align="left"
+                        :is-edit="true"
+                        class="mx-auto"
+                    />
                 </div>
-                <template v-if="cronEnabled">
-                    <a-divider class="mt-3 mb-4" />
-                    <Schedule v-model="cron" />
-                </template>
+                <!-- FIXME: Scheduling optiond -->
+                <div
+                    v-if="allowSchedule(workflowObject) && false"
+                    class="px-4 py-3 border rounded-lg shadow-sm"
+                >
+                    <div class="flex items-center">
+                        <span class="text-base font-bold text-new-gray-800">
+                            Enable Schedule
+                        </span>
+                        <a-switch
+                            v-model:checked="cronEnabled"
+                            class="ml-auto"
+                        />
+                    </div>
+                    <template v-if="cronEnabled">
+                        <a-divider class="mt-3 mb-4" />
+                        <Schedule v-model="cron" />
+                    </template>
+                </div>
             </div>
             <a-popconfirm
                 ok-text="Yes"
@@ -62,7 +70,10 @@
                         >Start a new run</a-checkbox
                     >
                 </template>
-                <AtlanButton2 class="ml-auto" label="Update" />
+                <AtlanButton2
+                    class="mt-4 ml-auto mr-5 lg:mr-10 xl:mr-16"
+                    label="Update"
+                />
             </a-popconfirm>
         </div>
         <WorkflowPreview

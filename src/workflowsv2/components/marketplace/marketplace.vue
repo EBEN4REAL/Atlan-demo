@@ -1,5 +1,5 @@
 <template>
-    <div class="flex w-full h-full overflow-x-hidden bg-white">
+    <div class="flex w-full overflow-hidden bg-white">
         <router-view v-if="isItem" @select="handleSelect"></router-view>
 
         <keep-alive>
@@ -11,16 +11,13 @@
             ></PackageDiscoveryList>
         </keep-alive>
 
-        <div
-            class="relative hidden h-full overflow-y-auto bg-white border-l border-gray-200 asset-preview-container md:block"
-        >
-            <WorfklowPreview
-                :item="selectedPackage"
-                v-if="selectedPackage"
-                mode="package"
-            ></WorfklowPreview>
-            <!-- <PackagePreview :selectedPackage="selectedPackage"></PackagePreview> -->
-        </div>
+        <WorkflowPreview
+            v-if="selectedPackage"
+            class="h-full bg-white border-l border-gray-200 asset-preview-container"
+            :item="selectedPackage"
+            mode="package"
+        />
+        <!-- <PackagePreview :selectedPackage="selectedPackage"></PackagePreview> -->
     </div>
 </template>
 
@@ -28,7 +25,7 @@
     import { computed, defineComponent, ref } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
-    import WorfklowPreview from '~/workflows/components/workflows/preview/index.vue'
+    import WorkflowPreview from '~/workflows/components/workflows/preview/index.vue'
 
     import PackageDiscoveryList from '~/workflows/components/packages/index.vue'
 
@@ -39,7 +36,7 @@
         components: {
             PackageDiscoveryList,
             // Sandbox,
-            WorfklowPreview,
+            WorkflowPreview,
         },
         setup(props, { emit }) {
             useHead({

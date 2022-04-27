@@ -63,7 +63,7 @@
                 class="px-6"
                 @select="handleSelect"
                 @dblClick="handleDoubleClick"
-            ></PackageList>
+            />
         </div>
     </div>
 </template>

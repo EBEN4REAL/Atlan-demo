@@ -4,7 +4,6 @@ export const mappingKeywords = {
     BY: 'COLUMN',
     ON: 'COLUMN',
     OR: 'COLUMN',
-    NOT: 'COLUMN',
     AND: 'COLUMN',
     SET: 'COLUMN',
     DISTINCT: 'COLUMN',

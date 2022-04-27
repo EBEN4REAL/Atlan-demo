@@ -685,11 +685,54 @@ export async function useAutoSuggestions(
     /* Remove tokens which are special characters */
     tokens = tokens.filter((token) => {
         let t = true
-        t = !token.match(/[-[\]{};/\n()*+?'."\\/^$|#\s\t]/g) && token !== ''
+        t = !token.match(/[-[\]{};/\n()*+?'"\\/^$|#\s\t]/g) && token !== ''
         return t
     })
     // tokens.push(' ')
     let currentWord = tokens[tokens.length - 1]
+
+    // TABLE[DOT]
+    if (currentWord === '.') {
+        // fetch table columns
+        if (tokens.length > 1) {
+            const tableName = tokens[tokens.length - 2]
+            const type = 'Column'
+            refreshBody()
+            body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
+                {
+                    term: {
+                        tableQualifiedName: `${connectionQualifiedName}/${databaseName}/${schemaName}/${tableName}`,
+                    },
+                }
+            )
+            body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
+                {
+                    term: {
+                        '__typeName.keyword': type,
+                    },
+                }
+            )
+            if (cancelTokenSource.value !== undefined) {
+                cancelTokenSource.value.cancel()
+            }
+            cancelTokenSource.value = axios.CancelToken.source()
+            const entitiesResponsPromise = Insights.GetAutoSuggestions(
+                body,
+                cancelTokenSource
+            )
+
+            let suggestionsPromise = entitiesToEditorKeyword(
+                entitiesResponsPromise,
+                type.toUpperCase(),
+                currentWord,
+                connectorsInfo,
+                context
+            )
+            // console.log('connector: ', connectorsInfo)
+
+            return suggestionsPromise
+        }
+    }
 
     /* If it is a first/nth character of first word */
     if (tokens.length < 2) {
@@ -710,11 +753,9 @@ export async function useAutoSuggestions(
             typesKeywordsMap
         )
         // console.log('inside', lastMatchedKeyword, tokens)
-        debugger
         if (lastMatchedKeyword) {
             switch (lastMatchedKeyword.functionType) {
                 case 'FILTER': {
-                    debugger
                     if (lastMatchedKeyword.tokenPosition === 0) {
                         return getSuggestionsUsingType(
                             lastMatchedKeyword.type,

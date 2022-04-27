@@ -13,6 +13,7 @@
         "
         :asset-type="selectedAsset.typeName"
         :show-slack-switch-banner="showSlackSwitchBanner"
+        :slack-link-count="slackLinkCount"
         @add="handleAdd"
         @update="handleUpdate"
         @remove="handleRemove"
@@ -72,15 +73,15 @@
         return links(selectedAsset.value)
     })
 
-    const hasAtleastOneSlackLink = computed(() => {
-        const slackLink = links(selectedAsset.value)?.some(
-            (link) => getDomain(link.attributes.link) === 'slack.com'
-        )
+    const slackLinkCount = computed(() => {
+        const slackLink = links(selectedAsset.value)?.filter(
+            (l) => getDomain(l.attributes.link) === 'slack.com'
+        ).length
         return slackLink
     })
 
     const showSlackSwitchBanner = computed(
-        () => tenantSlackStatus.value.configured && hasAtleastOneSlackLink.value
+        () => tenantSlackStatus.value.configured && slackLinkCount.value
     )
 
     const linkEditPermission = computed(

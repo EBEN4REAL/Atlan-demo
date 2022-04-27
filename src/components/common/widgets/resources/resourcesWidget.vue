@@ -30,10 +30,13 @@
                         </template>
                     </AddResource>
                 </div>
-                <SwitchSlackTabBanner
-                    v-if="showSlackSwitchBanner"
-                    @switchTab="$emit('switchTab')"
-                />
+                <div class="">
+                    <SwitchSlackTabBanner
+                        v-if="showSlackSwitchBanner"
+                        :slack-link-count="slackLinkCount"
+                        @switchTab="$emit('switchTab')"
+                    />
+                </div>
             </template>
         </template>
 
@@ -211,6 +214,10 @@
         showSlackSwitchBanner: {
             type: Boolean,
             default: false,
+        },
+        slackLinkCount: {
+            type: Number,
+            default: 0,
         },
         readOnly: {
             type: Boolean,

@@ -1,19 +1,31 @@
 <template>
-    <div
-        class="p-2 mx-5 my-2 text-xs border border-gray-200 rounded bg-gray-50"
+    <a-tooltip
+        placement="bottom"
+        title="View Slack Threads"
+        :align="{ offset: [0, -5] }"
     >
-        <span
-            class="cursor-pointer hover:underline"
-            @click="$emit('switchTab')"
+        <div
+            class="inline-block text-new-gray-800 py-1.5 px-2 mx-5 my-2 rounded cursor-pointer text-xs bg-new-gray-100 group hover:bg-new-gray-200"
+            style="box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05)"
         >
-            Click here to view
-            <AtlanIcon icon="Slack" class="h-3" /> Slack threads
-        </span>
-    </div>
+            <span class="" @click="$emit('switchTab')">
+                <AtlanIcon icon="Slack" class="h-4" /> Slack threads
+            </span>
+            <span
+                class="p-1 rounded group-hover:bg-new-gray-300 bg-new-gray-200 text-new-gray-600"
+            >
+                {{ slackLinkCount }}
+            </span>
+        </div>
+    </a-tooltip>
 </template>
 
 <script setup lang="ts">
     const emit = defineEmits(['switchTab'])
+
+    const props = defineProps({
+        slackLinkCount: { type: Number, default: 0 },
+    })
 </script>
 
 <style scoped></style>

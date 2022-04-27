@@ -15,7 +15,7 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
         Table: 'Table',
         View: 'View',
         MaterialisedView: 'View',
-        TableauDatasource: 'TableauDatasource',
+        TableauDatasource: 'Datasource',
     }
     const base = bodybuilder()
     const attributes = LineageAttributesPortLevel

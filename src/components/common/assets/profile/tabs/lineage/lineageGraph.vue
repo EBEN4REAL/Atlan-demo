@@ -74,6 +74,7 @@
     import useCreateGraph from './useCreateGraph'
     import useComputeGraph from './useComputeGraph'
     import useEventGraph from './useEventGraph'
+    import usePrefGraph from './usePrefGraph'
 
     export default defineComponent({
         name: 'LineageGraph',
@@ -138,6 +139,12 @@
                     graphHeight,
                 })
 
+                // usePrefGraph
+                const { controlPrefRetainer } = usePrefGraph({
+                    graph,
+                    preferences,
+                })
+
                 // useComputeGraph
                 const {
                     addSubGraph,
@@ -153,6 +160,7 @@
                     lineage,
                     currZoom,
                     isComputeDone,
+                    controlPrefRetainer,
                 })
 
                 // useEventGraph
@@ -170,6 +178,7 @@
                     onCloseDrawer,
                     addSubGraph,
                     renderLayout,
+                    controlPrefRetainer,
                 })
             }
 
@@ -313,7 +322,7 @@
                 }
             }
 
-            &__columns {
+            &__ports {
                 background-color: #f9fafb;
                 border-top: 1px solid #e0e4eb;
                 border-bottom-right-radius: 5px;
@@ -340,7 +349,7 @@
                     color: #3e4359 !important;
                     z-index: 9999 !important;
 
-                    & .node-column {
+                    & .node-port {
                         @apply pl-3 pr-2 py-2;
                         border: 1px solid transparent;
                         border-bottom: 1px solid #e0e4eb;
@@ -525,7 +534,7 @@
         }
 
         .isExpandedNode {
-            & .lineage-node__columns {
+            & .lineage-node__ports {
                 padding-bottom: 10px !important;
             }
         }
@@ -548,11 +557,11 @@
             );
         }
 
-        .node-columnListLoader {
-            position: absolute;
-            z-index: 99;
-            left: 115px !important;
-            top: 15px !important;
-        }
+        // .node-columnListLoader {
+        //     position: absolute;
+        //     z-index: 99;
+        //     left: 115px !important;
+        //     top: 15px !important;
+        // }
     }
 </style>

@@ -5,10 +5,10 @@
                 <div>Legend</div>
                 <div>
                     <AtlanIcon
-                        @click="preferences.showLegend = false"
                         icon="Cross"
                         class="cursor-pointer"
                         style="width: 0.8rem !important"
+                        @click="preferences.showLegend = false"
                     ></AtlanIcon>
                 </div>
             </div>
@@ -105,6 +105,16 @@
                                 <span class="text-gray-500">Show Schema</span>
                                 <a-switch
                                     v-model:checked="preferences.showSchema"
+                                />
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500"
+                                    >Show Announcement</span
+                                >
+                                <a-switch
+                                    v-model:checked="
+                                        preferences.showAnnouncement
+                                    "
                                 />
                             </div>
                         </div>

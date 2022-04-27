@@ -63,10 +63,10 @@
 
 <script lang="ts">
     import { ref, watch, PropType } from 'vue'
+    import { message } from 'ant-design-vue'
     import { getNameInitials, getNameInTitleCase } from '~/utils/string'
     import { useTenantStore } from '~/store/tenant'
     import uploadLogo from '~/composables/avatar/updateLogo'
-    import { message } from 'ant-design-vue'
 
     export default {
         name: 'Avatar',

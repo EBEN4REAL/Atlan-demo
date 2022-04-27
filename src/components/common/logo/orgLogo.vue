@@ -6,13 +6,13 @@
             :style="{ height: `${avatarSize}px` }"
         >
             <a-upload
-                accept="image/*"
+                accept=".png, .jpg, .jpeg"
                 class="cursor-pointer"
                 :custom-request="handleUploadAvatar"
                 :show-upload-list="false"
             >
                 <div
-                    v-if="!isReady && uploadStarted"
+                    v-if="!isReady && uploadStarted && !error"
                     class="hidden text-center bg-primary-light sm:block"
                     :class="[
                         bordered ? 'mb-2' : '',
@@ -66,6 +66,7 @@
     import { getNameInitials, getNameInTitleCase } from '~/utils/string'
     import { useTenantStore } from '~/store/tenant'
     import uploadLogo from '~/composables/avatar/updateLogo'
+    import { message } from 'ant-design-vue'
 
     export default {
         name: 'Avatar',
@@ -108,12 +109,21 @@
                 }
             )
 
-            const { upload, isReady, uploadKey } = uploadLogo()
+            const { upload, isReady, uploadKey, error } = uploadLogo()
             const handleUploadAvatar = async (uploaded) => {
                 console.log('handle Upload', uploaded)
-                upload(uploaded.file)
                 uploadStarted.value = true
-
+                await upload(uploaded.file)
+                if (error.value) {
+                    message.error({
+                        key: 'upload',
+                        content: 'Image upload failed, please try again.',
+                    })
+                } else if (isReady?.value)
+                    message.success({
+                        key: 'upload',
+                        content: 'Image uploaded',
+                    })
                 updatedImageUrl.value = `${updatedImageUrl.value}?${uploadKey.value}`
 
                 return true
@@ -123,6 +133,7 @@
                 tenantStore.setLogo(updatedImageUrl.value)
             })
             return {
+                error,
                 handleUploadAvatar,
                 isReady,
                 uploadStarted,

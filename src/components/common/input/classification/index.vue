@@ -214,7 +214,9 @@
             })
 
             const existingClassifications = computed(() =>
-                modelValue.value.map((i) => i.typeName)
+                modelValue.value
+                    .filter((i) => !isPropagated(i))
+                    .map((j) => j.typeName)
             )
             const requestLoading = ref()
             const newClassifications = ref([])
@@ -276,7 +278,9 @@
                 })
 
                 if (!props.editPermission) {
-                    newClassifications.value = localValue.value
+                    newClassifications.value = localValue.value.filter(
+                        (i) => !isPropagated(i)
+                    )
                     localValue.value = modelValue.value.filter((i) =>
                         isPropagated(i)
                     )
@@ -378,6 +382,10 @@
                 requestLoading.value = false
             }
             const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
+
+            watch(localValue, () => console.log('hello', localValue.value), {
+                immediate: true,
+            })
 
             return {
                 localValue,

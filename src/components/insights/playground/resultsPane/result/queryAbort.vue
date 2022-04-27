@@ -18,27 +18,26 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, inject, Ref } from 'vue'
+    import { defineComponent, computed, inject, Ref, toRefs } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         components: {},
-        props: {},
-        setup() {
+        props: {
+            isQueryRunning: {
+                type: String,
+                required: true,
+            },
+            isQueryAborted: {
+                type: Boolean,
+                required: true,
+            },
+        },
+        setup(props) {
+            const { isQueryRunning, isQueryAborted } = toRefs(props)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-            const isQueryRunning = computed(
-                () =>
-                    activeInlineTab.value?.playground?.resultsPane?.result
-                        ?.isQueryRunning
-            )
-
-            const isQueryAborted = computed(
-                () =>
-                    activeInlineTab.value?.playground?.resultsPane?.result
-                        ?.isQueryAborted
-            )
 
             const queryErrorObj = computed(
                 () =>

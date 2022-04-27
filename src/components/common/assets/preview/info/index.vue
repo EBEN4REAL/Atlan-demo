@@ -216,6 +216,21 @@
                     </div>
                     <div class="text-sm text-gray-700 break-all">
                         <AtlanIcon
+                            v-if="
+                                parentTable(selectedAsset)?.attributes
+                                    ?.certificateStatus
+                            "
+                            :icon="
+                                getEntityStatusIcon(
+                                    'Table',
+                                    parentTable(selectedAsset)?.attributes
+                                        ?.certificateStatus
+                                )
+                            "
+                            class="w-auto h-4 mb-0.5 mr-1"
+                        />
+                        <AtlanIcon
+                            v-else
                             icon="TableGray"
                             class="w-auto h-4 mb-0.5 mr-1"
                         />
@@ -248,8 +263,23 @@
                     </div>
                     <div class="text-sm text-gray-700">
                         <AtlanIcon
-                            icon="ViewGray"
+                            v-if="
+                                parentView(selectedAsset)?.attributes
+                                    ?.certificateStatus
+                            "
+                            :icon="
+                                getEntityStatusIcon(
+                                    'View',
+                                    parentView(selectedAsset)?.attributes
+                                        ?.certificateStatus
+                                )
+                            "
                             class="w-auto h-4 mb-0.5 break-all mr-1"
+                        />
+                        <AtlanIcon
+                            v-else
+                            icon="ViewGray"
+                            class="w-auto h-4 mb-0.5 mr-1"
                         />
                         <router-link
                             class="text-gray-700 border-b border-gray-500 border-dashed cursor-pointer hover:text-primary"
@@ -642,6 +672,22 @@
                     :edit-permission="editPermission"
                     @change="handleChangeDescription"
                 />
+
+                <transition
+                    v-if="
+                        similarList('description').length > 0 &&
+                        !localDescription
+                    "
+                    name="fade"
+                >
+                    <Suggestion
+                        class="mt-2"
+                        @apply="handleApplySuggestion"
+                        :button-between="false"
+                        :edit-permission="editPermission"
+                        :list="similarList('description')"
+                    ></Suggestion>
+                </transition>
             </div>
             <div v-if="isProcess(selectedAsset)" class="flex flex-col text-sm">
                 <span class="px-5 mb-1 text-gray-500">Query</span>
@@ -987,6 +1033,7 @@
     import Categories2 from '@/common/input/categories/categories2.vue'
     import RelatedTerms from '@/common/input/relatedTerms/relatedTerms.vue'
     import Connection from './connection.vue'
+    import Suggestion from './suggestion.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
@@ -1003,6 +1050,8 @@
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import UserPill from '@/common/pills/user.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import { useSimilarList } from '~/composables/discovery/useSimilarList'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -1036,6 +1085,7 @@
             PreviewTabsIcon,
             UserPill,
             PopOverUser,
+            Suggestion,
             SampleDataTable: defineAsyncComponent(
                 () =>
                     import(
@@ -1121,6 +1171,9 @@
                 sourceId,
                 formula,
                 createdBy,
+                parentTable,
+                parentView,
+                title,
             } = useAssetInfo()
 
             const {
@@ -1153,6 +1206,27 @@
                 localSQLQuery,
                 handleSQLQueryUpdate,
             } = updateAssetAttributes(selectedAsset, isDrawer.value)
+
+            const limit = ref(20)
+            const offset = ref(0)
+            const facets = ref({
+                typeNames: [selectedAsset.value.typeName],
+                similarity: title(selectedAsset.value),
+                orExists: ['description', 'userDescription'],
+            })
+            const aggregations = ref(['description'])
+
+            const { quickChange, similarList, aggregationMap } = useSimilarList(
+                {
+                    limit,
+                    offset,
+                    facets,
+                    aggregations,
+                }
+            )
+            if (!localDescription.value) {
+                quickChange()
+            }
 
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
                 if (
@@ -1197,6 +1271,12 @@
             const handleCopyValue = async (value, type) => {
                 await copyToClipboard(value)
                 message.success(`${type} copied!`)
+            }
+
+            const handleApplySuggestion = (obj) => {
+                console.log(obj)
+                localDescription.value = obj.value
+                handleChangeDescription()
             }
 
             const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
@@ -1286,21 +1366,43 @@
                 formula,
                 handleClickUser,
                 createdBy,
+                getEntityStatusIcon,
+                parentTable,
+                parentView,
+                quickChange,
+                limit,
+                title,
+                offset,
+                aggregations,
+                similarList,
+                aggregationMap,
+                handleApplySuggestion,
             }
         },
     })
 </script>
 
-<style lang="less" module>
-    .button {
-        :global(.ant-btn) {
-            @apply text-gray-700;
-        }
+<style scoped>
+    .fade-enter-active,
+    .fade-leave-active {
+        transition: opacity 0.1s ease;
     }
-</style>
 
-<style lang="less" scoped>
-    .disabledButton {
-        @apply text-gray-500 !important;
+    .fade-enter-from,
+    .fade-leave-to {
+        opacity: 0.2;
+    }
+    .close-btn {
+        height: 32px;
+        width: 32px;
+        background: #3e4359cc;
+        position: fixed;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        transform: rotate(45deg);
+        right: 430px;
+        top: 60px;
+        cursor: pointer;
     }
 </style>

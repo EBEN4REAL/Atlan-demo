@@ -185,7 +185,11 @@ export const AssetRelationAttributes = [
     '__createdBy',
 ]
 
-export const DefaultRelationAttributes = ['name', 'qualifiedName']
+export const DefaultRelationAttributes = [
+    'name',
+    'qualifiedName',
+    'certificateStatus',
+]
 
 // For just asset list display
 export const MinimalAttributes = [
@@ -338,25 +342,25 @@ export const BasicSearchAttributes = [
 export const LineageAttributes = [
     // General
     'qualifiedName',
-    'name',
-    'displayName',
     'certificateStatus',
-    'link',
-    'dataType',
-    'columnCount',
-    'rowCount',
     'announcementType',
-    // BI Relationships
-    'workspace',
-    'report',
-    'dashboard',
-    'model',
-    'folder',
-    'project',
+    'name',
+    // SQL - For when a column assets appears top level
+    'table',
+    'view',
+]
+
+export const LineageAttributesPortLevel = [
+    // General
+    'qualifiedName',
+    'certificateStatus',
+    'announcementType',
+    'dataType',
+    'isPrimary',
+    'isForeign',
     // SQL
     'table',
     'view',
-    '__customAttributes',
 ]
 
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

@@ -178,7 +178,8 @@ export function entitiesToEditorKeyword(
     context: {
         attributeName: string
         attributeValue: string
-    }
+    },
+    isDotBased: boolean = false // wether to include table with column or not T.C
 ) {
     const { getConnectorName } = useConnector()
     // for assetQuote Info of different sources
@@ -307,7 +308,9 @@ export function entitiesToEditorKeyword(
                                 entity: entities[i],
                             },
                             sortText: sortString,
-                            insertText: `${contextPrefix}${assetQuoteType}${tableName}${assetQuoteType}.${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`,
+                            insertText: isDotBased
+                                ? `${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`
+                                : `${contextPrefix}${assetQuoteType}${tableName}${assetQuoteType}.${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`,
                         }
                         words.push(keyword)
                         // }
@@ -726,7 +729,8 @@ export async function useAutoSuggestions(
                 type.toUpperCase(),
                 currentWord,
                 connectorsInfo,
-                context
+                context,
+                true
             )
             // console.log('connector: ', connectorsInfo)
 

@@ -242,6 +242,7 @@
                         return 'insights-bg'
 
                     case '/workflows':
+                    case '/workflowsv1':
                         return 'workflows-bg'
 
                     default:

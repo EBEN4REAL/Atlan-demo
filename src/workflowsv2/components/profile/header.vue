@@ -7,8 +7,8 @@
         />
 
         <div
-            class="flex flex-grow mb-2 border-gray-200 gap-x-2"
             v-if="packageObject?.metadata?.annotations"
+            class="flex flex-1 mb-2 border-gray-200 gap-x-2"
         >
             <div class="relative flex-none mt-0.5">
                 <PackageIcon :package="packageObject" />
@@ -110,7 +110,7 @@
             </div>
         </div>
 
-        <div class="flex ml-auto gap-x-2 mt-1.5">
+        <div class="flex ml-auto gap-2 mt-1.5">
             <a-modal
                 v-model:visible="scheduleVisible"
                 title="Schedule"

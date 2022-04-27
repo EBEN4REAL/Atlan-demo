@@ -22,10 +22,12 @@
             const route = useRoute()
             const assetdiscovery = ref()
 
-            const isItem = computed(() => route.params.id || isSetup.value)
             const isSetup = computed(() =>
-                route.path.startsWith('/workflows/setup')
+                route.path.startsWith('/workflowsv1/setup')
             )
+
+            const isItem = computed(() => route.params.id || isSetup.value)
+
             const localSelected = ref()
 
             const handlePreview = (asset) => {

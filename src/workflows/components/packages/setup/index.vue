@@ -3,34 +3,34 @@
         class="flex flex-col flex-grow w-full h-full overflow-hidden bg-white border rounded-lg"
         :class="{ 'items-center justify-center': status }"
     >
-        <div class="flex items-center px-5 py-4">
-            <a-tooltip
-                :mouseEnterDelay="1"
-                placement="bottomLeft"
-                title="Back to marketplace"
-            >
-                <IconButton
-                    icon="ChevronLeft"
-                    class="mr-4"
-                    @click="handleExit"
-                />
-            </a-tooltip>
-            <span class="mr-2 text-xl font-bold text-gray-600"
-                >Setup a new workflow:
-            </span>
-            <img
-                v-if="icon(workflowTemplate)"
-                :src="icon(workflowTemplate)"
-                class="w-6 h-6 mb-0.5"
-            />
-            <div v-else class="w-6 mb-0.5 text-xl leading-6 text-center">
-                {{ emoji(workflowTemplate) }}
-            </div>
-            <span class="ml-1 text-xl font-bold">{{
-                packageName(workflowTemplate)
-            }}</span>
-        </div>
         <template v-if="!status">
+            <div class="flex items-center px-5 py-4">
+                <a-tooltip
+                    :mouseEnterDelay="1"
+                    placement="bottomLeft"
+                    title="Back to marketplace"
+                >
+                    <IconButton
+                        icon="ChevronLeft"
+                        class="mr-4"
+                        @click="handleExit"
+                    />
+                </a-tooltip>
+                <span class="mr-2 text-xl font-bold text-gray-600"
+                    >Setup a new workflow →
+                </span>
+                <img
+                    v-if="icon(workflowTemplate)"
+                    :src="icon(workflowTemplate)"
+                    class="w-6 h-6 mb-0.5"
+                />
+                <div v-else class="w-6 mb-0.5 text-xl leading-6 text-center">
+                    {{ emoji(workflowTemplate) }}
+                </div>
+                <span class="ml-1 text-xl font-bold">{{
+                    packageName(workflowTemplate)
+                }}</span>
+            </div>
             <div class="p-6">
                 <a-steps v-if="steps.length > 0" :current="currentStep">
                     <template v-for="(step, index) in steps" :key="step.id">
@@ -165,7 +165,13 @@
                     </template>
                     <template #extra>
                         <div class="flex items-center justify-center">
-                            <router-link to="/workflows">
+                            <router-link
+                                :to="
+                                    featureEnabledMap[WORKFLOW_CENTER_V2]
+                                        ? '/workflows'
+                                        : '/workflowsv1'
+                                "
+                            >
                                 <AtlanButton2
                                     v-if="updateStatus.status === 'success'"
                                     color="secondary"
@@ -266,6 +272,11 @@
         until,
     } from '@vueuse/core'
     import { useRoute, useRouter } from 'vue-router'
+
+    import {
+        featureEnabledMap,
+        WORKFLOW_CENTER_V2,
+    } from '~/composables/labs/labFeatureList'
 
     // Components
     import DynamicForm from '~/workflows/components/dynamicForm2/index.vue'
@@ -486,12 +497,19 @@
             const handleTrackLink = () => {
                 if (run.value?.metadata?.name) {
                     router.push(
-                        `/workflows/profile/${
-                            data.value?.metadata?.name ||
-                            run.value?.metadata?.labels[
-                                'workflows.argoproj.io/workflow-template'
-                            ]
-                        }/runs?name=${run.value?.metadata?.name}`
+                        featureEnabledMap.value[WORKFLOW_CENTER_V2]
+                            ? `/workflows/profile/${
+                                  data.value?.metadata?.name ||
+                                  run.value?.metadata?.labels[
+                                      'workflows.argoproj.io/workflow-template'
+                                  ]
+                              }/runs?name=${run.value?.metadata?.name}`
+                            : `/workflowsv1/${
+                                  data.value?.metadata?.name ||
+                                  run.value?.metadata?.labels[
+                                      'workflows.argoproj.io/workflow-template'
+                                  ]
+                              }/runs?name=${run.value?.metadata?.name}`
                     )
                 }
 
@@ -743,7 +761,11 @@
             }
 
             const handleExit = () => {
-                router.replace(`/workflows/marketplace`)
+                router.replace(
+                    featureEnabledMap.value[WORKFLOW_CENTER_V2]
+                        ? '/workflows/marketplace'
+                        : '/workflowsv1/setup'
+                )
             }
 
             const handleStepClick = (step) => {
@@ -799,6 +821,8 @@
                 packageName,
                 icon,
                 emoji,
+                featureEnabledMap,
+                WORKFLOW_CENTER_V2,
             }
         },
     })

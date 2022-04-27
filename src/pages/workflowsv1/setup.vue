@@ -58,7 +58,7 @@
                 selectedPackage.value = item
                 const url = selectedPackage.value.metadata.name
                 router.push({
-                    path: `/workflows/setup/${url}`,
+                    path: `/workflowsv1/setup/${url}`,
                     query: {},
                 })
             }
@@ -71,7 +71,7 @@
                 selectedPackage.value = item
                 const url = selectedPackage.value.metadata.name
                 router.push({
-                    path: `/workflows/setup/${url}`,
+                    path: `/workflowsv1/setup/${url}`,
                     query: { sandbox: 'true' },
                 })
             }

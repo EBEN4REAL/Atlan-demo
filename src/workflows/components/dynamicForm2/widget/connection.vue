@@ -149,11 +149,11 @@
             </template>
             <div
                 v-else
-                class="flex flex-col items-center justify-center p-6 py-4 text-xl text-center"
+                class="flex flex-col items-center justify-center px-6 py-4 text-lg leading-snug text-center"
                 style="min-height: 150px"
             >
-                <AtlanIcon icon="Error" class="h-6 mr-2"></AtlanIcon>
-                <b>No connection found</b>
+                <AtlanIcon icon="Error" class="h-6 mb-2 mr-2" />
+                <b class="mb-1">No connection found</b>
                 <span>
                     Wait for a while if you have setup a new connection or
                     delete the worklow and try setting up a new one

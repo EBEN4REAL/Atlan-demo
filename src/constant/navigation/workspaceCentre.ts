@@ -1,9 +1,17 @@
 /* eslint-disable import/prefer-default-export */
+import { computed } from 'vue'
 import page from '~/constant/accessControl/page'
 
-export const workspaceCentreList = [
+import {
+    featureEnabledMap,
+    WORKFLOW_CENTER_V2,
+} from '~/composables/labs/labFeatureList'
+
+export const workspaceCentreList = computed(() => [
     {
-        path: '/workflows',
+        path: featureEnabledMap.value[WORKFLOW_CENTER_V2]
+            ? '/workflows'
+            : '/workflowsv1',
         icon: 'WorkflowsActive',
         label: 'Workflow',
         isActive: true,
@@ -44,4 +52,4 @@ export const workspaceCentreList = [
         isActive: false,
         auth: page.PAGE_PLATFORM,
     },
-]
+])

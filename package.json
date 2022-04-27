@@ -179,6 +179,8 @@
         "cronstrue",
         "dayjs",
         "dayjs/plugin/advancedFormat",
+        "dayjs/plugin/isToday",
+        "dayjs/plugin/isYesterday",
         "dayjs/plugin/relativeTime",
         "dayjs/plugin/timezone",
         "dayjs/plugin/utc",

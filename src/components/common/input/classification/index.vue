@@ -383,10 +383,6 @@
             }
             const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
 
-            watch(localValue, () => console.log('hello', localValue.value), {
-                immediate: true,
-            })
-
             return {
                 localValue,
                 isPropagated,

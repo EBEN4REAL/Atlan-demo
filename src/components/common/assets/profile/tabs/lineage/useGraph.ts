@@ -132,6 +132,7 @@ export default function useGraph(graph) {
 
         const computedData = {
             id: guid,
+            hasPorts: !!isNodeWithPorts,
             ports: [],
             portsCount: null,
             portsListExpanded: false,

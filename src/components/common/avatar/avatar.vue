@@ -8,7 +8,7 @@
                 :show-upload-list="false"
             >
                 <div
-                    v-if="!isReady && uploadStarted"
+                    v-if="!isReady && uploadStarted && !error"
                     class="hidden text-sm text-center bg-primary-light sm:block"
                     :style="{
                         width: avatarSize + 'px',
@@ -128,6 +128,7 @@
                 emit('imageUpdated', updatedImageUrl)
             })
             return {
+                error,
                 handleUploadAvatar,
                 isReady,
                 uploadStarted,

@@ -148,7 +148,7 @@ export default function useGlossary(immediate = true) {
                 return 0
             }
         )
-        console.log(list);
+
         glossaryStore.setList(list || [])
         glossaryStore.setTermsCount(
             aggregationMap(GROUP_TERM_AGGREATION, true) || []
@@ -156,6 +156,7 @@ export default function useGlossary(immediate = true) {
         glossaryStore.setCategoryCount(
             aggregationMap(GROUP_CATEGORY_AGGREATION, true) || []
         )
+
     })
 
     return { mutate }

@@ -29,6 +29,7 @@
                     class="w-full pr-1 mt-1 mr-1 text-base text-gray-700 border-none outline-none"
                     style="max-width: 95%"
                     @input="updateQueryNameDirty"
+                    :readonly="readOnly"
                 />
                 <Tooltip
                     v-else

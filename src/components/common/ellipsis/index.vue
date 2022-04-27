@@ -6,6 +6,7 @@
         :color="tooltipColor"
         :overlay-class-name="tooltipColor === 'white' ? 'tooltip-black' : ''"
         :mouse-leave-delay="mouseLeaveDelay"
+        :mouse-enter-delay="mouseEnterDelay"
     >
         <template v-if="truncated" #title>
             <div v-linkified class="whitespace-pre-wrap">
@@ -91,6 +92,11 @@
                 default: '95%',
             },
             mouseLeaveDelay: {
+                type: Number,
+                required: false,
+                default: 0.1,
+            },
+            mouseEnterDelay: {
                 type: Number,
                 required: false,
                 default: 0.1,

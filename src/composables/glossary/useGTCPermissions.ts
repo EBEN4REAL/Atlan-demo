@@ -66,6 +66,8 @@ const useGTCPermissions = (GTC) => {
 
 export const fetchGlossaryPermission = (glossary, immediate = false) => {
     // ? use this if you want to fetch evaluations if not fetched already
+
+    if (!glossary.value) return { isEvaluating: false, fetch: () => {} }
     const body = ref({})
     const authStore = useAuthStore()
     const { getAssetEvaluationsBody } = useAssetEvaluate()

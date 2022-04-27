@@ -34,6 +34,8 @@
                             ref="ownerInputRef"
                             v-model="localValue"
                             :show-none="false"
+                            :enableTabs="enableTabs"
+                            @change="handleChangeData"
                         ></OwnerFacets>
 
                         <OwnerFacets
@@ -94,11 +96,7 @@
                         }"
                         @click="() => (isEdit = true)"
                     >
-                        <span
-                            ><AtlanIcon
-                                icon="Add"
-                                class="h-3"
-                            ></AtlanIcon></span
+                        <span> <AtlanIcon icon="Add" class="h-3" /> </span
                     ></a-button>
                 </Shortcut>
             </a-tooltip>
@@ -117,6 +115,7 @@
                     ></UserPill>
                 </PopOverUser>
             </template>
+            <slot name="users"></slot>
 
             <template v-for="name in localValue?.ownerGroups" :key="name">
                 <PopOverGroup :item="name">
@@ -134,11 +133,13 @@
                 v-if="
                     !showAddBtn &&
                     localValue?.ownerGroups?.length < 1 &&
-                    localValue?.ownerUsers?.length < 1
+                    localValue?.ownerUsers?.length < 1 &&
+                    showEmptyOwner
                 "
-                class="text-gray-600 ml-1"
-                >No owners assigned</span
+                class="ml-1 text-gray-600"
             >
+                No owners assigned
+            </span>
         </div>
     </div>
 </template>
@@ -199,6 +200,10 @@
             ),
         },
         props: {
+            enableTabs: {
+                type: Array as PropType<Array<any>>,
+                default: () => ['users', 'groups'],
+            },
             editPermission: {
                 type: Boolean,
                 required: false,
@@ -253,8 +258,13 @@
                 required: false,
                 default: () => ({}),
             },
+            showEmptyOwner: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'changeData'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const { selectedAsset, inProfile, editPermission } = toRefs(props)
@@ -415,7 +425,9 @@
             const handleCancelRequest = () => {
                 isEdit.value = false
             }
-
+            const handleChangeData = () => {
+                emit('changeData', localValue)
+            }
             return {
                 ownerGroups,
                 ownerUsers,
@@ -434,6 +446,7 @@
                 handleRequest,
                 handleCancelRequest,
                 newOwners,
+                handleChangeData,
             }
         },
     })

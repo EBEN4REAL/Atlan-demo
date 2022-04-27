@@ -65,6 +65,7 @@
         <div
             class="flex flex-col w-full h-full px-4 overflow-y-scroll"
             v-if="list.length && !isLoading"
+            style="height: calc(100vh - 142px) !important"
         >
             <template v-for="item in list" :key="item.name">
                 <WorkflowCard
@@ -75,51 +76,68 @@
             </template>
 
             <div
-                v-if="list.length > 0 && list.length < totalWorkflows"
-                class="flex items-center justify-center mb-3"
+                class="flex items-center justify-center w-full h-full px-4"
+                v-if="isLoading"
             >
-                <button
-                    :disabled="isLoading"
-                    class="flex items-center justify-between px-3 py-2 transition-all duration-300 bg-white rounded-full text-primary"
-                    :class="isLoading ? 'px-3 py-2' : ''"
-                    @click="handleLoadMore"
-                >
-                    <template v-if="!isLoading">
-                        <p
-                            class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
-                        >
-                            Load more
-                        </p>
-                        <AtlanIcon icon="ArrowDown" class="-mt-0.5" />
-                    </template>
-                    <AtlanLoader v-else class="w-6 h-6" />
-                </button>
+                <Loader class="" style="min-height: 64px !important"></Loader>
             </div>
-        </div>
+            <div
+                v-else-if="fetchListError && !isLoading"
+                class="flex items-center justify-center h-full px-4"
+            >
+                <ErrorView :error="errorObjectForScheduleWorkflows">
+                    <div class="mt-3">
+                        <a-button
+                            data-test-id="try-again"
+                            size="large"
+                            type="primary"
+                            ghost
+                            @click="quickChangeRun"
+                        >
+                            <template v-if="!isLoading">
+                                <p
+                                    class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                                >
+                                    Load more
+                                </p>
+                                <AtlanIcon icon="ArrowDown" class="-mt-0.5" />
+                            </template>
+                            <AtlanLoader v-else class="w-6 h-6" />
+                        </a-button>
+                    </div>
+                </ErrorView>
+            </div>
 
-        <div
-            class="flex items-center justify-center w-full h-full px-4"
-            v-if="isLoading"
-        >
-            <Loader class="" style="min-height: 64px !important"></Loader>
-        </div>
-        <div
-            v-else-if="fetchListError && !isLoading"
-            class="flex items-center justify-center h-full px-4"
-        >
-            <ErrorView :error="errorObjectForScheduleWorkflows">
-                <div class="mt-3">
-                    <a-button
-                        data-test-id="try-again"
-                        size="large"
-                        type="primary"
-                        ghost
-                        @click="quickChangeRun"
-                    >
-                        Try again
-                    </a-button>
-                </div>
-            </ErrorView>
+            <div
+                class="flex justify-center w-full h-full px-4"
+                v-else-if="list.length === 0 && !isLoading && !fetchListError"
+            >
+                <p class="text-gray-500">No scheduled workflows!</p>
+            </div>
+            <div
+                class="flex items-center justify-center w-full h-full px-4"
+                v-if="isLoading"
+            >
+                <Loader class="" style="min-height: 64px !important"></Loader>
+            </div>
+            <div
+                v-else-if="fetchListError && !isLoading"
+                class="flex items-center justify-center h-full px-4"
+            >
+                <ErrorView :error="errorObjectForScheduleWorkflows">
+                    <div class="mt-3">
+                        <a-button
+                            data-test-id="try-again"
+                            size="large"
+                            type="primary"
+                            ghost
+                            @click="quickChangeRun"
+                        >
+                            Try again
+                        </a-button>
+                    </div>
+                </ErrorView>
+            </div>
         </div>
     </div>
 </template>

@@ -17,7 +17,10 @@ import useGraph from './useGraph'
 import fetchPorts from './fetchPorts'
 
 /** CONSTANTS */
-import { LineageAttributes } from '~/constant/projection'
+import {
+    LineageAttributes,
+    LineageAttributesPortLevel,
+} from '~/constant/projection'
 
 /** UTILS */
 import { isCyclicEdge, getFilteredRelations } from './util.js'
@@ -36,6 +39,7 @@ export default function useEventGraph({
     onCloseDrawer,
     addSubGraph,
     renderLayout,
+    controlPrefRetainer,
 }) {
     /** INITIALIZE */
     const lineageStore = useLineageStore()
@@ -207,7 +211,11 @@ export default function useEventGraph({
 
     // isPortTypeName
     const isPortTypeName = (typeName) => {
-        const typeNames = ['Column', 'TableauDatasourceField']
+        const typeNames = [
+            'Column',
+            'TableauDatasourceField',
+            'TableauCalculatedField',
+        ]
         return typeNames.includes(typeName)
     }
 
@@ -446,8 +454,6 @@ export default function useEventGraph({
         addEdge(relation)
         graph.value.unfreeze('selectVpNode-addVpEdge')
 
-        controlEdgesArrow()
-
         const cell = graph.value.getCellById(node.id)
         const updatedData = {
             hiddenCount: entitiesHidden.length,
@@ -504,6 +510,7 @@ export default function useEventGraph({
             guid,
             direction: isLeafNode ? 'OUTPUT' : 'INPUT',
             hideProcess: true,
+            allowDeletedProcess: false,
             entityFilters: {
                 attributeName: '__state',
                 operator: 'eq',
@@ -514,7 +521,7 @@ export default function useEventGraph({
 
         const n = getX6Node(guid)
         const { data, error } = useFetchLineage(nodeConfig, true)
-        const { lineageDirection } = data.value
+        const lineageDirection = nodeConfig.value.direction
         const path = lineageDirection === 'OUTPUT' ? 'right' : 'left'
 
         watchOnce(error, () => {
@@ -614,7 +621,7 @@ export default function useEventGraph({
                     }
                 })
             }
-            controlEdgesArrow()
+            controlPrefRetainer()
         })
     }
 
@@ -662,21 +669,18 @@ export default function useEventGraph({
                     addPorts(node, ports, overrideExp, {
                         portsCount: total,
                     })
-                    removeShowMorePort(node)
-                    if (ports.length < total) addShowMorePort(node)
 
-                    let portsLength = ports.length
                     const newPorts = []
 
                     if (lineageStore.hasPortsList(node.id)) {
                         const { ports: c } = lineageStore.getNodesPortList(
                             node.id
                         )
-                        portsLength = c.length + newPorts.length
                         newPorts.push(...c)
                     }
 
                     newPorts.push(...ports)
+                    const portsLength = newPorts.length
 
                     lineageStore.setNodesPortsList(
                         node.id,
@@ -772,7 +776,6 @@ export default function useEventGraph({
 
         Object.entries(guidEntityMap).forEach(([k, v]) => {
             if (isPortTypeName(v.typeName) && k !== portId) {
-                // TODO: xx
                 const parentName = getNodeQN(v?.attributes?.qualifiedName)
                 const parentNode = Object.values(
                     mergedLineageData.value.guidEntityMap
@@ -843,7 +846,7 @@ export default function useEventGraph({
             depth: depthCounter.value,
             guid: portId,
             direction: 'BOTH',
-            attributes: ['dataType', 'qualifiedName', 'certificateStatus'],
+            attributes: LineageAttributesPortLevel,
             hideProcess: true,
         }))
 
@@ -920,16 +923,13 @@ export default function useEventGraph({
         const { ports } = node.getData()
         const mergedPorts = [...ports, ...newPorts]
         const uniquePorts = []
-        console.log({ newPorts })
-        console.log({ ports })
-        console.log({ mergedPorts })
+
         mergedPorts.forEach((x) => {
             if (!x.guid) return
             const exist = uniquePorts.find((y) => y.guid === x.guid)
             if (!exist) uniquePorts.push(x)
         })
 
-        console.log({ uniquePorts })
         node.updateData({
             ports: uniquePorts,
             portsListExpanded: true,
@@ -1013,9 +1013,6 @@ export default function useEventGraph({
 
     // addLineagePorts
     const addLineagePorts = (nodesForPortLineage, portLineage) => {
-        console.log({ nodesForPortLineage })
-        console.log({ portLineage })
-
         dimNodesEdges(true)
 
         const { guidEntityMap, relations } = portLineage
@@ -1065,10 +1062,11 @@ export default function useEventGraph({
         const portEdges = graph.value
             .getEdges()
             .filter((x) => x.id.includes('port'))
+
         if (!portEdges.length)
             message.info(
-                'There are no related assets present on the graph for the selected port' // TODO: xx
-            )
+                'There are no related assets present on the graph for the selected port'
+            ) // TODO: rename "port" to appropriate label
     }
 
     // addPortEdge
@@ -1489,30 +1487,6 @@ export default function useEventGraph({
         }
     }
 
-    // controlEdgesArrow
-    const controlEdgesArrow = () => {
-        const val = preferences.value.showArrow
-        const size = val ? 12 : 0.1
-        graph.value.freeze('showArrow')
-        graph.value.getEdges().forEach((edge) => {
-            if (edge.id.includes('port')) return
-            edge.attr('line/targetMarker/height', size)
-            edge.attr('line/targetMarker/width', size)
-        })
-        graph.value.unfreeze('showArrow')
-    }
-
-    // controlSchemaToggle
-    const controlSchemaToggle = () => {
-        const val = preferences.value.showSchema
-        const nodesList = document.querySelectorAll('.node-schema')
-        const nodesArr = Array.from(nodesList)
-        nodesArr.forEach((n) => {
-            if (val) n?.classList.remove('hidden')
-            else n?.classList.add('hidden')
-        })
-    }
-
     /** Resets */
     // resetSelectedNode
     const resetSelectedNode = () => {
@@ -1802,18 +1776,4 @@ export default function useEventGraph({
             guidToSelectOnGraph.value = ''
         }
     })
-
-    watch(
-        () => preferences.value.showArrow,
-        () => {
-            controlEdgesArrow()
-        }
-    )
-
-    watch(
-        () => preferences.value.showSchema,
-        () => {
-            controlSchemaToggle()
-        }
-    )
 }

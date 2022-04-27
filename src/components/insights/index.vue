@@ -21,7 +21,7 @@
                         v-model:activeKey="activeTabId"
                         :class="$style.previewtab"
                         :style="'height: calc(100%)'"
-                        tab-position="right"
+                        tab-position="top"
                     >
                         <a-tab-pane
                             v-for="tab in tabsList"
@@ -32,17 +32,36 @@
                             "
                         >
                             <template #tab>
-                                <AtlanIcon
-                                    v-if="tab?.icon"
-                                    :icon="`${tab.icon}`"
-                                    class="w-6 h-6"
-                                    :color="
-                                        activeTabId === tab.id
-                                            ? '#5277D7'
-                                            : '#6f7590'
+                                <div
+                                    class="flex flex-row items-center px-3 py-1 flex-grow-1"
+                                    :class="
+                                        tab.id === activeTabId
+                                            ? 'active-tab-indicator'
+                                            : ''
                                     "
-                                    @click="() => changeTab(tab)"
-                                />
+                                >
+                                    <AtlanIcon
+                                        v-if="tab?.icon"
+                                        :icon="`${tab.icon}`"
+                                        class="w-4 h-4"
+                                        :color="
+                                            activeTabId === tab.id
+                                                ? '#225BD2'
+                                                : '#6A7692'
+                                        "
+                                        @click="() => changeTab(tab)"
+                                    />
+                                    <div
+                                        :class="
+                                            activeTabId === tab.id
+                                                ? 'active-tab'
+                                                : 'inactive-tab'
+                                        "
+                                        class="nav-text"
+                                    >
+                                        {{ tab.name }}
+                                    </div>
+                                </div>
                             </template>
                             <keep-alive>
                                 <component
@@ -136,6 +155,7 @@
     import { useConnector } from '~/components/insights/common/composables/useConnector'
     import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
     import { useQuery } from '~/components/insights/common/composables/useQuery'
+    import insightsStore from '~/store/insights/index'
     import { assetInterface } from '~/types/assets/asset.interface'
 
     import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
@@ -166,7 +186,10 @@
         },
         props: {},
         setup(props) {
+            // insights Store initialization
+            const store = insightsStore()
             const UrlDetectedAsset = ref()
+            const lastPreviewTabElement = ref()
             const refreshSchedulesWorkflowTab = ref()
             const activeKey = ref(0)
             const observer = ref()
@@ -188,6 +211,7 @@
                 'isCollectionCreated'
             ) as Ref<Boolean>
             const collectionSelectorChange = ref(false)
+            const activeResultPreviewTab = ref(false)
 
             const {
                 MIN_EXPLORER_WIDTH,
@@ -348,6 +372,8 @@
             */
 
             const provideData: provideDataInterface = {
+                lastPreviewTabElement,
+                activeResultPreviewTab,
                 activeExplorerTabId: activeTabId,
                 showcustomToolBar,
                 activeInlineTab,
@@ -766,6 +792,11 @@
     })
 </script>
 <style lang="less" module>
+    html {
+        --duration: 0.1s;
+        --durationAnimation: 0.2s;
+    }
+
     .splitpane_insights {
         :global(.splitpanes__splitter) {
             @apply bg-new-gray-100;
@@ -838,51 +869,63 @@
         }
     }
     .previewtab {
-        &:global(.ant-tabs-right) {
-            :global(.ant-tabs-nav .ant-tabs-ink-bar) {
-                right: 0 !important;
-                left: unset !important;
-            }
+        &:global(.ant-tabs-top) {
             :global(.ant-tabs-nav) {
+                margin: 0 !important;
+                height: 40px !important;
                 order: 0 !important;
-                min-width: 60px !important;
-                @apply border-r border-b border-gray-300  !important;
+                // min-width: 60px !important;
+                // @apply border-r border-b border-gray-300  !important;
             }
-            :global(.ant-tabs-nav-container) {
-                @apply ml-0 !important;
-            }
-            :global(.ant-tabs-tab) {
-                padding: 3px 8px !important;
-
-                @apply justify-center;
+            :global(.ant-tabs-nav-wrap) {
+                justify-content: center;
+                position: relative;
+                top: -1px;
+                width: 100%;
             }
 
-            :global(.ant-tabs-tab:first-child) {
-                padding: 3px 8px !important;
-                @apply mt-3 !important;
+            :global(.ant-tabs-nav::before) {
+                @apply border-new-gray-300 !important;
+            }
+            :global(.ant-tabs-nav-list .ant-tabs-tab:not(:first-child)) {
+                // margin-left: 16px !important;
+                margin-left: 0 !important;
+            }
+            :global(.ant-tabs-nav-list) {
+                display: flex;
+                position: relative;
+                align-items: center;
 
-                @apply justify-center;
+                justify-content: center;
+                width: 100%;
+                @apply px-8;
             }
 
-            :global(.ant-tabs-content) {
-                @apply px-0 h-full !important;
-
-                :global(.ant-tabs-tab:first-child) {
-                    @apply mt-0 !important;
-                }
-            }
             :global(.ant-tabs-ink-bar) {
-                @apply rounded-t-sm;
-                margin-bottom: 1px;
-            }
-            :global(.ant-tabs-tabpane) {
-                @apply px-0 !important;
-                @apply pb-0 !important;
-                @apply h-full !important;
+                // display: none;
+                @apply bg-white rounded-md;
+                height: 28px;
+                bottom: 6px;
+                z-index: -1;
+                box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.16);
+                transition: width var(--durationAnimation),
+                    left var(--durationAnimation),
+                    right var(--durationAnimation);
             }
 
-            :global(.ant-tabs-content-holder) {
-                @apply h-full !important;
+            :global(.ant-tabs-tab) {
+                flex-grow: 1;
+                display: flex;
+                position: relative;
+                align-items: center;
+                justify-content: center;
+                min-width: 30%;
+
+                // When query history tab or any other tab comes in to make total tab count 4
+                // min-width: 20%;
+            }
+            :global(.ant-tabs-tab-active) {
+                flex-grow: 2.2;
             }
         }
     }
@@ -922,6 +965,44 @@
     }
     .assetSidebar {
         z-index: 51 !important;
+    }
+    .active-tab-indicator {
+        // @apply bg-white rounded-md;
+        // box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.16);
+    }
+    .active-tab {
+        display: block;
+        margin-left: 6px;
+        position: relative;
+        // top: 0.5px !important;
+        color: #225bd2;
+        @apply h-5;
+        // animation: fadeIn ease 1s;
+    }
+    .inactive-tab {
+        display: none;
+        color: #6a7692;
+        animation: fadeOut ease 2s;
+    }
+
+    .nav-text {
+        animation: fadeIn ease var(--durationAnimation);
+    }
+    @keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+    @keyframes fadeOut {
+        0% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+        }
     }
 </style>
 

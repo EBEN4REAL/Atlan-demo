@@ -20,6 +20,7 @@ export default async function useComputeGraph({
     lineage,
     currZoom,
     isComputeDone,
+    controlPrefRetainer,
 }) {
     const lineageStore = useLineageStore()
     lineageStore.cyclicRelations = []
@@ -394,6 +395,7 @@ export default async function useComputeGraph({
 
         createColCTAPorts()
         createHoPaCTAPorts()
+        controlPrefRetainer()
     }
     renderLayout()
     isComputeDone.value = true

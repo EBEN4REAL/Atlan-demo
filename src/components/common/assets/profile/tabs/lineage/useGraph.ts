@@ -38,6 +38,8 @@ import {
     lookup,
     enum1,
     percent,
+    tableauCalculatedField,
+    tableauDatasourceField,
 } from './icons'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -78,6 +80,11 @@ const portDataTypeIcons = {
     lookup,
     enum1,
     percent,
+}
+
+const biPortDataTypeIcons = {
+    TableauCalculatedField: tableauCalculatedField,
+    TableauDatasourceField: tableauDatasourceField,
 }
 
 const columnKeyTypeIcons = {
@@ -177,12 +184,16 @@ export default function useGraph(graph) {
                                     port.displayText.charAt(0).toUpperCase() +
                                     port.displayText.slice(1).toLowerCase()
 
-                                const dataType = dataTypeCategoryList.find(
-                                    (d) =>
-                                        d.type.includes(
-                                            port.attributes?.dataType?.toUpperCase()
-                                        )
-                                )?.imageText
+                                const dataType = port.attributes?.dataType
+                                const portTypeName = port.typeName
+
+                                const dataTypeComputed =
+                                    dataTypeCategoryList.find((d) =>
+                                        d.type.includes(dataType?.toUpperCase())
+                                    )?.imageText
+
+                                const biDataTypeIcon =
+                                    biPortDataTypeIcons[portTypeName]
 
                                 const isSelectedPort =
                                     data?.selectedPortId === port.guid
@@ -195,7 +206,11 @@ export default function useGraph(graph) {
                                 ${isSelectedPort ? 'selected-port' : ''}
                                 ${isHighlightedPort ? 'highlighted-port' : ''}">
                                     <div class="flex items-center truncate">
-                                        ${portDataTypeIcons[dataType] || ''}
+                                        ${
+                                            portDataTypeIcons[
+                                                dataTypeComputed
+                                            ] || biDataTypeIcon
+                                        }
                                         <span title="${text}" class="truncate flex-grow-0 flex-shrink">${text}</span> 
                                     </div>
                                     <div class="flex items-center">
@@ -215,7 +230,7 @@ export default function useGraph(graph) {
                                         }
                                         ${
                                             aType
-                                                ? `<span class="ml-2">
+                                                ? `<span class="ml-2 node-announcement">
                                                     ${announcementTypeIcons[aType]}
                                                    </span>`
                                                 : ''
@@ -281,7 +296,7 @@ export default function useGraph(graph) {
                                     <div class="flex items-center gap-x-1">
                                         <span title="${displayText}" class="truncate node-title">${displayText}</span>
                                         <span class="flex-none ml-1">${status}</span>
-                                        <span class="flex-none ml-1">${flag}</span>
+                                        <span class="flex-none ml-1 node-announcement">${flag}</span>
 
                                     </div>
                                 </div>
@@ -309,7 +324,8 @@ export default function useGraph(graph) {
                                     <div class="flex items-center">
                                         <span class="mr-2">
                                             ${getPortsCTALabel(
-                                                typeName, data?.portsCount,
+                                                typeName,
+                                                data?.portsCount,
                                                 data?.highlightPorts
                                             )}
                                         </span>

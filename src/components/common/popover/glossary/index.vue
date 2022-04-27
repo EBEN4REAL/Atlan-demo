@@ -13,10 +13,18 @@
                     <AtlanLoader class="h-7" />
                 </div>
             </div>
-            <div v-else style="max-width: 374px">
+            <div
+                v-else-if="
+                    !fetchedTerm ||
+                    (fetchedTerm &&
+                        fetchedTerm?.typeName !== 'cta' &&
+                        fetchedTerm?.typeName !== 'loadMore')
+                "
+                style="max-width: 374px"
+            >
                 <GlossaryPopoverHeader
                     :term="fetchedTerm"
-                    :showDrawerToggle="showDrawerToggle"
+                    :show-drawer-toggle="showDrawerToggle"
                 />
                 <GlossaryPopoverBody
                     :attributes="attributes"
@@ -99,7 +107,7 @@
         showDrawerToggle: {
             type: Boolean,
             required: false,
-            default: ()=>true,
+            default: () => true,
         },
     })
 
@@ -114,7 +122,7 @@
         trigger,
         mouseEnterDelay,
         excludeFields,
-        showDrawerToggle
+        showDrawerToggle,
     } = toRefs(props)
 
     const attributes = ref({})

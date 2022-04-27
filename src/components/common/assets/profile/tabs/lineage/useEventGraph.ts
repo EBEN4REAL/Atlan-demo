@@ -220,6 +220,10 @@ export default function useEventGraph({
         return typeNames.includes(typeName)
     }
 
+    // isPortEdgesPresent
+    const isPortEdgesPresent = () =>
+        graph.value.getEdges().filter((x) => x.id.includes('port')).length
+
     // getX6Node
     const getX6Node = (nodeId) =>
         graph.value.getNodes().find((x) => x.id === nodeId)
@@ -750,6 +754,7 @@ export default function useEventGraph({
                     node
                 )}`
             )
+            resetSelectedPort()
             return
         }
 
@@ -849,9 +854,13 @@ export default function useEventGraph({
             })
         } else addLineagePorts(nodesForPortLineage, portLineage)
 
-        const parentNode = getPortNode(portId)
-        const cellToFit = graph.value.getCellById(parentNode.id)
-        graph.value.scrollToCell(cellToFit, { animation: { duration: 600 } })
+        if (isPortEdgesPresent()) {
+            const parentNode = getPortNode(portId)
+            const cellToFit = graph.value.getCellById(parentNode.id)
+            graph.value.scrollToCell(cellToFit, {
+                animation: { duration: 600 },
+            })
+        }
 
         controlPortsLoader(node, false, 'item')
     }
@@ -1082,14 +1091,13 @@ export default function useEventGraph({
                 translateSubsequentNodes(n)
         })
 
-        const portEdges = graph.value
-            .getEdges()
-            .filter((x) => x.id.includes('port'))
-
-        if (!portEdges.length)
+        if (!isPortEdgesPresent()) {
+            // TODO: rename "port" to appropriate label
             message.info(
                 'There are no related assets present on the graph for the selected port'
-            ) // TODO: rename "port" to appropriate label
+            )
+            resetSelectedPort()
+        }
     }
 
     // addPortEdge
@@ -1180,7 +1188,7 @@ export default function useEventGraph({
             (isNodePortInCurrPortLineage(node.id) ||
                 activeNodesToggled.value[node.id])
         ) {
-            controlToggleOfActiveNode(node)
+            // controlToggleOfActiveNode(node)
             return
         }
 

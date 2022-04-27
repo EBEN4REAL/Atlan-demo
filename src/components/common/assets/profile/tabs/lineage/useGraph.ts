@@ -322,7 +322,11 @@ export default function useGraph(graph) {
                             </div>
                             <div class="lineage-node__ports 
                                     ${isNodeWithPorts ? '' : 'hidden'}">
-                                <div iscollist="true" class="lineage-node__ports-cta">
+                                <div iscollist="true" class="lineage-node__ports-cta ${
+                                    data?.highlightPorts || data?.selectedPortId
+                                        ? 'opacity-30 cursor-not-allowed'
+                                        : ''
+                                }">
                                     <div class="flex items-center">
                                         <span class="mr-2">
                                             ${getPortsCTALabel(

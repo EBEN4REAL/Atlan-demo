@@ -763,8 +763,8 @@ export default function useEventGraph({
         let nodesForPortLineage = {}
 
         const allNodesQN = getAllNodesQN()
-        const addNodesForPortLineage = (guid, pd) => {
-            const portData = { ...pd }
+        const addNodesForPortLineage = (guid, pd, isPortToPort = true) => {
+            const portData = { ...pd, isPortToPort }
             portData.highlight = true
             if (nodesForPortLineage[guid])
                 nodesForPortLineage[guid].push(portData)
@@ -806,6 +806,19 @@ export default function useEventGraph({
                     addNodesForPortLineage(guid, v)
                 } else if (allNodesQN.includes(parentName))
                     addNodesForPortLineage(guid, v)
+            } else if (!isPortTypeName(v.typeName)) {
+                const { isHidden, type, node: nn } = isNodeHidden(v.guid, false)
+
+                if (isHidden) {
+                    const prefix =
+                        type === 'sameSourceCount' ? 'vpNodeSS' : 'vpNodeST'
+                    const vpNodeId = `${prefix}-${nn}`
+                    nodesToMakeVisible = {
+                        ...nodesToMakeVisible,
+                        [vpNodeId]: [v.guid],
+                    }
+                }
+                addNodesForPortLineage(v.guid, v, false)
             }
         })
 
@@ -1028,7 +1041,8 @@ export default function useEventGraph({
         const { guidEntityMap, relations } = portLineage
         Object.entries(nodesForPortLineage).forEach(([k, cols]) => {
             const parentNode = getX6Node(k)
-            const { ports } = parentNode.getData()
+            const { ports, hasPorts } = parentNode.getData()
+            if (!hasPorts) return
 
             if (ports.length) removePorts(parentNode)
             addPorts(parentNode, cols, false, {
@@ -1053,11 +1067,10 @@ export default function useEventGraph({
                     return false
                 })
 
-                if (rels.length) {
+                if (rels.length)
                     rels.forEach((r) => {
                         addPortEdge(r, guidEntityMap)
                     })
-                }
             })
             graph.value.unfreeze('addPortEdges')
         })
@@ -1096,6 +1109,12 @@ export default function useEventGraph({
         const isPortToPort =
             isPortTypeName(sourceTypeName) && isPortTypeName(targetTypeName)
 
+        const isPortToNode =
+            isPortTypeName(sourceTypeName) && !isPortTypeName(targetTypeName)
+
+        const isNodeToPort =
+            !isPortTypeName(sourceTypeName) && isPortTypeName(targetTypeName)
+
         if (isPortToPort || mode === 'port>port') {
             sourceCell = getPortNode(fromEntityId)?.id
             sourcePort = fromEntityId
@@ -1103,40 +1122,25 @@ export default function useEventGraph({
             targetPort = toEntityId
         }
 
-        // column > query ... column > dataset
-        // if (
-        //     (sourceTypeName === 'Column' &&
-        //         ['LookerQuery', 'PowerBiDataset'].includes(targetTypeName)) ||
-        //     (!guidEntityMap && mode === 'column>bi')
-        // ) {
-        //     sourceCell = getPortNode(fromEntityId)?.id
-        //     sourcePort = fromEntityId
-        //     targetCell = toEntityId
-        //     targetPort = `${toEntityId}-invisiblePort`
+        if (isPortToNode || mode === 'port>node') {
+            sourceCell = getPortNode(fromEntityId)?.id
+            sourcePort = fromEntityId
+            targetCell = toEntityId
+            targetPort = `${toEntityId}-invisiblePort`
 
-        //     if (!isNodeRendered(targetCell)) return
-        //     if (isNodeHidden(targetCell, true)) return
+            portHighlightedBINodes.value.push(targetCell)
+            highlightNode(targetCell, 'highlight')
+        }
 
-        //     portHighlightedBINodes.value.push(targetCell)
-        //     highlightNode(targetCell, 'highlight')
-        // }
+        if (isNodeToPort || mode === 'node>port') {
+            sourceCell = fromEntityId
+            sourcePort = `${fromEntityId}-invisiblePort`
+            targetCell = getPortNode(toEntityId)?.id
+            targetPort = toEntityId
 
-        // dataset > report
-        // if (
-        //     sourceTypeName === 'PowerBiDataset' &&
-        //     targetTypeName === 'PowerBiReport'
-        // ) {
-        //     // TODO: Edge already exist
-        //     sourceCell = fromEntityId
-        //     sourcePort = `${fromEntityId}-invisiblePort`
-        //     targetCell = toEntityId
-        //     targetPort = `${toEntityId}-invisiblePort`
-
-        //     if (!isNodeRendered(sourceCell)) return
-        //     if (isNodeHidden(sourceCell)) return
-        //     if (!isNodeRendered(targetCell)) return
-        //     if (isNodeHidden(targetCell)) return
-        // }
+            portHighlightedBINodes.value.push(sourceCell)
+            highlightNode(sourceCell, 'highlight')
+        }
 
         if (!(sourceCell && sourcePort && targetCell && targetPort)) return
 
@@ -1326,7 +1330,11 @@ export default function useEventGraph({
                         processId,
                     }
 
-                    addPortEdge(newRelation, {}, 'port>port')
+                    if (newTarget.includes('invisible'))
+                        addPortEdge(newRelation, {}, 'port>node')
+                    else if (newSource.includes('invisible'))
+                        addPortEdge(newRelation, {}, 'node>port')
+                    else addPortEdge(newRelation, {}, 'port>port')
                 })
                 activeNodesToggled.value[node.id].portsEdges.push(...portsEdges)
             })
@@ -1359,7 +1367,11 @@ export default function useEventGraph({
                     toEntityId: target,
                     processId,
                 }
-                addPortEdge(relation, {}, 'port>port')
+                if (target.includes('invisible'))
+                    addPortEdge(relation, {}, 'port>node')
+                else if (source.includes('invisible'))
+                    addPortEdge(relation, {}, 'node>port')
+                else addPortEdge(relation, {}, 'port>port')
             })
 
             activeNodesToggled.value[node.id].newEdgesId.forEach((edgeId) => {

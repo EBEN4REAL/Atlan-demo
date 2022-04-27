@@ -398,7 +398,7 @@ export const percent = `<svg class="w-4 h-4 mr-2 mb-1 flex-grow flex-shrink-0" v
 </svg>
 `
 
-export const tableauCalculatedField = `<svg class="w-6 h-6 mr-2 mb-1 flex-grow flex-shrink-0" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const tableauCalculatedField = `<svg class="w-6 h-6 mr-2 flex-grow flex-shrink-0" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M7.66461 10.6483H8.33501V8.79546H10.0212V8.13668H8.33501V6.28387H7.66461V8.13668H5.99878V8.79546H7.66461V10.6483Z" fill="#E8762D"/>
 <path d="M4.55653 13.3246H5.12535V11.6777H6.62866V11.163H5.12535V9.49548H4.55653V11.163H3.05322V11.6777H4.55653V13.3246Z" fill="#C72037"/>
 <path d="M10.8744 7.37502H11.4432V5.72808H12.9668V5.23399H11.4432V3.56647H10.8744V5.23399H9.37109V5.72808H10.8744V7.37502Z" fill="#5B879B"/>
@@ -412,7 +412,7 @@ export const tableauCalculatedField = `<svg class="w-6 h-6 mr-2 mb-1 flex-grow f
 </svg>
 `
 
-export const tableauDatasourceField = `<svg class="w-6 h-6 mr-2 mb-1 flex-grow flex-shrink-0" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const tableauDatasourceField = `<svg class="w-6 h-6 mr-2 flex-grow flex-shrink-0" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M7.66461 10.6483H8.33501V8.79546H10.0212V8.13668H8.33501V6.28387H7.66461V8.13668H5.99878V8.79546H7.66461V10.6483Z" fill="#E8762D"/>
 <path d="M4.55653 13.3246H5.12535V11.6777H6.62866V11.163H5.12535V9.49548H4.55653V11.163H3.05322V11.6777H4.55653V13.3246Z" fill="#C72037"/>
 <path d="M10.8744 7.37502H11.4432V5.72808H12.9668V5.23399H11.4432V3.56647H10.8744V5.23399H9.37109V5.72808H10.8744V7.37502Z" fill="#5B879B"/>

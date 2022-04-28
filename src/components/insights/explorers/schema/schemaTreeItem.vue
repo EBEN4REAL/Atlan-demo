@@ -228,9 +228,12 @@
                                 "
                             >
                                 <div
+                                    class="w-8 h-full opacity-70 bg-gradient-to-l from-new-gray-200"
+                                ></div>
+                                <div
                                     :data-test-id="'insert-in-editor'"
-                                    class="pl-2 ml-4"
                                     v-if="!showVQB"
+                                    class="bg-new-gray-200"
                                     @click="() => actionClick('add', item)"
                                 >
                                     <a-tooltip
@@ -260,6 +263,7 @@
                                 <div
                                     :class="showVQB ? 'pl-2 pr-1' : 'pl-1 pr-1'"
                                     :data-test-id="'preview'"
+                                    class="bg-new-gray-200"
                                     @click="() => actionClick('info', item)"
                                 >
                                     <a-tooltip

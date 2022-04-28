@@ -137,7 +137,7 @@
                 type: String,
                 required: false,
                 default: () => '180',
-
+            },
         },
         emits: ['addBackground', 'visibleChange'],
         setup(props, { emit }) {

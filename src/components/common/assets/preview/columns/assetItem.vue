@@ -297,9 +297,9 @@
                     aggregations,
                 }
             )
-            if (!localDescription.value) {
+            /*  if (!localDescription.value) {
                 quickChange()
-            }
+            } */
 
             const handleApplySuggestion = (obj) => {
                 localDescription.value = obj.value

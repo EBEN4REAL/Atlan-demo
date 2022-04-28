@@ -279,7 +279,7 @@
                 orExists: ['description', 'userDescription'],
                 similarities: [],
             })
-            const suggestionAggregations = ref(['description'])
+            const suggestionAggregations = ref(['name'])
 
             const {
                 quickChange: quickSuggestionChange,

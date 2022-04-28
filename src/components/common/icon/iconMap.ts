@@ -284,6 +284,7 @@ import DBDiagram from '~/assets/images/readme/dbdiagram.svg'
 import MicrosoftWord from '~/assets/images/readme/microsoftWord.svg'
 import MicrosoftExcel from '~/assets/images/readme/microsoftExcel.svg'
 import MicrosoftPowerpoint from '~/assets/images/readme/microsoftPowerpoint.svg'
+import Equation from '~/assets/images/readme/equation.svg'
 
 import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
@@ -461,8 +462,21 @@ import Workflow from '~/assets/images/icons/workflows.svg'
 import Package from '~/assets/images/icons/package.svg'
 
 import Display from '~/assets/images/icons/display.svg'
+import FullScreenSquare from '~/assets/images/icons/full_screen_sqaure.svg'
+import QueryOutputSuccess from '~/assets/images/icons/query_output_success.svg'
+import QueryMetadata from '~/assets/images/icons/query_metadata.svg'
+import QueryOutputFail from '~/assets/images/icons/query_output_fail.svg'
+import QueryOutputNeutral from '~/assets/images/icons/query_output_neutral.svg'
+import PreviewQuery from '~/assets/images/icons/preview.svg'
+import Trident from '~/assets/images/icons/trident.svg'
 
 export default {
+    PreviewQuery,
+    QueryOutputFail,
+    QueryOutputNeutral,
+    QueryMetadata,
+    QueryOutputSuccess,
+    FullScreenSquare,
     LegendExpand,
     LegendCollapse,
     LegendAnomaly,
@@ -769,6 +783,7 @@ export default {
     MicrosoftWord,
     MicrosoftExcel,
     MicrosoftPowerpoint,
+    Equation,
     Running,
     Refresh,
     ErrorLogs,
@@ -905,4 +920,5 @@ export default {
     Workflow,
     Package,
     Display,
+    Trident,
 }

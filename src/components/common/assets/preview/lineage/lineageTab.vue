@@ -147,6 +147,7 @@
                 depth: depth.value,
                 guid: guid.value,
                 hideProcess: false,
+                allowDeletedProcess: false,
                 entityFilters: {
                     attributeName: '__state',
                     operator: 'eq',

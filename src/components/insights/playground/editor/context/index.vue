@@ -29,6 +29,7 @@
                     class="w-full pr-1 mt-1 mr-1 text-base text-gray-700 border-none outline-none"
                     style="max-width: 95%"
                     @input="updateQueryNameDirty"
+                    :readonly="readOnly"
                 />
                 <Tooltip
                     v-else
@@ -208,7 +209,12 @@
                             class="w-4 h-4 mr-1"
                         />
                         <img
-                            v-if="connectionName"
+                            v-if="
+                                connectionName &&
+                                getConnectorImage(connectorAsset?.id).includes(
+                                    '/'
+                                )
+                            "
                             :src="getConnectorImage(connectorAsset?.id)"
                             class="w-4 h-4 mr-1"
                             style="min-width: 1rem"

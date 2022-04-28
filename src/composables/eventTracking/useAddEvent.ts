@@ -74,6 +74,7 @@ export const identifyUser = async () => {
                 purpose_count: authStore.purposes
                     ? authStore.purposes.length
                     : 0,
+                created_at: authStore.createdAt ? authStore.createdAt : '',
             })
         }
     }

@@ -9,7 +9,11 @@ import { getCountString, getSizeString } from '~/utils/number'
 import { SourceList } from '~/constant/source'
 import { assetTypeList } from '~/constant/assetType'
 import { dataTypeCategoryList } from '~/constant/dataType'
-import { previewTabs, JiraPreviewTab } from '~/constant/previewTabs'
+import {
+    previewTabs,
+    JiraPreviewTab,
+    SlackResourcesTab,
+} from '~/constant/previewTabs'
 import { profileTabs } from '~/constant/profileTabs'
 import { summaryVariants } from '~/constant/summaryVariants'
 import { formatDateTime } from '~/utils/date'
@@ -199,6 +203,10 @@ export default function useAssetInfo() {
     const parentSchema = (asset: assetInterface) =>
         attributes(asset)?.atlanSchema
 
+    const parentTable = (asset: assetInterface) => attributes(asset)?.table
+
+    const parentView = (asset: assetInterface) => attributes(asset)?.view
+
     const tableName = (asset: assetInterface) =>
         attributes(asset)?.tableName ?? ''
 
@@ -292,7 +300,7 @@ export default function useAssetInfo() {
 
     const getPreviewTabs = (asset: assetInterface, inProfile: boolean) => {
         const store = integrationStore()
-        const { tenantJiraStatus } = toRefs(store)
+        const { tenantJiraStatus, tenantSlackStatus } = toRefs(store)
         let customTabList = []
         if (cmList(assetType(asset))?.length > 0) {
             customTabList = cmList(assetType(asset)).map((i) => {
@@ -313,6 +321,9 @@ export default function useAssetInfo() {
 
         let allTabs = [
             ...getTabs(previewTabs, assetType(asset)),
+            ...(tenantSlackStatus.value.configured
+                ? getTabs([SlackResourcesTab], assetType(asset))
+                : []),
             ...(tenantJiraStatus.value.configured
                 ? getTabs([JiraPreviewTab], assetType(asset))
                 : []),
@@ -1377,6 +1388,8 @@ export default function useAssetInfo() {
         parentModel,
         parentDatabase,
         parentSchema,
+        parentTable,
+        parentView,
         sourceChildCount,
         tableCount,
         viewCount,

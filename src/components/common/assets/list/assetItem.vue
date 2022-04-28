@@ -452,6 +452,23 @@
                                             class="flex items-center text-gray-500"
                                         >
                                             <AtlanIcon
+                                                v-if="
+                                                    parentTable(item)
+                                                        ?.attributes
+                                                        ?.certificateStatus
+                                                "
+                                                :icon="
+                                                    getEntityStatusIcon(
+                                                        'Table',
+                                                        parentTable(item)
+                                                            ?.attributes
+                                                            ?.certificateStatus
+                                                    )
+                                                "
+                                                class="mr-1 mb-0.5"
+                                            />
+                                            <AtlanIcon
+                                                v-else
                                                 icon="TableGray"
                                                 class="mr-1 mb-0.5"
                                             />
@@ -477,6 +494,22 @@
                                             class="flex items-center text-gray-500"
                                         >
                                             <AtlanIcon
+                                                v-if="
+                                                    parentView(item)?.attributes
+                                                        ?.certificateStatus
+                                                "
+                                                :icon="
+                                                    getEntityStatusIcon(
+                                                        'View',
+                                                        parentView(item)
+                                                            ?.attributes
+                                                            ?.certificateStatus
+                                                    )
+                                                "
+                                                class="mr-1 mb-0.5"
+                                            />
+                                            <AtlanIcon
+                                                v-else
                                                 icon="ViewGray"
                                                 class="mr-1 mb-0.5"
                                             />
@@ -1277,7 +1310,7 @@
                                                 <div class="w-4 mr-1">
                                                     <AtlanIcon
                                                         :icon="
-                                                            getEntityStatusIcon(
+                                                            getGlossaryStatusIcon(
                                                                 'AtlasGlossaryCategory',
                                                                 certificateStatus(
                                                                     cat
@@ -1360,6 +1393,7 @@
 
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -1482,7 +1516,8 @@
                 isLoading,
             } = toRefs(props)
 
-            const { getEntityStatusIcon } = useGlossaryData()
+            const { getEntityStatusIcon: getGlossaryStatusIcon } =
+                useGlossaryData()
             const showAssetSidebarDrawer = ref(false)
             const selectedAssetDrawerGuid = ref('')
 
@@ -1547,6 +1582,8 @@
                 databaseQualifiedName,
                 schemaQualifiedName,
                 connectionQualifiedName,
+                parentTable,
+                parentView,
             } = useAssetInfo()
 
             const icon = computed(() => {
@@ -1742,7 +1779,7 @@
                 terms,
                 fieldCount,
                 isCustom,
-                getEntityStatusIcon,
+                getGlossaryStatusIcon,
                 meanings,
                 assetTypeImage,
                 icon,
@@ -1758,6 +1795,9 @@
                 termMouseEnterDelay,
                 termEnteredPill,
                 termLeftPill,
+                getEntityStatusIcon,
+                parentTable,
+                parentView,
             }
         },
     })

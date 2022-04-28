@@ -49,8 +49,11 @@
                             <template #title>{{
                                 getContextName(`connection`)
                             }}</template>
-
                             <img
+                                v-if="
+                                    getContextName(`icon`) !==
+                                    'Select connector context'
+                                "
                                 :src="getContextName(`icon`)"
                                 class="w-6 h-6"
                             />
@@ -103,6 +106,7 @@
                     >
                         <template #content>
                             <div
+                                v-if="treeData.length"
                                 class="rounded-lg w-60"
                                 :class="$style.schemaExplorerTreeStyles"
                             >
@@ -185,11 +189,22 @@
                                     </a-tree>
                                 </div>
                             </div>
+                            <div
+                                class="p-3 overflow-x-hidden text-center text-gray-500 rounded-lg w-60 tree-container"
+                                :class="$style.schemaExplorerTreeStyles"
+                                v-else
+                            >
+                                No connectors available
+                            </div>
                         </template>
                         <div
                             class="flex items-center justify-center px-4 py-2 submenu-title-content"
                         >
                             <img
+                                v-if="
+                                    getContextName(`icon`) !==
+                                    'Select connector context'
+                                "
                                 :src="getContextName(`icon`)"
                                 class="flex-shrink-0 w-6 h-6 mr-1 text-gray-500"
                             />
@@ -236,6 +251,12 @@
                         </template>
                         <div
                             class="flex items-center justify-center px-4 py-2 submenu-title-content"
+                            :class="
+                                getContextName(`connection`) ===
+                                'Select connector context'
+                                    ? `disabled-popover`
+                                    : `enabled-popover`
+                            "
                         >
                             <AtlanIcon
                                 icon="DatabaseGray"
@@ -312,11 +333,15 @@
 
                             <div
                                 class="flex items-center justify-center px-4 py-2 submenu-title-content"
-                                :class="
+                                :class="[
                                     getContextName(`schema`) === ''
                                         ? `disabled-popover`
-                                        : `enabled-popover`
-                                "
+                                        : `enabled-popover`,
+                                    getContextName(`connection`) ===
+                                    'Select connector context'
+                                        ? `disabled-popover`
+                                        : `enabled-popover`,
+                                ]"
                             >
                                 <AtlanIcon
                                     icon="SchemaGray"
@@ -754,10 +779,11 @@
 
             // Filling in the state values of the schema explorer for connectors, DB, and Schema
             const getContextName = (item) => {
-                const chunks = data.value?.attributeValue?.split('/')
+                const chunks = data.value?.attributeValue?.split('/') ?? []
+                if (chunks.length == 0) return 'Select connector context'
                 const connectorKey = `${chunks[0]}/${chunks[1]}/${chunks[2]}`
 
-                if (item === 'connection') {
+                if (item === 'connection' && connectorKey) {
                     if (chunks?.length > 2) {
                         const obj = treeData.value.find(
                             ({ connector }) => connector === chunks[1]
@@ -765,12 +791,12 @@
                         const child = obj?.children.find(
                             ({ key }) => key === connectorKey
                         )
-                        return `${nodeStringFilter(chunks[1])}: ${child.title}`
+                        return `${nodeStringFilter(chunks[1])}: ${child?.title}`
                     }
                     return ''
                 }
 
-                if (item === 'connector') {
+                if (item === 'connector' && connectorKey) {
                     if (chunks?.length > 2) {
                         const obj = treeData.value.find(
                             ({ connector }) => connector === chunks[1]
@@ -778,7 +804,7 @@
                         const child = obj?.children.find(
                             ({ key }) => key === connectorKey
                         )
-                        return child.title
+                        return child?.title ?? ''
                     }
                     if (chunks?.length > 1) return 'Select connector context'
                     return ''

@@ -22,6 +22,7 @@ export enum NAME_OF_EVENTS {
     MENTION_INSERTED = 'Mention',
     TASK_LIST_INSERTED = 'Task List',
     QUOTE_INSERTED = 'Quote',
+    EQUATION_ADDED = 'Equation',
     CODE_BLOCK_INSERTED = 'Code Block',
     TABLE_INSERTED = 'Table',
     BOLD = 'Bold',

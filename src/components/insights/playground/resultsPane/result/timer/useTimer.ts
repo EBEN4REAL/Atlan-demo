@@ -1,8 +1,14 @@
 import { ref, Ref } from 'vue'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
-export function useTimer(activeInlineTab: Ref<activeInlineTabInterface>) {
+export function useTimer(
+    activeInlineTab: Ref<activeInlineTabInterface>,
+    explicitTimerKey?: string
+) {
     let timerId = activeInlineTab.value.key
+    if (explicitTimerKey) {
+        timerId = explicitTimerKey
+    }
 
     let timeBegan = null,
         started = null

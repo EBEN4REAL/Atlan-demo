@@ -111,9 +111,11 @@
                 uploadStarted.value = true
                 await upload(uploaded.file)
                 if (error.value) {
+                    const errMsg = error.value?.response?.data?.message
                     message.error({
                         key: 'upload',
-                        content: 'Image upload failed, please try again.',
+                        content:
+                            errMsg ?? 'Image upload failed, please try again.',
                     })
                 } else if (isReady?.value)
                     message.success({
@@ -121,12 +123,10 @@
                         content: 'Image uploaded',
                     })
                 updatedImageUrl.value = `${updatedImageUrl.value}?${uploadKey.value}`
-
+                emit('imageUpdated', updatedImageUrl)
                 return true
             }
-            watch(uploadKey, () => {
-                emit('imageUpdated', updatedImageUrl)
-            })
+
             return {
                 error,
                 handleUploadAvatar,

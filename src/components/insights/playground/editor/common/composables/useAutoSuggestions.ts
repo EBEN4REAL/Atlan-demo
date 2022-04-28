@@ -693,9 +693,11 @@ export async function useAutoSuggestions(
     })
     // tokens.push(' ')
     let currentWord = tokens[tokens.length - 1]
+    debugger
+    // TABLE[DOT]  // check if previous is [dot]
+    if (currentWord === '.' || currentWord.includes('.')) {
+        const dotSplitWord = currentWord.split('.')
 
-    // TABLE[DOT]
-    if (currentWord === '.') {
         // fetch table columns
         if (tokens.length > 1) {
             const tableName = tokens[tokens.length - 2]
@@ -715,6 +717,15 @@ export async function useAutoSuggestions(
                     },
                 }
             )
+            if (dotSplitWord.length > 1) {
+                body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
+                    {
+                        regexp: {
+                            'name.keyword': `${dotSplitWord[1]}.*`,
+                        },
+                    }
+                )
+            }
             if (cancelTokenSource.value !== undefined) {
                 cancelTokenSource.value.cancel()
             }
@@ -737,7 +748,6 @@ export async function useAutoSuggestions(
             return suggestionsPromise
         }
     }
-
     /* If it is a first/nth character of first word */
     if (tokens.length < 2) {
         return getLocalSQLSugggestions(currentWord)
@@ -785,6 +795,41 @@ export async function useAutoSuggestions(
                             incomplete: true,
                         })
                     }
+                }
+                case 'AGGREGATE': {
+                    return new Promise((resolve, reject) => {
+                        getSuggestionsUsingType(
+                            lastMatchedKeyword.type,
+                            lastMatchedKeyword.token,
+                            currentWord,
+                            connectorsInfo,
+                            cancelTokenSource,
+                            context
+                        ).then((value) => {
+                            debugger
+                            const filterKeywords =
+                                typesKeywordsMap['AGGREGATE'].values
+                            let filterKeywordsMap = filterKeywords.map(
+                                (keyword) => {
+                                    return {
+                                        label: keyword,
+                                        kind: monaco.languages
+                                            .CompletionItemKind.Keyword,
+                                        insertText: keyword,
+                                    }
+                                }
+                            )
+
+                            let _suggestions = [
+                                ...value.suggestions,
+                                ...filterKeywordsMap,
+                            ]
+                            resolve({
+                                suggestions: _suggestions,
+                                incomplete: true,
+                            })
+                        })
+                    })
                 }
                 default: {
                     return getSuggestionsUsingType(

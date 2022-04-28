@@ -115,7 +115,6 @@ keycloak
             app.use(router).mount('#app')
             const redirectUrl = localStorage.getItem('redirectURL') // "/admin/integrations"
             if (redirectUrl) {
-                debugger
                 const allRoles = authStore.decodedToken?.realm_access?.roles
                 if (!allRoles.includes('$admin') && ['/workflows', '/admin', '/governance'].some(p => redirectUrl.startsWith(p)))
                     router.push('/')

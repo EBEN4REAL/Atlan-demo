@@ -53,7 +53,7 @@
                         </template>
                         <a-input-password
                             v-model:value="password"
-                            @change="setPassword"
+                            @change="handleChangePassword"
                         />
                     </a-form-item>
                 </div>
@@ -190,6 +190,10 @@
                     disabledSave.value = true
                 })
             }
+            const handleChangePassword = () => {
+                setPassword()
+                disabledSave.value = false
+            }
             return {
                 testDone,
                 setPassword,
@@ -213,6 +217,7 @@
                 triggerBlur,
                 disabledSave,
                 saveSmtpConfigSave,
+                handleChangePassword,
             }
         },
     })

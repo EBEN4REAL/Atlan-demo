@@ -25,7 +25,14 @@
                     </div>
                     <a-switch
                         :checked="featureEnabledMap[feature.key]"
-                        :disabled="updateStatus === 'loading'"
+                        :disabled="
+                            updateStatus === 'loading' ||
+                            (feature.dependantFeatureKey
+                                ? !featureEnabledMap[
+                                      feature.dependantFeatureKey
+                                  ]
+                                : false)
+                        "
                         :loading="updateStatus === 'loading'"
                         @click="handleSwitch(feature)"
                     />

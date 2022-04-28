@@ -289,7 +289,7 @@
                 </template>
             </a-popover>
 
-            <div class="flex justify-end w-full">
+            <div class="flex justify-end w-full gap-1">
                 <AtlanButton2
                     color="secondary"
                     label="Cancel"

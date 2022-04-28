@@ -67,7 +67,8 @@
                 <p class="mb-2 text-gray-700">
                     {{ startedAt(selectedRun, false) }}
                 </p> -->
-                <div class="px-5 py-4 space-y-4 bg-white">
+                <div class="px-5 py-4 bg-white 2">
+                    <p class="mb-1 info-title">Start Time</p>
                     <div class="flex items-center gap-x-2">
                         <AtlanIcon icon="ClockStart" />
                         <span class="text-sm text-new-gray-800">
@@ -81,23 +82,23 @@
                         </span>
                     </div>
 
-                    <div
-                        v-if="finishedAt(selectedRun, false) !== 'N/A'"
-                        class="flex items-center gap-x-2"
-                    >
-                        <AtlanIcon icon="ClockStop" />
-                        <span class="text-sm text-new-gray-800">
-                            {{
-                                finishedAt(
-                                    selectedRun,
-                                    false,
-                                    "H:mm:ss A, MMM Do 'YY"
-                                )
-                            }}
-                        </span>
-                    </div>
+                    <template v-if="finishedAt(selectedRun, false) !== 'N/A'">
+                        <p class="mt-4 mb-1 info-title">Finish Time</p>
+                        <div class="flex items-center gap-x-2">
+                            <AtlanIcon icon="ClockStop" />
+                            <span class="text-sm text-new-gray-800">
+                                {{
+                                    finishedAt(
+                                        selectedRun,
+                                        false,
+                                        "H:mm:ss A, MMM Do 'YY"
+                                    )
+                                }}
+                            </span>
+                        </div>
+                    </template>
 
-                    <a-divider class="m-0" />
+                    <a-divider class="my-4" />
 
                     <div class="flex items-center justify-between">
                         <div class="flex items-center text-sm gap-x-2">

@@ -117,7 +117,7 @@
                     packageType(item) === 'connector' &&
                     featureEnabledMap[WORKFLOW_CENTER_V2]
                 "
-                class="px-5 space-y-1.5 text-sm"
+                class="px-5 space-y-1.5 text-sm pb-4"
             >
                 <span class="mb-1 text-gray-500"
                     >Existing Connections ({{

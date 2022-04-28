@@ -33,6 +33,7 @@ export const Metadata: WidgetData[] = [
                     group_by_state: {
                         terms: {
                             field: '__state',
+                            min_doc_count: 0,
                             size: 5,
                         },
                     },
@@ -119,7 +120,7 @@ export const Metadata: WidgetData[] = [
                         },
                         ticks: {
                             maxTicksLimit: 5,
-                            display: false,
+                            display: true,
                         },
                     },
                 },
@@ -185,7 +186,7 @@ export const Metadata: WidgetData[] = [
     },
     {
         id: 'connector-assets',
-        label: 'Top Connector workflows by asset count',
+        label: 'Assets by connector',
         showHeader: true,
         class: 'col-span-6 h-64',
         component: 'graph',

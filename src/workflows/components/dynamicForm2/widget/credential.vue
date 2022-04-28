@@ -59,8 +59,11 @@
             ></FormItem>
         </div>
 
-        <div v-else class="grid grid-cols-2 text-sm font-medium gap-y-4">
-            <div class="space-y-1.5">
+        <div
+            v-else
+            class="grid grid-cols-3 text-sm font-medium xl:grid-cols-2 gap-y-4"
+        >
+            <div class="space-y-1.5 col-span-2 xl:col-span-1">
                 <p class="text-new-gray-600">Host</p>
                 <p class="select-all text-new-gray-800">
                     {{ host(credential) }}
@@ -74,7 +77,7 @@
                 </p>
             </div>
 
-            <div class="space-y-1.5">
+            <div class="space-y-1.5 col-span-2 xl:col-span-1">
                 <p class="text-new-gray-600">Reference</p>
                 <p class="select-all text-new-gray-800">
                     {{ credential.id }}

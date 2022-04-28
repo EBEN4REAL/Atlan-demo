@@ -28,7 +28,7 @@
             </div>
 
             <div class="truncate">
-                <div class="flex items-center gap-x-1">
+                <!-- <div class="flex items-center gap-x-1">
                     <span class="truncate text-new-gray-700">{{
                         pkgName(workflowObject)
                     }}</span>
@@ -37,9 +37,9 @@
                             type(workflowObject)
                         }}</span>
                     </div>
-                </div>
+                </div> -->
 
-                <div class="flex items-center mt-0.5 text-base gap-x-1">
+                <div class="flex items-center text-base gap-x-1">
                     <span
                         class="font-bold tracking-wide truncate cursor-pointer text-new-gray-800"
                         >{{
@@ -52,7 +52,7 @@
                 </div>
 
                 <div
-                    class="flex flex-wrap items-center mt-2 text-gray-500 gap-x-2"
+                    class="flex flex-wrap items-center mt-0.5 text-gray-500 gap-x-2"
                 >
                     <div class="text-sm text-gray-500">
                         <span

@@ -1,6 +1,9 @@
 <template>
     <div class="flex w-full h-full overflow-hidden">
-        <div class="flex flex-col border-r" style="background-color: #f9fafc">
+        <div
+            class="flex flex-col flex-1 border-r"
+            style="background-color: #f9fafc"
+        >
             <div
                 class="flex flex-col flex-grow px-5 pt-5 pb-4 space-y-4 overflow-y-scroll border-b lg:px-10 xl:px-16"
             >

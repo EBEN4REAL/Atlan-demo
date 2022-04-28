@@ -43,7 +43,7 @@
                                         phase(selectedRun)
                                     )
                                 "
-                                class="text-red-500"
+                                class="text-new-blue-400 border-new-blue-300"
                                 label="Retry"
                                 color="secondary"
                                 prefixIcon="Retry"

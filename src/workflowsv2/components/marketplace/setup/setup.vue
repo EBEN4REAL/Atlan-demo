@@ -18,9 +18,6 @@
                     @click="handleExit"
                 />
             </a-tooltip>
-            <span class="mr-2 text-xl font-bold text-gray-600"
-                >Setup a new workflow &nbsp;
-            </span>
             <img
                 v-if="icon(workflowTemplate)"
                 :src="icon(workflowTemplate)"
@@ -144,7 +141,7 @@
                             v-else-if="
                                 currentStep === steps.length - 1 && !isEdit
                             "
-                            class="flex gap-x-2"
+                            class="flex ml-auto gap-x-2"
                         >
                             <AtlanButton2
                                 :color="allowSchedule ? 'secondary' : 'primary'"
@@ -864,7 +861,7 @@
     .stepper {
         @apply relative;
         @apply px-3 py-2;
-        @apply border rounded-lg border-new-gray-300 bg-new-gray-100;
+        @apply border rounded-lg border-new-gray-300 bg-white;
         @apply text-new-gray-700;
         @apply cursor-pointer;
         @apply transition-colors duration-200;
@@ -874,7 +871,7 @@
         }
 
         &.disabled {
-            @apply cursor-not-allowed;
+            @apply cursor-not-allowed bg-new-gray-100;
         }
 
         .dot {

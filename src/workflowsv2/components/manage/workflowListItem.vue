@@ -125,7 +125,7 @@
         @apply cursor-pointer;
         @apply transition-colors duration-300;
         @apply border border-new-gray-200;
-        box-shadow: 1px 2px 3px 0px rgba(0, 0, 0, 0.05);
+        // box-shadow: 1px 2px 3px 0px rgba(0, 0, 0, 0.05);
 
         .badge {
             @apply flex items-center justify-center;

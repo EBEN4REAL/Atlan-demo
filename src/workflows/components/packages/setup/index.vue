@@ -16,9 +16,6 @@
                         @click="handleExit"
                     />
                 </a-tooltip>
-                <span class="mr-2 text-xl font-bold text-gray-600"
-                    >Setup a new workflow →
-                </span>
                 <img
                     v-if="icon(workflowTemplate)"
                     :src="icon(workflowTemplate)"

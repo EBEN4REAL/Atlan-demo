@@ -92,8 +92,8 @@
                 </p>
             </div>
         </div>
-        <a-divider class="mt-3 mb-1" />
-        <div class="flex gap-x-2">
+        <!-- <a-divider class="mt-3 mb-1" /> -->
+        <div class="flex mt-4 gap-x-3">
             <AtlanButton2
                 color="secondary"
                 :label="isEditVisible ? 'Cancel' : 'Edit Credentials'"

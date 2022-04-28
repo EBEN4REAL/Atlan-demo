@@ -133,8 +133,8 @@
                     </div>
                 </div>
 
-                <a-divider class="mt-4 mb-3" />
-                <div class="flex gap-x-2">
+                <!-- <a-divider class="mt-4 mb-3" /> -->
+                <div class="flex mt-6 gap-x-3">
                     <AtlanButton2
                         label="Edit Connection"
                         color="secondary"

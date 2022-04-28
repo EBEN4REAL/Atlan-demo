@@ -98,7 +98,10 @@
                                 </template>
                             </AddResource>
                         </div>
-                        <div v-if="showSlackSwitchBanner" class="">
+                        <div
+                            v-if="showSlackSwitchBanner"
+                            class="mt-1 text-center"
+                        >
                             <SwitchSlackTabBanner
                                 :slack-link-count="slackLinkCount"
                                 @switchTab="$emit('switchTab')"

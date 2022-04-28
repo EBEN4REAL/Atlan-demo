@@ -1207,7 +1207,7 @@
                 handleSQLQueryUpdate,
             } = updateAssetAttributes(selectedAsset, isDrawer.value)
 
-            const limit = ref(20)
+            const limit = ref(0)
             const offset = ref(0)
             const facets = ref({
                 typeNames: [selectedAsset.value.typeName],

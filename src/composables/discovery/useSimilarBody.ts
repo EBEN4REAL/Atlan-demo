@@ -1,11 +1,5 @@
 /* eslint-disable default-case */
-import { isFor } from '@babel/types'
 import bodybuilder from 'bodybuilder'
-import { ref } from 'vue'
-import { useUtils } from '~/components/governance/personas/assets/useUtils'
-import { useConnectionStore } from '~/store/connection'
-import { usePersonaStore } from '~/store/persona'
-import { usePurposeStore } from '~/store/purpose'
 
 const agg_prefix = 'group_by'
 
@@ -117,7 +111,6 @@ export function useSimilarBody(
         query: {
             function_score: {
                 query: tempQuery.query,
-                functions: functionArray,
                 boost_mode: 'sum',
                 score_mode: 'sum',
             },

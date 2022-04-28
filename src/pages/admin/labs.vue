@@ -2,48 +2,49 @@
     <main class="mx-4 space-y-8 my-9">
         <h1 class="text-3xl">Labs</h1>
         <div class="grid w-full p-5 border rounded-md gap-y-5">
-            <div
-                v-for="feature in featureList"
-                :key="feature.key"
-                class="flex flex-col pb-5 border-b last:border-b-0 last:pb-0 lab-card"
-            >
-                <div class="flex justify-between gap-y-8">
-                    <div class="flex flex-col">
-                        <div class="flex">
-                            <span class="text-base font-bold text-primary">{{
-                                feature.name
-                            }}</span>
-                            <div
-                                v-if="feature.isBeta"
-                                class="flex items-center px-2 ml-2 rounded-full bg-success-muted border-success"
-                            >
-                                Beta
+            <template v-for="feature in featureList">
+                <div
+                    v-if="
+                        feature.dependantFeatureKey
+                            ? featureEnabledMap[feature.dependantFeatureKey]
+                            : true
+                    "
+                    :key="feature.key"
+                    class="flex flex-col pb-5 border-b last:border-b-0 last:pb-0 lab-card"
+                >
+                    <div class="flex justify-between gap-y-8">
+                        <div class="flex flex-col">
+                            <div class="flex">
+                                <span
+                                    class="text-base font-bold text-primary"
+                                    >{{ feature.name }}</span
+                                >
+                                <div
+                                    v-if="feature.isBeta"
+                                    class="flex items-center px-2 ml-2 rounded-full bg-success-muted border-success"
+                                >
+                                    Beta
+                                </div>
+                                <div class=""></div>
                             </div>
-                            <div class=""></div>
+                            <span>{{ feature.description }}</span>
                         </div>
-                        <span>{{ feature.description }}</span>
+                        <a-switch
+                            :checked="featureEnabledMap[feature.key]"
+                            :disabled="updateStatus === 'loading'"
+                            :loading="updateStatus === 'loading'"
+                            @click="handleSwitch(feature)"
+                        />
                     </div>
-                    <a-switch
-                        :checked="featureEnabledMap[feature.key]"
-                        :disabled="
-                            updateStatus === 'loading' ||
-                            (feature.dependantFeatureKey
-                                ? !featureEnabledMap[
-                                      feature.dependantFeatureKey
-                                  ]
-                                : false)
-                        "
-                        :loading="updateStatus === 'loading'"
-                        @click="handleSwitch(feature)"
-                    />
                 </div>
-            </div>
+            </template>
         </div>
     </main>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, ref, toRefs, watch, h } from 'vue'
+    import { message } from 'ant-design-vue'
     import {
         featureList,
         orgPrefrencesKey,
@@ -53,7 +54,6 @@
     import useTenantUpdate from '~/composables/tenant/useTenantUpdate'
     import { Tenant } from '~/services/service/tenant'
     import { useTenantStore } from '~/store/tenant'
-    import { message } from 'ant-design-vue'
     import SuccessToast from '@/common/assets/misc/customToasts/labFeatureEnabled.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 

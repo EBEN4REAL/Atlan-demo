@@ -31,6 +31,7 @@
                         <template #content>
                             <UserFilter
                                 v-model="statusFilter"
+                                v-model:role="filterRole"
                                 :user-type-agg="userTypeAgg"
                                 @changeRole="changeFilterRole"
                                 @change="updateFilters"
@@ -308,8 +309,7 @@
                 getUserList()
             }
 
-            const changeFilterRole = (role) => {
-                filterRole.value = role
+            const changeFilterRole = () => {
                 updateFilters()
             }
 
@@ -569,6 +569,7 @@
             userTypeAgg.value = getUserTypeAggregations().value
 
             return {
+                filterRole,
                 showPreview,
                 isReady,
                 tenantName,

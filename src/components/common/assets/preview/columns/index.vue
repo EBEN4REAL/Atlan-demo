@@ -74,6 +74,7 @@
                 <ColumnItem
                     :item="item"
                     class="px-2 my-1"
+                    :similar-list="similarListByName(item)"
                     @update="handleListUpdate"
                 />
             </template>
@@ -281,18 +282,27 @@
             })
             const suggestionAggregations = ref(['name'])
 
-            const {
-                quickChange: quickSuggestionChange,
-                similarList,
-                aggregationMap,
-            } = useSimilarList({
-                limit: suggestionLimit,
-                offset: suggestionOffset,
-                facets: suggestionFacets,
-                aggregations: suggestionAggregations,
-            })
+            const { quickChange: quickSuggestionChange, list: suggestionList } =
+                useSimilarList({
+                    limit: suggestionLimit,
+                    offset: suggestionOffset,
+                    facets: suggestionFacets,
+                    aggregations: suggestionAggregations,
+                })
 
             const { title } = useAssetInfo()
+
+            const similarListByName = (asset) => {
+                const suggestion = suggestionList.value.find(
+                    (item) => title(asset)?.toLowerCase() === item?.key
+                )
+
+                if (suggestion?.group_by_description?.buckets) {
+                    return suggestion?.group_by_description?.buckets
+                }
+
+                return []
+            }
 
             watch(
                 () => [...freshList.value],
@@ -315,7 +325,6 @@
                         ),
                     }
 
-                    console.log('hello', suggestionFacets.value)
                     quickSuggestionChange()
                 }
             )
@@ -341,6 +350,7 @@
                 isValidating,
                 handleListUpdate,
                 columnAttributes,
+                similarListByName,
             }
         },
     })

@@ -95,20 +95,17 @@
                     @change="handleChangeDescription"
                 />
                 <transition
-                    v-if="
-                        similarList('description').length > 0 &&
-                        !localDescription
-                    "
+                    v-if="similarList?.length > 0 && !localDescription"
                     name="fade"
                 >
                     <Suggestion
                         class="mb-1"
-                        @apply="handleApplySuggestion"
                         :button-between="false"
                         :edit-permission="
                             selectedAssetUpdatePermission(item, true)
                         "
-                        :list="similarList('description')"
+                        :list="similarList"
+                        @apply="handleApplySuggestion"
                     ></Suggestion>
                 </transition>
                 <div v-if="list?.length > 0" class="flex flex-wrap gap-1">
@@ -143,7 +140,7 @@
             :guid="item?.guid"
             :show-drawer="showColumnDrawer"
             :show-mask="page === 'assets'"
-            :showCloseBtn="page !== 'assets'"
+            :show-close-btn="page !== 'assets'"
             @closeDrawer="handleCloseDrawer"
             @update="handleListUpdate"
         />
@@ -174,7 +171,6 @@
     import Suggestion from '@/common/assets/preview/info/suggestion.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import useLineageStore from '~/store/lineage'
-    import { useSimilarList } from '~/composables/discovery/useSimilarList'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -196,6 +192,13 @@
                 required: false,
                 default() {
                     return {}
+                },
+            },
+            similarList: {
+                type: Array,
+                required: false,
+                default() {
+                    return []
                 },
             },
         },
@@ -280,27 +283,6 @@
                 return matchingIdsResult
             })
 
-            const limit = ref(0)
-            const offset = ref(0)
-            const facets = ref({
-                typeNames: [item.value.typeName],
-                similarity: title(item.value),
-                orExists: ['description', 'userDescription'],
-            })
-            const aggregations = ref(['description'])
-
-            const { quickChange, similarList, aggregationMap } = useSimilarList(
-                {
-                    limit,
-                    offset,
-                    facets,
-                    aggregations,
-                }
-            )
-            /*  if (!localDescription.value) {
-                quickChange()
-            } */
-
             const handleApplySuggestion = (obj) => {
                 localDescription.value = obj.value
                 handleChangeDescription()
@@ -327,7 +309,6 @@
                 dataTypeCategoryImage,
                 isDist,
                 isPartition,
-                similarList,
                 isPrimary,
                 isForeign,
                 isSort,

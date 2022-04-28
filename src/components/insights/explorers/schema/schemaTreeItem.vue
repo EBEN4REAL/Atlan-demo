@@ -445,74 +445,83 @@
             </div>
 
             <!-- FOR DB AND SCHMA -->
-            <div
-                v-if="!isPopoverAllowed(item?.typeName) && hoverActions"
-                class="flex w-full m-0"
+            <InsightsThreeDotMenu
+                :options="dropdownOptions"
+                :item="item"
+                class=""
+                trigger="contextmenu"
             >
-                <div
-                    class="relative flex items-center content-center w-full h-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
-                >
-                    <!-- <div class="parent-ellipsis-container"> -->
+                <template #menuTrigger>
                     <div
-                        class="flex items-center justify-between w-full h-full"
+                        v-if="!isPopoverAllowed(item?.typeName) && hoverActions"
+                        class="flex w-full m-0"
                     >
                         <div
-                            class="flex items-center w-11/12 parent-ellipsis-container"
+                            class="relative flex items-center content-center w-full h-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
                         >
-                            <AtlanIcon
-                                :icon="
-                                    getEntityStatusIcon(
-                                        assetType(item),
-                                        certificateStatus(item)
-                                    )
-                                "
-                                class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
-                            ></AtlanIcon>
-
-                            <span
-                                class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                                >{{ title(item) }}
-                            </span>
-                        </div>
-
-                        <div>
-                            <span class="z-10 count-box">
-                                {{ childCount(item) }}</span
-                            >
-                        </div>
-                    </div>
-
-                    <div
-                        v-if="hoverActions"
-                        class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
-                        :class="
-                            item?.selected
-                                ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
-                        "
-                        @click.stop="() => {}"
-                    >
-                        <div class="pl-2 ml-4">
+                            <!-- <div class="parent-ellipsis-container"> -->
                             <div
-                                class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                class="flex items-center justify-between w-full h-full"
                             >
-                                <InsightsThreeDotMenu
-                                    :options="dropdownOptions"
-                                    :item="item"
-                                    class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                <div
+                                    class="flex items-center w-11/12 parent-ellipsis-container"
                                 >
-                                    <template #menuTrigger>
-                                        <AtlanIcon
-                                            icon="KebabMenuHorizontal"
+                                    <AtlanIcon
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                assetType(item),
+                                                certificateStatus(item)
+                                            )
+                                        "
+                                        class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
+                                    ></AtlanIcon>
+
+                                    <span
+                                        class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                                        >{{ title(item) }}
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <span class="z-10 count-box">
+                                        {{ childCount(item) }}</span
+                                    >
+                                </div>
+                            </div>
+
+                            <div
+                                v-if="hoverActions"
+                                class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
+                                :class="
+                                    item?.selected
+                                        ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
+                                        : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
+                                "
+                                @click.stop="() => {}"
+                            >
+                                <div class="pl-2 ml-4">
+                                    <div
+                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                    >
+                                        <InsightsThreeDotMenu
+                                            :options="dropdownOptions"
+                                            :item="item"
                                             class="w-4 h-4 my-auto -mr-1.5 outline-none"
-                                        />
-                                    </template>
-                                </InsightsThreeDotMenu>
+                                        >
+                                            <template #menuTrigger>
+                                                <AtlanIcon
+                                                    icon="KebabMenuHorizontal"
+                                                    class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                                />
+                                            </template>
+                                        </InsightsThreeDotMenu>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </template>
+            </InsightsThreeDotMenu>
             <!--  -->
 
             <!-- For others component which does not need hoverActions -->
@@ -1557,6 +1566,29 @@
                 playQuery(selectedText, item?.entity)
             }
 
+            const dropdownTableOptions = [
+                {
+                    title: 'Run Query',
+                    key: 'run',
+                    class: '',
+                    disabled: false,
+                    component: MenuItem,
+                    handleClick: () => {
+                        openQuery(true)
+                    },
+                },
+                {
+                    title: 'Open in a new tab',
+                    key: 'openInNewTab',
+                    component: MenuItem,
+                    class: '',
+                    disabled: false,
+                    handleClick: () => {
+                        // TODO: Code for opening in new tab goes here
+                    },
+                },
+            ]
+
             const dropdownOptions = [
                 {
                     title: 'Set in editor context',
@@ -1612,6 +1644,7 @@
                 ADJACENT_TOOLTIP_DELAY,
                 lastTooltipPresence,
                 dropdownOptions,
+                dropdownTableOptions,
                 // showContextModal,
                 // closeContextModal,
                 // openInCurrentTab,

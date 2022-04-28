@@ -107,6 +107,8 @@
     import useEvaluate from '~/composables/auth/useEvaluate'
     import { assetInterface } from '~/types/assets/asset.interface'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import { useSimilarList } from '~/composables/discovery/useSimilarList'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -270,6 +272,28 @@
                 quickChange()
             }
 
+            const suggestionLimit = ref(0)
+            const suggestionOffset = ref(0)
+            const suggestionFacets = ref({
+                typeNames: ['Column'],
+                orExists: ['description', 'userDescription'],
+                similarities: [],
+            })
+            const suggestionAggregations = ref(['description'])
+
+            const {
+                quickChange: quickSuggestionChange,
+                similarList,
+                aggregationMap,
+            } = useSimilarList({
+                limit: suggestionLimit,
+                offset: suggestionOffset,
+                facets: suggestionFacets,
+                aggregations: suggestionAggregations,
+            })
+
+            const { title } = useAssetInfo()
+
             watch(
                 () => [...freshList.value],
                 () => {
@@ -282,6 +306,17 @@
                         })),
                     }
                     refresh()
+
+                    // For getting description suggestions for all the columns
+                    suggestionFacets.value = {
+                        ...suggestionFacets.value,
+                        similarities: freshList.value.map((item) =>
+                            title(item)
+                        ),
+                    }
+
+                    console.log('hello', suggestionFacets.value)
+                    quickSuggestionChange()
                 }
             )
 

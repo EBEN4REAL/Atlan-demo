@@ -33,6 +33,16 @@ export function useSimilarBody(
                 }
                 break
             }
+            case 'similarities': {
+                if (filterObject) {
+                    base.filter('bool', (q) => {
+                        q.orFilter('terms', 'name.keyword', filterObject)
+
+                        return q
+                    })
+                }
+                break
+            }
             case 'orExists': {
                 if (filterObject?.length > 0) {
                     base.filter('bool', (q) => {

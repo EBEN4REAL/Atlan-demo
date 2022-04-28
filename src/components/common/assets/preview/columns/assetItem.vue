@@ -161,6 +161,7 @@
         inject,
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
+    import { useRoute } from 'vue-router'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import Description from '@/common/input/description/index.vue'
@@ -173,7 +174,6 @@
     import Suggestion from '@/common/assets/preview/info/suggestion.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import useLineageStore from '~/store/lineage'
-    import { useRoute } from 'vue-router'
     import { useSimilarList } from '~/composables/discovery/useSimilarList'
 
     export default defineComponent({
@@ -302,7 +302,6 @@
             }
 
             const handleApplySuggestion = (obj) => {
-                console.log(obj)
                 localDescription.value = obj.value
                 handleChangeDescription()
             }

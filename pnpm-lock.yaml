@@ -52,7 +52,7 @@ specifiers:
   '@vue/server-renderer': ^3.2.30
   '@vueuse/core': ^8.2.5
   '@vueuse/head': ^0.7.5
-  ant-design-vue: ^3.0.0-beta.9
+  ant-design-vue: 3.2.0
   autoprefixer: ^10.4.2
   axios: ^0.25.0
   babel-loader: ^8.2.3
@@ -166,7 +166,7 @@ dependencies:
   '@tiptap/vue-3': 2.0.0-beta.90_6ee8d5efd65f2c31792c6d576ba4b897
   '@vueuse/core': 8.2.5_vue@3.2.30
   '@vueuse/head': 0.7.5_vue@3.2.30
-  ant-design-vue: 3.0.0-beta.9_05af980f38c66eaadcf24f3cd122fc63
+  ant-design-vue: 3.2.0_vue@3.2.30
   axios: 0.25.0
   bodybuilder: 2.4.0
   chart.js: 3.7.0
@@ -272,12 +272,6 @@ packages:
       '@jridgewell/trace-mapping': 0.2.7
     dev: true
 
-  /@ant-design/colors/5.1.1:
-    resolution: {integrity: sha512-Txy4KpHrp3q4XZdfgOBqLl+lkQIc3tEvHXOimRN1giX1AEC7mGtyrO9p8iRGJ3FLuVMGa2gNEzQyghVymLttKQ==}
-    dependencies:
-      '@ctrl/tinycolor': 3.4.0
-    dev: false
-
   /@ant-design/colors/6.0.0:
     resolution: {integrity: sha512-qAZRvPzfdWHtfameEGP2Qvuf838NhergR35o+EuVyB5XvSA98xod5r4utvi4TJ3ywmevm290g9nsCG5MryrdWQ==}
     dependencies:
@@ -288,15 +282,13 @@ packages:
     resolution: {integrity: sha512-EB0iwlKDGpG93hW8f85CTJTs4SvMX7tt5ceupvhALp1IF44SeUFOMhKUOYqpsoYWQKAOuTRDMqn75rEaKDp0Xw==}
     dev: false
 
-  /@ant-design/icons-vue/6.0.1_vue@3.2.30:
-    resolution: {integrity: sha512-HigIgEVV6bbcrz2A92/qDzi/aKWB5EC6b6E1mxMB6aQA7ksiKY+gi4U94TpqyEIIhR23uaDrjufJ+xCZQ+vx6Q==}
+  /@ant-design/icons-vue/6.1.0_vue@3.2.30:
+    resolution: {integrity: sha512-EX6bYm56V+ZrKN7+3MT/ubDkvJ5rK/O2t380WFRflDcVFgsvl3NLH7Wxeau6R8DbrO5jWR6DSTC3B6gYFp77AA==}
     peerDependencies:
       vue: '>=3.0.3'
     dependencies:
-      '@ant-design/colors': 5.1.1
+      '@ant-design/colors': 6.0.0
       '@ant-design/icons-svg': 4.2.1
-      '@types/lodash': 4.14.178
-      lodash: 4.17.21
       vue: 3.2.30
     dev: false
 
@@ -2402,10 +2394,6 @@ packages:
     resolution: {integrity: sha1-7ihweulOEdK4J7y+UnC86n8+ce4=}
     dev: true
 
-  /@types/lodash/4.14.178:
-    resolution: {integrity: sha512-0d5Wd09ItQWH1qFbEyQ7oTQ3GZrMfth5JkbN3EvTKLXcHLRDSXeLnlvlOn0wvxVIwK5o2M8JzP/OWz7T3NRsbw==}
-    dev: false
-
   /@types/lowlight/0.0.3:
     resolution: {integrity: sha512-R83q/yPX2nIlo9D3WtSjyUDd57t8s+GVLaL8YIv3k7zMMWpYpOXqjJgrWp80qXUJB/a1t76nTyBpxrv0JNYaEg==}
     dev: false
@@ -3005,17 +2993,16 @@ packages:
       color-convert: 2.0.1
     dev: true
 
-  /ant-design-vue/3.0.0-beta.9_05af980f38c66eaadcf24f3cd122fc63:
-    resolution: {integrity: sha512-5wRfrnj6n5E4Xrqd4A8DsnThCNa4HD3jUPVV9cDb4aH2C2a1QcuxNCXB0kvPUDJRyOJ4+6Qr547n0fCN+CVOhg==}
+  /ant-design-vue/3.2.0_vue@3.2.30:
+    resolution: {integrity: sha512-qY9f/kF9YqfzV/vJ9/GKj7s1wmpCuNwWVRyQ3qsG8P4Was/u5WTKG5hz9huUY/cNle2nBTDacvMBIOkfxPeUiQ==}
     peerDependencies:
-      '@vue/compiler-sfc': '>=3.1.0'
-      vue: '>=3.1.0'
+      vue: '>=3.2.0'
     dependencies:
       '@ant-design/colors': 6.0.0
-      '@ant-design/icons-vue': 6.0.1_vue@3.2.30
+      '@ant-design/icons-vue': 6.1.0_vue@3.2.30
       '@babel/runtime': 7.16.7
+      '@ctrl/tinycolor': 3.4.0
       '@simonwep/pickr': 1.8.2
-      '@vue/compiler-sfc': 3.2.30
       array-tree-filter: 2.1.0
       async-validator: 4.0.7
       dayjs: 1.10.7

@@ -11,7 +11,7 @@
                 <template #header>
                     <!-- header starts here -->
                     <div
-                        class="flex items-center justify-between py-2 pl-2 pr-3 gap-x-4 group"
+                        class="flex items-center justify-between py-2 pl-2 pr-3 gap-x-4 group w-full"
                     >
                         <span class="flex items-center">
                             <AtlanIcon

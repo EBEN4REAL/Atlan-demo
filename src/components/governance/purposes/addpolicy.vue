@@ -173,8 +173,8 @@
                                             Add</span
                                         >
                                         <AtlanIcon
-                                            icon="ArrowRight"
-                                            class="ml-1 text-primary"
+                                            icon="Add"
+                                            class="ml-1 -mt-1 text-primary"
                                         /></div
                                 ></template>
                                 <template #users>

@@ -1,3 +1,4 @@
+// TODO: refactor this file after request creation
 <template>
     <div @click="showModal">
         <slot name="trigger" @click="showModal" />
@@ -11,6 +12,23 @@
         :closable="false"
         :footer="null"
     >
+        <div
+            v-if="hasCreatePermission !== undefined && !hasCreatePermission"
+            class="px-3 py-2 mb-3 bg-gray-100 fixed top-14 rounded text-gray-500 text-xs"
+            style="width: 40%"
+        >
+            You don't have access to create {{ typeNameTitle }}, but you can
+            suggest them to your
+            <span class="text-primary cursor-pointer">
+                <a-popover placement="rightBottom">
+                    <template #content>
+                        <AdminList></AdminList>
+                    </template>
+                    <span>workspace admins</span>
+                </a-popover>
+            </span>
+        </div>
+
         <div class="px-5 py-3">
             <!-- header starts -->
             <div class="flex items-center justify-between mb-1">
@@ -161,7 +179,7 @@
         >
             <div class="flex items-center spaxe-x-4">
                 <div
-                    v-if="entityType !== 'AtlasGlossary'"
+                    v-if="entityType !== 'AtlasGlossary' && hasCreatePermission"
                     class="flex items-center mr-2 space-x-2"
                 >
                     <a-switch size="small" v-model:checked="isCreateMore" />
@@ -172,6 +190,15 @@
                 </div>
             </div>
             <a-button
+                v-if="hasCreatePermission !== undefined && !hasCreatePermission"
+                type="primary"
+                @click="handleRequest"
+                :loading="isLoading"
+                class="self-end bg-primary"
+                >Request</a-button
+            >
+            <a-button
+                v-else
                 type="primary"
                 @click="handleSave"
                 :loading="isLoading"
@@ -185,6 +212,7 @@
 <script lang="ts">
     import {
         defineComponent,
+        defineAsyncComponent,
         ref,
         computed,
         onMounted,
@@ -214,6 +242,11 @@
     import GTCSelect from '@/common/popover/gtcSelect/index.vue'
     import GlossarySelect from '@/common/popover/glossarySelect/index.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { useCreateRequests } from '~/composables/requests/useCreateRequests'
+    import useGTCPermissions, {
+        fetchGlossaryPermission,
+    } from '~/composables/glossary/useGTCPermissions'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         name: 'AddGtcModal',
@@ -224,6 +257,9 @@
             AddOwners,
             GlossarySelect,
             Tooltip,
+            AdminList: defineAsyncComponent(
+                () => import('@/common/info/adminList.vue')
+            ),
         },
         props: {
             entityType: {
@@ -267,6 +303,11 @@
                 required: false,
                 default: false,
             },
+            createPermission: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['add', 'update:visible'],
         setup(props, { emit }) {
@@ -276,6 +317,7 @@
                 categoryGuid,
                 glossaryName,
                 categoryName,
+                createPermission,
             } = toRefs(props)
             const checkDuplicateCategoryNames = inject(
                 'checkDuplicateCategoryNames',
@@ -287,6 +329,7 @@
 
             const router = useRouter()
             const localEntityType = ref(entityType.value)
+            const { role } = whoami()
             watch(entityType, () => {
                 localEntityType.value = entityType.value
             })
@@ -317,8 +360,28 @@
                 },
             })
             const titleBar: Ref<null | HTMLInputElement> = ref(null)
+            // handle create permissions for gtc
+            const glossaryForPermission = ref(getGlossaryByQF(anchorQf.value))
 
+            const {
+                createPermission: hasCreatePermission,
+                fetch: fetchPermissions,
+            } = fetchGlossaryPermission(glossaryForPermission, false)
+
+            const handleFetchPermission = () => {
+                console.log(
+                    'calling fetch permissions for -> ',
+                    getGlossaryByQF(parentGlossary.value)
+                )
+                if (parentGlossary.value) {
+                    console.log('fetching again')
+                    fetchPermissions()
+                }
+                console.log(hasCreatePermission.value)
+            }
             const showModal = async () => {
+                //               handleFetchPermission()
+                if (entityType !== 'AtlasGlossary') fetchPermissions()
                 resetInput()
                 visible.value = true
                 await nextTick()
@@ -360,49 +423,63 @@
             })
 
             const defaultRetry = ref(3)
+            const constructPayload = () => {
+                entity.typeName = localEntityType.value
+                if (typeNameTitle.value === 'Glossary') {
+                    entity.attributes.qualifiedName = ''
+                }
+
+                if (
+                    ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
+                        entityType.value
+                    )
+                ) {
+                    entity.attributes.qualifiedName = ''
+                    entity.relationshipAttributes = {
+                        anchor: {
+                            typeName: 'AtlasGlossary',
+                            guid: getGlossaryByQF(anchorQf.value)?.guid,
+                        },
+                    }
+                    console.log(entity)
+                    if (
+                        categoryGuid.value &&
+                        categoryGuid.value !==
+                            getGlossaryByQF(anchorQf.value)?.guid
+                    ) {
+                        if (typeNameTitle.value === 'Category') {
+                            entity.relationshipAttributes.parentCategory = {
+                                typeName: 'AtlasGlossaryCategory',
+                                guid: categoryGuid.value,
+                            }
+                            if (!hasCreatePermission.value) {
+                                entity.relationshipAttributes.parentCategory.attributes =
+                                    {
+                                        name: props.categoryName,
+                                    }
+                            }
+                        }
+                        if (typeNameTitle.value === 'Term') {
+                            entity.relationshipAttributes.categories = [
+                                {
+                                    typeName: 'AtlasGlossaryCategory',
+                                    guid: categoryGuid.value,
+                                },
+                            ]
+                            if (!hasCreatePermission.value) {
+                                entity.relationshipAttributes.categories[0].attributes =
+                                    {
+                                        name: props.categoryName,
+                                    }
+                            }
+                        }
+                    }
+                }
+            }
             const handleSave = () => {
                 defaultRetry.value = 2
                 if (entity.attributes.name) {
-                    entity.typeName = localEntityType.value
-                    if (typeNameTitle.value === 'Glossary') {
-                        entity.attributes.qualifiedName = ''
-                    }
-
-                    if (
-                        ['AtlasGlossaryTerm', 'AtlasGlossaryCategory'].includes(
-                            entityType.value
-                        )
-                    ) {
-                        entity.attributes.qualifiedName = ''
-                        entity.relationshipAttributes = {
-                            anchor: {
-                                typeName: 'AtlasGlossary',
-                                guid: getGlossaryByQF(anchorQf.value)?.guid,
-                            },
-                        }
-                        console.log(entity)
-                        if (
-                            categoryGuid.value &&
-                            categoryGuid.value !==
-                                getGlossaryByQF(anchorQf.value)?.guid
-                        ) {
-                            if (typeNameTitle.value === 'Category') {
-                                entity.relationshipAttributes.parentCategory = {
-                                    typeName: 'AtlasGlossaryCategory',
-                                    guid: categoryGuid.value,
-                                }
-                            }
-                            if (typeNameTitle.value === 'Term') {
-                                entity.relationshipAttributes.categories = [
-                                    {
-                                        typeName: 'AtlasGlossaryCategory',
-                                        guid: categoryGuid.value,
-                                    },
-                                ]
-                            }
-                        }
-                    }
-
+                    constructPayload()
                     body.value = {
                         entities: [entity],
                     }
@@ -500,8 +577,8 @@
                             getGlossaryByQF(anchorQf.value)
                         )
                     else emit('add', asset.value)
-                    if(asset?.value?.guid)
-                    router.push(`/glossary/${asset?.value?.guid}/overview`)
+                    if (asset?.value?.guid)
+                        router.push(`/glossary/${asset?.value?.guid}/overview`)
                 } else if (defaultRetry.value > 0) {
                     defaultRetry.value -= 1
                     mutateUpdate()
@@ -511,7 +588,9 @@
                 if (meta.value && Enter.value) {
                     Enter.value = false
                     meta.value = false
-                    if (entity.attributes.name) handleSave()
+                    if (entity.attributes.name && hasCreatePermission?.value) {
+                        handleSave()
+                    }
                 }
             })
 
@@ -519,16 +598,54 @@
                 parentGlossary.value = parentGlossaryQf.value
                 console.log(parentGlossaryQf.value)
             })
-            const handleSelectGlossary = (val) => {
-                console.log(glossaryQualifiedName.value.length)
-                console.log(
-                    glossaryQualifiedName.value.length
-                        ? glossaryQualifiedName.value
-                        : parentGlossary.value
-                )
-                console.log(glossaryQualifiedName.value || parentGlossary.value)
-            }
 
+            const handleSelectGlossary = (val) => {
+                // handleFetchPermission()
+                glossaryForPermission.value = getGlossaryByQF(anchorQf.value)
+                if (entityType !== 'AtlasGlossary') fetchPermissions()
+            }
+            const handleRequest = () => {
+                console.log('raising request')
+                if (!entity?.attributes?.name) {
+                    message.warning(`Please enter a name`)
+                    titleBar.value?.focus()
+                    return
+                }
+
+                let requestType
+                constructPayload()
+                const glossaryPayload = entity
+
+                if (props.entityType === 'AtlasGlossary') {
+                    requestType = 'create_glossary'
+                } else if (props.entityType === 'AtlasGlossaryCategory')
+                    requestType = 'create_category'
+                else requestType = 'create_term'
+                glossaryPayload.relationshipAttributes.anchor.attributes = {
+                    name: props.glossaryName,
+                }
+
+                const {
+                    error: requestError,
+                    isLoading: isRequestLoading,
+                    isReady: requestReady,
+                } = useCreateRequests({
+                    requestType,
+                    glossaryPayload,
+                })
+                whenever(requestError, () => {
+                    if (requestError.value) {
+                        message.error(`Request failed`)
+                        handleCancel()
+                    }
+                })
+                whenever(requestReady, () => {
+                    if (requestReady.value) {
+                        message.success(`Request raised`)
+                        handleCancel()
+                    }
+                })
+            }
             return {
                 visible,
                 showModal,
@@ -560,6 +677,10 @@
                 handleOwnersChange,
                 parentGlossary,
                 handleSelectGlossary,
+                handleRequest,
+                createPermission,
+                hasCreatePermission,
+                role,
             }
         },
     })

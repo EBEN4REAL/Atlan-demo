@@ -108,7 +108,7 @@
                     :style="
                         fullSreenState
                             ? 'height: calc( 100vh - 140px )'
-                            : 'height: calc( 100vh - 120px )'
+                            : 'height: calc( 100vh - 170px )'
                     "
                 >
                     <div class="w-full h-full bg-new-gray-100">

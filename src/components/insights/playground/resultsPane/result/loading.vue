@@ -12,23 +12,25 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, computed, inject } from 'vue'
+    import { defineComponent, Ref, computed, inject, toRefs } from 'vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import LoadingView from '@common/loaders/page.vue'
     import Loader from '@common/loaders/page.vue'
 
     export default defineComponent({
         components: { LoadingView, Loader },
-        props: {},
+        props: {
+            isQueryRunning: {
+                type: Boolean,
+                required: true,
+            },
+        },
         setup(props, { emit }) {
+            const { isQueryRunning } = toRefs(props)
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as Ref<activeInlineTabInterface>
-            const isQueryRunning = computed(
-                () =>
-                    activeInlineTab.value?.playground?.resultsPane?.result
-                        ?.isQueryRunning
-            )
+
             return {
                 isQueryRunning,
             }

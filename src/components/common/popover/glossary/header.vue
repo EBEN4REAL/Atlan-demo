@@ -13,6 +13,7 @@
                 :timestamp="certificateUpdatedAt(term)"
             />
             <AtlanButton
+                v-if="showDrawerToggle"
                 size="icn"
                 color="secondary"
                 padding="icon"
@@ -79,9 +80,14 @@
             type: Object,
             required: true,
         },
+        showDrawerToggle: {
+            type: Boolean,
+            required: false,
+            default: () => true,
+        },
     })
 
-    const { term } = toRefs(props)
+    const { term, showDrawerToggle } = toRefs(props)
     const {
         certificateStatus,
         certificateUpdatedBy,

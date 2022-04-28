@@ -62,8 +62,14 @@
 
     export default defineComponent({
         components: {},
-        props: {},
+        props: {
+            queryErrorObj: {
+                type: Object,
+                required: true,
+            },
+        },
         setup(props) {
+            const { queryErrorObj } = toRefs(props)
             /* Regex for extracting the line number & column number */
             const lineRegex = /(?:line )([0-9]+)/gim
             const columnRegex = /(?:column )([0-9]+)/gim
@@ -85,11 +91,6 @@
                         .errorDecorations
             )
 
-            const queryErrorObj = computed(
-                () =>
-                    activeInlineTab.value.playground.resultsPane.result
-                        .queryErrorObj
-            )
             watch(
                 activeInlineTabKey,
                 () => {

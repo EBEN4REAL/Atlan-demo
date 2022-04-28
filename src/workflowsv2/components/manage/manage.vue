@@ -13,6 +13,7 @@
 
         <div
             class="flex flex-col flex-1 h-full overflow-x-hidden border-l border-r border-gray-300 gap-y-4"
+            style="background-color: #f9fafc"
         >
             <div class="flex items-center mx-6 mt-4 gap-x-4">
                 <div

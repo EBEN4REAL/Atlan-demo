@@ -1,13 +1,13 @@
 <template>
     <div class="flex w-full h-full overflow-hidden">
-        <div class="flex flex-col py-5 border-r">
+        <div class="flex flex-col border-r" style="background-color: #f9fafc">
             <div
-                class="flex flex-col flex-grow px-5 pb-4 space-y-4 overflow-y-scroll border-b lg:px-10 xl:px-16"
+                class="flex flex-col flex-grow px-5 pt-5 pb-4 space-y-4 overflow-y-scroll border-b lg:px-10 xl:px-16"
             >
                 <div
                     v-for="(step, index) in steps"
                     :key="`form_${index}`"
-                    class="px-4 py-3 border rounded-lg shadow-sm"
+                    class="px-4 py-3 bg-white border rounded-lg shadow-sm"
                 >
                     <div v-if="!['connection', 'credential'].includes(step.id)">
                         <p
@@ -48,33 +48,35 @@
                     </template>
                 </div>
             </div>
-            <a-popconfirm
-                ok-text="Yes"
-                :overlay-class-name="$style.popConfirm"
-                cancel-text="Cancel"
-                placement="topRight"
-                :ok-button-props="{ size: 'default' }"
-                :cancel-button-props="{ size: 'default' }"
-                @confirm="handleSubmit"
-            >
-                <template #icon />
-                <template #title>
-                    <p class="font-bold">
-                        Are you sure you want to update the configuration for
-                        this workflow?
-                    </p>
-                    <p class="text-gray-500">
-                        All future runs will use this new configuration
-                    </p>
-                    <a-checkbox v-model:checked="runOnUpdate" class="mt-3"
-                        >Start a new run</a-checkbox
-                    >
-                </template>
-                <AtlanButton2
-                    class="mt-4 ml-auto mr-5 lg:mr-10 xl:mr-16"
-                    label="Update"
-                />
-            </a-popconfirm>
+            <div class="bg-white">
+                <a-popconfirm
+                    ok-text="Yes"
+                    :overlay-class-name="$style.popConfirm"
+                    cancel-text="Cancel"
+                    placement="topRight"
+                    :ok-button-props="{ size: 'default' }"
+                    :cancel-button-props="{ size: 'default' }"
+                    @confirm="handleSubmit"
+                >
+                    <template #icon />
+                    <template #title>
+                        <p class="font-bold">
+                            Are you sure you want to update the configuration
+                            for this workflow?
+                        </p>
+                        <p class="text-gray-500">
+                            All future runs will use this new configuration
+                        </p>
+                        <a-checkbox v-model:checked="runOnUpdate" class="mt-3"
+                            >Start a new run</a-checkbox
+                        >
+                    </template>
+                    <AtlanButton2
+                        class="my-4 ml-auto mr-5 lg:mr-10 xl:mr-16"
+                        label="Update"
+                    />
+                </a-popconfirm>
+            </div>
         </div>
         <WorkflowPreview
             v-if="workflowTemplate"

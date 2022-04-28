@@ -9,7 +9,7 @@
     </div>
     <a-tabs v-else v-model:activeKey="activeKey" :class="$style.previewtab">
         <a-tab-pane key="summary" tab="Summary">
-            <div class="pt-2 space-y-2 bg-primary-light">
+            <div class="pt-2 space-y-2" style="background-color: #f9fafc">
                 <div class="flex px-5 py-3 mb-2 bg-white gap-x-3">
                     <div class="flex flex-col w-full">
                         <div class="flex items-center justify-between w-full">
@@ -75,7 +75,7 @@
                                 startedAt(
                                     selectedRun,
                                     false,
-                                    "MMM Do 'YY [at] H:mm:ss A [(]dddd[)]"
+                                    "H:mm:ss A, MMM Do 'YY"
                                 )
                             }}
                         </span>
@@ -87,7 +87,13 @@
                     >
                         <AtlanIcon icon="ClockStop" />
                         <span class="text-sm text-new-gray-800">
-                            {{ finishedAt(selectedRun, false) }}
+                            {{
+                                finishedAt(
+                                    selectedRun,
+                                    false,
+                                    "H:mm:ss A, MMM Do 'YY"
+                                )
+                            }}
                         </span>
                     </div>
 
@@ -169,12 +175,12 @@
                         </a>
                     </div>
                     <!-- <div
-        v-if="error"
-        class="flex items-center w-full bg-white gap-x-1"
-    >
-        <AtlanIcon class="h-5" icon="Error" />
-        <span>{{ error.message }}</span>
-    </div> -->
+                        v-if="error"
+                        class="flex items-center w-full bg-white gap-x-1"
+                    >
+                        <AtlanIcon class="h-5" icon="Error" />
+                        <span>{{ error.message }}</span>
+                    </div> -->
                 </div>
             </div>
         </a-tab-pane>
@@ -185,7 +191,7 @@
             v-if="['Error', 'Failed'].includes(phase(selectedRun))"
         >
             <div
-                class="flex flex-col px-3 py-2 bg-white border-b border-l border-r shadow"
+                class="flex flex-col px-3 pt-4 pb-2 bg-white border-b border-l border-r shadow"
             >
                 <div class="flex flex-col gap-y-2">
                     <div class="flex w-full mb-2 gap-x-2">
@@ -229,25 +235,25 @@
                         </a-modal>
                     </div>
                     <div class="flex flex-col">
-                        <p class="text-gray-500">Name</p>
+                        <p class="info-title">Name</p>
                         <div class="mb-2 text-gray-700">
                             {{ selectedPod?.name }}
                         </div>
                     </div>
                     <div class="flex flex-col">
-                        <p class="text-gray-500">Started At</p>
+                        <p class="info-title">Started At</p>
                         <p class="mb-2 text-gray-700">
                             {{ formatDate(selectedPod?.startedAt) }}
                         </p>
                     </div>
                     <div class="flex flex-col">
-                        <p class="text-gray-500">Finished At</p>
+                        <p class="info-title">Finished At</p>
                         <p class="mb-2 text-gray-700">
                             {{ formatDate(selectedPod?.finishedAt) }}
                         </p>
                     </div>
                     <div class="flex flex-col">
-                        <p class="text-gray-500">Duration</p>
+                        <p class="info-title">Duration</p>
                         <p class="mb-2 text-gray-700">
                             {{
                                 difference(
@@ -258,7 +264,7 @@
                         </p>
                     </div>
                     <div class="flex flex-col">
-                        <p class="text-gray-500">Reference</p>
+                        <p class="info-title">Reference</p>
                         <div class="mb-2 text-gray-700">
                             {{ selectedPod?.id }}
                         </div>
@@ -502,7 +508,7 @@
         }
 
         :global(.ant-tabs-content-holder) {
-            @apply bg-primary-light overflow-y-auto !important;
+            @apply overflow-y-auto !important;
         }
         :global(.ant-tabs-content) {
             @apply min-h-full !important;

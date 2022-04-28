@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col flex-1 h-full overflow-y-hidden bg-primary-menu">
+    <div class="flex flex-col flex-1 h-full overflow-y-hidden">
         <div class="flex flex-col px-6 py-3">
             <span class="text-xl font-semibold text-gray-700">
                 Metadata Marketplace</span

@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col flex-grow h-full overflow-hidden">
-        <div class="relative flex-grow overflow-hidden bg-primary-light">
+        <div class="relative flex-grow overflow-hidden">
             <div
                 class="absolute z-10 flex flex-col h-full py-5 bg-white border-r border-gray-300 rounded gap-y-2"
             >

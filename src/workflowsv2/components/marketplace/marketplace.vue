@@ -1,5 +1,5 @@
 <template>
-    <div class="flex w-full overflow-hidden bg-white">
+    <div class="flex w-full overflow-hidden" style="background-color: #f9fafc">
         <router-view v-if="isItem" @select="handleSelect"></router-view>
 
         <keep-alive>

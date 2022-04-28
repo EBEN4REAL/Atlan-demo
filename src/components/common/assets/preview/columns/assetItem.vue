@@ -94,6 +94,23 @@
                     :edit-permission="selectedAssetUpdatePermission(item, true)"
                     @change="handleChangeDescription"
                 />
+                <transition
+                    v-if="
+                        similarList('description').length > 0 &&
+                        !localDescription
+                    "
+                    name="fade"
+                >
+                    <Suggestion
+                        class="mb-1"
+                        @apply="handleApplySuggestion"
+                        :button-between="false"
+                        :edit-permission="
+                            selectedAssetUpdatePermission(item, true)
+                        "
+                        :list="similarList('description')"
+                    ></Suggestion>
+                </transition>
                 <div v-if="list?.length > 0" class="flex flex-wrap gap-1">
                     <template
                         v-for="classification in list"
@@ -153,9 +170,11 @@
     import ClassificationPill from '@/common/pills/classification.vue'
     import PopoverClassification from '@/common/popover/classification/index.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
+    import Suggestion from '@/common/assets/preview/info/suggestion.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import useLineageStore from '~/store/lineage'
     import { useRoute } from 'vue-router'
+    import { useSimilarList } from '~/composables/discovery/useSimilarList'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -165,6 +184,7 @@
             ClassificationPill,
             ColumnKeys,
             Tooltip,
+            Suggestion,
             PopoverClassification,
             AssetDrawer: defineAsyncComponent(
                 () => import('@/common/assets/preview/drawer.vue')
@@ -260,6 +280,33 @@
                 return matchingIdsResult
             })
 
+            const limit = ref(0)
+            const offset = ref(0)
+            const facets = ref({
+                typeNames: [item.value.typeName],
+                similarity: title(item.value),
+                orExists: ['description', 'userDescription'],
+            })
+            const aggregations = ref(['description'])
+
+            const { quickChange, similarList, aggregationMap } = useSimilarList(
+                {
+                    limit,
+                    offset,
+                    facets,
+                    aggregations,
+                }
+            )
+            if (!localDescription.value) {
+                quickChange()
+            }
+
+            const handleApplySuggestion = (obj) => {
+                console.log(obj)
+                localDescription.value = obj.value
+                handleChangeDescription()
+            }
+
             watch(shouldDrawerUpdate, () => {
                 if (shouldDrawerUpdate.value) {
                     emit('update', asset.value)
@@ -274,12 +321,14 @@
                 getConnectorImage,
                 assetType,
                 dataType,
+                handleApplySuggestion,
                 connectorName,
                 connectionName,
                 dataTypeCategoryLabel,
                 dataTypeCategoryImage,
                 isDist,
                 isPartition,
+                similarList,
                 isPrimary,
                 isForeign,
                 isSort,

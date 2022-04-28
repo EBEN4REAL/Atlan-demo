@@ -681,7 +681,7 @@
                     name="fade"
                 >
                     <Suggestion
-                        class="mt-2"
+                        class="mx-4 mt-2"
                         @apply="handleApplySuggestion"
                         :button-between="false"
                         :edit-permission="editPermission"

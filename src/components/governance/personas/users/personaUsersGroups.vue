@@ -269,21 +269,27 @@
                                                     }
                                                 "
                                             >
-                                                <span class="text-primary">
-                                                    {{
-                                                        `${
-                                                            item.name ||
-                                                            item.username ||
-                                                            item.email ||
-                                                            '-'
-                                                        }${
+                                                <div class="flex items-center">
+                                                    <span class="text-primary">
+                                                        {{
+                                                            `${
+                                                                item.name ||
+                                                                item.username ||
+                                                                item.email ||
+                                                                '-'
+                                                            }`
+                                                        }}
+                                                    </span>
+                                                    <div
+                                                        v-if="
                                                             item.emailVerified ===
                                                             false
-                                                                ? ' - invited'
-                                                                : ''
-                                                        }`
-                                                    }}
-                                                </span>
+                                                        "
+                                                        class="border border-alert mb-0.5 ml-3 px-1.5 rounded-2xl text-alert text-xs"
+                                                    >
+                                                        Invited
+                                                    </div>
+                                                </div>
                                             </div>
                                             <span class="text-xs text-gray-500">
                                                 @{{ item.username }}</span

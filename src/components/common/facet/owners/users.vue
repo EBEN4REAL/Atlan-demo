@@ -47,16 +47,22 @@
                                     :avatar-size="20"
                                     class="mr-2"
                                 />
-                                <div
-                                    class="text-sm leading-none capitalize text-gray"
-                                >
-                                    {{
-                                        `${fullName(item)} ${
-                                            item.emailVerified === false
-                                                ? '- Invited'
-                                                : ''
-                                        }`
-                                    }}
+                                <div class="flex items-center">
+                                    <div
+                                        class="text-sm leading-none capitalize truncate text-gray"
+                                        :class="
+                                            item.emailVerified === false &&
+                                            'user-name-facet-owner'
+                                        "
+                                    >
+                                        {{ `${fullName(item)} ` }}
+                                    </div>
+                                    <div
+                                        v-if="item.emailVerified === false"
+                                        class="border border-alert mb-0.5 ml-3 px-1.5 rounded-2xl text-alert text-xs"
+                                    >
+                                        Invited
+                                    </div>
                                 </div>
                             </div>
                         </a-checkbox>
@@ -378,3 +384,8 @@
         },
     })
 </script>
+<style lang="less" scoped>
+    .user-name-facet-owner {
+        max-width: 125px;
+    }
+</style>

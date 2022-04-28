@@ -43,23 +43,23 @@
         ></AggregationTabs>
 
         <div
-            v-if="isLoading"
-            class="flex items-center justify-center flex-grow"
-        >
-            <AtlanLoader class="h-10" />
-        </div>
-        <div
-            v-if="!isLoading && error"
+            v-if="!isValidating && error"
             class="flex items-center justify-center flex-grow"
         >
             <ErrorView></ErrorView>
         </div>
-        <div v-else-if="list.length === 0 && !isLoading" class="flex-grow">
+        <div v-else-if="list.length === 0 && !isValidating" class="flex-grow">
             <EmptyView
                 empty-screen="NoAssetsFound"
                 image-class="h-44"
                 desc="No columns found"
             ></EmptyView>
+        </div>
+        <div
+            v-else-if="list.length === 0 && isValidating"
+            class="flex items-center justify-center flex-grow"
+        >
+            <AtlanLoader class="h-10" />
         </div>
         <!-- {{ list }} -->
         <AssetList

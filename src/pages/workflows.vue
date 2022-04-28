@@ -11,15 +11,26 @@
         </keep-alive>
     </router-view>
 </template>
+
 <script lang="ts">
     import { defineComponent } from 'vue'
     import { useRouter, onBeforeRouteUpdate, useRoute } from 'vue-router'
+
+    import {
+        featureEnabledMap,
+        WORKFLOW_CENTER_V2,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'WorkflowV2Wrapper',
         setup() {
             const router = useRouter()
             const route = useRoute()
+
+            if (!featureEnabledMap.value[WORKFLOW_CENTER_V2]) {
+                router.replace('/workflowsv1')
+                return
+            }
 
             if (!route.params?.tab) router.replace('/workflows/monitor')
 

@@ -184,7 +184,10 @@
 
             const router = useRouter()
 
-            const handleBack = router.back
+            const handleBack = () => {
+                if (window.history.state.back) router.back()
+                else router.push('/workflows')
+            }
 
             const scheduleVisible = ref(false)
 

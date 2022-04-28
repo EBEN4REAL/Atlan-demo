@@ -8,8 +8,13 @@
 <script lang="ts">
     import { computed, defineComponent, onMounted, provide, ref } from 'vue'
     import { useHead } from '@vueuse/head'
-    import { useRoute } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
     import WorkflowDiscovery from '~/workflows/components/workflows/workflowDiscovery.vue'
+
+    import {
+        featureEnabledMap,
+        WORKFLOW_CENTER_V2,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         components: {
@@ -19,6 +24,11 @@
             useHead({
                 title: 'Workflows Center',
             })
+
+            const router = useRouter()
+            if (featureEnabledMap.value[WORKFLOW_CENTER_V2])
+                router.replace('/workflows')
+
             const route = useRoute()
             const assetdiscovery = ref()
 

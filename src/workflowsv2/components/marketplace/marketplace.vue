@@ -23,7 +23,6 @@
 
 <script lang="ts">
     import { computed, defineComponent, ref } from 'vue'
-    import { useHead } from '@vueuse/head'
     import { useRoute, useRouter } from 'vue-router'
     import WorkflowPreview from '~/workflows/components/workflows/preview/index.vue'
 
@@ -39,9 +38,6 @@
             WorkflowPreview,
         },
         setup(props, { emit }) {
-            useHead({
-                title: 'Metadata Marketplace',
-            })
             const selectedPackage = ref(null)
 
             const route = useRoute()

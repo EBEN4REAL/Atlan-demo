@@ -28,6 +28,7 @@
 <script lang="ts">
     import { computed, defineComponent, defineAsyncComponent } from 'vue'
     import { useHead } from '@vueuse/head'
+    import { whenever } from '@vueuse/core'
     import { useRoute, useRouter } from 'vue-router'
     import { mainTabs } from '~/workflowsv2/constants/tabs'
 
@@ -48,9 +49,20 @@
             ),
         },
         setup() {
-            useHead({
-                title: 'Workflows Center V2',
-            })
+            const getTitle = (key: string) => {
+                debugger
+                switch (key) {
+                    case 'monitor':
+                        return 'Monitor Workflows'
+                    case 'manage':
+                        return 'Manage Workflows'
+                    case 'marketplace':
+                        return 'Metadata Marketplace'
+                    default:
+                        return 'Workflow Center'
+                }
+            }
+
             const route = useRoute()
             const router = useRouter()
 
@@ -59,6 +71,10 @@
                 set: (key) => {
                     router.push({ params: { tab: key } })
                 },
+            })
+
+            useHead({
+                title: 'Workflow Center',
             })
 
             return { activeKey, mainTabs }

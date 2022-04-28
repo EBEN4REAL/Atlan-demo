@@ -1,5 +1,5 @@
 <template>
-    <a-dropdown trigger="click">
+    <a-dropdown :trigger="[`${trigger}`]" @visibleChange="visibleChange">
         <slot name="menuTrigger"> </slot>
 
         <template #overlay v-if="showOverlay">
@@ -138,10 +138,16 @@
                 required: false,
                 default: () => true,
             },
+            trigger: {
+                type: String,
+                default: () => 'click',
+                required: false,
+            },
         },
-        emits: ['addBackground'],
+        emits: ['addBackground', 'visibleChange'],
         setup(props, { emit }) {
-            const { options, item, placement, minWidth, showOverlay } = props
+            const { options, item, placement, minWidth, showOverlay, trigger } =
+                props
 
             const handleMenuItemClick = (option: any) => {
                 option.handleClick(option)
@@ -149,8 +155,13 @@
             const addBackground = () => {
                 emit('addBackground')
             }
+            const visibleChange = (visible) => {
+                emit('visibleChange', visible)
+            }
 
             return {
+                visibleChange,
+                trigger,
                 item,
                 options,
                 addBackground,

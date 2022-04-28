@@ -38,8 +38,15 @@
                 "
                 :collection="activeTabCollection"
             />
-            <VQB v-if="showVQB" :key="activeInlineTab.key" />
-            <Monaco @editorInstance="setInstance" />
+            <div class="relative h-full">
+                <VQB
+                    v-if="showVQB"
+                    :key="activeInlineTab.key"
+                    class="absolute w-full"
+                    style="z-index: 10; height: calc(100% - 5rem) !important"
+                />
+                <Monaco @editorInstance="setInstance" />
+            </div>
 
             <!-- START: EDITOR FOOTER -->
             <div
@@ -482,6 +489,7 @@
     import { useAuthStore } from '~/store/auth'
     import { storeToRefs } from 'pinia'
     import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
+    import insightsStore from '~/store/insights/index'
 
     const Monaco = defineAsyncComponent(() => import('./monaco/monaco.vue'))
 
@@ -515,6 +523,7 @@
                 ADJACENT_TOOLTIP_DELAY,
                 lastTooltipPresence,
             } = useTooltipDelay()
+            const insights_Store = insightsStore()
 
             // const permissions = inject('permissions') as ComputedRef<any>
             // TODO: will be used for HOTKEYs
@@ -568,6 +577,9 @@
                 'activeInlineTabKey'
             ) as Ref<string>
             const editorInstance = inject('editorInstance') as Ref<any>
+            const activeResultPreviewTab = inject(
+                'activeResultPreviewTab'
+            ) as Ref<boolean>
             const monacoInstance = inject('monacoInstance') as Ref<any>
             const setEditorInstanceFxn = inject('setEditorInstance') as Function
             const saveQueryLoading = ref(false)
@@ -673,6 +685,8 @@
             )
 
             function toggleRun() {
+                activeResultPreviewTab.value = true
+                insights_Store.activePreviewGuid = undefined
                 const activeInlineTabKeyCopy = activeInlineTabKey.value
 
                 const tabIndex = inlineTabs.value.findIndex(

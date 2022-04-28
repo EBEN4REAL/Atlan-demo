@@ -90,6 +90,7 @@
             const preferences = ref({
                 showArrow: false,
                 showSchema: true,
+                showAnnouncement: true,
                 showLegend: false,
             })
             const config = computed(() => ({
@@ -97,6 +98,7 @@
                 guid: guid.value,
                 direction: direction.value,
                 hideProcess: true,
+                allowDeletedProcess: false,
                 entityFilters: {
                     attributeName: '__state',
                     operator: 'eq',

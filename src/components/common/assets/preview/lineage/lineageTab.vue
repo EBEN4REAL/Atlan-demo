@@ -150,6 +150,7 @@
                 depth: depth.value,
                 guid: guid.value,
                 hideProcess: true,
+                allowDeletedProcess: false,
                 entityFilters: {
                     attributeName: '__state',
                     operator: 'eq',

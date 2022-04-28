@@ -1,5 +1,8 @@
 <template>
-    <div class="h-full overflow-y-hidden">
+    <div
+        class="h-full overflow-y-hidden"
+        v-if="!insights_Store.activePreviewGuid || isQueryRunning === 'loading'"
+    >
         <div
             class="flex flex-col h-full"
             :style="{
@@ -15,7 +18,10 @@
                 v-if="isQueryRunning === 'loading'"
                 class="flex flex-col justify-center h-full"
             >
-                <Loading v-if="isQueryRunning === 'loading'" />
+                <Loading
+                    v-if="isQueryRunning === 'loading'"
+                    :isQueryRunning="isQueryRunning"
+                />
                 <QueryTimer
                     v-if="
                         !activeInlineTab.playground.resultsPane.result
@@ -88,7 +94,11 @@
             <!-- --------------- -->
 
             <!-- First screen -->
-            <QueryAbort v-else-if="isQueryRunning === '' && isQueryAborted" />
+            <QueryAbort
+                :isQueryAborted="isQueryAborted"
+                :isQueryRunning="isQueryRunning"
+                v-else-if="isQueryRunning === '' && isQueryAborted"
+            />
 
             <div
                 v-else-if="isQueryRunning === ''"
@@ -105,12 +115,16 @@
             </div>
 
             <QueryError
+                :queryErrorObj="queryErrorObj"
+                :isQueryRunning="isQueryRunning"
                 v-else-if="
                     isQueryRunning === 'error' && !haveLineNumber(queryErrorObj)
                 "
             />
 
             <LineError
+                :queryErrorObj="queryErrorObj"
+                :errorDecorations="errorDecorations"
                 v-else-if="
                     isQueryRunning === 'error' && haveLineNumber(queryErrorObj)
                 "
@@ -118,10 +132,23 @@
             />
         </div>
     </div>
+    <PreviewTabResult
+        v-else-if="
+            insights_Store.activePreviewGuid && isQueryRunning !== 'loading'
+        "
+    />
 </template>
 
 <script lang="ts">
-    import { defineComponent, Ref, inject, computed, PropType, ref } from 'vue'
+    import {
+        defineComponent,
+        Ref,
+        inject,
+        computed,
+        PropType,
+        ref,
+        watch,
+    } from 'vue'
     import LoadingView from '@common/loaders/page.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import Tooltip from '@/common/ellipsis/index.vue'
@@ -141,6 +168,8 @@
     import QueryTimer from '~/components/insights/playground/resultsPane/result/timer/queryTimer.vue'
     import { canQueryAbort } from '~/components/insights/common/composables/getDialectInfo'
     import { useConnector } from '~/components/insights/common/composables/useConnector'
+    import insightsStore from '~/store/insights/index'
+    import PreviewTabResult from '~/components/insights/playground/resultsPane/result/preview/result.vue'
 
     // import { useTimer } from '~/components/insights/playground/resultsPane/result/timer/useTimer'
 
@@ -157,6 +186,7 @@
             AtlanIcon,
             AtlanPreviewTable,
             QueryTimer,
+            PreviewTabResult,
         },
         props: {
             dataList: {
@@ -169,6 +199,7 @@
             },
         },
         setup(props) {
+            const insights_Store = insightsStore()
             const { abortQuery } = useRunQuery()
             const { getConnectorName } = useConnector()
             const activeInlineTab = inject(
@@ -227,6 +258,7 @@
             }
 
             return {
+                insights_Store,
                 getConnectorName,
                 canQueryAbort,
                 haveLineNumber,

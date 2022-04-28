@@ -113,10 +113,16 @@ keycloak
             inputFocusDirective(app)
             authDirective(app)
             app.use(router).mount('#app')
-            const redirectUrl = localStorage.getItem('redirectURL')
+            const redirectUrl = localStorage.getItem('redirectURL') // "/admin/integrations"
             if (redirectUrl) {
-                router.push(redirectUrl)
-                localStorage.setItem('redirectURL', '')
+                debugger
+                const allRoles = authStore.decodedToken?.realm_access?.roles
+                if (!allRoles.includes('$admin') && ['/workflows', '/admin', '/governance'].some(p => redirectUrl.startsWith(p)))
+                    router.push('/')
+                else {
+                    router.push(redirectUrl)
+                    localStorage.setItem('redirectURL', '')
+                }
             }
             identifyUser()
             identifyGroup()

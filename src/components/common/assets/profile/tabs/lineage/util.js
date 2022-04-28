@@ -33,6 +33,7 @@ export const getNodeTypeText = {
     PowerBITile: 'Tile',
     PowerBIWorkspace: 'Workspace',
     // Looker
+    LookerView: 'View',
     LookerTile: 'Tile',
     LookerFolder: 'Folder',
     LookerDashboard: 'Dashboard',

@@ -233,7 +233,7 @@
                                                 placement="top"
                                             >
                                                 <template #title
-                                                    >Open preview
+                                                    >Open query
                                                     sidebar</template
                                                 >
                                                 <div
@@ -1515,7 +1515,7 @@
                     },
                 },
                 {
-                    title: 'Open preview sidebar',
+                    title: 'Open query sidebar',
                     key: 'sidebar',
                     class: 'border-b border-gray-300',
                     component: MenuItem,

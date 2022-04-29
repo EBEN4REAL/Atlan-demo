@@ -11,11 +11,11 @@
     >
         <div class="p-3">
             <p class="mb-1 font-bold text-md">
-                Delete {{ isSlackTab ? 'Slack thread' : 'Resource' }}
+                Delete {{ isSlackTab ? 'Slack Thread' : 'Resource' }}
             </p>
             <p class="text-md">
                 Are you sure you want to delete
-                {{ isSlackTab ? 'Slack thread' : 'resource' }}
+                {{ isSlackTab ? 'Slack Thread' : 'resource' }}
                 "{{ link.attributes.name }}" of
                 <span class="font-bold">{{ entityName }} </span>?
             </p>
@@ -88,7 +88,7 @@
                     if (link.value?.attributes?.name)
                         message.success({
                             content: `Successfully removed ${
-                                isSlackTab.value ? 'Slack thread' : 'resource'
+                                isSlackTab.value ? 'Slack Thread' : 'resource'
                             } "${link.value.attributes.name}"`,
                             duration: 1.5,
                             key: 'update',
@@ -98,7 +98,7 @@
                     if (link.value?.attributes?.name)
                         message.error({
                             content: `Failed to removed ${
-                                isSlackTab.value ? 'Slack thread' : 'resource'
+                                isSlackTab.value ? 'Slack Thread' : 'resource'
                             } "${link.value.attributes.name}"`,
                             duration: 1.5,
                             key: 'error',

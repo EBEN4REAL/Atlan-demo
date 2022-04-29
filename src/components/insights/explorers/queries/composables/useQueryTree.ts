@@ -329,7 +329,7 @@ const useQueryTree = ({
 
             // checkAndAddLoadMoreNode(schemaResponse, 'Database', treeNode.dataRef.qualifiedName)
         }
-
+        treeData.value = [...treeData.value]
         loadedKeys.value.push(treeNode.dataRef.key)
     }
 

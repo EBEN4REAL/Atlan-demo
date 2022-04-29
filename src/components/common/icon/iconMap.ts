@@ -442,6 +442,7 @@ import Comment from '~/assets/images/icons/Comment.svg'
 import Resources2 from '~/assets/images/illustrations/resources/resources.svg'
 import RunningQuery from '~/assets/images/icons/tabs/Running.svg'
 import FailedQuery from '~/assets/images/icons/tabs/Error.svg'
+import SlackTabEmpty from '~/assets/images/illustrations/empty_slack_tab.svg'
 import SuccessQuery from '~/assets/images/icons/tabs/success-check.svg'
 import QuestionRound from '~/assets/images/icons/question-round.svg'
 import QuestionRoundSmall from '~/assets/images/icons/question-round-small.svg'
@@ -470,6 +471,7 @@ import PreviewQuery from '~/assets/images/icons/preview.svg'
 import Trident from '~/assets/images/icons/trident.svg'
 
 export default {
+    SlackTabEmpty,
     PreviewQuery,
     QueryOutputFail,
     QueryOutputNeutral,

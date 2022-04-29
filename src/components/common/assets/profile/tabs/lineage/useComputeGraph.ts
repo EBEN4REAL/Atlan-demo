@@ -50,6 +50,7 @@ export default async function useComputeGraph({
             'Column',
             'TableauDatasourceField',
             'TableauCalculatedField',
+            'LookerField',
         ]
         return typeNames.includes(typeName)
     }

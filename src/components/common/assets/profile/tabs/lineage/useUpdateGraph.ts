@@ -5,10 +5,11 @@ export default function useUpdateGraph(graph) {
         const graphNodeElement = document.querySelectorAll(
             `[data-cell-id="${nodeId}"]`
         )[0]
+        if (!graphNodeElement) return
         const lineageNodeElement = Array.from(
             graphNodeElement.querySelectorAll('*')
         ).find((y) => y.classList.contains('lineage-node'))
-
+        if (!lineageNodeElement) return
         lineageNodeElement?.classList.remove(
             'isSelectedNode',
             'isHighlightedNode',
@@ -30,10 +31,11 @@ export default function useUpdateGraph(graph) {
             const graphNodeElement = document.querySelectorAll(
                 `[data-cell-id="${x.id}"]`
             )[0]
+            if (!graphNodeElement) return
             const lineageNodeElement = Array.from(
                 graphNodeElement.querySelectorAll('*')
             ).find((y) => y.classList.contains('lineage-node'))
-
+            if (!lineageNodeElement) return
             const itExists = nodesToHighlight.includes(x.id)
             const cell = graph.value.getCellById(x.id)
 

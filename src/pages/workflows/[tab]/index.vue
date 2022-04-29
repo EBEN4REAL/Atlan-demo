@@ -70,7 +70,7 @@
             }
 
             if (featureEnabledMap.value[WORKFLOW_CENTER_V2]) {
-                if (route.params.tab?.length || 0 > 17) {
+                if ((route.params.tab?.length || 0) > 17) {
                     const newRoute = route.fullPath.replace(
                         '/workflows/',
                         '/workflows/profile/'

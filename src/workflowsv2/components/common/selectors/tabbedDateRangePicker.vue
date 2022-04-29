@@ -1,54 +1,49 @@
 <template>
     <div
-        class="box-border flex items-stretch h-8 overflow-hidden border border-gray-300 divide-x divide-gray-300 rounded"
+        class="box-border flex items-stretch h-8 overflow-hidden border border-gray-300 divide-x divide-gray-300 rounded-lg"
     >
-        <button
-            v-for="item in ranges"
+        <a-tooltip
+            v-for="item in dateRanges"
             :key="item.label"
-            class="tabbed-btn"
-            :class="selected === item.label ? 'fake-bold selected' : ''"
-            @click="handleSelect(item.label, item.value())"
+            placement="top"
+            color="#2A2F45"
+            :mouse-enter-delay="0.5"
+            :mouse-leave-delay="0"
         >
-            {{ item.label }}
-        </button>
+            <template v-if="item.hint" #title>
+                <p class="text-xs font-semibold">
+                    {{ item.hint?.split('/')[0] }}
+                </p>
+                <p class="text-xs mt-0.5 font-semibold">
+                    {{ item.hint?.split('/')[1] }}
+                </p>
+            </template>
+            <button
+                class="tabbed-btn"
+                :class="{ selected: selected === item.label }"
+                @click="handleSelect(item.label, item.value)"
+            >
+                {{ item.label }}
+            </button>
+        </a-tooltip>
     </div>
 </template>
 
 <script lang="ts">
     import dayjs from 'dayjs'
     import { defineComponent, ref } from 'vue'
+    import { dateRanges } from '~/workflowsv2/constants/filters'
 
     export default defineComponent({
         name: 'TabbedDateRangePicker',
         components: {},
         props: {
-            value: { type: Number, required: false, default: () => undefined },
+            value: { type: Object, required: false, default: () => undefined },
         },
         emits: ['update:value'],
         setup(_, { emit }) {
             const selected = ref(undefined)
-            const ranges = [
-                {
-                    label: 'Today',
-                    value: () => dayjs().startOf('day').valueOf(),
-                },
-                {
-                    label: 'Yesterday',
-                    value: () =>
-                        dayjs().startOf('day').subtract(1, 'day').valueOf(),
-                },
-                {
-                    label: '7 days',
-                    value: () =>
-                        dayjs().startOf('day').subtract(7, 'day').valueOf(),
-                },
-                {
-                    label: '30 days',
-                    value: () =>
-                        dayjs().startOf('day').subtract(30, 'day').valueOf(),
-                },
-                // { label: 'Custom' },
-            ]
+
             const handleSelect = (sel, val) => {
                 if (sel === selected.value) {
                     emit('update:value', undefined)
@@ -58,7 +53,11 @@
                     selected.value = sel
                 }
             }
-            return { selected, ranges, handleSelect }
+
+            // Select today by default
+            handleSelect('Today', { gt: dayjs().startOf('day').valueOf() })
+
+            return { selected, dateRanges, handleSelect }
         },
     })
 </script>
@@ -71,7 +70,7 @@
         @apply px-4;
         @apply bg-white text-gray;
 
-        &:hover:not(:disabled) {
+        &:hover:not(:disabled):not(.selected) {
             background-color: #f8f8f8;
         }
 
@@ -83,8 +82,8 @@
         }
 
         &.selected {
-            @apply bg-primary-light;
-            @apply text-primary;
+            @apply bg-new-blue-400;
+            @apply text-white;
         }
 
         &:focus-visible {

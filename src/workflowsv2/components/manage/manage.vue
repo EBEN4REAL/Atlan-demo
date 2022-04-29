@@ -6,7 +6,7 @@
             :filter-list="workflowFilterRef"
             :allow-custom-filters="false"
             no-filter-title="Filters"
-            class="drawer-request"
+            class="filter-sidebar"
             @reset="handleResetEvent"
             @change="refetch()"
         />
@@ -14,7 +14,7 @@
         <div
             class="flex flex-col flex-1 h-full overflow-x-hidden border-l border-r border-gray-300 gap-y-4"
         >
-            <div class="flex items-center mx-4 mt-4 gap-x-4">
+            <div class="flex items-center mx-6 mt-4 gap-x-4">
                 <div
                     class="flex items-center flex-1 bg-white border border-gray-300 rounded-md"
                     style="width: calc(100% - 150px)"
@@ -30,12 +30,14 @@
                         v-model:value="queryText"
                         size="minimal"
                         class="bg-white border-b-0 rounded-tr-md rounded-br-md focus-within:ring-2 ml-0.5"
-                        placeholder="Search all Snowflake Assets workflows..."
+                        :placeholder="getPlaceholder"
                         @update:value="refetch()"
                         @select="$event.target.blur()"
                     />
                 </div>
-                <AtlanButton2 label="New workflow" class="flex-none" />
+                <router-link :to="{ params: { tab: 'marketplace' } }">
+                    <AtlanButton2 label="New workflow" class="flex-none" />
+                </router-link>
             </div>
 
             <WorkflowList
@@ -67,34 +69,36 @@
             </template>
         </div>
 
-        <div style="width: 420px" class="flex-none">
+        <div style="width: 420px" class="flex-none hidden lg:block">
             <WorkflowPreview
                 v-if="selectedWorkflow"
                 :workflow="selectedWorkflow"
                 :runs="runs(selectedWorkflow)"
+                @archive="handleArchiveWorkflow"
             />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { useDebounceFn, watchOnce, whenever } from '@vueuse/core'
-    import { computed, defineComponent, provide, ref } from 'vue'
-
+    import { until, useDebounceFn, watchOnce, whenever } from '@vueuse/core'
+    import { computed, defineComponent, provide, ref, watch } from 'vue'
     import { capitalizeFirstLetter } from '~/utils/string'
 
     import AssetFilters from '@/common/assets/filters/index.vue'
 
+    import { useWorkflowStore } from '~/workflowsv2/store'
     import { workflowFilter } from '~/workflowsv2/constants/filters'
     import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
     import { useWorkflowDiscoverList } from '~/workflowsv2/composables/useWorkflowDiscoverList'
     import { useWorkflowTypes } from '~/workflowsv2/composables/useWorkflowTypes'
+    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
 
     import WorkflowList from '~/workflowsv2/components/manage/workflowList.vue'
-    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import SearchAndFilter from '~/components/common/input/searchAndFilter.vue'
     import PackageSelector from '~/workflowsv2/components/common/selectors/packageSelector.vue'
     import WorkflowPreview from '~/workflowsv2/components/common/preview/workflowPreview.vue'
+    import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
 
     export default defineComponent({
         name: 'ManageWorkflows',
@@ -109,14 +113,25 @@
         emits: [],
         setup() {
             const { name } = useWorkflowInfo()
+            const { name: pkgName } = usePackageInfo()
+            const workflowStore = useWorkflowStore()
             const isDrawerVisible = ref(false)
-            const activeKey = ref([])
+            const activeKey = ref(['schedule_0'])
             const wfFilters = ref({})
-            const packageId = ref(undefined)
+            const packageId = ref<string | undefined>(undefined)
             const offset = ref(0)
             const limit = ref(20)
             const selectedId = ref('')
 
+            const getPlaceholder = computed(() => {
+                if (packageId.value)
+                    return `Search ${
+                        pkgName(workflowStore.packageMeta?.[packageId.value]) ||
+                        'all'
+                    } workflows`
+
+                return 'Search all workflows'
+            })
             const preference = ref({
                 sort: 'metadata.creationTimestamp-desc',
             })
@@ -135,15 +150,17 @@
                     queryText,
                     limit,
                     offset,
-                    source: ref({
-                        excludes: ['spec'],
-                    }),
                     preference,
                 })
 
             const selectedWorkflow = computed(() =>
                 list.value?.find((li) => li?.metadata?.uid === selectedId.value)
             )
+
+            watch(list, () => {
+                if (list.value.length && offset.value === 0)
+                    selectedId.value = list.value[0]?.metadata?.uid || ''
+            })
 
             const runFacets = computed(() => ({
                 workflowTemplates: list.value
@@ -174,7 +191,8 @@
                 () => runFacets.value.workflowTemplates,
                 () => {
                     if (!offset.value) resetRunState()
-                    quickChangeRun()
+                    if (runFacets.value.workflowTemplates?.length)
+                        quickChangeRun()
                 },
                 { deep: true }
             )
@@ -194,13 +212,46 @@
             }
 
             const loadMoreWorkflows = () => {
-                if (isLoadMore.value) offset.value += limit.value
+                if (isLoadMore.value) offset.value = list.value.length
                 quickChange()
             }
 
-            provide('isRunLoading', isRunLoading)
+            const handleArchiveWorkflow = (workflowName: string) => {
+                const idx = list.value.findIndex(
+                    (li) => li?.metadata?.name === workflowName
+                )
 
-            ///////////////////////////////////////////////////////////////////////////////////
+                if (idx > -1) {
+                    list.value.splice(idx, 1)
+
+                    const nextIdx = idx < list.value.length - 1 ? idx : idx - 1
+                    selectedId.value = list.value[nextIdx]?.metadata?.uid || ''
+                }
+            }
+
+            const updateRunByWorkflowName = async (workflowName: string) => {
+                const { runByWorkflowMap: runWfMap, isLoading: runLoading } =
+                    useRunDiscoverList({
+                        preference,
+                        facets: computed(() => ({
+                            workflowTemplate: workflowName,
+                        })),
+                        limit: ref(0),
+                        aggregations: ref(['status']),
+                    })
+
+                await until(runLoading).toBe(false)
+
+                if (runWfMap.value[workflowName])
+                    runByWorkflowMap.value = {
+                        ...runByWorkflowMap.value,
+                        [workflowName]: runWfMap.value[workflowName],
+                    }
+            }
+
+            provide('isRunLoading', isRunLoading)
+            provide('updateRunByWorkflowName', updateRunByWorkflowName)
+
             /**  Dynamically inject the workflow type filter after getting response from API */
 
             // Existing filters
@@ -223,7 +274,7 @@
                             })`,
                         }))
             })
-            ///////////////////////////////////////////////////////////////////////////////////
+            /**  END Block */
 
             return {
                 list,
@@ -245,13 +296,15 @@
                 loadMoreWorkflows,
                 selectedId,
                 selectedWorkflow,
+                getPlaceholder,
+                handleArchiveWorkflow,
             }
         },
     })
 </script>
 
 <style lang="less" scoped>
-    .drawer-request {
+    .filter-sidebar {
         @apply bg-gray-100 flex-none w-64;
         .ant-collapse-content {
             background: none !important;

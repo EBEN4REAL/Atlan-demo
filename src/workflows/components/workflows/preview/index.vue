@@ -1,5 +1,12 @@
 <template>
-    <div class="flex flex-col h-full">
+    <div class="flex flex-col h-full overflow-y-hidden">
+        <AssetDrawer
+            :guid="selectedConnectionId"
+            :show-drawer="isDrawerVisible && !!selectedConnectionId"
+            :show-mask="false"
+            :show-close-btn="true"
+            @close-drawer="isDrawerVisible = false"
+        />
         <div class="flex flex-col px-4 py-4 border-b border-gray-200">
             <div class="flex items-center" style="padding-bottom: 1px">
                 <div class="flex items-center justify-between">
@@ -90,18 +97,50 @@
                 />
             </template>
         </div>
+        <div class="flex flex-col overflow-y-auto">
+            <Property
+                v-if="mode === 'package'"
+                :item="item"
+                :key="item.metadata.name"
+                class="flex-none"
+            />
 
-        <Property
-            :item="item"
-            v-if="mode === 'package'"
-            :key="item.metadata.name"
-        ></Property>
+            <Workflows
+                v-if="mode === 'workflow'"
+                :item="item"
+                :key="item.metadata.name"
+                class="flex-none"
+            />
 
-        <Workflows
-            :item="item"
-            v-if="mode === 'workflow'"
-            :key="item.metadata.name"
-        ></Workflows>
+            <div
+                v-if="
+                    packageType(item) === 'connector' &&
+                    featureEnabledMap[WORKFLOW_CENTER_V2]
+                "
+                class="px-5 space-y-1.5 text-sm pb-4"
+            >
+                <span class="mb-1 text-gray-500"
+                    >Existing Connections ({{
+                        previousConnectors.length
+                    }})</span
+                >
+                <template v-if="!prevConnLoading">
+                    <template v-for="conn in previousConnectors" :key="conn.id">
+                        <span
+                            class="block font-medium cursor-pointer text-primary hover:underline"
+                            @click="handleConnectionSelect(conn.connector)"
+                            >{{ conn.label }}</span
+                        >
+                    </template>
+                </template>
+                <a-skeleton
+                    v-else
+                    active
+                    :title="false"
+                    :paragraph="{ rows: 5 }"
+                />
+            </div>
+        </div>
 
         <!-- <a-tabs
             v-model:activeKey="activeKey"
@@ -147,10 +186,17 @@
         provide,
         defineAsyncComponent,
     } from 'vue'
-
-    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
-    import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { useRoute, useRouter } from 'vue-router'
+
+    import AssetDrawer from '@/common/assets/preview/drawer.vue'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import { useWorkflowDiscoverList } from '~/workflowsv2/composables/useWorkflowDiscoverList'
+    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
+
+    import {
+        featureEnabledMap,
+        WORKFLOW_CENTER_V2,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'Sidebar',
@@ -162,26 +208,29 @@
             Workflows: defineAsyncComponent(
                 () => import('./workflows/index.vue')
             ),
+            AssetDrawer,
         },
 
         props: {
             item: {
                 type: Object,
                 required: false,
-                default: () => {},
+                default: () => ({}),
             },
             mode: {
                 type: String,
                 required: false,
-                default() {
-                    return 'workflow'
-                },
+                default: () => 'workflow',
             },
         },
         emits: ['assetMutation', 'closeDrawer'],
         setup(props, { emit }) {
             const activeKey = ref('detail')
+            const isDrawerVisible = ref(false)
+            const selectedConnectionId = ref(undefined)
             const { item, mode } = toRefs(props)
+            const { displayName, packageType, packageName, connectorGuid } =
+                useWorkflowInfo()
 
             if (mode.value === 'workflow') {
                 activeKey.value = 'workflow'
@@ -223,7 +272,55 @@
             const router = useRouter()
 
             const handleSetupWorkflow = () => {
-                router.push(`/workflows/setup/${item.value?.metadata?.name}`)
+                // prettier-ignore
+                router.push(`${featureEnabledMap.value[WORKFLOW_CENTER_V2] ? '/workflows/setup/' : '/workflowsv1/setup/'}${item.value?.metadata?.name}`)
+            }
+
+            const {
+                list,
+                isLoading: prevConnLoading,
+                quickChange,
+            } = useWorkflowDiscoverList({
+                facets: computed(() => ({
+                    ui: true,
+                    packageName: packageName(item.value),
+                })),
+                limit: ref(100),
+                source: ref({
+                    includes: [
+                        'metadata.name',
+                        'metadata.annotations.package.argoproj.io/name',
+                        'metadata.annotations.orchestration.atlan.com/schedule',
+                    ],
+                }),
+                preference: ref({
+                    sort: 'metadata.creationTimestamp-desc',
+                }),
+            })
+
+            const previousConnectors = computed(() =>
+                list.value.map((workflow) => ({
+                    id: workflow.metadata.name,
+                    connector: connectorGuid(
+                        item.value,
+                        workflow.metadata.name
+                    ),
+                    label: displayName(item.value, workflow.metadata.name),
+                }))
+            )
+
+            watch(
+                () => packageName(item.value),
+                () => {
+                    if (packageName(item.value)) {
+                        quickChange()
+                    }
+                }
+            )
+
+            const handleConnectionSelect = (id: string) => {
+                selectedConnectionId.value = id
+                isDrawerVisible.value = true
             }
 
             return {
@@ -235,6 +332,14 @@
                 route,
                 handleSetupWorkflow,
                 router,
+                previousConnectors,
+                prevConnLoading,
+                packageType,
+                isDrawerVisible,
+                selectedConnectionId,
+                handleConnectionSelect,
+                featureEnabledMap,
+                WORKFLOW_CENTER_V2,
             }
         },
     })

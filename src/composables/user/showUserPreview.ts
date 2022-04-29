@@ -18,7 +18,7 @@ const finalTabs = computed(() => {
                     allowedTabs.value.includes(tab.key) &&
                     !blacklistedTabs.value.includes(tab.key)
             )
-        else return allTabs.filter((tab) => allowedTabs.value.includes(tab.key))
+        return allTabs.filter((tab) => allowedTabs.value.includes(tab.key))
     }
     return allTabs.filter((tab) => !blacklistedTabs.value.includes(tab.key))
 })

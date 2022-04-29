@@ -38,6 +38,8 @@ import {
     lookup,
     enum1,
     percent,
+    tableauCalculatedField,
+    tableauDatasourceField,
 } from './icons'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -80,6 +82,11 @@ const portDataTypeIcons = {
     percent,
 }
 
+const biPortDataTypeIcons = {
+    TableauCalculatedField: tableauCalculatedField,
+    TableauDatasourceField: tableauDatasourceField,
+}
+
 const columnKeyTypeIcons = {
     isPrimary: iconPrimary,
     isForeign: iconForeign,
@@ -88,6 +95,7 @@ const columnKeyTypeIcons = {
 const portsLabelMap = {
     Table: 'columns',
     View: 'columns',
+    MaterialisedView: 'columns',
     TableauDatasource: 'fields',
 }
 
@@ -124,6 +132,7 @@ export default function useGraph(graph) {
 
         const computedData = {
             id: guid,
+            hasPorts: !!isNodeWithPorts,
             ports: [],
             portsCount: null,
             portsListExpanded: false,
@@ -177,12 +186,16 @@ export default function useGraph(graph) {
                                     port.displayText.charAt(0).toUpperCase() +
                                     port.displayText.slice(1).toLowerCase()
 
-                                const dataType = dataTypeCategoryList.find(
-                                    (d) =>
-                                        d.type.includes(
-                                            port.attributes?.dataType?.toUpperCase()
-                                        )
-                                )?.imageText
+                                const dataType = port.attributes?.dataType
+                                const portTypeName = port.typeName
+
+                                const dataTypeComputed =
+                                    dataTypeCategoryList.find((d) =>
+                                        d.type.includes(dataType?.toUpperCase())
+                                    )?.imageText
+
+                                const biDataTypeIcon =
+                                    biPortDataTypeIcons[portTypeName]
 
                                 const isSelectedPort =
                                     data?.selectedPortId === port.guid
@@ -195,7 +208,11 @@ export default function useGraph(graph) {
                                 ${isSelectedPort ? 'selected-port' : ''}
                                 ${isHighlightedPort ? 'highlighted-port' : ''}">
                                     <div class="flex items-center truncate">
-                                        ${portDataTypeIcons[dataType] || ''}
+                                        ${
+                                            portDataTypeIcons[
+                                                dataTypeComputed
+                                            ] || biDataTypeIcon
+                                        }
                                         <span title="${text}" class="truncate flex-grow-0 flex-shrink">${text}</span> 
                                     </div>
                                     <div class="flex items-center">
@@ -305,7 +322,11 @@ export default function useGraph(graph) {
                             </div>
                             <div class="lineage-node__ports 
                                     ${isNodeWithPorts ? '' : 'hidden'}">
-                                <div iscollist="true" class="lineage-node__ports-cta">
+                                <div iscollist="true" class="lineage-node__ports-cta ${
+                                    data?.highlightPorts || data?.selectedPortId
+                                        ? 'opacity-30 cursor-not-allowed'
+                                        : ''
+                                }">
                                     <div class="flex items-center">
                                         <span class="mr-2">
                                             ${getPortsCTALabel(

@@ -182,6 +182,18 @@ const keyMap = {
                     asset_type: props.asset_type,
                 }),
             },
+            categories_updated: {
+                action: 'discovery_metadata_categories_updated',
+                properties: (props) => ({
+                    count: props.count,
+                }),
+            },
+            related_terms_updated: {
+                action: 'discovery_metadata_related_terms_updated',
+                properties: (props) => ({
+                    count: props.count,
+                }),
+            },
             suggestion_applied: {
                 action: 'discovery_metadata_suggestion_applied',
                 properties: (props) => ({

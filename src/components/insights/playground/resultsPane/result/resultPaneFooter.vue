@@ -338,7 +338,13 @@
                     <AtlanPreviewTable
                         :dataList="dataList"
                         :columns="columnsList"
-                        :key="`hello_world${fullScreenTabActive}`"
+                        :key="`${fullScreenTabActive}.${
+                            fullScreenTabActive > -1
+                                ? insights_Store.previewTabs[
+                                      fullScreenTabActive
+                                  ].asset.guid
+                                : 'helloworld'
+                        }`"
                         class=""
                         :table-instance-i-d="'query-result-full-screen'"
                     />
@@ -535,7 +541,7 @@
                 }
             })
             const columnsList = computed(() => {
-                if (fullScreenMode.value && selectedAsset.value) {
+                if (fullScreenMode.value) {
                     if (fullScreenTabActive.value === -1) {
                         return activeInlineTab.value.playground.editor
                             .columnList
@@ -562,7 +568,7 @@
                 }
             })
             const dataList = computed(() => {
-                if (fullScreenMode.value && selectedAsset.value) {
+                if (fullScreenMode.value) {
                     if (fullScreenTabActive.value === -1) {
                         return activeInlineTab.value.playground.editor.dataList
                     } else {

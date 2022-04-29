@@ -339,9 +339,14 @@ const useTree = ({
         } else {
             triggerLoadingState(parentNodeId)
             const response = await getAssets(parentQualifiedName, offset)
-            const query = JSON.parse(
-                JSON.stringify(response.searchParameters.query)
-            )
+            let query
+            if (typeof response.searchParameters.query === 'string') {
+                query = JSON.parse(response.searchParameters.query)
+            } else {
+                query = JSON.parse(
+                    JSON.stringify(response.searchParameters.query)
+                )
+            }
             const limit = query.size
             const responseOffset = query.from
 
@@ -371,7 +376,7 @@ const useTree = ({
                             (limit ?? 0) + (responseOffset ?? 0)
                     ) {
                         newChildren?.push({
-                            key: `${parentQualifiedName  }_Load_More`,
+                            key: `${parentQualifiedName}_Load_More`,
                             title: 'Load more',
                             isLeaf: true,
                             click: () =>
@@ -521,7 +526,6 @@ const useTree = ({
             )
 
             loadedKeys.value.push(treeNode.dataRef.key)
-            
         }
     }
 
@@ -529,7 +533,7 @@ const useTree = ({
         console.log('expanded', expanded, expandedKeys.value)
 
         if (!event.node.dataRef.isLeaf) {
-            const {key} = event.node.dataRef
+            const { key } = event.node.dataRef
             const isExpanded = expandedKeys.value?.includes(key)
             if (!isExpanded) {
                 if (isAccordion && event.node.dataRef.isRoot) {
@@ -682,7 +686,7 @@ const useTree = ({
         ) {
             if (key === 'root') {
                 treeData.value.push({
-                    key: `${key ?? parentQualifiedName  }_Load_More`,
+                    key: `${key ?? parentQualifiedName}_Load_More`,
                     title: 'Load more',
                     isLeaf: true,
                     isLoading: false,
@@ -707,7 +711,7 @@ const useTree = ({
                         !currentPath
                     ) {
                         node.children?.push({
-                            key: `${key ?? parentQualifiedName  }_Load_More`,
+                            key: `${key ?? parentQualifiedName}_Load_More`,
                             title: 'Load more',
                             isLeaf: true,
                             isLoading: false,

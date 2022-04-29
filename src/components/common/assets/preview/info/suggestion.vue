@@ -1,5 +1,8 @@
 <template>
-    <div class="px-4 py-2 mx-4 bg-yellow-100 rounded-lg">
+    <div
+        v-if="list[0]?.key && list[0]?.key !== ''"
+        class="px-4 py-2 bg-yellow-100 rounded-lg"
+    >
         <div
             class="flex items-center justify-between text-sm text-gray-500 text-muted"
         >
@@ -47,8 +50,10 @@
         inject,
         ref,
         toRefs,
+        Proptype,
     } from 'vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         components: {},
@@ -64,13 +69,19 @@
                 type: Boolean,
                 required: false,
             },
+            asset: {
+                type: Object as Proptype<assetInterface>,
+                required: false,
+                default() {
+                    return {}
+                },
+            },
         },
         emits: ['apply'],
         setup(props, { emit }) {
-            const { list, editPermission } = toRefs(props)
+            const { list, editPermission, asset } = toRefs(props)
 
             const currentIndex = ref(0)
-            const selectedAsset = inject('selectedAsset')
 
             const handleNext = (step) => {
                 if (step === 1) {
@@ -95,7 +106,7 @@
                     value: list.value[currentIndex.value]?.key,
                 })
                 const properties = {
-                    asset_type: selectedAsset.value.typeName,
+                    asset_type: asset.value?.typeName,
                     index: currentIndex.value,
                 }
                 console.log('properties suggestion event', properties)

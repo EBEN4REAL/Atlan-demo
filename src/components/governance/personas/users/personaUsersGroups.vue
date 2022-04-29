@@ -270,16 +270,30 @@
                                                 "
                                             >
                                                 <div class="flex items-center">
-                                                    <span class="text-primary">
-                                                        {{
-                                                            `${
-                                                                item.name ||
-                                                                item.username ||
-                                                                item.email ||
-                                                                '-'
-                                                            }`
-                                                        }}
-                                                    </span>
+                                                    <a-tooltip>
+                                                        <template #title>
+                                                            {{
+                                                                `${
+                                                                    item.name ||
+                                                                    item.username ||
+                                                                    item.email ||
+                                                                    '-'
+                                                                }`
+                                                            }}
+                                                        </template>
+                                                        <div
+                                                            class="max-w-xs truncate text-primary"
+                                                        >
+                                                            {{
+                                                                `${
+                                                                    item.name ||
+                                                                    item.username ||
+                                                                    item.email ||
+                                                                    '-'
+                                                                }`
+                                                            }}
+                                                        </div>
+                                                    </a-tooltip>
                                                     <div
                                                         v-if="
                                                             item.emailVerified ===

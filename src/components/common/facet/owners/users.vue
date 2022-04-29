@@ -47,23 +47,29 @@
                                     :avatar-size="20"
                                     class="mr-2"
                                 />
-                                <div class="flex items-center">
-                                    <div
-                                        class="text-sm leading-none capitalize truncate text-gray"
-                                        :class="
-                                            item.emailVerified === false &&
-                                            'user-name-facet-owner'
-                                        "
-                                    >
+                                <a-tooltip>
+                                    <template #title>
                                         {{ `${fullName(item)} ` }}
+                                    </template>
+                                    <div class="flex items-center">
+                                        <div
+                                            class="text-sm leading-none capitalize truncate text-gray"
+                                            :class="
+                                                item.emailVerified === false
+                                                    ? 'user-name-facet-owner'
+                                                    : 'user-name-facet-owner-verified'
+                                            "
+                                        >
+                                            {{ `${fullName(item)} ` }}
+                                        </div>
+                                        <div
+                                            v-if="item.emailVerified === false"
+                                            class="border border-alert mb-0.5 ml-3 px-1.5 rounded-2xl text-alert text-xs"
+                                        >
+                                            Invited
+                                        </div>
                                     </div>
-                                    <div
-                                        v-if="item.emailVerified === false"
-                                        class="border border-alert mb-0.5 ml-3 px-1.5 rounded-2xl text-alert text-xs"
-                                    >
-                                        Invited
-                                    </div>
-                                </div>
+                                </a-tooltip>
                             </div>
                         </a-checkbox>
                     </template>
@@ -387,5 +393,8 @@
 <style lang="less" scoped>
     .user-name-facet-owner {
         max-width: 125px;
+    }
+    .user-name-facet-owner-verified {
+        max-width: 180px;
     }
 </style>

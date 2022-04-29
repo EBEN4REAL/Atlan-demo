@@ -106,7 +106,7 @@
                         /> -->
                                 <OwnersSelector
                                     v-model:modelValue="userGroupData"
-                                    :no-filter-pending="true"
+                                    :show-invited-users="true"
                                     :show-none="false"
                                     :enable-tabs="enableTabs"
                                     select-group-key="id"

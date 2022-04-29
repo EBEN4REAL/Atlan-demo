@@ -69,7 +69,7 @@
                 :select-user-key="selectUserKey"
                 :group-id="groupId"
                 :disabled-keys="disabledValues?.ownerUsers"
-                :no-filter-pending="noFilterPending"
+                :show-invited-users="showInvitedUsers"
                 @change="handleChange"
             ></Users>
             <Groups
@@ -187,7 +187,7 @@
                 type: Object,
                 required: false,
             },
-            noFilterPending: {
+            showInvitedUsers: {
                 type: Boolean,
                 required: false,
             },

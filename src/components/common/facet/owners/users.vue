@@ -212,7 +212,7 @@
                 default: false,
                 required: false,
             },
-            noFilterPending: {
+            showInvitedUsers: {
                 type: Boolean,
                 required: false,
             },
@@ -229,7 +229,7 @@
                 groupId,
                 excludeMe,
                 showLoggedInUser,
-                noFilterPending,
+                showInvitedUsers,
             } = toRefs(props)
             const localValue = ref(modelValue.value)
             const allUsers = ref({}) // map of all users (userId: userRecord)
@@ -253,7 +253,7 @@
             } = useFacetUsers({
                 groupId,
                 excludeMe: excludeMe.value,
-                noFilterPending: noFilterPending.value,
+                showInvitedUsers: showInvitedUsers.value,
             })
 
             watch(

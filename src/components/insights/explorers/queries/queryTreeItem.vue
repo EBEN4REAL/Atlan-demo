@@ -1505,6 +1505,26 @@
 
             const dropdownQueryOptions = [
                 {
+                    title: 'Run Query',
+                    key: 'run',
+                    class: '',
+                    component: MenuItem,
+                    disabled: false,
+                    handleClick: ({ item }) => {
+                        actionClick('play', item)
+                    },
+                },
+                {
+                    title: 'Open preview sidebar',
+                    key: 'sidebar',
+                    class: 'border-b border-gray-300',
+                    component: MenuItem,
+                    disabled: false,
+                    handleClick: ({ item }) => {
+                        actionClick('info', item)
+                    },
+                },
+                {
                     title: 'Schedule',
                     key: 'schedule',
                     class: '',
@@ -1532,7 +1552,6 @@
                 },
                 {
                     title: 'Move Query',
-
                     key: 'move',
                     class: 'border-b border-gray-300',
                     component: MenuItem,
@@ -1543,7 +1562,6 @@
                 },
                 {
                     title: 'Rename',
-
                     key: 'rename',
                     class: '',
                     component: MenuItem,
@@ -1552,7 +1570,6 @@
                 },
                 {
                     title: 'Edit',
-
                     key: 'edit',
                     class: 'border-b border-gray-300',
                     component: MenuItem,
@@ -1563,7 +1580,6 @@
                 },
                 {
                     title: 'Delete',
-
                     key: 'delete',
                     class: 'text-red-600',
                     component: MenuItem,

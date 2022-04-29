@@ -384,6 +384,7 @@
         featureEnabledMap,
         INSIGHT_DATA_DOWNLOAD,
     } from '~/composables/labs/labFeatureList'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: { AtlanBtn, Tooltip, PreviewTabs, AtlanPreviewTable },
@@ -608,6 +609,20 @@
             })
 
             const toggleFullScreenMode = () => {
+                if (!fullScreenMode.value) {
+                    const _index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+
+                    useAddEvent('insights', 'previewTabs', 'fullScreenMode', {
+                        query_tab_id: activeInlineTab.value.key,
+                        click_index: _index,
+                        tab_type: insights_Store.activePreviewGuid
+                            ? 'preview_tab'
+                            : 'result_tab',
+                    })
+                }
                 fullScreenMode.value = !fullScreenMode.value
             }
 

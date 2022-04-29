@@ -414,6 +414,14 @@ const keyMap = {
                     previous_index: props?.previous_index,
                 }),
             },
+            fullScreenMode: {
+                action: 'insights_preview_tab_full_screen',
+                properties: (props) => ({
+                    query_tab_id: props?.query_tab_id,
+                    click_index: props?.click_index,
+                    tab_type: props?.tab_type,
+                }),
+            },
         },
         collection: {
             created: {

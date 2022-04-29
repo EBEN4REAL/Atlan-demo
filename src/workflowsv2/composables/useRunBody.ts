@@ -142,6 +142,21 @@ export function useRunBody(
                     }
                     break
                 }
+                case 'filterOut': {
+                    if (filterObject?.length) {
+                        base.notFilter('nested', {
+                            path: 'spec',
+                            ...bodybuilder()
+                                .query(
+                                    'terms',
+                                    'spec.workflowTemplateRef.name.keyword',
+                                    filterObject
+                                )
+                                .build(),
+                        })
+                    }
+                    break
+                }
             }
         })
     } catch (e) {

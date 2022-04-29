@@ -142,6 +142,11 @@
                 dateRange: filters.value?.dateRange,
                 status: filters.value?.status,
                 creators: filters.value?.creators,
+                filterOut: [
+                    'atlan-typedef-seeder',
+                    'atlan', // atlan-upadate
+                    'cloud-es-log-policy',
+                ],
             }))
 
             const preference = ref({

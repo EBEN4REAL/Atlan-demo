@@ -146,6 +146,7 @@
                     'atlan-typedef-seeder',
                     'atlan', // atlan-upadate
                     'cloud-es-log-policy',
+                    'cloud-backups',
                 ],
             }))
 

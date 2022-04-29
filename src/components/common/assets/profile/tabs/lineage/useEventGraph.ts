@@ -95,6 +95,8 @@ export default function useEventGraph({
             View: 'column',
             MaterialisedView: 'column',
             TableauDatasource: 'field',
+            LookerExplore: 'field',
+            LookerView: 'field',
         }
         return portsLabelMap[typeName]
     }
@@ -212,6 +214,7 @@ export default function useEventGraph({
             'Column',
             'TableauDatasourceField',
             'TableauCalculatedField',
+            'LookerField',
         ]
         return typeNames.includes(typeName)
     }
@@ -1046,6 +1049,8 @@ export default function useEventGraph({
         const { guidEntityMap, relations } = portLineage
         Object.entries(nodesForPortLineage).forEach(([k, cols]) => {
             const parentNode = getX6Node(k)
+            if (!parentNode) return
+
             const { ports, hasPorts } = parentNode.getData()
             if (!hasPorts) return
 
@@ -1119,11 +1124,16 @@ export default function useEventGraph({
         const isNodeToPort =
             !isPortTypeName(sourceTypeName) && isPortTypeName(targetTypeName)
 
+        const isNodeToNode =
+            !isPortTypeName(sourceTypeName) && !isPortTypeName(targetTypeName)
+
         if (isPortToPort || mode === 'port>port') {
             sourceCell = getPortNode(fromEntityId)?.id
             sourcePort = fromEntityId
             targetCell = getPortNode(toEntityId)?.id
             targetPort = toEntityId
+
+            if (!getX6Node(sourceCell) || !getX6Node(targetCell)) return
         }
 
         if (isPortToNode || mode === 'port>node') {
@@ -1131,6 +1141,8 @@ export default function useEventGraph({
             sourcePort = fromEntityId
             targetCell = toEntityId
             targetPort = `${toEntityId}-invisiblePort`
+
+            if (!getX6Node(sourceCell) || !getX6Node(targetCell)) return
 
             portHighlightedBINodes.value.push(targetCell)
             highlightNode(targetCell, 'highlight')
@@ -1142,8 +1154,31 @@ export default function useEventGraph({
             targetCell = getPortNode(toEntityId)?.id
             targetPort = toEntityId
 
+            if (!getX6Node(sourceCell) || !getX6Node(targetCell)) return
+
             portHighlightedBINodes.value.push(sourceCell)
             highlightNode(sourceCell, 'highlight')
+        }
+
+        if (isNodeToNode || mode === 'node>node') {
+            const edge = graph.value.getEdges().find((e) => {
+                if (e.id.includes('port')) return false
+                const [source, target] = e.id.split('/')[1].split('@')
+
+                if (source === fromEntityId && target === toEntityId)
+                    return true
+                return false
+            })
+
+            edge.attr('line/stroke', '#3c71df')
+            edge.attr('line/targetMarker/stroke', '#3c71df')
+
+            targetCell = toEntityId
+
+            portHighlightedBINodes.value.push(targetCell)
+            highlightNode(targetCell, 'highlight')
+
+            return
         }
 
         if (!(sourceCell && sourcePort && targetCell && targetPort)) return

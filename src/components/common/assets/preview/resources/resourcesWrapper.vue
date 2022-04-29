@@ -11,10 +11,13 @@
         :entity-name="
             selectedAsset.displayText || selectedAsset.attributes.qualifiedName
         "
-        :assetType="selectedAsset.typeName"
+        :asset-type="selectedAsset.typeName"
+        :show-slack-switch-banner="showSlackSwitchBanner"
+        :slack-link-count="slackLinkCount"
         @add="handleAdd"
         @update="handleUpdate"
         @remove="handleRemove"
+        @switchTab="handleSwitchTab"
     >
         <template #placeholder>
             <Placeholder />
@@ -64,11 +67,22 @@
     // eslint-disable-next-line arrow-body-style
     const resources = computed(() => {
         if (tenantSlackStatus.value.configured)
-            return links(selectedAsset.value).filter(
+            return links(selectedAsset.value)?.filter(
                 (l) => getDomain(l.attributes.link) !== 'slack.com'
             )
         return links(selectedAsset.value)
     })
+
+    const slackLinkCount = computed(() => {
+        const slackLink = links(selectedAsset.value)?.filter(
+            (l) => getDomain(l.attributes.link) === 'slack.com'
+        ).length
+        return slackLink
+    })
+
+    const showSlackSwitchBanner = computed(
+        () => tenantSlackStatus.value.configured && slackLinkCount.value
+    )
 
     const linkEditPermission = computed(
         () =>
@@ -107,6 +121,10 @@
         } catch (error) {
             addStatus.value = 'error'
         }
+    }
+
+    const handleSwitchTab = (tab) => {
+        switchTab(selectedAsset.value, tab || 'Slack')
     }
 
     const updateStatus = ref('')

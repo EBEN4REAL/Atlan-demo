@@ -1144,7 +1144,7 @@
                             <div class="flex flex-wrap items-center gap-x-1">
                                 <div
                                     v-if="
-                                        clsfList.length > 0 &&
+                                        clsfList?.length > 0 &&
                                         preference?.display?.includes(
                                             'classifications'
                                         )

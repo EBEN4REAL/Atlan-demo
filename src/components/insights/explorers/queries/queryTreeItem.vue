@@ -153,7 +153,7 @@
                 >
                     <InsightsThreeDotMenu
                         trigger="contextmenu"
-                        :options="dropdownQueryOptions"
+                        :options="dropdownQueryRightClickOptions"
                         :item="item"
                         :showOverlay="hasWritePermission ? true : false"
                         minWidth=""
@@ -1504,26 +1504,26 @@
             }
 
             const dropdownQueryOptions = [
-                {
-                    title: 'Run Query',
-                    key: 'run',
-                    class: '',
-                    component: MenuItem,
-                    disabled: false,
-                    handleClick: ({ item }) => {
-                        actionClick('play', item)
-                    },
-                },
-                {
-                    title: 'Open query sidebar',
-                    key: 'sidebar',
-                    class: 'border-b border-gray-300',
-                    component: MenuItem,
-                    disabled: false,
-                    handleClick: ({ item }) => {
-                        actionClick('info', item)
-                    },
-                },
+                // {
+                //     title: 'Run Query',
+                //     key: 'run',
+                //     class: '',
+                //     component: MenuItem,
+                //     disabled: false,
+                //     handleClick: ({ item }) => {
+                //         actionClick('play', item)
+                //     },
+                // },
+                // {
+                //     title: 'Open query sidebar',
+                //     key: 'sidebar',
+                //     class: 'border-b border-gray-300',
+                //     component: MenuItem,
+                //     disabled: false,
+                //     handleClick: ({ item }) => {
+                //         actionClick('info', item)
+                //     },
+                // },
                 {
                     title: 'Schedule',
                     key: 'schedule',
@@ -1589,6 +1589,31 @@
                     },
                 },
             ]
+
+            const dropdownQueryRightClickOptions = [
+                {
+                    title: 'Run Query',
+                    key: 'run',
+                    class: '',
+                    component: MenuItem,
+                    disabled: false,
+                    handleClick: ({ item }) => {
+                        actionClick('play', item)
+                    },
+                },
+                {
+                    title: 'Open query sidebar',
+                    key: 'sidebar',
+                    class: '',
+                    component: MenuItem,
+                    disabled: false,
+                    handleClick: ({ item }) => {
+                        actionClick('info', item)
+                    },
+                },
+                ...dropdownQueryOptions,
+            ]
+
             const dropdownFolderOptions = [
                 {
                     title: 'Rename',
@@ -1647,6 +1672,7 @@
             return {
                 dropdownFolderOptions,
                 dropdownQueryOptions,
+                dropdownQueryRightClickOptions,
                 scheduleQueryModal,
                 toggleScheduleQueryModal,
                 evaluatePermisson,

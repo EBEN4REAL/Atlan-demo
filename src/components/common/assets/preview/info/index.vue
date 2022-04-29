@@ -684,6 +684,7 @@
                         class="mx-4 mt-2"
                         @apply="handleApplySuggestion"
                         :button-between="false"
+                        :asset="selectedAsset"
                         :edit-permission="editPermission"
                         :list="similarList('description')"
                     ></Suggestion>

@@ -92,6 +92,7 @@
                     v-model="localDescription"
                     :selected-asset="item"
                     :edit-permission="selectedAssetUpdatePermission(item, true)"
+                    :used-in-info="false"
                     @change="handleChangeDescription"
                 />
                 <transition
@@ -105,6 +106,7 @@
                             selectedAssetUpdatePermission(item, true)
                         "
                         :list="similarList"
+                        :asset="item"
                         @apply="handleApplySuggestion"
                     ></Suggestion>
                 </transition>

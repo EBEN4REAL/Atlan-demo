@@ -31,6 +31,10 @@
     import { whenever } from '@vueuse/core'
     import { useRoute, useRouter } from 'vue-router'
     import { mainTabs } from '~/workflowsv2/constants/tabs'
+    import {
+        featureEnabledMap,
+        WORKFLOW_CENTER_V2,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'WorkflowV2Tabs',
@@ -49,8 +53,10 @@
             ),
         },
         setup() {
+            const route = useRoute()
+            const router = useRouter()
+
             const getTitle = (key: string) => {
-                debugger
                 switch (key) {
                     case 'monitor':
                         return 'Monitor Workflows'
@@ -63,8 +69,15 @@
                 }
             }
 
-            const route = useRoute()
-            const router = useRouter()
+            if (featureEnabledMap.value[WORKFLOW_CENTER_V2]) {
+                if (route.params.tab?.length || 0 > 17) {
+                    const newRoute = route.fullPath.replace(
+                        '/workflows/',
+                        '/workflows/profile/'
+                    )
+                    router.replace(newRoute)
+                }
+            }
 
             const activeKey = computed({
                 get: () => route?.params?.tab,

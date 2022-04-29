@@ -549,7 +549,10 @@
 
                                                     {{ databaseName(item) }}
                                                 </div>
-                                                <div class="pl-3 font-bold">
+                                                <div
+                                                    v-if="page === 'assets'"
+                                                    class="pl-3 font-bold"
+                                                >
                                                     <a-button
                                                         shape="circle"
                                                         type="dashed"
@@ -592,7 +595,10 @@
 
                                                     {{ schemaName(item) }}
                                                 </div>
-                                                <div class="pl-3 font-bold">
+                                                <div
+                                                    v-if="page === 'assets'"
+                                                    class="pl-3 font-bold"
+                                                >
                                                     <a-button
                                                         shape="circle"
                                                         type="dashed"

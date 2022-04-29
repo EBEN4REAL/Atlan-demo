@@ -59,23 +59,6 @@
                             class="px-2 cmd-k-asset-card hover:bg-primary-menu"
                         />
                     </div>
-                    <!-- <div
-                        v-if="
-                            [
-                                'AtlasGlossary',
-                                'AtlasGlossaryTerm',
-                                'AtlasGlossaryCategory',
-                            ].includes(item?.typeName)
-                        "
-                        @click="$emit('closeModal')"
-                    >
-                        <GtcCard :item="item" class="px-5" />
-                    </div>
-                    <AssetCard
-                        v-else
-                        :item="item"
-                        Modal="$emit('closeModal')"
-                    /> -->
                 </router-link>
             </div>
         </div>
@@ -99,12 +82,7 @@
         whenever,
     } from '@vueuse/core'
 
-    import {
-        AssetAttributes,
-        AssetRelationAttributes,
-        InternalAttributes,
-        SQLAttributes,
-    } from '~/constant/projection'
+    import { MinimalAttributes } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import AssetCard from '@/common/commandk/assetCard.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
@@ -113,6 +91,7 @@
     import { assetCategoryList } from '~/constant/assetCategory'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import AssetItem from '@/common/assets/list/assetItem.vue'
+    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         name: 'CommandK',
@@ -148,44 +127,13 @@
 
             const { getProfilePath } = useAssetInfo()
 
-            const defaultAttributes = ref([
-                'anchor',
-                'name',
-                'displayName',
-                'description',
-                'displayDescription',
-                'userDescription',
-                'certificateStatus',
-                'certificateUpdatedAt',
-                'certificateUpdatedBy',
-                'certificateStatusMessage',
-                'connectorName',
-                'connectionName',
-                'connectionQualifiedName',
-                'ownerUsers',
-                'ownerGroups',
-                'allowQuery',
-                'allowQueryPreview',
-                'parentQualifiedName',
-                'collectionQualifiedName',
-                'parent',
-                'rowCount',
-                'columnCount',
-                'sizeBytes',
-                'schemaName',
-                'tableName',
-                'viewName',
-                'databaseName',
-                'dataType',
-                'definition',
-                'isPrimary',
-                'order',
-                'isPartition',
-                'isSort',
-                'isIndexed',
-                'isForeign',
-                'isDist',
-            ])
+            const discoveryStore = useAssetStore()
+
+            if (discoveryStore.cmdkActivePostFacet) {
+                postFacets.value = discoveryStore.cmdkActivePostFacet
+            }
+
+            const defaultAttributes = ref([...MinimalAttributes])
             const relationAttributes = ref([
                 'name',
                 'description',
@@ -290,7 +238,7 @@
                 isLoading.value = true
                 offset.value = 0
                 quickChange()
-                // discoveryStore.setActivePostFacet(postFacets.value)
+                discoveryStore.setCmdkActivePostFacet(postFacets.value)
             }
 
             onKeyStroke(['ArrowDown', 'ArrowUp', 'Enter'], (e) => {

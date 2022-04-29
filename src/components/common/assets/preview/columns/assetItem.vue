@@ -92,8 +92,24 @@
                     v-model="localDescription"
                     :selected-asset="item"
                     :edit-permission="selectedAssetUpdatePermission(item, true)"
+                    :used-in-info="false"
                     @change="handleChangeDescription"
                 />
+                <transition
+                    v-if="similarList?.length > 0 && !localDescription"
+                    name="fade"
+                >
+                    <Suggestion
+                        class="mb-1"
+                        :button-between="false"
+                        :edit-permission="
+                            selectedAssetUpdatePermission(item, true)
+                        "
+                        :list="similarList"
+                        :asset="item"
+                        @apply="handleApplySuggestion"
+                    ></Suggestion>
+                </transition>
                 <div v-if="list?.length > 0" class="flex flex-wrap gap-1">
                     <template
                         v-for="classification in list"
@@ -126,7 +142,7 @@
             :guid="item?.guid"
             :show-drawer="showColumnDrawer"
             :show-mask="page === 'assets'"
-            :showCloseBtn="page !== 'assets'"
+            :show-close-btn="page !== 'assets'"
             @closeDrawer="handleCloseDrawer"
             @update="handleListUpdate"
         />
@@ -144,6 +160,7 @@
         inject,
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
+    import { useRoute } from 'vue-router'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import Description from '@/common/input/description/index.vue'
@@ -153,9 +170,9 @@
     import ClassificationPill from '@/common/pills/classification.vue'
     import PopoverClassification from '@/common/popover/classification/index.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
+    import Suggestion from '@/common/assets/preview/info/suggestion.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import useLineageStore from '~/store/lineage'
-    import { useRoute } from 'vue-router'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -165,6 +182,7 @@
             ClassificationPill,
             ColumnKeys,
             Tooltip,
+            Suggestion,
             PopoverClassification,
             AssetDrawer: defineAsyncComponent(
                 () => import('@/common/assets/preview/drawer.vue')
@@ -176,6 +194,13 @@
                 required: false,
                 default() {
                     return {}
+                },
+            },
+            similarList: {
+                type: Array,
+                required: false,
+                default() {
+                    return []
                 },
             },
         },
@@ -260,6 +285,11 @@
                 return matchingIdsResult
             })
 
+            const handleApplySuggestion = (obj) => {
+                localDescription.value = obj.value
+                handleChangeDescription()
+            }
+
             watch(shouldDrawerUpdate, () => {
                 if (shouldDrawerUpdate.value) {
                     emit('update', asset.value)
@@ -274,6 +304,7 @@
                 getConnectorImage,
                 assetType,
                 dataType,
+                handleApplySuggestion,
                 connectorName,
                 connectionName,
                 dataTypeCategoryLabel,

@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col h-full">
         <div
-            class="px-4 pb-3 pt-3.5 text-sm bg-white border-b shadow-sm filter-head"
+            class="px-3 pb-3 pt-3.5 text-sm bg-white border-b shadow-sm filter-head"
         >
             <div
                 v-if="totalFilteredCount > 0"

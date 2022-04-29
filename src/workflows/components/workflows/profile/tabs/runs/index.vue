@@ -1,34 +1,35 @@
 <template>
     <div class="flex flex-col flex-grow h-full overflow-hidden">
-        <div class="relative flex-grow overflow-hidden bg-primary-light">
-            <div class="absolute z-10 rounded left-10 top-10">
-                <div class="flex flex-col gap-y-3">
-                    <RunsSelect
-                        ref="runSelector"
-                        class="shadow"
-                        style="min-width: 150px"
-                        :model-value="path.name"
-                        :workflow-name="workflowName"
-                        @update:model-value="handleRunSelect"
-                    />
+        <div class="relative flex-grow overflow-hidden">
+            <div
+                class="absolute z-10 flex flex-col h-full py-5 bg-white border-r border-gray-300 rounded gap-y-2"
+            >
+                <span class="mx-5 font-bold text-new-gray-600">Select Run</span>
+                <RunsSelect
+                    ref="runSelector"
+                    style="min-width: 150px; max-width: 300px"
+                    class="mx-5"
+                    :model-value="path.name"
+                    :workflow-name="workflowName"
+                    @update:model-value="handleRunSelect"
+                />
 
-                    <Sidebar
-                        :key="path.name"
-                        :selectedRun="selectedRun"
-                        :isLoading="firstLoad"
-                        :error="error"
-                        style="width: 300px"
-                    />
+                <Sidebar
+                    :key="path.name"
+                    :selectedRun="selectedRun"
+                    :isLoading="isSidebarLoading"
+                    :error="error"
+                    style="width: 340px"
+                />
 
-                    <div
-                        v-if="!firstLoad && isLoading"
-                        class="flex items-center p-2 bg-white border rounded gap-x-1"
+                <div
+                    v-if="!isSidebarLoading && isLoading"
+                    class="flex items-center p-2 bg-white border rounded gap-x-1"
+                >
+                    <AtlanLoader class="h-5" />
+                    <span class="text-gray-500 test-sm"
+                        >Fetching latest data</span
                     >
-                        <AtlanLoader class="h-5" />
-                        <span class="text-gray-500 test-sm"
-                            >Fetching latest data</span
-                        >
-                    </div>
                 </div>
             </div>
 
@@ -84,14 +85,12 @@
                 error,
             } = useRunItem(path, false)
 
-            const unWatchLoad = watch(isLoading, () => {
-                if (!isLoading.value) {
-                    firstLoad.value = false
-                    unWatchLoad()
-                }
+            watch(isLoading, () => {
+                if (!isLoading.value) firstLoad.value = false
             })
 
             const handleRunSelect = (newRunId) => {
+                firstLoad.value = true
                 if (newRunId && route.query.name !== newRunId) {
                     router.replace({
                         query: {
@@ -100,7 +99,11 @@
                     })
                 }
             }
-
+            const isSidebarLoading = computed(
+                () =>
+                    firstLoad.value ||
+                    (phase(selectedRun.value) !== 'Running' && isLoading.value)
+            )
             watch(
                 path,
                 () => {
@@ -156,6 +159,7 @@
                 route,
                 handleRefresh,
                 path,
+                isSidebarLoading,
             }
         },
     })

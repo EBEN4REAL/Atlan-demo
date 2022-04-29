@@ -1,14 +1,12 @@
-<!-- FIXME: Deprecated component -->
 <template>
     <BaseSelector
         :type="type"
         :value="value"
         :list="workflowList"
         :loading="isLoading"
-        :placeholder="
-            $attrs.disabled ? 'Select a package first' : 'Select workflow'
-        "
+        :placeholder="placeholder"
         :not-found-content="isLoading ? 'Loading' : 'No workflow found'"
+        :title="$attrs.disabled ? 'Select a package first' : ''"
         @update:value="$emit('update:value', $event)"
     />
 </template>
@@ -28,8 +26,8 @@
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
 
     import BaseSelector from './baseSelector.vue'
+    import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
 
-    /** @deprecated - Remove this component*/
     export default defineComponent({
         name: 'WorkflowSelector',
         components: { BaseSelector },
@@ -58,6 +56,13 @@
                     : {}
             )
             const { displayName } = useWorkflowInfo()
+            const { type } = usePackageInfo()
+
+            const placeholder = computed(() =>
+                packageName.value && type(pkg.value) === 'connector'
+                    ? 'Select connection'
+                    : 'Select workflow'
+            )
 
             const { list, quickChange, isLoading } = useWorkflowDiscoverList({
                 facets: computed(() => ({
@@ -69,7 +74,12 @@
                 })),
                 limit: ref(100),
                 source: ref({
-                    excludes: ['spec'],
+                    includes: [
+                        'metadata.name',
+                        'metadata.annotations.package.argoproj.io/name',
+                        'metadata.annotations.orchestration.atlan.com/schedule',
+                        'spec.templates',
+                    ],
                 }),
                 preference: ref({
                     sort: 'metadata.creationTimestamp-desc',
@@ -80,7 +90,11 @@
             whenever(list, () => {
                 workflowList.value = list.value.map((workflow) => ({
                     id: workflow.metadata.name,
-                    label: displayName(pkg.value, workflow.metadata.name),
+                    label: displayName(
+                        pkg.value,
+                        workflow.metadata.name,
+                        workflow?.spec
+                    ),
                 }))
             })
 
@@ -92,7 +106,14 @@
                     quickChange()
                 }
             })
-            return { workflowName, workflowList, pkg, list, isLoading }
+            return {
+                workflowName,
+                workflowList,
+                pkg,
+                list,
+                isLoading,
+                placeholder,
+            }
         },
     })
 </script>

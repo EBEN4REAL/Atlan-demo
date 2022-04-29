@@ -681,9 +681,10 @@
                     name="fade"
                 >
                     <Suggestion
-                        class="mt-2"
+                        class="mx-4 mt-2"
                         @apply="handleApplySuggestion"
                         :button-between="false"
+                        :asset="selectedAsset"
                         :edit-permission="editPermission"
                         :list="similarList('description')"
                     ></Suggestion>
@@ -1207,7 +1208,7 @@
                 handleSQLQueryUpdate,
             } = updateAssetAttributes(selectedAsset, isDrawer.value)
 
-            const limit = ref(20)
+            const limit = ref(0)
             const offset = ref(0)
             const facets = ref({
                 typeNames: [selectedAsset.value.typeName],

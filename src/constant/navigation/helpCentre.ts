@@ -1,7 +1,7 @@
 export const helpCenterList = [
     {
         icon: 'Support',
-        label: 'Contact Support',
+        label: 'Support',
         id: 'support',
         isActive: true,
     },
@@ -9,7 +9,7 @@ export const helpCenterList = [
         link: 'https://ask.atlan.com',
         openInANewTab: true,
         icon: 'Documentation',
-        label: 'Atlan Documentation',
+        label: 'Docs',
         id: 'documentation',
         isActive: true,
     },

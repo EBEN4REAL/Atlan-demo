@@ -7,137 +7,182 @@
         <AtlanLoader class="h-6" />
         <span>Loading Run</span>
     </div>
-    <a-tabs
-        v-else
-        v-model:activeKey="activeKey"
-        type="card"
-        :class="$style.previewtab"
-    >
-        <a-tab-pane key="summary" tab="Summary" class="shadow">
-            <div
-                class="flex flex-col px-3 py-2 bg-white border-b border-l border-r shadow"
-            >
-                <div class="flex mb-2 gap-x-3">
+    <a-tabs v-else v-model:activeKey="activeKey" :class="$style.previewtab">
+        <a-tab-pane key="summary" tab="Summary">
+            <div class="pt-2 space-y-2" style="background-color: #f9fafc">
+                <div class="flex px-5 py-3 mb-2 bg-white gap-x-3">
                     <div class="flex flex-col w-full">
-                        <p class="text-gray-500">Status</p>
-                        <div class="flex justify-between w-full">
-                            <div class="flex items-center">
-                                <div
-                                    class="w-4 h-4 p-1 mr-1 bg-gray-200 rounded shadow"
-                                    :class="getRunClass(selectedRun)"
-                                ></div>
-                                <p
+                        <div class="flex items-center justify-between w-full">
+                            <div>
+                                <p class="mb-1 info-title">Status</p>
+
+                                <AtlanIcon
+                                    :icon="getRunIconByPhase(selectedRun)"
+                                    class="mb-0.5 mr-1"
+                                />
+
+                                <span
                                     :class="getRunTextClass(selectedRun)"
                                     class="font-semibold"
                                 >
                                     {{ phase(selectedRun) }}
-                                </p>
+                                </span>
                             </div>
 
-                            <a-button
-                                type="danger"
+                            <AtlanButton2
                                 v-if="['Running'].includes(phase(selectedRun))"
-                                @click="handleStop"
-                                >Stop</a-button
-                            >
-
-                            <a-button
                                 class="text-red-500"
+                                color="secondary"
+                                label="Stop"
+                                @click="handleStop"
+                            />
+
+                            <AtlanButton2
                                 v-if="
                                     ['Failed', 'Error'].includes(
                                         phase(selectedRun)
                                     )
                                 "
+                                class="text-new-blue-400 border-new-blue-300"
+                                label="Retry"
+                                color="secondary"
+                                prefixIcon="Retry"
                                 @click="handleRetry"
-                                >Retry</a-button
-                            >
+                            />
                         </div>
+                        <button
+                            v-if="
+                                ['Failed', 'Error'].includes(phase(selectedRun))
+                            "
+                            class="flex items-center justify-center py-2 mt-4 font-bold transition-colors rounded gap-x-1 text-new-red-400 bg-new-red-200 bg-opacity-20 hover:bg-opacity-30"
+                            @click="activeKey = 'failed'"
+                        >
+                            View Failed tasks
+                            <AtlanIcon icon="ArrowRight" />
+                        </button>
                     </div>
                 </div>
 
-                <p class="text-gray-500">Started At</p>
+                <!-- <p class="info-title">Started At</p>
                 <p class="mb-2 text-gray-700">
                     {{ startedAt(selectedRun, false) }}
-                </p>
-
-                <p class="text-gray-500" v-if="finishedAt(selectedRun, false)">
-                    Finished At
-                </p>
-                <p
-                    class="mb-2 text-gray-700"
-                    v-if="finishedAt(selectedRun, false)"
-                >
-                    {{ finishedAt(selectedRun, false) }}
-                </p>
-
-                <div class="flex items-center justify-between">
-                    <div class="flex flex-col">
-                        <p class="text-gray-500">Duration</p>
-                        <p class="mb-2 text-gray-700">
-                            {{ duration(selectedRun, false) }}
-                        </p>
+                </p> -->
+                <div class="px-5 py-4 bg-white 2">
+                    <p class="mb-1 info-title">Start Time</p>
+                    <div class="flex items-center gap-x-2">
+                        <AtlanIcon icon="ClockStart" />
+                        <span class="text-sm text-new-gray-800">
+                            {{
+                                startedAt(
+                                    selectedRun,
+                                    false,
+                                    "H:mm:ss A, MMM Do 'YY"
+                                )
+                            }}
+                        </span>
                     </div>
 
-                    <!--   <a-button
-                            v-if="['Succeeded'].includes(phase(selectedRun))"
-                            @click="handleMetrics"
-                            >View Metrics</a-button
-                        >-->
-                    <a-modal
-                        width="100%"
-                        :centered="true"
-                        :bodyStyle="{
-                            height: 'calc(100vh - 100px)',
-                        }"
-                        :destroyOnClose="true"
-                        v-model:visible="isMetricVisible"
-                        :closable="false"
-                    >
-                        <div class="h-full px-6 py-3">
-                            <WorkflowMetrics
-                                :selectedPod="selectedPod"
-                                :selectedRun="selectedRun"
-                            ></WorkflowMetrics>
+                    <template v-if="finishedAt(selectedRun, false) !== 'N/A'">
+                        <p class="mt-4 mb-1 info-title">Finish Time</p>
+                        <div class="flex items-center gap-x-2">
+                            <AtlanIcon icon="ClockStop" />
+                            <span class="text-sm text-new-gray-800">
+                                {{
+                                    finishedAt(
+                                        selectedRun,
+                                        false,
+                                        "H:mm:ss A, MMM Do 'YY"
+                                    )
+                                }}
+                            </span>
                         </div>
-                        <template #footer> </template>
-                    </a-modal>
+                    </template>
+
+                    <a-divider class="my-4" />
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center text-sm gap-x-2">
+                            <AtlanIcon icon="Clock" />
+                            <span class="text-new-gray-600">Duration:</span>
+                            <span class="text-new-gray-800">
+                                {{ duration(selectedRun) }}
+                            </span>
+                        </div>
+
+                        <!--   <a-button
+                v-if="['Succeeded'].includes(phase(selectedRun))"
+                @click="handleMetrics"
+                >View Metrics</a-button
+            >-->
+                        <a-modal
+                            width="100%"
+                            :centered="true"
+                            :bodyStyle="{
+                                height: 'calc(100vh - 100px)',
+                            }"
+                            :destroyOnClose="true"
+                            v-model:visible="isMetricVisible"
+                            :closable="false"
+                        >
+                            <div class="h-full px-6 py-3">
+                                <WorkflowMetrics
+                                    :selectedPod="selectedPod"
+                                    :selectedRun="selectedRun"
+                                ></WorkflowMetrics>
+                            </div>
+                            <template #footer> </template>
+                        </a-modal>
+                    </div>
                 </div>
 
-                <p class="text-gray-500">Run Mode</p>
-                <div class="mb-2 text-gray-700" v-if="isCronRun(selectedRun)">
-                    <span>via <span>Schedule</span></span>
-                </div>
-                <div
-                    class="mb-2 text-gray-700"
-                    v-else-if="creatorUsername(selectedRun)"
-                >
-                    via
+                <div class="px-5 py-4 bg-white">
+                    <div>
+                        <p class="info-title">Run Mode</p>
+                        <div
+                            class="mb-2 text-gray-700"
+                            v-if="isCronRun(selectedRun)"
+                        >
+                            Scheduled Run
+                        </div>
+                        <div
+                            class="mb-2 text-gray-700"
+                            v-else-if="creatorUsername(selectedRun)"
+                        >
+                            Manually Run by
+                            <template
+                                v-if="
+                                    creatorUsername(selectedRun)?.startsWith(
+                                        'service-account-apikey-'
+                                    )
+                                "
+                            >
+                                <AtlanIcon icon="Key" class="h-3" /> API key
+                            </template>
+                            <UserWrapper
+                                v-else
+                                :username="creatorUsername(selectedRun)"
+                            />
+                        </div>
+                    </div>
 
-                    <template
-                        v-if="
-                            creatorUsername(selectedRun)?.startsWith(
-                                'service-account-apikey-'
-                            )
-                        "
+                    <div>
+                        <p class="info-title">Reference</p>
+                        <a
+                            :href="link"
+                            target="_blank"
+                            class="mb-2 font-medium text-primary"
+                        >
+                            {{ name(selectedRun) }}
+                        </a>
+                    </div>
+                    <!-- <div
+                        v-if="error"
+                        class="flex items-center w-full bg-white gap-x-1"
                     >
-                        <AtlanIcon icon="Key" class="h-3" /> API key
-                    </template>
-                    <template v-else>
-                        {{ creatorUsername(selectedRun) }}
-                    </template>
+                        <AtlanIcon class="h-5" icon="Error" />
+                        <span>{{ error.message }}</span>
+                    </div> -->
                 </div>
-
-                <p class="text-gray-500">Reference</p>
-                <a :href="link" target="_blank" class="mb-2 text-primary">
-                    {{ name(selectedRun) }}
-                </a>
-                <!-- <div
-                    v-if="error"
-                    class="flex items-center w-full bg-white gap-x-1"
-                >
-                    <AtlanIcon class="h-5" icon="Error" />
-                    <span>{{ error.message }}</span>
-                </div> -->
             </div>
         </a-tab-pane>
         <a-tab-pane
@@ -147,7 +192,7 @@
             v-if="['Error', 'Failed'].includes(phase(selectedRun))"
         >
             <div
-                class="flex flex-col px-3 py-2 bg-white border-b border-l border-r shadow"
+                class="flex flex-col px-3 pt-4 pb-2 bg-white border-b border-l border-r shadow"
             >
                 <div class="flex flex-col gap-y-2">
                     <div class="flex w-full mb-2 gap-x-2">
@@ -191,25 +236,25 @@
                         </a-modal>
                     </div>
                     <div class="flex flex-col">
-                        <p class="text-gray-500">Name</p>
+                        <p class="info-title">Name</p>
                         <div class="mb-2 text-gray-700">
                             {{ selectedPod?.name }}
                         </div>
                     </div>
                     <div class="flex flex-col">
-                        <p class="text-gray-500">Started At</p>
+                        <p class="info-title">Started At</p>
                         <p class="mb-2 text-gray-700">
                             {{ formatDate(selectedPod?.startedAt) }}
                         </p>
                     </div>
                     <div class="flex flex-col">
-                        <p class="text-gray-500">Finished At</p>
+                        <p class="info-title">Finished At</p>
                         <p class="mb-2 text-gray-700">
                             {{ formatDate(selectedPod?.finishedAt) }}
                         </p>
                     </div>
                     <div class="flex flex-col">
-                        <p class="text-gray-500">Duration</p>
+                        <p class="info-title">Duration</p>
                         <p class="mb-2 text-gray-700">
                             {{
                                 difference(
@@ -220,7 +265,7 @@
                         </p>
                     </div>
                     <div class="flex flex-col">
-                        <p class="text-gray-500">Reference</p>
+                        <p class="info-title">Reference</p>
                         <div class="mb-2 text-gray-700">
                             {{ selectedPod?.id }}
                         </div>
@@ -242,18 +287,21 @@
         useTimeoutFn,
         watchOnce,
     } from '@vueuse/core'
-    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import useWorkflowLogsStream from '~/workflows/composables/package/useWorkflowLogsStream'
     import WorkflowLogs from './logs.vue'
     import WorkflowMetrics from './metrics.vue'
     import useWorkflowRunStop from '~/workflows/composables/package/useWorkflowRunStop'
     import useRunItem from '~/workflows/composables/package/useRunItem'
 
+    import UserWrapper from '~/workflowsv2/components/common/user.vue'
+
     export default defineComponent({
         // mixins: [WorkflowMixin],
         components: {
             WorkflowLogs,
             WorkflowMetrics,
+            UserWrapper,
         },
         props: {
             selectedRun: {
@@ -286,7 +334,7 @@
                 isCronRun,
                 creatorUsername,
                 phaseMessage,
-                getRunClass,
+                getRunIconByPhase,
                 getRunTextClass,
                 podFinishedAt,
                 difference,
@@ -305,19 +353,18 @@
             const failedPods = computed(() => {
                 const temp = []
                 if (selectedRun?.value?.metadata?.name) {
-                    Object.keys(selectedRun?.value?.status?.nodes).forEach(
-                        (key) => {
-                            if (
-                                ['Failed', 'Error'].includes(
-                                    selectedRun.value?.status?.nodes[key].phase
-                                ) &&
-                                selectedRun.value?.status?.nodes[key].type ===
-                                    'Pod'
-                            ) {
-                                temp.push(selectedRun.value?.status?.nodes[key])
-                            }
+                    Object.keys(
+                        selectedRun?.value?.status?.nodes || {}
+                    ).forEach((key) => {
+                        if (
+                            ['Failed', 'Error'].includes(
+                                selectedRun.value?.status?.nodes[key].phase
+                            ) &&
+                            selectedRun.value?.status?.nodes[key].type === 'Pod'
+                        ) {
+                            temp.push(selectedRun.value?.status?.nodes[key])
                         }
-                    )
+                    })
                 }
                 return temp
             })
@@ -425,7 +472,7 @@
                 creatorUsername,
                 isCronRun,
                 phaseMessage,
-                getRunClass,
+                getRunIconByPhase,
                 getRunTextClass,
                 failedPods,
                 podFinishedAt,
@@ -448,13 +495,30 @@
 
 <style lang="less" module>
     .previewtab {
-        &:global(.ant-tabs-card) {
-            :global(.ant-tabs-tab:not(.ant-tabs-tab-active)) {
-                @apply bg-transparent border-0 !important;
-            }
-            :global(.ant-tabs-tab:first-child) {
-                @apply ml-0 !important;
-            }
+        :global(.ant-tabs-tab:first-child) {
+            @apply ml-6;
         }
+
+        :global(.ant-tabs-tab-active) {
+            -webkit-text-stroke: 0.65px;
+            -moz-text-stroke: 0.65px;
+        }
+
+        :global(.ant-tabs-nav) {
+            @apply mb-0 !important;
+        }
+
+        :global(.ant-tabs-content-holder) {
+            @apply overflow-y-auto !important;
+        }
+        :global(.ant-tabs-content) {
+            @apply min-h-full !important;
+        }
+    }
+</style>
+
+<style>
+    .info-title {
+        @apply text-sm text-new-gray-600 font-medium;
     }
 </style>

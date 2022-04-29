@@ -187,7 +187,7 @@
                 required:false,
             },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'update:selectedRecords'],
         setup(props, { emit }) {
             const { modelValue, selectedRecords } = useVModels(props, emit)
             const localValue = ref(modelValue.value)

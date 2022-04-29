@@ -1504,26 +1504,6 @@
             }
 
             const dropdownQueryOptions = [
-                // {
-                //     title: 'Run Query',
-                //     key: 'run',
-                //     class: '',
-                //     component: MenuItem,
-                //     disabled: false,
-                //     handleClick: ({ item }) => {
-                //         actionClick('play', item)
-                //     },
-                // },
-                // {
-                //     title: 'Open query sidebar',
-                //     key: 'sidebar',
-                //     class: 'border-b border-gray-300',
-                //     component: MenuItem,
-                //     disabled: false,
-                //     handleClick: ({ item }) => {
-                //         actionClick('info', item)
-                //     },
-                // },
                 {
                     title: 'Schedule',
                     key: 'schedule',

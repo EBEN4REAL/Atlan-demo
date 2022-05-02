@@ -38,6 +38,7 @@
                         <a-input
                             v-model:value="smtpFormModal.user"
                             type="text"
+                            @change="disabledSave.value = false"
                             @blur="triggerBlur(userFieldRef)"
                         />
                     </a-form-item>

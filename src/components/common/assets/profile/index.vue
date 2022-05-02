@@ -76,6 +76,9 @@
             RelatedAssets: defineAsyncComponent(
                 () => import('./tabs/relatedAssets/index.vue')
             ),
+            UploadHistory: defineAsyncComponent(
+                () => import('./tabs/uploadHistory/index.vue')
+            ),
         },
         props: {
             asset: {

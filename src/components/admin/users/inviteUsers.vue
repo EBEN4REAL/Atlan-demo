@@ -102,7 +102,7 @@
 
         <div class="flex justify-end">
             <div>
-                <a-button class="mr-3 border-0" @click="$emit('close')"
+                <a-button class="mr-3 border-0" @click="handleCancelInviteUser"
                     >Cancel
                 </a-button>
                 <a-button
@@ -307,6 +307,7 @@
                             useAddEvent('admin', 'user', 'added', {
                                 count: emails.value.length,
                             })
+                            emails.value = [{ ...allRoles.member }]
                         } else if (error && error.value) {
                             // Since there might be errors associated with more
                             // than one email address, we display all of them.
@@ -328,6 +329,10 @@
             }
             const capitalize = (string) =>
                 string ? string.charAt(0).toUpperCase() + string.slice(1) : ''
+            const handleCancelInviteUser = () => {
+                context.emit('close')
+                emails.value = [{ ...allRoles.member }]
+            }
             return {
                 capitalize,
                 roleList,
@@ -342,6 +347,7 @@
                 STATES,
                 state,
                 groupList,
+                handleCancelInviteUser,
             }
         },
         data() {

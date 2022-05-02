@@ -422,6 +422,24 @@ const keyMap = {
                     tab_type: props?.tab_type,
                 }),
             },
+            downloadResults: {
+                action: 'insights_download_results',
+                properties: (props) => ({
+                    query_tab_id: props?.query_tab_id,
+                    click_index: props?.click_index,
+                    tab_type: props?.tab_type,
+                    fullScreenMode: props?.fullScreenMode,
+                }),
+            },
+            copyResults: {
+                action: 'insights_copy_results',
+                properties: (props) => ({
+                    query_tab_id: props?.query_tab_id,
+                    click_index: props?.click_index,
+                    tab_type: props?.tab_type,
+                    fullScreenMode: props?.fullScreenMode,
+                }),
+            },
         },
         collection: {
             created: {

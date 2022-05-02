@@ -470,7 +470,20 @@
                         )
                     }
                 }
+
+                useAddEvent('insights', 'previewTabs', 'copyResults', {
+                    query_tab_id: activeInlineTab.value.key,
+                    click_index: insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    ),
+                    tab_type: insights_Store.activePreviewGuid
+                        ? 'preview_tab'
+                        : 'result_tab',
+                    fullScreenMode: fullScreenMode.value,
+                })
             }
+
             const useWrapperExport = () => {
                 if (fullScreenMode.value) {
                     if (fullScreenTabActive.value === -1) {
@@ -514,6 +527,18 @@
                         )
                     }
                 }
+
+                useAddEvent('insights', 'previewTabs', 'downloadResults', {
+                    query_tab_id: activeInlineTab.value.key,
+                    click_index: insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    ),
+                    tab_type: insights_Store.activePreviewGuid
+                        ? 'preview_tab'
+                        : 'result_tab',
+                    fullScreenMode: fullScreenMode.value,
+                })
             }
 
             const isResultTabPopulated = computed(

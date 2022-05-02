@@ -29,82 +29,85 @@
             </span>
         </div>
         <div class="mb-7">
-            <div
-                v-for="(email, index) in emails"
-                :key="index"
-                class="relative items-center mb-4 group"
-            >
-                <div class="relative">
-                    <a-input
-                        :id="`email-${index}`"
-                        v-model:value="email.value"
-                        class="inputHeight"
-                        placeholder="Email"
-                        @keyup.enter="onAddNewUser"
-                        @change="duplicateEmail = []"
-                    >
-                    </a-input>
-                    <a-select
-                        v-model:value="email.role"
-                        tabindex="-1"
-                        class="absolute"
-                        dropdown-class-name="border-0 transparent outline-none"
-                    >
-                        <template #suffixIcon>
-                            <AtlanIcon icon="CaretDown" />
-                        </template>
-                        <a-select-option
-                            v-for="role in roleList"
-                            :key="role.id"
-                            :value="role.name"
-                        >
-                            <span class="capitalize">{{ role.name }}</span>
-                        </a-select-option>
-                    </a-select>
-                </div>
+            <a-form ref="formRef" layout="vertical" class="" :model="formState">
                 <div
-                    v-if="duplicateEmail.includes(index)"
-                    class="mt-1 text-xs text-error"
+                    v-for="(email, name, index) in formState"
+                    :key="name"
+                    class="relative items-center mb-4 group"
                 >
-                    duplicate email
-                </div>
-                <div
-                    v-if="emails.length > 1"
-                    class="absolute bg-transparent border-0 opacity-0 cursor-pointer top-1 -right-5 group-hover:opacity-100"
-                    @click="deleteUserInput(index)"
-                >
-                    <AtlanIcon
-                        icon="Cross"
-                        class="text-lg text-gray-400 hover:text-blue-500"
-                    />
-                </div>
-            </div>
-            <div id="add-email-button" class="relative items-center group">
-                <div class="relative w-100">
-                    <a-input
-                        class="inputHeight"
-                        placeholder="Email"
-                        @focus="onAddNewUser"
-                    >
-                    </a-input>
-                    <a-select
-                        v-model:value="defaultRoleOnAdd"
-                        class="absolute"
-                        dropdown-class-name="border-0 outline-none"
-                    >
-                        <template #suffixIcon>
-                            <AtlanIcon icon="CaretDown" />
-                        </template>
-                        <a-select-option
-                            v-for="role in roleList"
-                            :key="role.id"
-                            :value="role.name"
+                    <div class="relative">
+                        <a-form-item :name="[name, 'value']" :rules="emailRule">
+                            <a-input
+                                :id="`email-${name}`"
+                                v-model:value="email.value"
+                                class="inputHeight"
+                                placeholder="Email"
+                                @keyup.enter="onAddNewUser"
+                            >
+                            </a-input>
+                        </a-form-item>
+                        <a-select
+                            v-model:value="email.role"
+                            tabindex="-1"
+                            class="absolute"
+                            dropdown-class-name="border-0 transparent outline-none"
                         >
-                            <span class="capitalize">{{ role.name }}</span>
-                        </a-select-option>
-                    </a-select>
+                            <template #suffixIcon>
+                                <AtlanIcon icon="CaretDown" />
+                            </template>
+                            <a-select-option
+                                v-for="role in roleList"
+                                :key="role.id"
+                                :value="role.name"
+                            >
+                                <span class="capitalize">{{ role.name }}</span>
+                            </a-select-option>
+                        </a-select>
+                    </div>
+                    <div
+                        v-if="duplicateEmail.includes(index)"
+                        class="mt-1 text-xs text-error"
+                    >
+                        duplicate email
+                    </div>
+                    <div
+                        v-if="Object.keys(formState).length > 1"
+                        class="absolute bg-transparent border-0 opacity-0 cursor-pointer top-1 -right-5 group-hover:opacity-100"
+                        @click="deleteUserInput(name)"
+                    >
+                        <AtlanIcon
+                            icon="Cross"
+                            class="text-lg text-gray-400 hover:text-blue-500"
+                        />
+                    </div>
                 </div>
-            </div>
+                <div id="add-email-button" class="relative items-center group">
+                    <div class="relative w-100">
+                        <a-input
+                            class="inputHeight"
+                            placeholder="Email"
+                            @focus="onAddNewUser"
+                        >
+                        </a-input>
+                        <a-select
+                            v-model:value="defaultRoleOnAdd"
+                            class="absolute"
+                            dropdown-class-name="border-0 outline-none"
+                        >
+                            <template #suffixIcon>
+                                <AtlanIcon icon="CaretDown" />
+                            </template>
+                            <a-select-option
+                                v-for="role in roleList"
+                                :key="role.id"
+                                :value="role.name"
+                            >
+                                <span class="capitalize">{{ role.name }}</span>
+                            </a-select-option>
+                        </a-select>
+                    </div>
+                </div>
+            </a-form>
         </div>
 
         <div class="flex justify-end">
@@ -196,11 +199,47 @@
             const defaultRoleOnAdd = ref('member')
             const { roleList } = useRoles()
             const duplicateEmail = ref([])
-            const emails = ref([{ ...allRoles.member }])
+            // const emails = ref([
+            //     { ...allRoles.member, id: new Date().getTime() },
+            // ])
+            const formRef = ref()
+            const triggerValidate = () => {
+                formRef.value.validate()
+            }
+            const formState = ref({
+                [new Date().getTime()]: { ...allRoles.member },
+            })
+            // const setFormState = () => {
+            //     const state = {}
+            //     emails.value.forEach((e, i) => {
+            //         state[`email-${i}`] = e.value
+            //     })
+            //     formState.value = state
+            // }
+            const validator = async (_rule, value: string) => {
+                console.log(_rule, value)
+            }
+
+            const emailRule = ref([
+                {
+                    required: true,
+                    message: 'Please provide a valid email',
+                    type: 'email',
+                    trigger: ['submit', 'change'],
+                },
+                {
+                    required: true,
+                    message: 'Duplicate',
+                    type: 'email',
+                    validator,
+                    trigger: ['submit', 'change'],
+                },
+            ])
             const loading = ref(false)
             const isSubmitInvites = computed(() => {
-                const reqIndex = emails.value.findIndex((email) => !email.value)
-                return reqIndex !== -1
+                return true
+                // const reqIndex = emails.value.findIndex((email) => !email.value)
+                // return reqIndex !== -1
             })
             const groupListAPIParams = reactive({
                 limit: 5,
@@ -217,36 +256,50 @@
             } = useGroups(groupListAPIParams)
             onMounted(() => {
                 const newInput = document.getElementById(
-                    `email-${emails?.value?.length - 1}`
+                    `email-${
+                        Object.keys(formState.value)[
+                            Object.keys(formState?.value).length
+                        ]
+                    }`
                 )
                 if (newInput) newInput.focus()
             })
-            const deleteUserInput = (index) => {
+            const deleteUserInput = (id) => {
                 duplicateEmail.value = []
-                emails.value.splice(index, 1)
-                if (!emails.value.length) {
-                    emails.value = [{ ...allRoles.member }]
+
+                delete formState.value[id]
+                if (!Object.keys(formState.value).length) {
+                    formState.value = {
+                        [new Date().getTime()]: { ...allRoles.member },
+                    }
                 }
+                triggerValidate()
             }
             const onAddNewUser = () => {
-                emails.value = [
-                    ...emails.value,
-                    { ...allRoles[defaultRoleOnAdd.value] },
-                ]
+                formState.value[new Date().getTime()] = {
+                    ...allRoles[defaultRoleOnAdd.value],
+                }
+                // formState.value = [
+                //     ...emails.value,
+                //     {
+                //         ...allRoles[defaultRoleOnAdd.value],
+                //         id: new Date().getTime(),
+                //     },
+                // ]
             }
-            watch(
-                emails,
-                (newVal, oldVal) => {
-                    if (newVal.length !== oldVal.length)
-                        nextTick(() => {
-                            const newInput = document.getElementById(
-                                `email-${emails?.value?.length - 1}`
-                            )
-                            if (newInput) newInput.focus()
-                        })
-                },
-                { deep: true }
-            )
+            // watch(
+            //     emails,
+            //     (newVal, oldVal) => {
+            //         if (newVal.length !== oldVal.length)
+            //             nextTick(() => {
+            //                 const newInput = document.getElementById(
+            //                     `email-${emails?.value?.length - 1}`
+            //                 )
+            //                 if (newInput) newInput.focus()
+            //             })
+            //     },
+            //     { deep: true }
+            // )
             const getRoleId = (email) => {
                 console.log(email)
                 const roleObj =
@@ -257,11 +310,11 @@
                         : {}
                 return roleObj.id || ''
             }
-            const validateEmail = (email) => {
-                const re =
-                    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                return re.test(String(email).toLowerCase())
-            }
+            // const validateEmail = (email) => {
+            //     const re =
+            //         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            //     return re.test(String(email).toLowerCase())
+            // }
             const highLightAsError = (index) => {
                 const input = document.getElementById(`email-${index}`)
                 if (input) {
@@ -273,47 +326,47 @@
                     }, 1000)
                 }
             }
-            const validateEmails = () => {
-                const invalidFields = emails.value.filter(
-                    (x) => !validateEmail(x.value)
-                )
-                emails.value.forEach((x, index) => {
-                    const isEmail = validateEmail(x.value)
-                    if (!isEmail) {
-                        highLightAsError(index)
-                    }
-                })
-                if (invalidFields?.length)
-                    message.error(
-                        `${invalidFields?.length} invalid email input field${
-                            invalidFields?.length ? 's' : ''
-                        }`
-                    )
-                return !invalidFields.length
-            }
-            const checkDuplicate = () => {
-                const duplicateIndex = []
-                emails.value.forEach((el, i) => {
-                    const filtered = emails.value.filter(
-                        (elc) => elc.value === el.value
-                    )
-                    if (filtered.length >= 2) {
-                        duplicateIndex.push(i)
-                    }
-                })
-                duplicateEmail.value = duplicateIndex
-                if (duplicateIndex.length) {
-                    return true
-                }
-                return false
-            }
+            // const validateEmails = () => {
+            //     const invalidFields = emails.value.filter(
+            //         (x) => !validateEmail(x.value)
+            //     )
+            //     emails.value.forEach((x, index) => {
+            //         const isEmail = validateEmail(x.value)
+            //         if (!isEmail) {
+            //             highLightAsError(index)
+            //         }
+            //     })
+            //     if (invalidFields?.length)
+            //         message.error(
+            //             `${invalidFields?.length} invalid email input field${
+            //                 invalidFields?.length ? 's' : ''
+            //             }`
+            //         )
+            //     return !invalidFields.length
+            // }
+            // const checkDuplicate = () => {
+            //     const duplicateIndex = []
+            //     emails.value.forEach((el, i) => {
+            //         const filtered = emails.value.filter(
+            //             (elc) => elc.value === el.value
+            //         )
+            //         if (filtered.length >= 2) {
+            //             duplicateIndex.push(i)
+            //         }
+            //     })
+            //     duplicateEmail.value = duplicateIndex
+            //     if (duplicateIndex.length) {
+            //         return true
+            //     }
+            //     return false
+            // }
             const handleSubmit = async (event) => {
                 // event.preventDefault() // no need to handle not in a form or lin
-                if (checkDuplicate()) return
-                const allValidEmails = validateEmails()
-                if (!allValidEmails) return
+                // if (checkDuplicate()) return
+                // const allValidEmails = validateEmails()
+                // if (!allValidEmails) return
                 const requestPayload = ref({
-                    users: emails.value.map((email) => ({
+                    users: Object.values(formState.value).map((email) => ({
                         email: email.value,
                         roleName: `$${email.role}`,
                         roleId: getRoleId(email),
@@ -329,7 +382,7 @@
                             context.emit('handleInviteSent')
                             message.success('Invites sent')
                             useAddEvent('admin', 'user', 'added', {
-                                count: emails.value.length,
+                                count: Object.keys(formState.value).length,
                             })
                         } else if (error && error.value) {
                             // Since there might be errors associated with more
@@ -353,9 +406,14 @@
             const capitalize = (string) =>
                 string ? string.charAt(0).toUpperCase() + string.slice(1) : ''
             return {
+                // setFormState,
+                triggerValidate,
+                formRef,
+                emailRule,
+                formState,
                 capitalize,
                 roleList,
-                emails,
+                // emails,
                 handleSubmit,
                 onAddNewUser,
                 deleteUserInput,

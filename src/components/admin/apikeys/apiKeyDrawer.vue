@@ -552,6 +552,13 @@
             const disabledButtonSaveUpdate = computed(() => {
                 if (
                     apiKeyDirty.value.id &&
+                    apiKey.value?.description == null &&
+                    !apiKeyDirty.value.description
+                )
+                    return true
+
+                if (
+                    apiKeyDirty.value.id &&
                     apiKeyDirty.value.displayName ===
                         apiKey.value.displayName &&
                     apiKeyDirty.value.description ===

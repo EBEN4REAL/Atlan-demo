@@ -1,3 +1,5 @@
+import { ref, Ref } from 'vue'
+import { contextKeywordType } from './autoSuggestionUtils'
 export const mappingKeywords = {
     SELECT: 'COLUMN',
     WHERE: 'COLUMN',
@@ -43,6 +45,12 @@ export const typesKeywordsMap = {
         trigger: ['SELECT'],
     },
 }
+
+export const contextStore = ref({
+    left: [],
+    right: [],
+}) as Ref<{ left: contextKeywordType[]; right: contextKeywordType[] }>
+
 export function useMapping() {
     const mappingKeywordsKeys = Object.keys(mappingKeywords)
     return {

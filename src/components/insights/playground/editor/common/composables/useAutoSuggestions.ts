@@ -6,6 +6,11 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
 import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
+import {
+    extractTablesFromContext,
+    getSchemaAndDatabaseFromSqlQueryText,
+} from './autoSuggestionUtils'
+import { contextStore } from './useMapping'
 
 // import HEKA_SERVICE_API from '~/services/heka/index'
 import { Insights } from '~/services/sql/query'
@@ -350,7 +355,6 @@ export function getLastMappedKeyword(
 ) {
     // console.log(tokens)
     let tokens = token_param.map((token) => token?.toUpperCase())
-    debugger
     for (let i = tokens.length - 1; i >= 0; i--) {
         /* type- TABLE/COLUMN/SQL keyword */
         if (mappingKeywordsKeys.includes(tokens[i])) {
@@ -595,6 +599,45 @@ async function getSuggestionsUsingType(
                 }
             )
 
+            if (
+                (contextStore.value.left.length > 0 ||
+                    contextStore.value.right.length > 0) &&
+                connectorsInfo.databaseName &&
+                connectorsInfo.schemaName
+            ) {
+                let tableQualifiedNames = []
+
+                if (contextStore.value.right.length > 0) {
+                    tableQualifiedNames = contextStore.value.right.map((e) => {
+                        return `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}/${e.name}`
+                    }) as any
+                }
+                if (contextStore.value.left.length > 0) {
+                    if (tableQualifiedNames.length > 0) {
+                        tableQualifiedNames = [
+                            ...tableQualifiedNames,
+                            contextStore.value.left.map((e) => {
+                                return `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}/${e.name}`
+                            }) as any,
+                        ] as any
+                    } else {
+                        tableQualifiedNames = contextStore.value.left.map(
+                            (e) => {
+                                return `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}/${e.name}`
+                            }
+                        ) as any
+                    }
+                }
+
+                body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
+                    {
+                        terms: {
+                            tableQualifiedName: tableQualifiedNames,
+                        },
+                    }
+                )
+            }
+
             if (cancelTokenSource.value !== undefined) {
                 cancelTokenSource.value.cancel()
             }
@@ -638,6 +681,10 @@ export async function useAutoSuggestions(
     activeInlineTab: Ref<activeInlineTabInterface>,
     cancelTokenSource: Ref<any>
 ) {
+    // reset Context on every run
+    contextStore.value.left = []
+    contextStore.value.right = []
+
     // console.log(changes, 'changes')
     const changedText = changes.text
     /* -------_EXITING CONDITIONS-------------- */
@@ -658,8 +705,21 @@ export async function useAutoSuggestions(
     const attributeValue =
         activeInlineTab.value?.playground?.editor?.context.attributeValue
     const connectionQualifiedName = getConnectionQualifiedName(attributeValue)
-    const databaseName = getDatabaseName(attributeValue ?? '')
-    const schemaName = getSchemaName(attributeValue ?? '')
+    let databaseName = getDatabaseName(attributeValue ?? '')
+    let schemaName = getSchemaName(attributeValue ?? '')
+
+    // taking context from sql query if there are no DB |Schema
+    const { _schemaName, _databaseName } = getSchemaAndDatabaseFromSqlQueryText(
+        editorInstance?.getValue(),
+        {
+            connectionQualifiedName,
+            databaseName,
+            schemaName,
+        }
+    )
+    databaseName = _databaseName
+    schemaName = _schemaName
+
     /* ------------For BETA----------- */
     // const connectionQualifiedName =
     //     'default/snowflake/atlan-snowflake-crawler-wpwvc'
@@ -683,6 +743,26 @@ export async function useAutoSuggestions(
         textTillChangedIndex + 1
     )
 
+    ///////////////////////////////////////////////////
+    let leftSideStringFromCurPos = editorTextTillCursorPos
+        .replace(/\"/g, '')
+        .split(/[ ,\n;"')(]+/gm)
+    contextStore.value.left = extractTablesFromContext(leftSideStringFromCurPos)
+
+    const editorTextAfterCursorPos = editorText.slice(
+        textTillChangedIndex,
+        editorText.length
+    )
+
+    let rightSideStringFromCurPos = editorTextAfterCursorPos
+        .replace(/\"/g, '')
+        .split(/[ ,\n;"')(]+/gm)
+    contextStore.value.right = extractTablesFromContext(
+        rightSideStringFromCurPos
+    )
+
+    /////////////////////////////////////////////////////////
+
     let tokens = editorTextTillCursorPos.split(/[ ,\n;"')(]+/gm)
     // console.log(tokens, 'tokk')
     /* Remove tokens which are special characters */
@@ -693,7 +773,6 @@ export async function useAutoSuggestions(
     })
     // tokens.push(' ')
     let currentWord = tokens[tokens.length - 1]
-    debugger
     // TABLE[DOT]  // check if previous is [dot]
     if (currentWord === '.' || currentWord.includes('.')) {
         const dotSplitWord = currentWord.split('.')
@@ -806,7 +885,6 @@ export async function useAutoSuggestions(
                             cancelTokenSource,
                             context
                         ).then((value) => {
-                            debugger
                             const filterKeywords =
                                 typesKeywordsMap['AGGREGATE'].values
                             let filterKeywordsMap = filterKeywords.map(

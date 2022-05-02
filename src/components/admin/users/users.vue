@@ -8,8 +8,8 @@
                 <div v-auth="map.LIST_USERS" class="flex filter-user-wrapper">
                     <SearchAndFilter
                         v-model:value="searchText"
-                        :placeholder="`Search all ${
-                            filteredUserCount || ''
+                        :placeholder="`Search from ${
+                            filteredUserCount || 0
                         } users`"
                         class="h-8 mr-1 shadow-none input-filter"
                         :dot="!!statusFilter?.length"

@@ -422,6 +422,7 @@ const refreshBody = () => {
                                             },
                                         },
                                     ],
+                                    should: [],
                                 },
                             },
                         },
@@ -629,7 +630,7 @@ async function getSuggestionsUsingType(
                     }
                 }
 
-                body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
+                body.value.dsl.query.function_score.query.bool.filter.bool.should.push(
                     {
                         terms: {
                             tableQualifiedName: tableQualifiedNames,
@@ -734,32 +735,96 @@ export async function useAutoSuggestions(
     // console.log(connectorsInfo, 'connectorsInfo')
 
     const editorText: string = editorInstance?.getValue()
+
     /* Getting the text till cursor pos because we hav to generate the tokens */
     const textTillChangedIndex = editorInstance
         ?.getModel()
         .getOffsetAt({ lineNumber: endLineNumber, column: endColumn })
+
     const editorTextTillCursorPos = editorText.slice(
         0,
         textTillChangedIndex + 1
     )
 
+    let subquery = false,
+        subqueryStartIndex = -1,
+        subQueryEndIndex = -1
+
+    // check if it is a subquery
+    // for left side
+    for (let i = textTillChangedIndex; i >= 0; i--) {
+        if (editorText[i] === '(') {
+            subqueryStartIndex = i
+            if (textTillChangedIndex + 1 < editorText.length)
+                for (
+                    let j = textTillChangedIndex + 1;
+                    j < editorText.length;
+                    j++
+                ) {
+                    if (editorText[j] === ')') {
+                        subquery = true
+                        subQueryEndIndex = j
+                        break
+                    }
+                }
+        }
+    }
+    if (subquery) {
+        ///////////////////////////////////////////////////////////
+        let subQueryleftSideStringFromCurPos = editorText
+            .slice(subqueryStartIndex, textTillChangedIndex + 1)
+            .replace(/\"/g, '')
+            .split(/[ ,\n;"')(]+/gm)
+        contextStore.value.left = extractTablesFromContext(
+            subQueryleftSideStringFromCurPos
+        ).filter((el) => el.name !== '')
+
+        let subQueryrightSideStringFromCurPos = editorText
+            .slice(textTillChangedIndex, subQueryEndIndex + 1)
+            .replace(/\"/g, '')
+            .split(/[ ,\n;"')(]+/gm)
+        contextStore.value.right = extractTablesFromContext(
+            subQueryrightSideStringFromCurPos
+        ).filter((el) => el.name !== '')
+
+        //////////////////////////////////////////////
+    }
+
     ///////////////////////////////////////////////////
-    let leftSideStringFromCurPos = editorTextTillCursorPos
-        .replace(/\"/g, '')
-        .split(/[ ,\n;"')(]+/gm)
-    contextStore.value.left = extractTablesFromContext(leftSideStringFromCurPos)
+    // removing subqueries if present
+    function removeSubQueries(str: string) {
+        let _str = str
+        if (_str.match(/\((.*)/gm) !== null) {
+            _str.match(/\((.*)/gm).forEach((el) => {
+                _str = _str.replace(el, '')
+            })
+        }
+        return _str
+    }
+    debugger
+    let leftSideStringFromCurPos = removeSubQueries(
+        editorTextTillCursorPos
+            .replace(/\"/g, '')
+            .replaceAll('\\([^\\(]*\\)', '')
+    ).split(/[ ,\n;"')(]+/gm)
+    contextStore.value.left = [
+        ...contextStore.value.left,
+        ...extractTablesFromContext(leftSideStringFromCurPos),
+    ].filter((el) => el.name !== '')
 
     const editorTextAfterCursorPos = editorText.slice(
         textTillChangedIndex,
         editorText.length
     )
 
-    let rightSideStringFromCurPos = editorTextAfterCursorPos
-        .replace(/\"/g, '')
-        .split(/[ ,\n;"')(]+/gm)
+    let rightSideStringFromCurPos = removeSubQueries(
+        editorTextAfterCursorPos
+            .replace(/\"/g, '')
+            .replaceAll('\\([^\\(]*\\)', '')
+    ).split(/[ ,\n;"')(]+/gm)
     contextStore.value.right = extractTablesFromContext(
         rightSideStringFromCurPos
-    )
+    ).filter((el) => el.name !== '')
 
     /////////////////////////////////////////////////////////
 

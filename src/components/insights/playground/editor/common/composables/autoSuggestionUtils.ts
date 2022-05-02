@@ -16,8 +16,8 @@ export function extractTablesFromContext(
     const tokensPosMap = []
     tokens.forEach((token, i) => {
         if (
-            Object.keys(mappingKeywords).includes(token) &&
-            mappingKeywords[token] === 'TABLE' &&
+            Object.keys(mappingKeywords).includes(token.toLocaleUpperCase()) &&
+            mappingKeywords[token.toLocaleUpperCase()] === 'TABLE' &&
             i + 1 < tokens.length
         ) {
             const _matches = instances.editor?.getModel()?.findMatches(token)

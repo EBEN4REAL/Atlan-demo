@@ -1494,20 +1494,39 @@
                 return inlineTabData.key
             }
 
-            const setContextInEditor = (item) => {
+            const setContext = (item, explorerType: 'editor' | 'explorer') => {
                 const activeInlineTabCopy: activeInlineTabInterface =
                     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
 
-                let qualifiedName = item?.qualifiedName?.split('/')
+                const qualifiedName = item?.qualifiedName?.split('/')
+
+                // Setting schemaQualifiedName
                 if (qualifiedName?.length === 5) {
-                    activeInlineTabCopy.playground.editor.context = {
+                    const newSchema = {
                         attributeName: 'schemaQualifiedName',
                         attributeValue: item?.qualifiedName,
                     }
-                } else if (qualifiedName?.length === 4) {
-                    activeInlineTabCopy.playground.editor.context = {
+                    if (explorerType === 'editor') {
+                        activeInlineTabCopy.playground.editor.context =
+                            newSchema
+                    } else if (explorerType === 'explorer') {
+                        activeInlineTabCopy.explorer.schema.connectors =
+                            newSchema
+                    }
+                }
+
+                // Setting databaseQualifiedName
+                else if (qualifiedName?.length === 4) {
+                    const newDatabase = {
                         attributeName: 'databaseQualifiedName',
                         attributeValue: item?.qualifiedName,
+                    }
+                    if (explorerType === 'editor') {
+                        activeInlineTabCopy.playground.editor.context =
+                            newDatabase
+                    } else if (explorerType === 'explorer') {
+                        activeInlineTabCopy.explorer.schema.connectors =
+                            newDatabase
                     }
                 }
 
@@ -1585,7 +1604,33 @@
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: item.typeName,
                         })
-                        setContextInEditor(item)
+                        setContext(item, 'editor')
+                    },
+                },
+                {
+                    title: 'Set in explorer context',
+                    key: 'Set in explorer context',
+                    class: `
+                                                ${
+                                                    readOnly?.value
+                                                        ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
+                                                        : 'cursor-pointer'
+                                                }
+
+                                            `,
+                    disabled: false,
+                    icon: 'Add',
+                    iconClass: 'w-4 h-4 my-auto mr-1.5',
+                    wrapperClass: 'flex items-center ',
+                    component: MenuItem,
+                    handleClick: ({ item }) => {
+                        // useAddEvent('insights', 'schemaTree', 'itemClick', {
+                        //     action: 'set_editor_context',
+                        //     trigger: 'kebab_menu',
+                        //     query_tab_id: activeInlineTab.value.key,
+                        //     asset_type: item.typeName,
+                        // })
+                        setContext(item, 'explorer')
                     },
                 },
                 {
@@ -1639,7 +1684,7 @@
                 item,
                 childCount,
                 openSidebar,
-                setContextInEditor,
+                setContext,
                 readOnly,
                 previewData,
                 tooltipText,

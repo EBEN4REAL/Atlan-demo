@@ -22,6 +22,7 @@ const useAddEvent = (category, obj, action, props = {}) => {
 
     // API call for adding event to segment
     const properties = eventProperties ? eventProperties() : {}
+    properties.domain = window.location.host
     console.log('analytics track', eventName, properties)
     if (eventProperties) {
         ;(window as any).analytics.track(eventName, properties)
@@ -36,6 +37,7 @@ export const useTrackPage = (category, name, props = {}) => {
         path: window.location.pathname,
         search: window.location.search,
         url: window.location.href,
+        domain: window.location.host,
     }
     props = {
         ...props,

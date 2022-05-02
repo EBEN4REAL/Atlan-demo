@@ -2,22 +2,25 @@
     <div
         v-if="applicableList"
         ref="target"
-        class="flex flex-col w-full mb-2 overflow-hidden border border-gray-300 rounded-lg"
+        class="flex flex-col w-full mb-2 overflow-hidden"
+        :class="
+            activeKey === ['1'] || showEditButton ? 'bg-gray-100' : 'bg-white'
+        "
         @mouseenter="showEditButton = true"
         @mouseleave="showEditButton = false"
     >
-        <a-collapse v-model:activeKey="activeKey" ghost :class="$style.cmTab">
+        <a-collapse
+            v-model:activeKey="activeKey"
+            :class="$style.cmTab"
+            :bordered="false"
+        >
             <a-collapse-panel key="1" :show-arrow="false">
                 <template #header>
                     <!-- header starts here -->
                     <div
-                        class="flex items-center justify-between py-2 pl-2 pr-3 gap-x-4 group w-full"
+                        class="flex items-center justify-between w-full px-3 py-2 gap-x-4 group"
                     >
                         <span class="flex items-center">
-                            <AtlanIcon
-                                icon="CaretDown"
-                                class="mr-3 text-gray-700"
-                            />
                             <PreviewTabsIcon
                                 :icon="tab.icon"
                                 :image="tab.image"
@@ -46,7 +49,7 @@
                                         : 'mr-1 line-clamp-1'
                                 "
                                 @click="switchTab(selectedAsset, data?.label)"
-                                clamp-percentage="75%"
+                                clamp-percentage="80%"
                             />
                             <a-tooltip>
                                 <template #title>
@@ -61,20 +64,25 @@
                                 </div>
                             </a-tooltip>
                         </span>
-                        <div
-                            v-if="
-                                selectedAssetUpdatePermission(
-                                    selectedAsset,
-                                    isDrawer,
-                                    'ENTITY_UPDATE_BUSINESS_METADATA'
-                                ) &&
-                                !viewOnly &&
-                                showEditButton
-                            "
-                            class="font-bold cursor-pointer hover:underline text-primary"
-                            @click="switchTab(selectedAsset, data?.label, true)"
-                        >
-                            Edit
+                        <div class="flex items-center">
+                            <div
+                                v-if="
+                                    selectedAssetUpdatePermission(
+                                        selectedAsset,
+                                        isDrawer,
+                                        'ENTITY_UPDATE_BUSINESS_METADATA'
+                                    ) &&
+                                    !viewOnly &&
+                                    showEditButton
+                                "
+                                class="mr-3 font-bold cursor-pointer hover:underline text-primary"
+                                @click="
+                                    switchTab(selectedAsset, data?.label, true)
+                                "
+                            >
+                                Edit
+                            </div>
+                            <AtlanIcon icon="CaretDown" class="text-gray-700" />
                         </div>
                     </div>
                     <!-- header ends here -->
@@ -99,7 +107,7 @@
 
                 <div
                     v-else
-                    class="flex flex-col flex-grow pr-5 overflow-y-auto pl-9"
+                    class="flex flex-col flex-grow px-3 overflow-y-auto"
                 >
                     <!-- showing non empty starts here -->
                     <template v-for="(a, x) in applicableList" :key="x">

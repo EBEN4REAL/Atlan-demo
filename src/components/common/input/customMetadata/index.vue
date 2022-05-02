@@ -6,7 +6,7 @@
         @mouseleave="showManageButton = false"
     >
         <div
-            class="flex items-center justify-between mb-1 text-sm text-gray-500"
+            class="flex items-center justify-between mx-5 mb-1 text-sm text-gray-500"
         >
             Custom Metadata
             <router-link
@@ -39,6 +39,7 @@
                     name: tab.label,
                     tooltip: tab.label,
                 }"
+                class="mx-2"
             />
         </div>
     </div>

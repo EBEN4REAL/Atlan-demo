@@ -163,9 +163,20 @@
                                 :destroy-tooltip-on-hide="true"
                                 :show-add-btn="!allUser"
                                 :show-empty-owner="false"
+                                :custom-add-button="true"
                                 @change="handleOwnersChange"
                                 @changeData="allUser = ''"
                             >
+                                <template #addButton>
+                                    <div class="ml-1 cursor-pointer">
+                                        <span class="text-sm text-primary">
+                                            Add</span
+                                        >
+                                        <AtlanIcon
+                                            icon="Add"
+                                            class="ml-1 -mt-1 text-primary"
+                                        /></div
+                                ></template>
                                 <template #users>
                                     <div
                                         v-if="allUser"

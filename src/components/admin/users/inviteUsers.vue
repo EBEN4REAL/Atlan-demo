@@ -31,18 +31,23 @@
         <div class="mb-7">
             <a-form ref="formRef" layout="vertical" class="" :model="formState">
                 <div
-                    v-for="(email, name, index) in formState"
+                    v-for="(email, name) in formState"
                     :key="name"
                     class="relative items-center mb-4 group"
                 >
                     <div class="relative">
-                        <a-form-item :name="[name, 'value']" :rules="emailRule">
+                        <a-form-item
+                            :name="[name, 'value']"
+                            :rules="emailRule"
+                            validate-first
+                        >
                             <a-input
                                 :id="`email-${name}`"
                                 v-model:value="email.value"
                                 class="inputHeight"
                                 placeholder="Email"
                                 @keyup.enter="onAddNewUser"
+                                @change="triggerValidate"
                             >
                             </a-input>
                         </a-form-item>
@@ -65,14 +70,8 @@
                         </a-select>
                     </div>
                     <div
-                        v-if="duplicateEmail.includes(index)"
-                        class="mt-1 text-xs text-error"
-                    >
-                        duplicate email
-                    </div>
-                    <div
                         v-if="Object.keys(formState).length > 1"
-                        class="absolute bg-transparent border-0 opacity-0 cursor-pointer top-1 -right-5 group-hover:opacity-100"
+                        class="absolute bg-transparent border-0 opacity-0 cursor-pointer top-2 -right-5 group-hover:opacity-100"
                         @click="deleteUserInput(name)"
                     >
                         <AtlanIcon
@@ -118,7 +117,7 @@
                 <a-button
                     type="primary"
                     html-type="submit"
-                    :disabled="isSubmitInvites"
+                    :disabled="disableSubmit"
                     :loading="loading"
                     @click="handleSubmit"
                 >
@@ -198,108 +197,108 @@
         setup(props, context) {
             const defaultRoleOnAdd = ref('member')
             const { roleList } = useRoles()
-            const duplicateEmail = ref([])
-            // const emails = ref([
-            //     { ...allRoles.member, id: new Date().getTime() },
-            // ])
+
+            const disableSubmit = ref(true)
             const formRef = ref()
-            const triggerValidate = () => {
-                formRef.value.validate()
-            }
             const formState = ref({
                 [new Date().getTime()]: { ...allRoles.member },
             })
-            // const setFormState = () => {
-            //     const state = {}
-            //     emails.value.forEach((e, i) => {
-            //         state[`email-${i}`] = e.value
-            //     })
-            //     formState.value = state
-            // }
+            const triggerValidate = async () => {
+                try {
+                    const validationStatus = await formRef.value.validate()
+                    disableSubmit.value = false
+                } catch (e) {
+                    disableSubmit.value = true
+                }
+            }
+
+            /** Validating if current email has already been added above */
             const validator = async (_rule, value: string) => {
-                console.log(_rule, value)
+                const valueArray: string[] = []
+                const { field } = _rule
+                const entries = Object.entries(formState.value)
+                let x = 0
+                for (x = 0; x < entries.length; x += 1) {
+                    const [k, state] = entries[x]
+                    if (field.includes(k)) break
+                    else valueArray.push(state.value)
+                }
+                if (valueArray.includes(value))
+                    // eslint-disable-next-line prefer-promise-reject-errors
+                    return Promise.reject('Duplicate email')
+                return Promise.resolve()
             }
 
             const emailRule = ref([
                 {
                     required: true,
-                    message: 'Please provide a valid email',
+                    message: 'Please enter a valid email',
                     type: 'email',
-                    trigger: ['submit', 'change'],
+                    trigger: ['submit'],
                 },
                 {
                     required: true,
-                    message: 'Duplicate',
+                    message: 'Duplicate email',
                     type: 'email',
                     validator,
-                    trigger: ['submit', 'change'],
+                    trigger: ['submit'],
                 },
             ])
+
             const loading = ref(false)
-            const isSubmitInvites = computed(() => {
-                return true
-                // const reqIndex = emails.value.findIndex((email) => !email.value)
-                // return reqIndex !== -1
-            })
             const groupListAPIParams = reactive({
                 limit: 5,
                 offset: 0,
                 filter: { attributes: { $elemMatch: { isDefault: ['true'] } } },
                 // sort: '-created_at',
             })
-            const {
-                groupList,
-                totalGroupsCount,
-                filteredGroupsCount,
-                STATES,
-                state,
-            } = useGroups(groupListAPIParams)
+            const { groupList, STATES, state } = useGroups(groupListAPIParams)
             onMounted(() => {
                 const newInput = document.getElementById(
                     `email-${
                         Object.keys(formState.value)[
-                            Object.keys(formState?.value).length
+                            Object.keys(formState?.value).length - 1
                         ]
                     }`
                 )
                 if (newInput) newInput.focus()
             })
-            const deleteUserInput = (id) => {
-                duplicateEmail.value = []
 
+            const deleteUserInput = (id) => {
                 delete formState.value[id]
                 if (!Object.keys(formState.value).length) {
                     formState.value = {
                         [new Date().getTime()]: { ...allRoles.member },
                     }
                 }
-                triggerValidate()
+                nextTick(() => {
+                    triggerValidate()
+                })
             }
+
             const onAddNewUser = () => {
                 formState.value[new Date().getTime()] = {
                     ...allRoles[defaultRoleOnAdd.value],
                 }
-                // formState.value = [
-                //     ...emails.value,
-                //     {
-                //         ...allRoles[defaultRoleOnAdd.value],
-                //         id: new Date().getTime(),
-                //     },
-                // ]
             }
-            // watch(
-            //     emails,
-            //     (newVal, oldVal) => {
-            //         if (newVal.length !== oldVal.length)
-            //             nextTick(() => {
-            //                 const newInput = document.getElementById(
-            //                     `email-${emails?.value?.length - 1}`
-            //                 )
-            //                 if (newInput) newInput.focus()
-            //             })
-            //     },
-            //     { deep: true }
-            // )
+
+            watch(
+                () => Object.keys(formState.value),
+                () => {
+                    nextTick(() => {
+                        const newInput = document.getElementById(
+                            `email-${
+                                Object.keys(formState.value)[
+                                    Object.keys(formState?.value).length - 1
+                                ]
+                            }`
+                        )
+                        if (newInput) newInput.focus()
+                    })
+                },
+                { deep: true }
+            )
+
             const getRoleId = (email) => {
                 console.log(email)
                 const roleObj =
@@ -310,61 +309,8 @@
                         : {}
                 return roleObj.id || ''
             }
-            // const validateEmail = (email) => {
-            //     const re =
-            //         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-            //     return re.test(String(email).toLowerCase())
-            // }
-            const highLightAsError = (index) => {
-                const input = document.getElementById(`email-${index}`)
-                if (input) {
-                    input.classList.add('border-red-500')
-                    input.classList.add('text-red-500')
-                    setTimeout(() => {
-                        input.classList.remove('border-red-500')
-                        input.classList.remove('text-red-500')
-                    }, 1000)
-                }
-            }
-            // const validateEmails = () => {
-            //     const invalidFields = emails.value.filter(
-            //         (x) => !validateEmail(x.value)
-            //     )
-            //     emails.value.forEach((x, index) => {
-            //         const isEmail = validateEmail(x.value)
-            //         if (!isEmail) {
-            //             highLightAsError(index)
-            //         }
-            //     })
-            //     if (invalidFields?.length)
-            //         message.error(
-            //             `${invalidFields?.length} invalid email input field${
-            //                 invalidFields?.length ? 's' : ''
-            //             }`
-            //         )
-            //     return !invalidFields.length
-            // }
-            // const checkDuplicate = () => {
-            //     const duplicateIndex = []
-            //     emails.value.forEach((el, i) => {
-            //         const filtered = emails.value.filter(
-            //             (elc) => elc.value === el.value
-            //         )
-            //         if (filtered.length >= 2) {
-            //             duplicateIndex.push(i)
-            //         }
-            //     })
-            //     duplicateEmail.value = duplicateIndex
-            //     if (duplicateIndex.length) {
-            //         return true
-            //     }
-            //     return false
-            // }
+
             const handleSubmit = async (event) => {
-                // event.preventDefault() // no need to handle not in a form or lin
-                // if (checkDuplicate()) return
-                // const allValidEmails = validateEmails()
-                // if (!allValidEmails) return
                 const requestPayload = ref({
                     users: Object.values(formState.value).map((email) => ({
                         email: email.value,
@@ -403,28 +349,27 @@
                     { immediate: true }
                 )
             }
+
             const capitalize = (string) =>
                 string ? string.charAt(0).toUpperCase() + string.slice(1) : ''
+
             return {
-                // setFormState,
                 triggerValidate,
                 formRef,
                 emailRule,
                 formState,
                 capitalize,
                 roleList,
-                // emails,
                 handleSubmit,
                 onAddNewUser,
                 deleteUserInput,
-                isSubmitInvites,
+                disableSubmit,
                 loading,
                 defaultRoleOnAdd,
                 // for fetching groups
                 STATES,
                 state,
                 groupList,
-                duplicateEmail,
             }
         },
         data() {

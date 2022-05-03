@@ -55,7 +55,7 @@
                                         : 'mr-0.5 line-clamp-1'
                                 "
                                 @click="switchTab(selectedAsset, data?.label)"
-                                clamp-percentage="80%"
+                                clamp-percentage="75%"
                             />
                             <div
                                 v-if="applicableList?.length"
@@ -102,7 +102,15 @@
                             >
                                 Edit
                             </div>
-                            <AtlanIcon icon="CaretDown" class="text-gray-700" />
+                            <AtlanIcon
+                                icon="CaretDown"
+                                class="text-gray-700"
+                                :class="{
+                                    'transform rotate-180': activeKey.includes(
+                                        ['1'].toString()
+                                    ),
+                                }"
+                            />
                         </div>
                     </div>
                     <!-- header ends here -->

@@ -187,6 +187,7 @@
                                 <span v-else>{{ dataType(item) ?? '-' }}</span>
                             </div>
                         </div>
+
                         <!--For Others: Table Item -->
                         <div v-else class="flex items-center w-full h-8 m-0">
                             <div
@@ -230,7 +231,7 @@
                                 <div
                                     class="w-8 h-full opacity-70 bg-gradient-to-l from-new-gray-200"
                                 ></div>
-                                <div
+                                <!-- <div
                                     :data-test-id="'insert-in-editor'"
                                     v-if="!showVQB"
                                     class="bg-new-gray-200"
@@ -258,7 +259,7 @@
                                             ></AtlanIcon>
                                         </div>
                                     </a-tooltip>
-                                </div>
+                                </div> -->
 
                                 <div
                                     :class="showVQB ? 'pl-2 pr-1' : 'pl-1 pr-1'"
@@ -415,6 +416,24 @@
                                         :item="item"
                                         :treeData="treeData"
                                     />
+                                </div>
+                                <div class="pl-1">
+                                    <div
+                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                    >
+                                        <InsightsThreeDotMenu
+                                            :options="dropdownTableOptions"
+                                            :item="item"
+                                            class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                        >
+                                            <template #menuTrigger>
+                                                <AtlanIcon
+                                                    icon="KebabMenuHorizontal"
+                                                    class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                                />
+                                            </template>
+                                        </InsightsThreeDotMenu>
+                                    </div>
                                 </div>
 
                                 <!-- <div
@@ -1500,8 +1519,12 @@
 
                 const qualifiedName = item?.qualifiedName?.split('/')
 
-                // Setting schemaQualifiedName
-                if (qualifiedName?.length === 5) {
+                // Setting schemaQualifiedName - from Schemas (5) and from Tables (6)
+                // Setting context from table also sets explorer context till schemaQualifiedName only
+                if (
+                    qualifiedName?.length === 5 ||
+                    qualifiedName?.length === 6
+                ) {
                     const newSchema = {
                         attributeName: 'schemaQualifiedName',
                         attributeValue: item?.qualifiedName,
@@ -1515,7 +1538,7 @@
                     }
                 }
 
-                // Setting databaseQualifiedName
+                // Setting databaseQualifiedName - from DB's
                 else if (qualifiedName?.length === 4) {
                     const newDatabase = {
                         attributeName: 'databaseQualifiedName',
@@ -1579,6 +1602,43 @@
 
                 playQuery(selectedText, item?.entity)
             }
+
+            const dropdownTableOptions = [
+                {
+                    title: 'Set in explorer context',
+                    key: 'Set in explorer context',
+                    class: `
+                                                ${
+                                                    readOnly?.value
+                                                        ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
+                                                        : 'cursor-pointer'
+                                                }
+
+                                            `,
+                    disabled: false,
+                    icon: 'Add',
+                    iconClass: 'w-4 h-4 my-auto mr-1.5',
+                    wrapperClass: 'flex items-center ',
+                    component: MenuItem,
+                    handleClick: ({ item }) => {
+                        setContext(item, 'explorer')
+                    },
+                },
+                {
+                    title: 'Place name in editor',
+                    key: 'AddAssetName',
+                    component: MenuItem,
+                    icon: 'AddAssetName',
+                    iconClass: 'w-4 h-4 my-auto mr-1.5 focus:outline-none',
+                    wrapperClass: 'flex items-center ',
+                    class: '',
+                    hide: showVQB.value,
+                    disabled: false,
+                    handleClick: ({ item }) => {
+                        actionClick('add', item)
+                    },
+                },
+            ]
 
             const dropdownOptions = [
                 {
@@ -1661,6 +1721,7 @@
                 ADJACENT_TOOLTIP_DELAY,
                 lastTooltipPresence,
                 dropdownOptions,
+                dropdownTableOptions,
                 // showContextModal,
                 // closeContextModal,
                 // openInCurrentTab,

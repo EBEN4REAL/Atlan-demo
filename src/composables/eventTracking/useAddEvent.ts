@@ -1,12 +1,16 @@
-import { watch } from 'vue'
+import { watch, toRefs } from 'vue'
 import keyMap from '~/composables/eventTracking/keyMap'
 import { useTenantStore } from '~/store/tenant'
 import { useAuthStore } from '~/store/auth'
 import { usePurposeStore } from '~/store/purpose'
 import { usePersonaStore } from '~/store/persona'
+import integrationStore from '~/store/integrations/index'
 import { storeToRefs } from 'pinia'
 import { Replicated } from '~/services/service/replicated'
 import { watchOnce } from '@vueuse/core'
+import { useConnectionStore } from '~/store/connection'
+import useGlossaryStore from '~/store/glossary'
+import { featureEnabledMap } from '~/composables/labs/labFeatureList'
 
 const useAddEvent = (category, obj, action, props = {}) => {
     if (!window.analytics || !window.analytics.track) {
@@ -22,6 +26,7 @@ const useAddEvent = (category, obj, action, props = {}) => {
 
     // API call for adding event to segment
     const properties = eventProperties ? eventProperties() : {}
+    properties.domain = window.location.host
     console.log('analytics track', eventName, properties)
     if (eventProperties) {
         ;(window as any).analytics.track(eventName, properties)
@@ -36,6 +41,7 @@ export const useTrackPage = (category, name, props = {}) => {
         path: window.location.pathname,
         search: window.location.search,
         url: window.location.href,
+        domain: window.location.host,
     }
     props = {
         ...props,
@@ -74,6 +80,7 @@ export const identifyUser = async () => {
                 purpose_count: authStore.purposes
                     ? authStore.purposes.length
                     : 0,
+                created_at: authStore.createdAt ? authStore.createdAt : '',
             })
         }
     }
@@ -81,22 +88,45 @@ export const identifyUser = async () => {
 
 export const identifyGroup = async () => {
     await addDelay(1800)
-    console.log('identifyGroup called')
+    console.log('identifyGroup called', featureEnabledMap.value)
     if (window?.analytics) {
         const tenantStore = useTenantStore()
         const purposeStore = usePurposeStore()
         const personaStore = usePersonaStore()
+        const intStore = integrationStore()
+        const connectionStore = useConnectionStore()
+        const glossaryStore = useGlossaryStore()
+        const { getTenantLevelIntegrationNames } = toRefs(intStore)
 
         const purposeCount = (purposeStore.list || []).length
         const personaCount = (personaStore.list || []).length
 
         const domain = window.location.host
         const groupId = domain
+        const identityProviders = tenantStore.identityProviders || []
+        const { createdAt } = tenantStore.tenantRaw.attributes || '  '
+        const createdAtIso = `${createdAt.split(' ')[0]}T${
+            createdAt.split(' ')[1]
+        }Z`
+        console.log('group identify createdAtIso', createdAtIso)
+        const configuredSso = identityProviders.length
+            ? identityProviders[0].alias
+            : ''
         const groupBody = {
             domain,
             name: tenantStore.displayName,
             purpose_count: purposeCount,
             persona_count: personaCount,
+            tenant_created_at: createdAtIso,
+            configured_sso: configuredSso || '',
+            configured_integrations: getTenantLevelIntegrationNames.value || [],
+            connection_count: (connectionStore?.list || []).length,
+            glossary_count: (glossaryStore?.list || []).length,
+            labs: featureEnabledMap.value,
+            // is_logo added or not
+            // user count
+            // assets count
+            // smtp enabled
         }
         // group
         // if (window?.analytics?.group) {
@@ -127,7 +157,7 @@ export const identifyGroup = async () => {
                 { immediate: false }
             )
         } catch (error) {
-            console.error(error)
+            console.error('group identify error', error)
             if (window?.analytics?.group) {
                 window?.analytics?.group(groupId, groupBody)
             }

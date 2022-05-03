@@ -40,6 +40,7 @@ import {
     percent,
     tableauCalculatedField,
     tableauDatasourceField,
+    lookerField,
 } from './icons'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -85,6 +86,7 @@ const portDataTypeIcons = {
 const biPortDataTypeIcons = {
     TableauCalculatedField: tableauCalculatedField,
     TableauDatasourceField: tableauDatasourceField,
+    LookerField: lookerField,
 }
 
 const columnKeyTypeIcons = {
@@ -95,7 +97,10 @@ const columnKeyTypeIcons = {
 const portsLabelMap = {
     Table: 'columns',
     View: 'columns',
+    MaterialisedView: 'columns',
     TableauDatasource: 'fields',
+    LookerExplore: 'fields',
+    LookerView: 'fields',
 }
 
 const getPortsCTALabel = (typeName, portsCount, highlightPorts) => {
@@ -127,10 +132,13 @@ export default function useGraph(graph) {
             'View',
             'MaterialisedView',
             'TableauDatasource',
+            'LookerExplore',
+            'LookerView',
         ].includes(typeName)
 
         const computedData = {
             id: guid,
+            hasPorts: !!isNodeWithPorts,
             ports: [],
             portsCount: null,
             portsListExpanded: false,
@@ -320,7 +328,11 @@ export default function useGraph(graph) {
                             </div>
                             <div class="lineage-node__ports 
                                     ${isNodeWithPorts ? '' : 'hidden'}">
-                                <div iscollist="true" class="lineage-node__ports-cta">
+                                <div iscollist="true" class="lineage-node__ports-cta ${
+                                    data?.highlightPorts || data?.selectedPortId
+                                        ? 'opacity-30 cursor-not-allowed'
+                                        : ''
+                                }">
                                     <div class="flex items-center">
                                         <span class="mr-2">
                                             ${getPortsCTALabel(

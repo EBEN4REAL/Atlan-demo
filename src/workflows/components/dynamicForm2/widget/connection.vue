@@ -7,139 +7,140 @@
         @close-drawer="isDrawerVisible = false"
         @update="handleDrawerUpdate"
     />
-    <div v-if="isEdit" class="flex flex-col w-2/3">
-        <div class="flex flex-col px-3 py-2 border rounded gap-y-2">
+    <div v-if="isEdit" class="flex flex-col">
+        <div class="flex flex-col gap-y-2">
             <div v-if="selectedConnection?.guid" class="flex flex-col flex-1">
-                <div class="flex items-center justify-between">
-                    <div class="flex flex-col">
-                        <div class="flex items-center font-semibold">
-                            <div class="flex items-center mr-1">
-                                <img
-                                    :src="getImage(connector)"
-                                    class="w-auto h-4 mr-1"
-                                />
-
-                                <span class="ml-1 capitalize"
-                                    >{{ connector }} Connection</span
-                                >
-                            </div>
-                        </div>
-                        <div class="text-gray-500">
-                            last updated
-                            {{ modifiedAt(selectedConnection) }} ago
-                            <template
-                                v-if="
-                                    modifiedBy(selectedConnection)?.startsWith(
-                                        'service-account-apikey-'
-                                    )
-                                "
-                            >
-                                using <AtlanIcon icon="Key" class="h-3" /> API
-                                key
-                            </template>
-                            <template v-else>
-                                by
-                                {{ modifiedBy(selectedConnection) }}
-                            </template>
-                        </div>
+                <div class="flex flex-col">
+                    <div class="flex items-center mr-1">
+                        <span class="text-base font-medium text-new-gray-600"
+                            >Connection: &nbsp;</span
+                        >
+                        <span class="text-base font-bold text-new-gray-800">{{
+                            title(selectedConnection)
+                        }}</span>
                     </div>
-                    <div class="flex gap-x-2">
-                        <AtlanButton2
-                            v-if="!isDrawerVisible"
-                            label="Edit"
-                            color="secondary"
-                            suffixIcon="SidebarSwitch"
-                            @click="isDrawerVisible = true"
-                        />
+
+                    <div class="text-gray-500">
+                        last updated
+                        {{ modifiedAt(selectedConnection) }} ago
+                        <template
+                            v-if="
+                                modifiedBy(selectedConnection)?.startsWith(
+                                    'service-account-apikey-'
+                                )
+                            "
+                        >
+                            using <AtlanIcon icon="Key" class="h-3" /> API key
+                        </template>
+                        <template v-else>
+                            by
+                            <UserWrapper
+                                :username="modifiedBy(selectedConnection)"
+                            />
+                        </template>
                     </div>
                 </div>
+                <a-divider class="mt-3 mb-4" />
+
                 <div class="flex flex-col gap-y-2">
-                    <div class="flex gap-x-3">
-                        <div class="flex flex-col">
-                            <div class="text-gray-500">Name</div>
-                            <div class="text-gray-700">
+                    <div class="grid grid-cols-2 text-sm font-medium gap-y-4">
+                        <div class="space-y-1.5">
+                            <p class="text-new-gray-600">Connection Name</p>
+                            <p
+                                class="font-bold cursor-pointer text-primary hover:underline"
+                                @click="isDrawerVisible = true"
+                            >
                                 {{ title(selectedConnection) }}
-                            </div>
+                            </p>
                         </div>
-                        <div class="flex flex-col">
-                            <div class="text-gray-500">Qualified Name</div>
-                            <div class="text-gray-700">
+                        <div class="space-y-1.5">
+                            <p class="text-new-gray-600">Qualified Name</p>
+                            <p class="text-new-gray-800">
                                 {{
                                     selectedConnection.attributes.qualifiedName
                                 }}
-                            </div>
+                            </p>
+                        </div>
+                        <div class="col-span-2 space-y-1.5">
+                            <p class="text-gray-500">Guid</p>
+                            <p class="text-new-gray-800">
+                                {{ selectedConnection.guid }}
+                            </p>
                         </div>
                     </div>
 
-                    <div class="flex flex-col">
-                        <div class="text-gray-500">Guid</div>
-                        <div class="text-gray-700">
-                            {{ selectedConnection.guid }}
-                        </div>
-                    </div>
+                    <a-divider
+                        orientation="left"
+                        orientationMargin="0px"
+                        class="m-0 mt-2"
+                    >
+                        <span class="text-sm text-new-gray-600">
+                            QUERYING
+                        </span>
+                    </a-divider>
+
                     <div
-                        class="flex flex-col mt-2"
+                        class="flex flex-col mt-2 gap-y-3"
                         v-if="
                             selectedConnection?.attributes?.category?.toLowerCase() !=
                             'bi'
                         "
                     >
-                        <div class="flex items-center mb-3 gap-x-6">
-                            <p class="flex items-center text-gray-500">
-                                <AtlanIcon
-                                    icon="RunSuccess"
-                                    class="mr-1"
-                                    v-if="allowQuery(selectedConnection)"
-                                ></AtlanIcon>
-                                <AtlanIcon
-                                    icon="Error"
-                                    class="mr-1"
-                                    v-else
-                                ></AtlanIcon>
-                                Allow Query
-                            </p>
-
-                            <p class="flex items-center text-gray-500">
-                                <AtlanIcon
-                                    icon="RunSuccess"
-                                    class="mr-1"
-                                    v-if="allowQueryPreview(selectedConnection)"
-                                ></AtlanIcon>
-                                <AtlanIcon
-                                    icon="Error"
-                                    class="mr-1"
-                                    v-else
-                                ></AtlanIcon>
-                                Allow Preview
-                            </p>
-                        </div>
-
-                        <div class="flex items-center mb-3 gap-x-6">
-                            <div class="flex flex-col">
-                                <p
-                                    class="flex items-center justify-between mb-1 text-sm text-gray-500"
-                                >
-                                    Credential
+                        <div
+                            class="flex items-center text-sm font-medium gap-x-9"
+                        >
+                            <div>
+                                <p class="mb-1 text-new-gray-600">
+                                    Allow Query
                                 </p>
-                                <div class="uppercase">
+
+                                <a-switch
+                                    :checked="allowQuery(selectedConnection)"
+                                    disabled
+                                />
+                            </div>
+
+                            <div>
+                                <p class="mb-1 text-new-gray-600">
+                                    Allow Preview
+                                </p>
+
+                                <a-switch
+                                    :checked="
+                                        allowQueryPreview(selectedConnection)
+                                    "
+                                    disabled
+                                />
+                            </div>
+
+                            <div>
+                                <p class="mb-1 text-new-gray-600">Credential</p>
+                                <p class="uppercase">
                                     {{
                                         selectedConnection.attributes
                                             ?.credentialStrategy
                                     }}
-                                </div>
-                            </div>
-                            <div class="flex flex-col">
-                                <p
-                                    class="flex items-center justify-between mb-1 text-sm text-gray-500"
-                                >
-                                    Row Limit
                                 </p>
-                                <div class="uppercase">
+                            </div>
+
+                            <div>
+                                <p class="mb-1 text-new-gray-600">Row Limit</p>
+                                <p class="uppercase">
                                     {{ connectionRowLimit(selectedConnection) }}
-                                </div>
+                                </p>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- <a-divider class="mt-4 mb-3" /> -->
+                <div class="flex mt-6 gap-x-3">
+                    <AtlanButton2
+                        label="Edit Connection"
+                        color="secondary"
+                        prefixIcon="SidebarSwitch"
+                        @click="isDrawerVisible = true"
+                    />
                 </div>
             </div>
             <template v-else-if="isLoading">
@@ -148,11 +149,11 @@
             </template>
             <div
                 v-else
-                class="flex flex-col items-center justify-center p-6 py-4 text-xl text-center"
+                class="flex flex-col items-center justify-center px-6 py-4 text-lg leading-snug text-center"
                 style="min-height: 150px"
             >
-                <AtlanIcon icon="Error" class="h-6 mr-2"></AtlanIcon>
-                <b>No connection found</b>
+                <AtlanIcon icon="Error" class="h-6 mb-2 mr-2" />
+                <b class="mb-1">No connection found</b>
                 <span>
                     Wait for a while if you have setup a new connection or
                     delete the worklow and try setting up a new one
@@ -213,6 +214,7 @@
     import useIndexSearch from '~/composables/discovery/useIndexSearch'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
+    import UserWrapper from '~/workflowsv2/components/common/user.vue'
 
     export default defineComponent({
         name: 'ConnectionInput',
@@ -221,6 +223,7 @@
                 import('~/workflows/components/dynamicForm2/formItem.vue')
             ),
             AssetDrawer,
+            UserWrapper,
         },
         props: {
             property: {
@@ -250,7 +253,7 @@
             const workflowTemplate = inject('workflowTemplate')
 
             const { name, createdBy, createdAt } = useAssetInfo()
-            const { getImage, getList, setList } = useConnectionStore()
+            const { getList, setList } = useConnectionStore()
 
             const isDrawerVisible = ref(false)
 
@@ -364,7 +367,7 @@
                             placeholder: 'environment',
                             help: "Name of your connection which represents your source environment. Example - 'production', 'development', 'gold', 'analytics' ",
                             required: true,
-                            grid: 3,
+                            grid: 6,
                             prefixImage: connectorImage.value,
                             prefixText: `${connector.value}-`,
                             rules: [
@@ -403,7 +406,7 @@
                             widget: 'userMultiple',
                             label: 'Admin Users',
                             start: 1,
-                            grid: 5,
+                            grid: 6,
                         },
                     },
                     adminGroups: {
@@ -413,7 +416,7 @@
                             widget: 'groupMultiple',
                             label: 'Admin Groups',
 
-                            grid: 4,
+                            grid: 6,
                         },
                     },
                     allowQuery: {
@@ -441,7 +444,7 @@
                         ui: {
                             label: 'Allow Data Preview',
                             help: 'Users will be view sample preview of the assets',
-                            grid: 3,
+                            grid: 4,
                             hidden: true,
                             rules: [
                                 {
@@ -571,7 +574,6 @@
                 selectedConnection,
                 handleDrawerUpdate,
                 isDrawerVisible,
-                getImage,
                 modifiedAt,
                 modifiedBy,
                 getList,
@@ -587,5 +589,3 @@
         },
     })
 </script>
-
-<style lang="scss" scoped></style>

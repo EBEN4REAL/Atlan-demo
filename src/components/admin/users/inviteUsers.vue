@@ -111,7 +111,7 @@
 
         <div class="flex justify-end">
             <div>
-                <a-button class="mr-3 border-0" @click="$emit('close')"
+                <a-button class="mr-3 border-0" @click="handleCancelInviteUser"
                     >Cancel
                 </a-button>
                 <a-button
@@ -355,6 +355,12 @@
             const capitalize = (string) =>
                 string ? string.charAt(0).toUpperCase() + string.slice(1) : ''
 
+            const handleCancelInviteUser = () => {
+                context.emit('close')
+                formState.value = {
+                    [new Date().getTime()]: { ...allRoles.member },
+                }
+            }
             return {
                 triggerValidate,
                 formRef,
@@ -372,6 +378,7 @@
                 STATES,
                 state,
                 groupList,
+                handleCancelInviteUser,
             }
         },
         data() {

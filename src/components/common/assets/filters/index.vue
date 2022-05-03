@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col h-full">
         <div
-            class="px-4 pb-3 pt-3.5 text-sm bg-white border-b shadow-sm filter-head"
+            class="px-3 pb-3 pt-3.5 text-sm bg-white border-b shadow-sm filter-head"
         >
             <div
                 v-if="totalFilteredCount > 0"
@@ -239,6 +239,7 @@
     .facetfilter {
         :global(.ant-collapse-item) {
             :global(.ant-collapse-header) {
+                display: block !important;
                 padding-left: 1rem !important;
                 padding-right: 1rem !important;
             }

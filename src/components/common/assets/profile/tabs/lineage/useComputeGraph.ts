@@ -44,8 +44,16 @@ export default async function useComputeGraph({
     nodes.value = []
 
     /* Nodes */
-    let columnEntity = {}
-    const columnEntityIds = []
+    const portIds = []
+    const isPortTypeName = (typeName) => {
+        const typeNames = [
+            'Column',
+            'TableauDatasourceField',
+            'TableauCalculatedField',
+            'LookerField',
+        ]
+        return typeNames.includes(typeName)
+    }
 
     const sameSourceCount = ref({})
     const sameTargetCount = ref({})
@@ -79,7 +87,8 @@ export default async function useComputeGraph({
             const { typeName: fromTypeName, guid: fromGuid } = getAsset(from)
             const { typeName: toTypeName, guid: toGuid } = getAsset(to)
 
-            if (fromTypeName === 'Column' || toTypeName === 'Column') return
+            if (isPortTypeName(fromTypeName) || isPortTypeName(toTypeName))
+                return
 
             if (from === to) return
 
@@ -89,8 +98,6 @@ export default async function useComputeGraph({
             else return
 
             if (isNodeExist(fromGuid) && isNodeExist(toGuid)) return
-
-            if ([fromTypeName, toTypeName].includes('column')) return
 
             // same source
             if (sameSourceCount.value[from]) {
@@ -179,24 +186,14 @@ export default async function useComputeGraph({
 
         guidEntityMapValues.forEach((entity) => {
             const ent = { ...entity }
-            const { attributes, typeName, guid } = ent
+            const { typeName, guid } = ent
 
             if (isNodeExist(guid)?.id) return
             if (allTargetsHiddenIds.value.includes(entity.guid)) return
             if (allSourcesHiddenIds.value.includes(entity.guid)) return
 
-            if (typeName === 'Column') {
-                const parentGuid =
-                    attributes?.table?.guid || attributes?.view?.guid
-                if (!columnEntity[parentGuid])
-                    columnEntity = {
-                        ...columnEntity,
-                        [parentGuid]: [ent],
-                    }
-                else columnEntity[parentGuid].push(ent)
-
-                columnEntityIds.push(guid)
-
+            if (isPortTypeName(typeName)) {
+                portIds.push(guid)
                 return
             }
 
@@ -246,7 +243,7 @@ export default async function useComputeGraph({
 
             if (from === to) return
 
-            if (columnEntityIds.find((y) => [from, to].includes(y))) return
+            if (portIds.find((y) => [from, to].includes(y))) return
 
             if (allTargetsHiddenIds.value.find((y) => [from, to].includes(y)))
                 return

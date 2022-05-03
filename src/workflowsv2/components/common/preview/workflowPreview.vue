@@ -12,11 +12,29 @@
             </div>
 
             <div class="flex items-center justify-between">
-                <span
+                <router-link
+                    :to="`/workflows/profile/${wfName(workflow)}`"
                     class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
-                    >{{ dName }}</span
                 >
-                <IconButton icon="EnterProfile" />
+                    {{ dName }}
+                </router-link>
+
+                <div class="flex items-center overflow-hidden border rounded">
+                    <router-link
+                        class="ml-auto border-r"
+                        :to="`/workflows/profile/${wfName(workflow)}`"
+                    >
+                        <IconButton
+                            icon="EnterProfile"
+                            class="button-group-item"
+                        />
+                    </router-link>
+
+                    <Dropdown
+                        :options="dropdownOptions"
+                        class="button-group-item"
+                    />
+                </div>
             </div>
         </div>
         <a-tabs
@@ -69,16 +87,23 @@
         defineComponent,
         ref,
         toRefs,
+        h,
     } from 'vue'
+    import { Modal, message } from 'ant-design-vue'
+    import { until } from '@vueuse/core'
+
+    import Dropdown from '@/UI/dropdown.vue'
     import { workflowPreviewTabs } from '~/workflowsv2/constants/tabs'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
+    import { deleteWorkflowByName } from '~/workflowsv2/composables/useWorkflowList'
     import { useWorkflowStore } from '~/workflowsv2/store'
 
     export default defineComponent({
         name: 'WorkflowPreview',
         components: {
+            Dropdown,
             PreviewTabsIcon,
             info: defineAsyncComponent(() => import('./tabs/info.vue')),
             runs: defineAsyncComponent(() => import('./tabs/runs.vue')),
@@ -93,14 +118,14 @@
                 default: () => [],
             },
         },
-        emits: [],
-        setup(props) {
+        emits: ['archive'],
+        setup(props, { emit }) {
             const { workflow } = toRefs(props)
             const workflowStore = useWorkflowStore()
             const activeKey = ref(0)
 
             const { name, icon, emoji, type } = usePackageInfo()
-            const { displayName } = useWorkflowInfo()
+            const { displayName, name: wfName } = useWorkflowInfo()
 
             const pkg = computed(
                 () =>
@@ -113,9 +138,55 @@
 
             const dName = computed(() =>
                 workflow.value?.metadata?.name
-                    ? displayName(pkg.value, workflow.value?.metadata?.name)
+                    ? displayName(
+                          pkg.value,
+                          workflow.value?.metadata?.name,
+                          workflow.value?.spec
+                      )
                     : 'Workflow Name'
             )
+
+            const archiveWorkflow = (workflowName: string) => {
+                Modal.confirm({
+                    title: 'Delete Workflow',
+                    content: () =>
+                        h('span', [
+                            'Are you sure you want to delete ',
+                            h('b', [workflowName]),
+                            ' workflow?',
+                        ]),
+                    okType: 'danger',
+                    autoFocusButton: null,
+                    okButtonProps: {
+                        type: 'primary',
+                    },
+                    okText: 'Delete',
+                    cancelText: 'Cancel',
+                    async onOk() {
+                        const { error, isLoading } = deleteWorkflowByName(
+                            workflowName,
+                            true
+                        )
+                        await until(isLoading).toBe(false)
+                        if (error.value)
+                            message.error('Failed to delete workflow')
+                        else {
+                            message.success('Workflow deleted')
+                            emit('archive', workflowName)
+                        }
+                    },
+                })
+            }
+
+            const dropdownOptions = [
+                {
+                    title: 'Delete',
+                    icon: 'Trash',
+                    class: 'text-red-700',
+                    handleClick: () =>
+                        archiveWorkflow(workflow.value?.metadata?.name),
+                },
+            ]
 
             return {
                 workflowPreviewTabs,
@@ -125,6 +196,9 @@
                 emoji,
                 type,
                 dName,
+                wfName,
+                dropdownOptions,
+                archiveWorkflow,
             }
         },
     })
@@ -171,6 +245,24 @@
                 @apply h-full !important;
                 @apply bg-white;
             }
+        }
+    }
+</style>
+
+<style lang="less">
+    .button-group-item {
+        @apply border-none;
+
+        &:hover {
+            @apply bg-primary-light;
+            box-shadow: none;
+            border-radius: 0;
+            @apply text-primary;
+        }
+
+        &:focus-visible,
+        &:active {
+            @apply ring-2 ring-primary-focus;
         }
     }
 </style>

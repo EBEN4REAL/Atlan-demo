@@ -64,9 +64,7 @@
                     />
                 </div>
             </template>
-            <div
-                class="justify-center w-full bg-white"
-            >
+            <div class="justify-center w-full bg-white">
                 <a-form layout="vertical" class="px-2">
                     <a-form-item class="mb-0">
                         <a-checkbox-group
@@ -188,6 +186,7 @@
     import { userStatusOptions, roleOptions } from '~/constant/users'
 
     import useUserStore from '~/store/users'
+    import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
         name: 'UserFilter',
@@ -195,6 +194,10 @@
             modelValue: {
                 type: Array,
                 default: () => null,
+            },
+            role: {
+                type: String,
+                required: true,
             },
             userTypeAgg: {
                 type: Object,
@@ -205,7 +208,7 @@
         setup(props, { emit }) {
             const activeCollapse = ref<Array<String>>(['1', '2'])
             const statusFilter = ref<Array<any>>(props.modelValue)
-            const role = ref('')
+            const { role } = useVModels(props, emit)
             const filterOpened = ref(false)
             const handleStatusFilterChange = () => {
                 // to ensure that I can do checks for null when updating filter, can use length check

@@ -323,6 +323,7 @@
                 watch(
                     [data, isReady, error, isLoading],
                     () => {
+                        debugger
                         loading.value = isLoading.value
                         if (isReady && !error.value && !isLoading.value) {
                             context.emit('handleInviteSent')
@@ -337,11 +338,10 @@
                                 error.value.response.data ?? {}
                             )
                             for (let i = 0; i < keys.length; i += 1) {
-                                message.error(
-                                    `${keys[i]}: ${
-                                        error.value.response.data[keys[i]]
-                                    }`
-                                )
+                                if (keys[i] === 'message')
+                                    message.error(
+                                        `${error.value.response.data[keys[i]]}`
+                                    )
                             }
                             context.emit('close')
                         }

@@ -2,10 +2,8 @@
     <div
         v-if="applicableList"
         ref="target"
-        class="flex flex-col w-full mb-2 overflow-hidden"
-        :class="
-            activeKey === ['1'] || showEditButton ? 'bg-gray-100' : 'bg-white'
-        "
+        class="flex flex-col w-full overflow-hidden border border-transparent rounded-lg"
+        :class="{ 'mb-1': activeKey.includes(['1'].toString()) }"
         @mouseenter="showEditButton = true"
         @mouseleave="showEditButton = false"
     >
@@ -13,12 +11,20 @@
             v-model:activeKey="activeKey"
             :class="$style.cmTab"
             :bordered="false"
+            ghost
+            @change="handleActiveKeyChange"
         >
             <a-collapse-panel key="1" :show-arrow="false">
                 <template #header>
                     <!-- header starts here -->
                     <div
-                        class="flex items-center justify-between w-full px-3 py-2 gap-x-4 group"
+                        class="flex items-center justify-between w-full px-3 py-2.5 group"
+                        :class="
+                            activeKey.includes(['1'].toString()) ||
+                            showEditButton
+                                ? 'bg-gray-100'
+                                : 'bg-white'
+                        "
                     >
                         <span class="flex items-center">
                             <PreviewTabsIcon
@@ -75,7 +81,7 @@
                                     !viewOnly &&
                                     showEditButton
                                 "
-                                class="mr-3 font-bold cursor-pointer hover:underline text-primary"
+                                class="mr-3 font-normal cursor-pointer hover:underline text-primary"
                                 @click="
                                     switchTab(selectedAsset, data?.label, true)
                                 "
@@ -108,6 +114,11 @@
                 <div
                     v-else
                     class="flex flex-col flex-grow px-3 overflow-y-auto"
+                    :class="
+                        activeKey.includes(['1'].toString()) || showEditButton
+                            ? 'bg-gray-100'
+                            : 'bg-white'
+                    "
                 >
                     <!-- showing non empty starts here -->
                     <template v-for="(a, x) in applicableList" :key="x">
@@ -139,6 +150,10 @@
                     </template></div></a-collapse-panel
         ></a-collapse>
     </div>
+    <hr
+        v-if="applicableList && !activeKey.includes(['1'].toString())"
+        class="mx-3"
+    />
 </template>
 
 <script lang="ts">
@@ -320,6 +335,10 @@
 
             const switchTab = inject('switchTab')
 
+            const handleActiveKeyChange = (newKey) => {
+                activeKey.value = newKey
+            }
+
             return {
                 viewOnly,
                 switchTab,
@@ -337,6 +356,7 @@
                 activeKey,
                 isEvaluating,
                 showEditButton,
+                handleActiveKeyChange,
             }
         },
     })
@@ -347,6 +367,9 @@
         :global(.ant-collapse-item) {
             :global(.ant-collapse-header) {
                 padding: 0 !important;
+            }
+            :global(.ant-collapse-content-box) {
+                padding-bottom: 0 !important;
             }
         }
     }

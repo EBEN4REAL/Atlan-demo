@@ -1,17 +1,17 @@
 <template>
     <div
         v-if="cmList(assetType(selectedAsset), false, true).length > 0"
-        class="flex flex-col"
+        class="flex flex-col px-2"
         @mouseenter="showManageButton = true"
         @mouseleave="showManageButton = false"
     >
         <div
-            class="flex items-center justify-between mx-5 mb-1 text-sm text-gray-500"
+            class="flex items-center justify-between px-3 mb-1 text-sm text-gray-500"
         >
             Custom Metadata
             <router-link
                 v-if="checkAccess(page.PAGE_GOVERNANCE) && showManageButton"
-                class="font-semibold text-primary hover:underline"
+                class="font-normal text-primary hover:underline"
                 to="/governance/custom-metadata"
                 target="_blank"
                 >Manage all</router-link
@@ -39,7 +39,6 @@
                     name: tab.label,
                     tooltip: tab.label,
                 }"
-                class="mx-2"
             />
         </div>
     </div>

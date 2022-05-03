@@ -323,7 +323,6 @@
                 watch(
                     [data, isReady, error, isLoading],
                     () => {
-                        debugger
                         loading.value = isLoading.value
                         if (isReady && !error.value && !isLoading.value) {
                             context.emit('handleInviteSent')
@@ -331,6 +330,9 @@
                             useAddEvent('admin', 'user', 'added', {
                                 count: Object.keys(formState.value).length,
                             })
+                            formState.value = {
+                                [new Date().getTime()]: { ...allRoles.member },
+                            }
                         } else if (error && error.value) {
                             // Since there might be errors associated with more
                             // than one email address, we display all of them.

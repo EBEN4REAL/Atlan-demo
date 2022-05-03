@@ -64,7 +64,9 @@
                 </a-modal>
             </div> -->
         </div>
-        <div class="flex items-center h-full cursor-pointer justify-self-end">
+        <div
+            class="flex items-center h-full cursor-pointer justify-self-end gap-x-3"
+        >
             <a-dropdown placement="bottomRight">
                 <template #overlay>
                     <a-menu>
@@ -132,12 +134,12 @@
                 >
                 <AtlanButton2
                     color="secondary"
-                    class="px-2 mx-1 text-gray-700 bg-transparent border-none"
+                    class="px-0 text-gray-700 bg-transparent border-none"
                 >
                     <AtlanIcon icon="QuestionRound" class="h-6" />
                 </AtlanButton2>
             </a-dropdown>
-            <div class="mx-2 announcekit-widget">What's new</div>
+            <div class="announcekit-widget">What's new</div>
             <!-- <atlan-icon icon="Search" class="h-5 mr-3" />
 
             <atlan-icon icon="Add" class="h-5 mr-3 font-bold text-primary" /> -->

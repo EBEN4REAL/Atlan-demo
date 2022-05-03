@@ -555,4 +555,12 @@ export const SourceList = [
             'SalesforceField',
         ],
     },
+    {
+        id: 's3',
+        label: 'S3',
+        image: Salesforce,
+        connectionCount: 0,
+        hierarchy: [],
+        types: ['S3Bucket', 'S3Object'],
+    },
 ]

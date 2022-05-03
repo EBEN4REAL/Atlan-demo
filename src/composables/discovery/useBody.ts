@@ -781,6 +781,7 @@ export function useBody(
             'SQL',
             'BI',
             'SaaS',
+            'ObjectStore',
         ])
         base.orFilter('terms', '__typeName.keyword', [
             'Query',

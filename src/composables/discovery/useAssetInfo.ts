@@ -862,6 +862,10 @@ export default function useAssetInfo() {
         return assetType(asset)?.includes('Salesforce')
     }
 
+    const isObjectAsset = (asset: assetInterface) => {
+        return assetType(asset)?.includes('S3')
+    }
+
     const isSQLAsset = (asset: assetInterface) => {
         return (
             assetType(asset) === 'Table' ||
@@ -1341,6 +1345,7 @@ export default function useAssetInfo() {
         selectedAssetUpdatePermission,
         isSQLAsset,
         isSaasAsset,
+        isObjectAsset,
         getLineagePath,
         isUserDescription,
         isScrubbed,

@@ -13,7 +13,8 @@
     <div
         v-if="
             attributes(selectedAsset)?.category?.toLowerCase() != 'bi' &&
-            attributes(selectedAsset)?.category?.toLowerCase() != 'saas'
+            attributes(selectedAsset)?.category?.toLowerCase() != 'saas' &&
+            attributes(selectedAsset)?.category?.toLowerCase() != 'objectsource'
         "
         class="flex flex-col"
     >

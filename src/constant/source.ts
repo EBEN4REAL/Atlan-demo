@@ -10,6 +10,8 @@ import Looker from '~/assets/images/source/svg/Looker.svg?url'
 import Salesforce from '~/assets/images/source/svg/Salesforce.svg?url'
 import MySQL from '~/assets/images/source/svg/MySQL.svg?url'
 import MSSQL from '~/assets/images/source/svg/MSSQL.svg?url'
+import S3 from '~/assets/images/source/svg/s3.svg?url'
+
 // FIXME: Add an SVG for glue
 import Glue from '~/assets/images/source/glue.png'
 
@@ -558,7 +560,7 @@ export const SourceList = [
     {
         id: 's3',
         label: 'S3',
-        image: Salesforce,
+        image: S3,
         connectionCount: 0,
         hierarchy: [],
         types: ['S3Bucket', 'S3Object'],

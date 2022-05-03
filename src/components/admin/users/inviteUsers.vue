@@ -212,7 +212,7 @@
                 }
             }
 
-            /** Validating if current email has already been added above */
+            /** Validating if current email has already been added on any field above (not below) */
             const validator = async (_rule, value: string) => {
                 const valueArray: string[] = []
                 const { field } = _rule

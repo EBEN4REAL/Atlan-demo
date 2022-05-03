@@ -23,7 +23,7 @@
             <div class="flex justify-end mr-3">
                 <AtlanButton2
                     :loading="addMemberLoading"
-                    :disabled="addMemberLoading"
+                    :disabled="addMemberLoading || !selectedUser"
                     :label="addMemberLoading ? 'Saving' : 'Save'"
                     @click="addMembersToGroup"
                 />
@@ -33,7 +33,7 @@
             <AtlanButton2
                 color="secondary"
                 label="Add Member"
-                prefixIcon="Add"
+                prefix-icon="Add"
             />
         </slot>
     </a-popover>
@@ -68,6 +68,9 @@
     const selectedUserIds = ref([])
     // Whether members are being added or not.
     const addMemberLoading = ref(false)
+    const selectedUser = computed(
+        () => selectedUserIds.value?.ownerUsers?.length || 0
+    )
 
     /**
      * Driver function to add members to the group. Under the hood, it relies

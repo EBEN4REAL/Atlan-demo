@@ -55,26 +55,17 @@ export function useSimilarList({
 
     const list = ref<assetInterface[]>([])
 
-    // For column widget
-    const freshList = ref<assetInterface[]>([])
     watch(data, () => {
         if (offset?.value > 0) {
-            if (data.value?.entities) {
-                list.value.push(...data.value?.entities)
-                freshList.value = [...data?.value?.entities]
+            if (aggregationMap(`group_by_name`)) {
+                list.value.push(...aggregationMap(`group_by_name`))
             }
-        } else if (data.value?.entities) {
-            list.value = [...data?.value?.entities]
-            freshList.value = [...data?.value?.entities]
+        } else if (aggregationMap(`group_by_name`)) {
+            list.value.push(...aggregationMap(`group_by_name`))
         } else {
             list.value = []
-            freshList.value = []
         }
     })
-
-    // watch(dependentKey, () => {
-    //     localKey.value = dependentKey?.value
-    // })
 
     const totalCount = computed(() => approximateCount.value)
 
@@ -91,11 +82,6 @@ export function useSimilarList({
         generateBody()
         cancelRequest()
 
-        /*  if (localKey.value) {
-            localKey.value = `dirty_${Date.now().toString()}`
-        } else {
-            refresh()
-        } */
         mutate()
     }
 
@@ -107,14 +93,11 @@ export function useSimilarList({
     return {
         limit,
         offset,
-
         totalCount,
         aggregationMap,
-
         isValidating,
         isLoading,
         list,
-        freshList,
         data,
         isReady,
         fetch,

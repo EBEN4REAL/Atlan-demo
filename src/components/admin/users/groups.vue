@@ -80,7 +80,7 @@
                 emit('handleManageGroups', userData)
             }
             watch(visiblePopover, () => {
-                if (visiblePopover.value && groupList.value.length === 0) {
+                if (visiblePopover.value) {
                     getUserGroupList()
                 }
             })

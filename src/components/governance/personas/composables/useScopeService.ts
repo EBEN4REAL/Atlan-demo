@@ -53,7 +53,7 @@ export const purposeScopeList = [
         scopes: [
             {
                 value: 'entity-update-business-metadata',
-                label: 'Update Custom Metadata',
+                label: 'Update Custom Metadata values',
                 desc: 'Update classifications for selected assets',
                 gif: updateBusinessMetaGif,
             },
@@ -169,9 +169,9 @@ export const personaScopeList = [
         scopes: [
             {
                 value: 'entity-update-business-metadata',
-                label: 'Update Custom Metadata',
+                label: 'Update Custom Metadata values',
                 // desc: 'Update values for BM attributes',
-                desc: 'Permission to update custom metadata attributes',
+                desc: 'Permission to update custom metadata values for the assets',
                 gif: updateBusinessMetaGif,
             },
             // {
@@ -300,8 +300,8 @@ export const glossaryPolicyScopeList = [
             },
             {
                 value: 'entity-update-business-metadata',
-                label: 'Update Custom Metadata',
-                desc: 'Permission to update custom metadata attributes',
+                label: 'Update Custom Metadata values',
+                desc: 'Permission to update custom metadata attributes for the terms & categories in selected glossary',
                 gif: updateCustomMetadataGlossary,
             },
 

@@ -132,7 +132,7 @@
         </div>
 
         <div class="flex-grow"></div>
-        <div class="px-2">
+        <div class="mb-4">
             <template v-for="nav in helpCenterList" :key="nav.id">
                 <div
                     v-if="nav.isActive"
@@ -148,22 +148,32 @@
                         v-if="nav.link"
                         :target="nav.openInANewTab ? '_blank' : 'self'"
                         :href="nav.link"
-                        class="flex items-center"
+                        class="flex items-center flex-col"
                     >
                         <atlan-icon
                             :icon="nav?.icon"
                             class="text-gray-500"
                             :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
                         />
-                        <span v-if="!isCollapsed"> {{ nav.label }}</span>
+                        <span
+                            class="mt-1 leading-none tracking-tight text-gray-500"
+                            style="font-size: 11px"
+                        >
+                            {{ nav.label }}</span
+                        >
                     </a>
-                    <span v-else class="flex items-center">
+                    <span v-else class="flex items-center flex-col">
                         <atlan-icon
                             :icon="nav?.icon"
                             class="text-gray-500"
                             :class="isCollapsed ? 'h-6' : 'h-4 mr-2'"
                         />
-                        <span v-if="!isCollapsed"> {{ nav.label }}</span>
+                        <span
+                            class="mt-1 leading-none tracking-tight text-gray-500"
+                            style="font-size: 11px"
+                        >
+                            {{ nav.label }}</span
+                        >
                     </span>
                 </div>
             </template>
@@ -242,6 +252,7 @@
                         return 'insights-bg'
 
                     case '/workflows':
+                    case '/workflowsv1':
                         return 'workflows-bg'
 
                     default:

@@ -34,7 +34,7 @@
                             ref="ownerInputRef"
                             v-model="localValue"
                             :show-none="false"
-                            :enableTabs="enableTabs"
+                            :enable-tabs="enableTabs"
                             @change="handleChangeData"
                         ></OwnerFacets>
 
@@ -43,7 +43,7 @@
                             ref="ownerInputRef"
                             v-model="newOwners"
                             :show-none="false"
-                            :disabledValues="localValue"
+                            :disabled-values="localValue"
                         ></OwnerFacets>
                     </div>
 
@@ -56,8 +56,8 @@
                         <a-button
                             type="primary"
                             :loading="requestLoading"
-                            @click="handleRequest"
                             class="bg-primary"
+                            @click="handleRequest"
                             >Submit Request</a-button
                         >
                     </div>
@@ -84,20 +84,33 @@
                     placement="left"
                     :edit-permission="editPermission && showShortcut"
                 >
-                    <a-button
-                        v-if="showAddBtn"
-                        :disabled="role === 'Guest' && !editPermission"
-                        shape="circle"
-                        size="small"
-                        class="text-center shadow"
-                        :class="{
-                            editPermission:
-                                'hover:bg-primary-light hover:border-primary',
-                        }"
-                        @click="() => (isEdit = true)"
-                    >
-                        <span> <AtlanIcon icon="Add" class="h-3" /> </span
-                    ></a-button>
+                    <div v-if="showAddBtn">
+                        <div
+                            v-if="customAddButton"
+                            @click="
+                                () =>
+                                    role === 'Guest' && !editPermission
+                                        ? false
+                                        : (isEdit = true)
+                            "
+                        >
+                            <slot name="addButton"></slot>
+                        </div>
+                        <a-button
+                            v-else
+                            :disabled="role === 'Guest' && !editPermission"
+                            shape="circle"
+                            size="small"
+                            class="text-center shadow"
+                            :class="{
+                                editPermission:
+                                    'hover:bg-primary-light hover:border-primary',
+                            }"
+                            @click="() => (isEdit = true)"
+                        >
+                            <span> <AtlanIcon icon="Add" class="h-3" /> </span
+                        ></a-button>
+                    </div>
                 </Shortcut>
             </a-tooltip>
 
@@ -262,6 +275,11 @@
                 type: Boolean,
                 required: false,
                 default: true,
+            },
+            customAddButton: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         emits: ['change', 'update:modelValue', 'changeData'],

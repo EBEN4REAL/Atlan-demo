@@ -4,6 +4,16 @@
         <template #overlay>
             <a-menu>
                 <a-menu-item
+                    key="openProfile"
+                    class="px-4 py-2"
+                    @click="handleOpenProfile"
+                >
+                    <div class="flex items-center">
+                        <AtlanIcon icon="EnterProfile" />
+                        <span class="pl-2 text-sm"> Open Profile </span>
+                    </div>
+                </a-menu-item>
+                <a-menu-item
                     key="copyLink"
                     class="px-4 py-2"
                     @click="handleCopyProfileLink"
@@ -70,7 +80,6 @@
     import { defineComponent, ref, PropType, toRefs, computed } from 'vue'
 
     // utils
-    import AnnouncementModal from '@common/widgets/announcement/addAnnouncementModal.vue'
     import { message } from 'ant-design-vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -124,6 +133,10 @@
                 closeMenu()
             }
 
+            const handleOpenProfile = () => {
+                window.open(getProfilePath(asset.value), '_blank')
+            }
+
             return {
                 announcementTitle,
                 isVisible,
@@ -132,6 +145,7 @@
                 access,
                 link,
                 handleCopyProfileLink,
+                handleOpenProfile,
             }
         },
     })

@@ -14,14 +14,14 @@
         </template>
 
         <template v-for="item in list" :key="item.id">
-            <a-select-option :value="item.id" class="flex">
+            <a-select-option :value="item.id" class="flex items-center">
                 <div class="flex items-center">
                     <AtlanIcon
-                        icon="Glossary"
                         v-if="item.typeName == 'AtlasGlossary'"
-                        class="mr-1"
+                        icon="Glossary"
+                        class="mr-1 mb-0.5"
                     ></AtlanIcon>
-                    <img :src="item.image" class="w-4 h-4 mr-1" v-else />
+                    <img v-else :src="item.image" class="w-4 h-4 mb-0.5 mr-1" />
                     <span class="">{{ item.label }}</span>
                     <span v-if="showCount" class="ml-1"
                         >({{ item.count }})</span
@@ -165,6 +165,10 @@
 
         &.ant-select:not(.ant-select-disabled):hover .ant-select-selector {
             @apply border-0 !important;
+        }
+
+        .ant-select-selection-placeholder {
+            @apply text-gray-500 !important;
         }
     }
 </style>

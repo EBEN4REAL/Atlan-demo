@@ -6,6 +6,7 @@ export interface Actions extends State {
     setPreferences(value: any): void
     setActiveFacet(value: any): void
     setActivePostFacet(value: any): void
+    setCmdkActivePostFacet(value: any): void
     setGlobalState(value: any): void
 }
 
@@ -24,6 +25,9 @@ export const actions: Actions = {
     },
     setActivePostFacet(value) {
         this.activePostFacet = value
+    },
+    setCmdkActivePostFacet(value) {
+        this.cmdkActivePostFacet = value
     },
     setGlobalState(value) {
         this.globalState = value

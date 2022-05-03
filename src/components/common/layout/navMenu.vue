@@ -137,6 +137,7 @@
                     <AtlanIcon icon="QuestionRound" class="h-6" />
                 </AtlanButton2>
             </a-dropdown>
+            <div class="mx-2 announcekit-widget">What's new</div>
             <!-- <atlan-icon icon="Search" class="h-5 mr-3" />
 
             <atlan-icon icon="Add" class="h-5 mr-3 font-bold text-primary" /> -->
@@ -150,7 +151,14 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, defineComponent, ref, watch, toRefs } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        watch,
+        toRefs,
+        onMounted,
+    } from 'vue'
 
     import { useRoute, useRouter } from 'vue-router'
     import UserPersonalAvatar from '@/common/avatar/me.vue'
@@ -167,6 +175,8 @@
     import { helpCenterList } from '~/constant/navigation/helpCentre'
     import { usePersonaStore } from '~/store/persona'
     import { usePurposeStore } from '~/store/purpose'
+    import whoami from '~/composables/user/whoami'
+
     export default defineComponent({
         name: 'Navigation Menu',
         components: {
@@ -313,6 +323,22 @@
                         (listItem) => listItem.id === 'documentation'
                     )?.link ?? ''
             )
+            const { username, email, userId } = whoami()
+
+            onMounted(() => {
+                if (window?.announcekit)
+                    window.announcekit.push({
+                        widget: 'https://announcekit.co/widgets/v2/3w3MA',
+                        selector: '.announcekit-widget',
+                        lang: 'en',
+                        user: {
+                            id: userId.value,
+                            // Optional additional fields
+                            email: email.value,
+                            name: username.value,
+                        },
+                    })
+            })
 
             return {
                 page,

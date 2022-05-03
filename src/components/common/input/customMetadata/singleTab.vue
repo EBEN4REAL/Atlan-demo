@@ -51,12 +51,26 @@
                                         isDrawer,
                                         'ENTITY_UPDATE_BUSINESS_METADATA'
                                     )
-                                        ? 'text-primary hover:underline mr-1 font-semibold'
-                                        : 'mr-1 line-clamp-1'
+                                        ? 'text-primary hover:underline mr-0.5 font-semibold'
+                                        : 'mr-0.5 line-clamp-1'
                                 "
                                 @click="switchTab(selectedAsset, data?.label)"
                                 clamp-percentage="80%"
                             />
+                            <div
+                                v-if="applicableList?.length"
+                                :class="
+                                    selectedAssetUpdatePermission(
+                                        selectedAsset,
+                                        isDrawer,
+                                        'ENTITY_UPDATE_BUSINESS_METADATA'
+                                    )
+                                        ? 'text-primary mr-1 font-semibold'
+                                        : 'mr-1'
+                                "
+                            >
+                                ({{ applicableList?.length }})
+                            </div>
                             <a-tooltip>
                                 <template #title>
                                     <span>{{ data?.description }}</span>

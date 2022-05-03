@@ -391,7 +391,9 @@
 
             <div
                 v-if="
-                    ((isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
+                    ((isBiAsset(selectedAsset) ||
+                        isSaasAsset(selectedAsset) ||
+                        isObjectAsset(selectedAsset)) &&
                         ![
                             'PowerBIWorkspace',
                             'TableauSite',
@@ -399,6 +401,7 @@
                             'LookerProject',
                             'LookerQuery',
                             'SalesforceOrganization',
+                            'S3Bucket',
                         ].includes(selectedAsset?.typeName)) ||
                     ['Schema'].includes(selectedAsset?.typeName)
                 "

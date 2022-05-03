@@ -1686,7 +1686,7 @@
             const dropdownTableOptions = showVQB.value
                 ? [
                       {
-                          title: 'Open table sidebar',
+                          title: `Open ${item?.value?.typeName?.toLowerCase()} sidebar`,
                           key: 'sidebar',
                           component: MenuItem,
                           class: '',
@@ -1696,7 +1696,7 @@
                           },
                       },
                       {
-                          title: 'Preview this table',
+                          title: `Preview this ${item?.value?.typeName?.toLowerCase()}`,
                           key: 'preview',
                           class: '',
                           disabled: false,
@@ -1729,7 +1729,7 @@
                           },
                       },
                       {
-                          title: 'Open table sidebar',
+                          title: `Open ${item?.value?.typeName?.toLowerCase()} sidebar`,
                           key: 'sidebar',
                           component: MenuItem,
                           class: '',
@@ -1739,7 +1739,7 @@
                           },
                       },
                       {
-                          title: 'Preview this table',
+                          title: `Preview this ${item?.value?.typeName?.toLowerCase()}`,
                           key: 'preview',
                           class: '',
                           disabled: false,
@@ -1750,8 +1750,8 @@
                       },
                       {
                           title:
-                              tooltipText === 'Query this '
-                                  ? 'Query this table'
+                              tooltipText.value === 'Query this '
+                                  ? `Query this ${item?.value?.typeName?.toLowerCase()}`
                                   : 'Another query is running',
                           key: 'query',
                           component: MenuItem,

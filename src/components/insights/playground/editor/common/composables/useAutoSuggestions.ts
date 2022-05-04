@@ -215,7 +215,7 @@ export function entitiesToEditorKeyword(
 
                 switch (type) {
                     case 'TABLE': {
-                        // debugger
+                        //
                         // console.log('su type: ', 'table')
                         /* When Schema Or database not selected TableQN will be used */
                         // let entityType = `${type}`
@@ -877,7 +877,6 @@ export async function useAutoSuggestions(
 
         // fetch table columns
         if (tokens.length > 1) {
-            debugger
             let tableName = tokens[tokens.length - 2]
             // if it is a alias
             Object.keys(aliasesMap.value).forEach((key) => {
@@ -957,7 +956,7 @@ export async function useAutoSuggestions(
             switch (lastMatchedKeyword.functionType) {
                 case 'FILTER': {
                     if (lastMatchedKeyword.tokenPosition === 0) {
-                        return getSuggestionsUsingType(
+                        const suggestionsPromise = getSuggestionsUsingType(
                             lastMatchedKeyword.type,
                             lastMatchedKeyword.token,
                             currentWord,
@@ -965,6 +964,40 @@ export async function useAutoSuggestions(
                             cancelTokenSource,
                             context
                         )
+
+                        return new Promise((resolve, reject) => {
+                            suggestionsPromise.then((value) => {
+                                debugger
+                                const AliasesKeys: string[] = []
+                                Object.keys(aliasesMap.value).forEach(
+                                    (key: any) => {
+                                        AliasesKeys.push(
+                                            aliasesMap.value[key]
+                                                .value as string
+                                        )
+                                    }
+                                )
+                                let AliasesKeywordsMap = AliasesKeys.map(
+                                    (keyword) => {
+                                        return {
+                                            label: keyword,
+                                            kind: monaco.languages
+                                                .CompletionItemKind.Keyword,
+                                            insertText: keyword,
+                                        }
+                                    }
+                                )
+
+                                let _suggestions = [
+                                    ...value.suggestions,
+                                    ...AliasesKeywordsMap,
+                                ]
+                                resolve({
+                                    suggestions: _suggestions,
+                                    incomplete: true,
+                                })
+                            })
+                        })
                     } else {
                         const filterKeywords = typesKeywordsMap['FILTER'].values
                         let suggestions = filterKeywords.map((keyword) => {
@@ -976,8 +1009,30 @@ export async function useAutoSuggestions(
                             }
                         })
 
+                        ///////////////////////////
+
+                        const AliasesKeys: string[] = []
+                        Object.keys(aliasesMap.value).forEach((key: any) => {
+                            AliasesKeys.push(
+                                aliasesMap.value[key].value as string
+                            )
+                        })
+                        let AliasesKeywordsMap = AliasesKeys.map((keyword) => {
+                            return {
+                                label: keyword,
+                                kind: monaco.languages.CompletionItemKind
+                                    .Keyword,
+                                insertText: keyword,
+                            }
+                        })
+
+                        let _suggestions = [
+                            ...suggestions,
+                            ...AliasesKeywordsMap,
+                        ]
+
                         return Promise.resolve({
-                            suggestions: suggestions,
+                            suggestions: _suggestions,
                             incomplete: true,
                         })
                     }
@@ -1005,9 +1060,29 @@ export async function useAutoSuggestions(
                                 }
                             )
 
+                            const AliasesKeys: string[] = []
+                            Object.keys(aliasesMap.value).forEach(
+                                (key: any) => {
+                                    AliasesKeys.push(
+                                        aliasesMap.value[key].value as string
+                                    )
+                                }
+                            )
+                            let AliasesKeywordsMap = AliasesKeys.map(
+                                (keyword) => {
+                                    return {
+                                        label: keyword,
+                                        kind: monaco.languages
+                                            .CompletionItemKind.Keyword,
+                                        insertText: keyword,
+                                    }
+                                }
+                            )
+
                             let _suggestions = [
                                 ...value.suggestions,
                                 ...filterKeywordsMap,
+                                ...AliasesKeywordsMap,
                             ]
                             resolve({
                                 suggestions: _suggestions,
@@ -1017,7 +1092,7 @@ export async function useAutoSuggestions(
                     })
                 }
                 default: {
-                    return getSuggestionsUsingType(
+                    const suggestionsPromise = getSuggestionsUsingType(
                         lastMatchedKeyword.type,
                         lastMatchedKeyword.token,
                         currentWord,
@@ -1025,6 +1100,37 @@ export async function useAutoSuggestions(
                         cancelTokenSource,
                         context
                     )
+                    return new Promise((resolve, reject) => {
+                        suggestionsPromise.then((value) => {
+                            const AliasesKeys: string[] = []
+                            Object.keys(aliasesMap.value).forEach(
+                                (key: any) => {
+                                    AliasesKeys.push(
+                                        aliasesMap.value[key].value as string
+                                    )
+                                }
+                            )
+                            let AliasesKeywordsMap = AliasesKeys.map(
+                                (keyword) => {
+                                    return {
+                                        label: keyword,
+                                        kind: monaco.languages
+                                            .CompletionItemKind.Keyword,
+                                        insertText: keyword,
+                                    }
+                                }
+                            )
+
+                            let _suggestions = [
+                                ...value.suggestions,
+                                ...AliasesKeywordsMap,
+                            ]
+                            resolve({
+                                suggestions: _suggestions,
+                                incomplete: true,
+                            })
+                        })
+                    })
                 }
             }
         }

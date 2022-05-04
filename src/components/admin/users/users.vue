@@ -131,7 +131,6 @@
 
         <a-modal
             :visible="showInviteUserModal"
-            :destroy-on-close="true"
             :footer="null"
             :closable="false"
             :width="470"

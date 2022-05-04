@@ -2,22 +2,31 @@
     <div
         v-if="applicableList"
         ref="target"
-        class="flex flex-col w-full mb-2 overflow-hidden border border-gray-300 rounded-lg"
+        class="flex flex-col w-full overflow-hidden border border-transparent rounded-lg"
+        :class="{ 'mb-1': activeKey.includes(['1'].toString()) }"
         @mouseenter="showEditButton = true"
         @mouseleave="showEditButton = false"
     >
-        <a-collapse v-model:activeKey="activeKey" ghost :class="$style.cmTab">
+        <a-collapse
+            v-model:activeKey="activeKey"
+            :class="$style.cmTab"
+            :bordered="false"
+            ghost
+            @change="handleActiveKeyChange"
+        >
             <a-collapse-panel key="1" :show-arrow="false">
                 <template #header>
                     <!-- header starts here -->
                     <div
-                        class="flex items-center justify-between py-2 pl-2 pr-3 gap-x-4 group w-full"
+                        class="flex items-center justify-between w-full px-3 py-2.5 group"
+                        :class="
+                            activeKey.includes(['1'].toString()) ||
+                            showEditButton
+                                ? 'bg-gray-100'
+                                : 'bg-white'
+                        "
                     >
                         <span class="flex items-center">
-                            <AtlanIcon
-                                icon="CaretDown"
-                                class="mr-3 text-gray-700"
-                            />
                             <PreviewTabsIcon
                                 :icon="tab.icon"
                                 :image="tab.image"
@@ -42,12 +51,26 @@
                                         isDrawer,
                                         'ENTITY_UPDATE_BUSINESS_METADATA'
                                     )
-                                        ? 'text-primary hover:underline mr-1 font-semibold'
-                                        : 'mr-1 line-clamp-1'
+                                        ? 'text-primary hover:underline mr-0.5 font-semibold'
+                                        : 'mr-0.5 line-clamp-1'
                                 "
                                 @click="switchTab(selectedAsset, data?.label)"
                                 clamp-percentage="75%"
                             />
+                            <div
+                                v-if="applicableList?.length"
+                                :class="
+                                    selectedAssetUpdatePermission(
+                                        selectedAsset,
+                                        isDrawer,
+                                        'ENTITY_UPDATE_BUSINESS_METADATA'
+                                    )
+                                        ? 'text-primary mr-1 font-semibold'
+                                        : 'mr-1'
+                                "
+                            >
+                                ({{ applicableList?.length }})
+                            </div>
                             <a-tooltip>
                                 <template #title>
                                     <span>{{ data?.description }}</span>
@@ -61,20 +84,33 @@
                                 </div>
                             </a-tooltip>
                         </span>
-                        <div
-                            v-if="
-                                selectedAssetUpdatePermission(
-                                    selectedAsset,
-                                    isDrawer,
-                                    'ENTITY_UPDATE_BUSINESS_METADATA'
-                                ) &&
-                                !viewOnly &&
-                                showEditButton
-                            "
-                            class="font-bold cursor-pointer hover:underline text-primary"
-                            @click="switchTab(selectedAsset, data?.label, true)"
-                        >
-                            Edit
+                        <div class="flex items-center">
+                            <div
+                                v-if="
+                                    selectedAssetUpdatePermission(
+                                        selectedAsset,
+                                        isDrawer,
+                                        'ENTITY_UPDATE_BUSINESS_METADATA'
+                                    ) &&
+                                    !viewOnly &&
+                                    showEditButton
+                                "
+                                class="mr-3 font-normal cursor-pointer hover:underline text-primary"
+                                @click="
+                                    switchTab(selectedAsset, data?.label, true)
+                                "
+                            >
+                                Edit
+                            </div>
+                            <AtlanIcon
+                                icon="CaretDown"
+                                class="text-gray-700"
+                                :class="{
+                                    'transform rotate-180': activeKey.includes(
+                                        ['1'].toString()
+                                    ),
+                                }"
+                            />
                         </div>
                     </div>
                     <!-- header ends here -->
@@ -99,7 +135,12 @@
 
                 <div
                     v-else
-                    class="flex flex-col flex-grow pr-5 overflow-y-auto pl-9"
+                    class="flex flex-col flex-grow px-3 overflow-y-auto"
+                    :class="
+                        activeKey.includes(['1'].toString()) || showEditButton
+                            ? 'bg-gray-100'
+                            : 'bg-white'
+                    "
                 >
                     <!-- showing non empty starts here -->
                     <template v-for="(a, x) in applicableList" :key="x">
@@ -131,6 +172,10 @@
                     </template></div></a-collapse-panel
         ></a-collapse>
     </div>
+    <hr
+        v-if="applicableList && !activeKey.includes(['1'].toString())"
+        class="mx-3"
+    />
 </template>
 
 <script lang="ts">
@@ -312,6 +357,10 @@
 
             const switchTab = inject('switchTab')
 
+            const handleActiveKeyChange = (newKey) => {
+                activeKey.value = newKey
+            }
+
             return {
                 viewOnly,
                 switchTab,
@@ -329,6 +378,7 @@
                 activeKey,
                 isEvaluating,
                 showEditButton,
+                handleActiveKeyChange,
             }
         },
     })
@@ -339,6 +389,9 @@
         :global(.ant-collapse-item) {
             :global(.ant-collapse-header) {
                 padding: 0 !important;
+            }
+            :global(.ant-collapse-content-box) {
+                padding-bottom: 0 !important;
             }
         }
     }

@@ -472,6 +472,7 @@ import QueryOutputFail from '~/assets/images/icons/query_output_fail.svg'
 import QueryOutputNeutral from '~/assets/images/icons/query_output_neutral.svg'
 import PreviewQuery from '~/assets/images/icons/preview.svg'
 import Trident from '~/assets/images/icons/trident.svg'
+import EmptyUploads from '~/assets/images/icons/empty-uploads.svg'
 
 export default {
     SlackTabEmpty,
@@ -927,4 +928,5 @@ export default {
     Package,
     Display,
     Trident,
+    EmptyUploads,
 }

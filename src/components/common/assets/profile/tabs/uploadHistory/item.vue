@@ -1,7 +1,7 @@
 <template>
     <div class="w-full my-4 bg-gray-100 rounded-lg">
-        <div class="flex p-4  items-center w-full">
-            <atlan-icon icon="Upload" class="h-5 mr-2" />
+        <div class="flex p-4 items-center w-full">
+            <atlan-icon :icon="WFIcon" class="h-5 mr-2" />
             <div class="w-full">
                 <div class="flex justify-between items-center w-full">
                     <div class="flex items-center space-x-2">
@@ -19,11 +19,14 @@
                             <div class="dot" :class="getRunClassBg(run)" />
                             {{
                                 runStatusMap[run.status.phase]?.label ||
-                                run.status.phase
+                                run?.status?.phase
                             }}
                         </span>
                     </div>
-                    <div  v-if="!['Running', 'Pending'].includes(phase(run))" class="items-center justify-end ">
+                    <div
+                        v-if="phase(run)==='Succeeded'"
+                        class="items-center justify-end"
+                    >
                         <div
                             class="border w-40 border-gray-200 bg-white cursor-pointer rounded-lg px-2 py-1"
                             @click="handleDownloadArtifacts"
@@ -183,6 +186,20 @@
             const path = computed(() => ({
                 name: name(props?.run),
             }))
+            const WFIcon = computed(() => {
+                if (
+                    phase(props.run) === 'Succeeded' &&
+                    !(
+                        finalStatus.value?.categories?.error_count ||
+                        finalStatus.value?.terms?.error_count
+                    )
+                )
+                    return 'RunSuccess'
+                if (phase(props.run) === 'Failed') return 'IssuesAnnouncement'
+                if (phase(props.run) === 'Running') return 'RunProgress'
+                return 'WarningAnnouncement'
+            })
+
             const {
                 data: selectedRun,
                 mutate,
@@ -266,7 +283,8 @@
                 creatorUsername,
                 finalStatus,
                 phase,
-                handleDownloadArtifacts
+                handleDownloadArtifacts,
+                WFIcon,
             }
         },
     })

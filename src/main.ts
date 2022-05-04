@@ -21,6 +21,10 @@ import {
     identifyGroup,
     identifyUser,
 } from './composables/eventTracking/useAddEvent'
+import page from './constant/accessControl/page'
+import useAuth from '~/composables/auth/useAuth'
+import usePermissions from '~/composables/auth/usePermissions'
+
 
 const app = createApp(App)
 app.use(createPinia())
@@ -115,13 +119,19 @@ keycloak
             app.use(router).mount('#app')
             const redirectUrl = localStorage.getItem('redirectURL') // "/admin/integrations"
             if (redirectUrl) {
-                const allRoles = authStore.decodedToken?.realm_access?.roles
-                if (!allRoles.includes('$admin') && ['/workflows', '/admin', '/governance'].some(p => redirectUrl.startsWith(p)))
+                const { checkAccess } = useAuth()
+                if (
+                    (redirectUrl.startsWith('/admin') && !checkAccess(page.PAGE_ADMIN, 'or'))
+                    ||
+                    (redirectUrl.startsWith('/workflows') && !checkAccess(page.PAGE_WORKFLOWS, 'or'))
+                    ||
+                    (redirectUrl.startsWith('/governance') && !checkAccess(page.PAGE_GOVERNANCE, 'or'))
+                )
                     router.push('/')
                 else {
                     router.push(redirectUrl)
-                    localStorage.setItem('redirectURL', '')
                 }
+                localStorage.setItem('redirectURL', '')
             }
             identifyUser()
             identifyGroup()

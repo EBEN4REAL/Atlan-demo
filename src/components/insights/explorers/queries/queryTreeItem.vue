@@ -323,6 +323,11 @@
     import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
     import { MenuItem, SubMenu } from 'ant-design-vue'
 
+    import {
+        featureEnabledMap,
+        INSIGHT_SCHEDULE_QUERY,
+    } from '~/composables/labs/labFeatureList'
+
     const {
         inlineTabRemove,
         modifyActiveInlineTabEditor,
@@ -1344,14 +1349,18 @@
             }
 
             const dropdownQueryOptions = [
-                {
-                    title: 'Schedule',
-                    key: 'schedule',
-                    class: '',
-                    component: MenuItem,
-                    disabled: false,
-                    handleClick: toggleScheduleQueryModal,
-                },
+                ...(featureEnabledMap.value[INSIGHT_SCHEDULE_QUERY]
+                    ? [
+                          {
+                              title: 'Schedule',
+                              key: 'schedule',
+                              class: '',
+                              component: MenuItem,
+                              disabled: false,
+                              handleClick: toggleScheduleQueryModal,
+                          },
+                      ]
+                    : []),
                 {
                     title: 'Copy link',
                     key: 'copyLink',

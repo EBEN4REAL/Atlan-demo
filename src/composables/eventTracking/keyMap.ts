@@ -376,8 +376,8 @@ const keyMap = {
                 }),
             },
         },
-        schemaTree: {
-            itemClick: {
+        schema_tree: {
+            item_click: {
                 action: 'insights_schema_explorer_tree_item_clicked',
                 properties: (props) => ({
                     action: props?.action,
@@ -387,57 +387,38 @@ const keyMap = {
                 }),
             },
         },
-        previewTabs: {
-            previewTabClose: {
+        results_panel: {
+            cta_clicked: {
+                action: 'insights_results_panel_cta_clicked',
+                properties: (props) => ({
+                    action: props.action,
+                    query_tab_id: props?.query_tab_id,
+                    click_index: props?.click_index,
+                    is_full_screen: props?.is_full_screen,
+                }),
+            },
+            tab_switched: {
+                action: 'insights_results_panel_tab_switched',
+                properties: (props) => ({
+                    click_index: props?.click_index,
+                    previous_index: props?.previous_index,
+                    is_full_screen: props?.is_full_screen,
+                }),
+            },
+        },
+        preview_tabs: {
+            closed: {
                 action: 'insights_preview_tabs_closed',
                 properties: (props) => ({
                     query_tab_id: props?.query_tab_id,
                     click_index: props?.click_index,
                 }),
             },
-            previewTabSwitched: {
-                action: 'insights_preview_tabs_switched',
-                properties: (props) => ({
-                    click_index: props?.click_index,
-                    previous_index: props?.previous_index,
-                }),
-            },
-            previewTabRightClickAction: {
+
+            right_click_action: {
                 action: 'insights_preview_tabs_right_click_action',
                 properties: (props) => ({
                     action: props?.action,
-                }),
-            },
-            resultTabSwitched: {
-                action: 'insights_result_tab_switched',
-                properties: (props) => ({
-                    previous_index: props?.previous_index,
-                }),
-            },
-            fullScreenMode: {
-                action: 'insights_preview_tab_full_screen',
-                properties: (props) => ({
-                    query_tab_id: props?.query_tab_id,
-                    click_index: props?.click_index,
-                    tab_type: props?.tab_type,
-                }),
-            },
-            downloadResults: {
-                action: 'insights_download_results',
-                properties: (props) => ({
-                    query_tab_id: props?.query_tab_id,
-                    click_index: props?.click_index,
-                    tab_type: props?.tab_type,
-                    fullScreenMode: props?.fullScreenMode,
-                }),
-            },
-            copyResults: {
-                action: 'insights_copy_results',
-                properties: (props) => ({
-                    query_tab_id: props?.query_tab_id,
-                    click_index: props?.click_index,
-                    tab_type: props?.tab_type,
-                    fullScreenMode: props?.fullScreenMode,
                 }),
             },
         },

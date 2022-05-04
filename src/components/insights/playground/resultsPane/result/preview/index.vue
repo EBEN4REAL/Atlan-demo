@@ -259,8 +259,10 @@
                 )
                 activeResultPreviewTab.value = !activeResultPreviewTab.value
                 insights_Store.activePreviewGuid = undefined
-                useAddEvent('insights', 'previewTabs', 'resultTabSwitched', {
-                    previous_index: index,
+                useAddEvent('insights', 'results_panel', 'tab_switched', {
+                    previous_index: index + 1,
+                    click_index: 0,
+                    is_full_screen: false,
                 })
             }
 
@@ -275,10 +277,10 @@
 
                 if (index > 0) {
                     // select previous tab
-                    useAddEvent('insights', 'previewTabs', 'previewTabClose', {
+                    useAddEvent('insights', 'preview_tabs', 'closed', {
                         query_tab_id:
                             insights_Store.previewTabs[index].asset.guid,
-                        click_index: index,
+                        click_index: index + 1,
                     })
                     insights_Store.previewTabs.splice(index, 1)
 
@@ -288,34 +290,22 @@
                     }
                 } else {
                     if (insights_Store.previewTabs.length > 1) {
-                        useAddEvent(
-                            'insights',
-                            'previewTabs',
-                            'previewTabClose',
-                            {
-                                query_tab_id:
-                                    insights_Store.previewTabs[index].asset
-                                        .guid,
-                                click_index: index,
-                            }
-                        )
+                        useAddEvent('insights', 'preview_tabs', 'closed', {
+                            query_tab_id:
+                                insights_Store.previewTabs[index].asset.guid,
+                            click_index: index + 1,
+                        })
                         insights_Store.previewTabs.splice(index, 1)
                         if (insights_Store.activePreviewGuid) {
                             insights_Store.activePreviewGuid =
                                 insights_Store.previewTabs[0].asset.guid
                         }
                     } else {
-                        useAddEvent(
-                            'insights',
-                            'previewTabs',
-                            'previewTabClose',
-                            {
-                                query_tab_id:
-                                    insights_Store.previewTabs[index].asset
-                                        .guid,
-                                click_index: index,
-                            }
-                        )
+                        useAddEvent('insights', 'preview_tabs', 'closed', {
+                            query_tab_id:
+                                insights_Store.previewTabs[index].asset.guid,
+                            click_index: index + 1,
+                        })
                         insights_Store.previewTabs.splice(index, 1)
                         insights_Store.activePreviewGuid = undefined
                     }
@@ -328,9 +318,10 @@
                 const clickIndex = insights_Store.previewTabs.findIndex(
                     (el) => el.asset.guid === guid
                 )
-                useAddEvent('insights', 'previewTabs', 'previewTabSwitched', {
-                    click_index: clickIndex,
-                    previous_index: previousIndex,
+                useAddEvent('insights', 'results_panel', 'tab_switched', {
+                    previous_index: clickIndex + 1,
+                    click_index: previousIndex + 1,
+                    is_full_screen: false,
                 })
                 insights_Store.activePreviewGuid = guid
                 activeResultPreviewTab.value = false
@@ -485,14 +476,9 @@
                 )
                 insights_Store.activePreviewGuid =
                     insights_Store.previewTabs[0].asset.guid
-                useAddEvent(
-                    'insights',
-                    'previewTabs',
-                    'previewTabRightClickAction',
-                    {
-                        action: 'close_other',
-                    }
-                )
+                useAddEvent('insights', 'preview_tabs', 'right_click_action', {
+                    action: 'close_other',
+                })
             }
             const closeAllTabsOnRight = ({ item }) => {
                 const _index = getIndexById(item.asset.guid)
@@ -500,27 +486,17 @@
                     (el, index) => index <= _index
                 )
                 insights_Store.activePreviewGuid = item.asset.guid
-                useAddEvent(
-                    'insights',
-                    'previewTabs',
-                    'previewTabRightClickAction',
-                    {
-                        action: 'close_right_tabs',
-                    }
-                )
+                useAddEvent('insights', 'preview_tabs', 'right_click_action', {
+                    action: 'close_right_tabs',
+                })
             }
             const closeAllTabs = ({ item }) => {
                 insights_Store.activePreviewGuid = undefined
                 insights_Store.isNewTabAdded = -1
                 insights_Store.previewTabs = []
-                useAddEvent(
-                    'insights',
-                    'previewTabs',
-                    'previewTabRightClickAction',
-                    {
-                        action: 'close_all',
-                    }
-                )
+                useAddEvent('insights', 'preview_tabs', 'right_click_action', {
+                    action: 'close_all',
+                })
             }
 
             const dropdownOptions = computed(() => {
@@ -564,8 +540,8 @@
                         handleClick: ({ item }) => {
                             useAddEvent(
                                 'insights',
-                                'previewTabs',
-                                'previewTabRightClickAction',
+                                'previe_tabs',
+                                'right_click_action',
                                 {
                                     action: 'close_tab',
                                 }

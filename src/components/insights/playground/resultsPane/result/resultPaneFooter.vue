@@ -471,16 +471,16 @@
                     }
                 }
 
-                useAddEvent('insights', 'previewTabs', 'copyResults', {
+                useAddEvent('insights', 'results_panel', 'cta_clicked', {
                     query_tab_id: activeInlineTab.value.key,
-                    click_index: insights_Store.previewTabs.findIndex(
-                        (el) =>
-                            el.asset.guid === insights_Store.activePreviewGuid
-                    ),
-                    tab_type: insights_Store.activePreviewGuid
-                        ? 'preview_tab'
-                        : 'result_tab',
-                    fullScreenMode: fullScreenMode.value,
+                    action: 'copy',
+                    click_index:
+                        insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        ) + 1,
+                    is_full_screen: fullScreenMode.value,
                 })
             }
 
@@ -528,16 +528,16 @@
                     }
                 }
 
-                useAddEvent('insights', 'previewTabs', 'downloadResults', {
+                useAddEvent('insights', 'results_panel', 'cta_clicked', {
                     query_tab_id: activeInlineTab.value.key,
-                    click_index: insights_Store.previewTabs.findIndex(
-                        (el) =>
-                            el.asset.guid === insights_Store.activePreviewGuid
-                    ),
-                    tab_type: insights_Store.activePreviewGuid
-                        ? 'preview_tab'
-                        : 'result_tab',
-                    fullScreenMode: fullScreenMode.value,
+                    action: 'download',
+                    click_index:
+                        insights_Store.previewTabs.findIndex(
+                            (el) =>
+                                el.asset.guid ===
+                                insights_Store.activePreviewGuid
+                        ) + 1,
+                    is_full_screen: fullScreenMode.value,
                 })
             }
 
@@ -635,18 +635,7 @@
 
             const toggleFullScreenMode = () => {
                 if (!fullScreenMode.value) {
-                    const _index = insights_Store.previewTabs.findIndex(
-                        (el) =>
-                            el.asset.guid === insights_Store.activePreviewGuid
-                    )
-
-                    useAddEvent('insights', 'previewTabs', 'fullScreenMode', {
-                        query_tab_id: activeInlineTab.value.key,
-                        click_index: _index,
-                        tab_type: insights_Store.activePreviewGuid
-                            ? 'preview_tab'
-                            : 'result_tab',
-                    })
+                    // ADD event here
                 }
                 fullScreenMode.value = !fullScreenMode.value
             }
@@ -687,7 +676,13 @@
             }
 
             const changeFullScreenTabActive = (tabIndex) => {
+                const prev_index = fullScreenTabActive.value
                 fullScreenTabActive.value = tabIndex
+                useAddEvent('insights', 'results_panel', 'tab_switched', {
+                    previous_index: prev_index + 1,
+                    click_index: tabIndex + 1,
+                    is_full_screen: true,
+                })
             }
             const debouncedFn = useDebounceFn(footerResizeHandler, 100)
 
@@ -725,7 +720,13 @@
             }
             const handleTabChange = (key: string) => {
                 const index = key.split('.')[0]
+                const prev_index = fullScreenTabActive.value
                 fullScreenTabActive.value = Number(index)
+                useAddEvent('insights', 'results_panel', 'tab_switched', {
+                    previous_index: Number(prev_index) + 1,
+                    click_index: Number(index) + 1,
+                    is_full_screen: true,
+                })
             }
             watch(
                 () => insights_Store.activePreviewGuid,

@@ -906,7 +906,7 @@
                                 }
                             )
                         }
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'place_name_in_editor',
                             trigger: 'quick_action',
                             query_tab_id: activeInlineTab.value.key,
@@ -918,19 +918,29 @@
                     // This case is used for preview & Play
                     case 'play': {
                         if (!isPlay) {
-                            useAddEvent('insights', 'schemaTree', 'itemClick', {
-                                action: 'preview_data',
-                                trigger: 'quick_action',
-                                query_tab_id: activeInlineTab.value.key,
-                                asset_type: t.typeName,
-                            })
+                            useAddEvent(
+                                'insights',
+                                'schema_tree',
+                                'item_click',
+                                {
+                                    action: 'preview_data',
+                                    trigger: 'quick_action',
+                                    query_tab_id: activeInlineTab.value.key,
+                                    asset_type: t.typeName,
+                                }
+                            )
                         } else {
-                            useAddEvent('insights', 'schemaTree', 'itemClick', {
-                                action: 'query_run',
-                                trigger: 'quick_action',
-                                query_tab_id: activeInlineTab.value.key,
-                                asset_type: t.typeName,
-                            })
+                            useAddEvent(
+                                'insights',
+                                'schema_tree',
+                                'item_click',
+                                {
+                                    action: 'query_run',
+                                    trigger: 'quick_action',
+                                    query_tab_id: activeInlineTab.value.key,
+                                    asset_type: t.typeName,
+                                }
+                            )
                         }
                         const activeInlineTabCopy: activeInlineTabInterface =
                             JSON.parse(
@@ -1236,7 +1246,7 @@
                         break
                     }
                     case 'info': {
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'open_sidebar',
                             trigger: 'quick_action',
                             query_tab_id: activeInlineTab.value.key,
@@ -1553,6 +1563,12 @@
                     limitRows.value,
                     useSchemaExplorerContext
                 )
+                useAddEvent('insights', 'schema_tree', 'item_click', {
+                    action: 'preview_data',
+                    trigger: 'quick_action',
+                    query_tab_id: activeInlineTab.value.key,
+                    asset_type: item?.entity.typeName,
+                })
 
                 playQuery(selectedText, item?.entity)
             }
@@ -1575,7 +1591,7 @@
                     wrapperClass: 'flex items-center ',
                     component: MenuItem,
                     handleClick: ({ item }) => {
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'set_editor_context',
                             trigger: 'kebab_menu',
                             query_tab_id: activeInlineTab.value.key,
@@ -1595,7 +1611,7 @@
                     hide: showVQB.value,
                     disabled: false,
                     handleClick: ({ item }) => {
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'place_name_in_editor',
                             trigger: 'kebab_menu',
                             query_tab_id: activeInlineTab.value.key,

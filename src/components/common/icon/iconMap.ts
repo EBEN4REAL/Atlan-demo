@@ -473,6 +473,11 @@ import QueryOutputNeutral from '~/assets/images/icons/query_output_neutral.svg'
 import PreviewQuery from '~/assets/images/icons/preview.svg'
 import Trident from '~/assets/images/icons/trident.svg'
 import EmptyUploads from '~/assets/images/icons/empty-uploads.svg'
+import CommonError1 from '~/assets/images/icons/common-error-1.svg'
+import CommonError2 from '~/assets/images/icons/common-error-2.svg'
+import CommonError3 from '~/assets/images/icons/common-error-3.svg'
+import CommonError4 from '~/assets/images/icons/common-error-4.svg'
+import CSVLogo from '~/assets/images/icons/csv-logo.svg'
 
 export default {
     SlackTabEmpty,
@@ -929,4 +934,9 @@ export default {
     Display,
     Trident,
     EmptyUploads,
+    CommonError1,
+    CommonError2,
+    CommonError3,
+    CommonError4,
+    CSVLogo
 }

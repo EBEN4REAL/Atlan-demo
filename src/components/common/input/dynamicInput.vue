@@ -124,6 +124,8 @@
 
     <!-- async tree select end -->
     <div class="flex flex-col items-center">
+        <span class="font-bold text-gray-700">Select a CSV file to upload</span>
+
         <div
             v-if="dataType === 'upload'"
             class="flex items-center mt-2 space-x-3"
@@ -150,11 +152,6 @@
                 {{ uploading ? 'Uploading' : 'Start Upload' }}
             </a-button>
         </div>
-        <span
-            v-if="accept?.length && !fileList?.length"
-            class="self-center mt-2 text-gray-500"
-            >Format allowed: {{ accept?.toUpperCase() }}</span
-        >
         <div v-if="fileList?.length" class="flex items-center mt-3 space-x-1">
             <atlan-icon icon="Link" />
             <span class="text-gray-500">{{ fileList[0]?.name }}</span>

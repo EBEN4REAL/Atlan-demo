@@ -335,9 +335,10 @@
                         lang: 'en',
                         user: {
                             id: userId.value,
-                            // Optional additional fields
-                            email: email.value,
-                            name: username.value,
+                        },
+                        data: {
+                            domain: window.location.hostname,
+                            username: username.value,
                         },
                     })
             })

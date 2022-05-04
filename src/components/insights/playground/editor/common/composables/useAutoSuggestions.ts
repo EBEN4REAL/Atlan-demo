@@ -7,10 +7,11 @@ import { useConnector } from '~/components/insights/common/composables/useConnec
 import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
 import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
 import {
+    createAliasesMap,
     extractTablesFromContext,
     getSchemaAndDatabaseFromSqlQueryText,
 } from './autoSuggestionUtils'
-import { contextStore } from './useMapping'
+import { contextStore, aliasesMap } from './useMapping'
 
 // import HEKA_SERVICE_API from '~/services/heka/index'
 import { Insights } from '~/services/sql/query'
@@ -746,6 +747,37 @@ export async function useAutoSuggestions(
         textTillChangedIndex + 1
     )
 
+    /////////////ALIASES/////////////////
+
+    aliasesMap.value = createAliasesMap(editorText)
+
+    // trimming [dot]s if any
+    const _tempTokens = editorTextTillCursorPos
+        .split(' ')
+        .filter((e) => e !== '')
+    let currAliasWord = _tempTokens[_tempTokens.length - 1]
+    let _currWord = currAliasWord,
+        lastIndex = -1
+    if (_currWord.length > 1) {
+        for (let i = _currWord.length - 2; i >= 0; i--) {
+            if (
+                _currWord[i] === _currWord[_currWord.length - 1] &&
+                _currWord[_currWord.length - 1] === '.'
+            ) {
+                lastIndex = i
+            } else {
+                break
+            }
+        }
+    }
+    if (lastIndex > 0) {
+        currAliasWord = currAliasWord.slice(0, lastIndex + 1)
+    } else if (currAliasWord[currAliasWord.length - 1] === '.') {
+        currAliasWord = currAliasWord.slice(0, currAliasWord.length - 1)
+    }
+
+    /////////////////////////////////////
+
     let subquery = false,
         subqueryStartIndex = -1,
         subQueryEndIndex = -1
@@ -801,7 +833,7 @@ export async function useAutoSuggestions(
         }
         return _str
     }
-    debugger
+
     let leftSideStringFromCurPos = removeSubQueries(
         editorTextTillCursorPos
             .replace(/\"/g, '')
@@ -840,11 +872,21 @@ export async function useAutoSuggestions(
     let currentWord = tokens[tokens.length - 1]
     // TABLE[DOT]  // check if previous is [dot]
     if (currentWord === '.' || currentWord.includes('.')) {
+        let aliasMode = false
         const dotSplitWord = currentWord.split('.')
 
         // fetch table columns
         if (tokens.length > 1) {
-            const tableName = tokens[tokens.length - 2]
+            debugger
+            let tableName = tokens[tokens.length - 2]
+            // if it is a alias
+            Object.keys(aliasesMap.value).forEach((key) => {
+                if (aliasesMap.value[key].value === currAliasWord) {
+                    tableName = key
+                    aliasMode = true
+                }
+            })
+
             const type = 'Column'
             refreshBody()
             body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
@@ -861,7 +903,7 @@ export async function useAutoSuggestions(
                     },
                 }
             )
-            if (dotSplitWord.length > 1) {
+            if (dotSplitWord.length > 1 && dotSplitWord[1].length > 0) {
                 body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
                     {
                         regexp: {

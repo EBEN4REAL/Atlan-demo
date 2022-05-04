@@ -51,6 +51,8 @@ export const contextStore = ref({
     right: [],
 }) as Ref<{ left: contextKeywordType[]; right: contextKeywordType[] }>
 
+export const aliasesMap = ref({})
+export const mappingKeywordsKeys = Object.keys(mappingKeywords)
 export function useMapping() {
     const mappingKeywordsKeys = Object.keys(mappingKeywords)
     return {

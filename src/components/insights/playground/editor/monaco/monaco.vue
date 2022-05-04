@@ -1,5 +1,26 @@
 <template>
     <div ref="monacoRoot" class="relative monacoeditor"></div>
+    <div
+        id="custom-drpdn"
+        class="absolute max-w-md py-2 overflow-auto bg-gray-100 shadow max-h-64"
+    >
+        <div
+            tabindex="-1"
+            v-for="(listItem, index) in list"
+            :key="index"
+            class="hover:bg-gray-300"
+            :class="selectedSuggestionIndex === index ? 'bg-gray-300' : ''"
+            :id="`sugg-${index}`"
+        >
+            <div
+                @keyup.enter.stop="handleApplySuggestion(listItem)"
+                @click.stop="handleApplySuggestion(listItem)"
+                class="px-2"
+            >
+                {{ listItem.label }}
+            </div>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -23,7 +44,7 @@
         ComputedRef,
         nextTick,
     } from 'vue'
-
+    import { useMagicKeys, whenever } from '@vueuse/core'
     import { languageTokens } from './sqlTokens'
     import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
     import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
@@ -70,6 +91,42 @@
         props: {},
 
         setup(props, { emit }) {
+            const list = ref([])
+            const selectedSuggestionIndex = ref(0)
+
+            const { ArrowUp, ArrowDown, x } = useMagicKeys()
+
+            const traverseUp = () => {
+                selectedSuggestionIndex.value =
+                    (selectedSuggestionIndex.value - 1) % list.value.length
+            }
+            const traverseDown = () => {
+                // debugger
+                console.log('HUHUHUHUHUHU')
+                selectedSuggestionIndex.value =
+                    (selectedSuggestionIndex.value + 1) % list.value.length
+                console.log(selectedSuggestionIndex.value)
+                const el = document.getElementById(
+                    `sugg-${selectedSuggestionIndex.value}`
+                )
+                if (el)
+                    el.scrollIntoView({
+                        behavior: 'smooth',
+                        // block: 'end',
+                        block: 'end',
+                        inline: 'nearest',
+                    })
+            }
+            // document.addEventListener('keydown', (e) => {
+            //     console.log('HAI', e, e.key)
+            // })
+            whenever(ArrowUp, traverseUp)
+            whenever(ArrowDown, traverseDown)
+
+            // watch(ArrowDown, (v) => {
+            //     traverseDown()
+            //     if (v) console.log('space has been pressed')
+            // })
             const cancelTokenSource = ref()
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -99,6 +156,9 @@
             const disposable: Ref<monaco.IDisposable | undefined> = ref()
             let editor: monaco.editor.IStandaloneCodeEditor | undefined
             const outputPaneSize = inject('outputPaneSize') as Ref<number>
+            // const keyDownEv = editor?.onKeyDown((e) => {
+            //     console.log('YAYAYAYAYA', e)
+            // })
 
             const {
                 clearMoustacheTemplateColor,
@@ -196,26 +256,69 @@
             )
 
             const { assetType, certificateStatus } = useAssetInfo()
+            const isAutoComplete = ref(false)
+            const hideAutoCompletion = () => {
+                const el = document.getElementById('custom-drpdn')
+                el?.classList.add('hidden')
+                isAutoComplete.value = false
+            }
+            const showAutoCompletion = () => {
+                const el = document.getElementById('custom-drpdn')
+                el?.classList.remove('hidden')
+                isAutoComplete.value = true
+                // document.activeElement.blur()
+                // setEditorFocusedState(false, editorFocused)
+            }
 
+            watch(
+                list,
+                () => {
+                    if (list.value.length) showAutoCompletion()
+                    else hideAutoCompletion()
+                },
+                { deep: true }
+            )
+            const setDropdown = () => {
+                const cursor = document.querySelector(
+                    '.cursor.monaco-mouse-cursor-text'
+                )
+                const parentEl = document.getElementsByClassName(
+                    'view-lines monaco-mouse-cursor-text'
+                )[0]
+
+                const cursorRect = cursor.getBoundingClientRect()
+                const parentRect = parentEl.getBoundingClientRect()
+                console.log('BOOO', cursor.offsetLeft, cursor.offsetTop)
+                const divA = document.getElementById('custom-drpdn')
+                console.log(divA)
+                divA.style.top = `${cursor.offsetTop + 27}px`
+                divA.style.left = `${cursor.offsetLeft + 65}px`
+            }
             const triggerAutoCompletion = (
                 promise: Promise<{
                     suggestions: suggestionKeywordInterface[]
                     incomplete: boolean
                 }>
             ) => {
+                setDropdown()
                 // clearing previous popover register data
-                if (disposable) disposable.value?.dispose()
-                disposable.value =
-                    monaco.languages.registerCompletionItemProvider(
-                        'atlansql',
-                        {
-                            triggerCharacters: triggerCharacters,
-                            provideCompletionItems() {
-                                // For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
-                                return promise
-                            },
-                        }
-                    )
+                // if (disposable) disposable.value?.dispose()
+                promise.then((value) => {
+                    // debugger
+                    list.value = value.suggestions
+                    console.log('HELOOOOOOOOOO', value)
+                })
+                // disposable.value =
+                //     monaco.languages.registerCompletionItemProvider(
+                //         'atlansql',
+                //         {
+                //             triggerCharacters: triggerCharacters,
+                //             provideCompletionItems() {
+                //                 // For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
+                //                 return promise
+                //             },
+                //         }
+                //     )
 
                 // editor autosuggestion icons
 
@@ -296,6 +399,60 @@
                 }, 150)
             }
 
+            const handleApplySuggestion = (suggestion) => {
+                // debugger
+                // get current cursor position
+                const editorPosition = editor?.getPosition() as monaco.IPosition
+                // use current cursor position to get position of the word to be replaced
+                const wordPosition = editor
+                    ?.getModel()
+                    ?.getWordAtPosition(editorPosition)
+                // debugger
+                if (
+                    wordPosition?.endColumn &&
+                    wordPosition?.startColumn &&
+                    editorPosition?.lineNumber
+                ) {
+                    // edit the word at the position calculated above
+                    editor?.getModel()?.pushEditOperations(
+                        [],
+                        [
+                            {
+                                range: {
+                                    endColumn: wordPosition.endColumn,
+                                    startColumn: wordPosition.startColumn,
+                                    startLineNumber: editorPosition.lineNumber,
+                                    endLineNumber: editorPosition.lineNumber,
+                                },
+                                text: suggestion.label,
+                            },
+                        ],
+                        () => null
+                    )
+                    // calling the above method selects the text that gets appended - we need to reset the selection to remove the selection
+                    // getting position of the completed word
+                    const completedWordPosition = editor
+                        ?.getModel()
+                        ?.getWordAtPosition(
+                            editor?.getPosition() as monaco.IPosition
+                        )
+                    const endColumn = completedWordPosition?.endColumn
+                    const endLine = editor?.getPosition()?.lineNumber
+                    // provide completed word's line number and end column number to reset selection (we do this by creating a new selection with same end and start position which is the end of the completed word - so the cursor gets set at the end of the completed word and no text is selected/highlighted)
+                    if (endColumn && endLine)
+                        editor?.setSelection(
+                            new monaco.Selection(
+                                endLine,
+                                endColumn,
+                                endLine,
+                                endColumn
+                            )
+                        )
+                    // restore focus on the editor (gets hidden after we insert the suggestion)
+                    editor?.focus()
+                }
+            }
+
             /* ---------------- Autoclosing pairs ------------------*/
             monaco.languages.setLanguageConfiguration(
                 'atlansql',
@@ -328,7 +485,7 @@
                     quickSuggestions: {
                         other: true,
                         comments: false,
-                        strings: true,
+                        strings: false,
                     },
                     scrollbar: {
                         useShadows: false,
@@ -510,7 +667,61 @@
                         multiLineComment()
                     }
                 }
+                // editor?.addCommand(18, function () {
+                //     traverseDown()
+                // })
+                // editor?.addCommand(16, function () {
+                //     traverseUp()
+                // })
+                const keyDownEv = editor?.onKeyDown((e) => {
+                    if (e.keyCode === 18 && isAutoComplete.value) {
+                        // debugger
+                        traverseDown()
+                        e.preventDefault()
+                        e.stopPropagation()
+                    }
+                    if (e.keyCode === 16 && isAutoComplete.value) {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        traverseUp()
+                    }
+                    if (e.keyCode === 3 && isAutoComplete.value) {
+                        // document.activeElement.blur()
+                        e.preventDefault()
+                        e.stopPropagation()
+                        handleApplySuggestion(
+                            list.value[selectedSuggestionIndex.value]
+                        )
+                    }
+                    // console.log('YAYAYAYAYA', e.keyCode)
+                })
+                // editor.addAction({
+                //     id: 'test',
+                //     label: 'test',
+                //     // An optional array of keybindings for the action.
+                //     keybindings: [3],
 
+                //     // A precondition for this action.
+                //     precondition: !!isAutoComplete.value,
+
+                //     // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
+                //     keybindingContext: !!isAutoComplete.value,
+
+                //     // Method that will be executed when the action is triggered.
+                //     // @param editor The editor instance is passed in as a convenience
+                //     run: function (ed) {
+                //         handleApplySuggestion(
+                //             list.value[selectedSuggestionIndex.value]
+                //         )
+                //     },
+                // })
+                // editor?.addCommand(3, function () {
+                //     if (isAutoComplete.value)
+                //         handleApplySuggestion(
+                //             list.value[selectedSuggestionIndex.value]
+                //         )
+                //     else return
+                // })
                 /* IMP for cmd+enter/ ctrl+enter to run query when editor is focused */
                 editor?.addCommand(
                     monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
@@ -551,6 +762,7 @@
 
                 /* -------------------------------------------- */
                 editor?.getModel().onDidChangeContent((event) => {
+                    // debugger
                     const text = editor?.getValue()
                     onEditorContentChange(event, text, editor)
                     findAndChangeCustomVariablesColor(false)
@@ -568,8 +780,16 @@
                     suggestionsList.value = suggestions
                     triggerAutoCompletion(suggestions)
                 })
+                // editor?.cursorPositionChangedEvent(()=>{
+
+                // })
+
                 editor?.onDidChangeCursorPosition((pos) => {
+                    // console.log('POSTION', pos)
+
                     setEditorPos(pos.position, editorPos)
+                    hideAutoCompletion()
+                    // setTimeout(setDropdown, 300)
                 })
 
                 editor?.onDidBlurEditorWidget(() => {
@@ -579,6 +799,7 @@
                         monaco,
                         editor?.getPosition()
                     )
+                    // hideAutoCompletion()
                 })
                 editor?.onDidFocusEditorWidget(() => {
                     toggleGhostCursor(false, editor, monaco, editorPos)
@@ -748,6 +969,10 @@
             })
 
             onMounted(() => {
+                const parentElement =
+                    document.getElementsByClassName('monacoeditor')[0]
+                const el = document.getElementById('custom-drpdn')
+                parentElement.appendChild(el)
                 tabs.value.forEach((tab) => {
                     const newModel = monaco.editor.createModel(
                         tab.playground.editor.text,
@@ -773,6 +998,9 @@
                 editorStates,
                 outputPaneSize,
                 monacoRoot,
+                list,
+                handleApplySuggestion,
+                selectedSuggestionIndex,
             }
         },
     })

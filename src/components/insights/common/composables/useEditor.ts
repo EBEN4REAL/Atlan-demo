@@ -73,7 +73,7 @@ export function useEditor(
     }
 
     function getFirstValidQuery(queries: string[], index = 0) {
-        debugger
+        // debugger
         if (index >= queries.length) return queries[0]
         if (
             queries[index].includes('-- ') &&
@@ -86,7 +86,7 @@ export function useEditor(
         } else return queries[index]
     }
     function semicolonSeparateQuery(query: string) {
-        debugger
+        // debugger
         // check if it have semicolon
         let queryTextValues = query?.split(';')
         queryTextValues = queryTextValues.filter(
@@ -105,7 +105,7 @@ export function useEditor(
         variables: CustomVaribaleInterface[],
         query: string
     ) {
-        debugger
+        // debugger
         if (
             variables.length > 0 &&
             query?.match(/{{\s*[\w\.]+\s*}}/g)?.length > 0

@@ -38,6 +38,10 @@ export const typesKeywordsMap = {
         values: ['BETWEEN', 'LIKE', 'IN', 'IS', 'IS NULL', 'NULL', 'NOT', 'IN'],
         trigger: ['WHERE'],
     },
+    AGGREGATE: {
+        values: ['SUM', 'COUNT', 'MAX', 'MIN', 'AVERAGE'],
+        trigger: ['SELECT'],
+    },
 }
 export function useMapping() {
     const mappingKeywordsKeys = Object.keys(mappingKeywords)

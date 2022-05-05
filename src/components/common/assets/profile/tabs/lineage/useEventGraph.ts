@@ -95,8 +95,8 @@ export default function useEventGraph({
             View: 'column',
             MaterialisedView: 'column',
             TableauDatasource: 'field',
-            LookerExplore: 'field',
-            LookerView: 'field',
+            // LookerExplore: 'field',
+            // LookerView: 'field',
         }
         return portsLabelMap[typeName]
     }
@@ -214,7 +214,7 @@ export default function useEventGraph({
             'Column',
             'TableauDatasourceField',
             'TableauCalculatedField',
-            'LookerField',
+            // 'LookerField',
         ]
         return typeNames.includes(typeName)
     }
@@ -874,7 +874,7 @@ export default function useEventGraph({
         }
 
         const config = computed(() => ({
-            depth: depthCounter.value,
+            depth: depthCounter.value * 2,
             guid: portId,
             direction: 'BOTH',
             attributes: LineageAttributesPortLevel,

@@ -4,14 +4,29 @@
             <div class="py-1 mb-3 text-base font-bold text-gray-500">
                 Group Info
             </div>
-            <div v-auth="map.UPDATE_GROUP" class="ml-auto">
-                <a-button
-                    class="flex items-center content-center px-2"
-                    @click="$emit('toggleEdit')"
-                >
-                    <AtlanIcon icon="Edit" class="mr-1" /> Edit
-                </a-button>
-            </div>
+            <!-- <div v-auth="map.UPDATE_GROUP" class="ml-auto">
+                <a-button-group>
+                    <MemberPopover
+                        :selected-group="selectedGroup"
+                        @members-added="$emit('changeTab', 'members')"
+                    >
+                        <template #label>
+                            <AtlanButton2
+                                color="secondary"
+                                prefix-icon="Add"
+                                class="rounded-md rounded-r-none py-2 px-1.5 text-sm"
+                                label="Add Users"
+                            />
+                        </template>
+                    </MemberPopover>
+                    <AtlanButton2
+                        class="rounded-md border-l-0 rounded-l-none py-2 px-1.5"
+                        color="secondary"
+                        prefix-icon="Edit"
+                        @click="$emit('toggleEdit')"
+                    />
+                </a-button-group>
+            </div> -->
         </div>
         <div class="profile-wrapper">
             <div class="pb-6 border-b border-gray-200 border-solid">
@@ -113,6 +128,7 @@
     import ViewPurposes from '@/admin/users/userPreview/about/viewPurposes.vue'
     import map from '~/constant/accessControl/map'
     import PopOverUser from '@/common/popover/user/user.vue'
+    import MemberPopover from '@/admin/groups/groupPreview/memberPopover.vue'
 
     export default defineComponent({
         name: 'ViewUser',
@@ -120,6 +136,7 @@
             PopOverUser,
             ViewPersonas,
             ViewPurposes,
+            MemberPopover,
         },
         props: {
             selectedGroup: {

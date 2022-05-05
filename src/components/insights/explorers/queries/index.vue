@@ -11,10 +11,12 @@
             class="w-full"
         >
             <div
-                class="w-full p-4 pb-0 rounded"
+                class="w-full p-2 pb-0 rounded"
                 v-if="queryCollections?.length > 0"
             >
-                <div class="flex items-center">
+                <div
+                    class="flex items-center p-2 rounded hover:bg-new-gray-200"
+                >
                     <CollectionSelector
                         @update:data="updateCollection"
                         @toggleCollectionModal="toggleCollectionModal"
@@ -58,7 +60,7 @@
                     </InsightsThreeDotMenu>
                 </div>
                 <div
-                    class="flex flex-row mt-4 space-x-2"
+                    class="flex flex-row mx-2 mt-3 space-x-2"
                     v-if="treeData?.length"
                 >
                     <a-input

@@ -637,6 +637,7 @@
         border: 1px solid #e9ebf1 !important;
         color: #6f7590 !important;
         border-radius: 8px !important;
+        margin-top: 8px !important;
     }
     :global(.ant-input) {
         color: #6f7590 !important;

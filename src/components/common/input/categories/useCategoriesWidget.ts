@@ -126,6 +126,7 @@ const useCategoriesWidget = ({ parentGlossaryQf }: Params) => {
                 }
                 treeNode.dataRef.isLoading = false
                 treeNode.dataRef.isError = null
+                treeData.value = [...treeData.value] // maintains reactivity of tree
             }
         } catch (e) {
             console.log(e)

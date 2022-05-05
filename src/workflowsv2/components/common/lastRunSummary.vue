@@ -4,7 +4,7 @@
         :title="false"
         :paragraph="{ rows: 1 }"
         active
-        class="mt-2.5"
+        style="height: 22px"
     />
     <div v-else class="flex text-gray-500 gap-x-5">
         <template v-if="run">
@@ -12,19 +12,10 @@
                 <AtlanIcon :icon="getRunIconByPhase(run)" class="mb-0.5" />
                 Last run
                 <span class="text-gray"> {{ startedAt(run, true) }} </span>
-                by
-                <span
-                    class="cursor-pointer hover:underline"
-                    @click="() => openUserSidebar(creatorUsername(run))"
-                >
-                    <img
-                        v-if="showCreatorImage"
-                        :src="avatarUrl(creatorUsername(run))"
-                        class="flex-none inline-block h-4 rounded-full"
-                        @error="showCreatorImage = false"
-                    />
-                    {{ creatorUsername(run) }}
-                </span>
+                <template v-if="creatorUsername(run) !== 'argo'">
+                    by
+                    <UserWrapper :username="creatorUsername(run)" />
+                </template>
             </span>
 
             <div class="flex items-center text-sm text-gray gap-x-1">
@@ -40,10 +31,9 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs } from 'vue'
-    import { useUserPreview } from '~/composables/user/showUserPreview'
-    import { avatarUrl } from '~/composables/user/useUsers'
+    import { computed, defineComponent, toRefs } from 'vue'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
+    import UserWrapper from '~/workflowsv2/components/common/user.vue'
 
     export default defineComponent({
         props: {
@@ -57,10 +47,10 @@
                 default: () => false,
             },
         },
+        components: { UserWrapper },
         setup(props) {
             const { runs } = toRefs(props)
             const run = computed(() => runs.value?.[0]?._source || undefined)
-            const showCreatorImage = ref(true)
 
             const {
                 startedAt,
@@ -70,16 +60,11 @@
                 getRunIconByPhase,
             } = useWorkflowInfo()
 
-            const { openUserSidebar } = useUserPreview()
-
             return {
                 run,
                 startedAt,
                 creatorUsername,
-                openUserSidebar,
                 phase,
-                showCreatorImage,
-                avatarUrl,
                 duration,
                 getRunIconByPhase,
             }

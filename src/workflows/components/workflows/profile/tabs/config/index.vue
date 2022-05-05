@@ -1,5 +1,5 @@
 <template>
-    <div class="flex h-full overflow-y-hidden">
+    <div class="flex h-full overflow-y-hidden bg-white">
         <Loader v-if="isLoading" />
         <div
             v-else-if="!isLoading && error"
@@ -8,115 +8,25 @@
             <ErrorView />
         </div>
 
-        <div
-            v-else-if="configMap"
-            class="flex-1 h-full overflow-y-hidden bg-white"
-        >
-            <Setup
-                :workflowTemplate="packageObject"
-                :workflowObject="workflowObject"
-                :configMap="configMapParsed"
-                :isEdit="true"
-                :defaultValue="getGlobalArguments(workflowObject)"
-            ></Setup>
-        </div>
-        <div
-            style="min-width: 420px !important; max-width: 420px !important"
-            class="bg-white border-l"
-        >
-            <div class="flex flex-col px-4 py-4 border-b border-gray-200">
-                <div class="flex items-center" style="padding-bottom: 1px">
-                    <div class="flex items-center justify-between">
-                        <div
-                            class="flex items-center flex-grow border-gray-200"
-                            v-if="packageObject?.metadata?.annotations"
-                        >
-                            <div
-                                class="relative w-10 h-10 p-2 mr-2 bg-white border border-gray-200 rounded-full"
-                            >
-                                <img
-                                    v-if="
-                                        packageObject?.metadata?.annotations[
-                                            'orchestration.atlan.com/icon'
-                                        ]
-                                    "
-                                    class="self-center w-6 h-6"
-                                    :src="
-                                        packageObject?.metadata?.annotations[
-                                            'orchestration.atlan.com/icon'
-                                        ]
-                                    "
-                                />
-                                <span
-                                    v-else-if="
-                                        packageObject?.metadata?.annotations[
-                                            'orchestration.atlan.com/emoji'
-                                        ]
-                                    "
-                                    class="self-center w-6 h-6"
-                                >
-                                    {{
-                                        packageObject?.metadata?.annotations[
-                                            'orchestration.atlan.com/emoji'
-                                        ]
-                                    }}</span
-                                >
-                                <span v-else class="self-center w-6 h-6">
-                                    {{ '\ud83d\udce6' }}</span
-                                >
-
-                                <div
-                                    v-if="
-                                        packageObject?.metadata?.labels[
-                                            'orchestration.atlan.com/certified'
-                                        ] === 'true'
-                                    "
-                                    class="absolute -right-1 -top-2"
-                                >
-                                    <a-tooltip
-                                        title="Certified"
-                                        placement="left"
-                                    >
-                                        <span>
-                                            <AtlanIcon
-                                                icon="Verified"
-                                                class="ml-1"
-                                            ></AtlanIcon
-                                        ></span>
-                                    </a-tooltip>
-                                </div>
-                            </div>
-                            <div class="flex flex-col">
-                                <div
-                                    class="flex items-center text-base font-semibold leading-none truncate overflow-ellipsis"
-                                >
-                                    {{
-                                        packageObject?.metadata?.annotations[
-                                            'orchestration.atlan.com/name'
-                                        ]
-                                    }}
-                                </div>
-
-                                <div class="flex text-gray-500">
-                                    {{
-                                        packageObject?.metadata.annotations[
-                                            'package.argoproj.io/name'
-                                        ]
-                                    }}
-                                    ({{
-                                        packageObject?.metadata.labels[
-                                            'package.argoproj.io/version'
-                                        ]
-                                    }})
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <Preview :item="packageObject"></Preview>
-        </div>
+        <template v-else-if="configMap">
+            <Config
+                v-if="featureEnabledMap[WORKFLOW_CENTER_V2]"
+                :workflow-template="packageObject"
+                :workflow-object="workflowObject"
+                :config-map="configMapParsed"
+                :default-value="getGlobalArguments(workflowObject)"
+            />
+            <template v-else>
+                <Setup
+                    :workflowTemplate="packageObject"
+                    :workflowObject="workflowObject"
+                    :configMap="configMapParsed"
+                    :isEdit="true"
+                    :defaultValue="getGlobalArguments(workflowObject)"
+                />
+                <Preview :item="packageObject" mode="package" />
+            </template>
+        </template>
     </div>
 </template>
 
@@ -124,15 +34,22 @@
     // Vue
     import { defineComponent, computed, inject, toRefs } from 'vue'
     import Setup from '~/workflows/components/packages/setup/index.vue'
+    import Config from '~/workflowsv2/components/profile/config.vue'
     import { useConfigMapByName } from '~/workflows/composables/package/useConfigMapByName'
     import Loader from '@/common/loaders/page.vue'
-    import ErrorView from '@common/error/discover.vue'
-    import Preview from '~/workflows/components/workflows/preview/property/index.vue'
+    import ErrorView from '@/common/error/discover.vue'
+    import Preview from '~/workflows/components/workflows/preview/index.vue'
+
     import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
+
+    import {
+        featureEnabledMap,
+        WORKFLOW_CENTER_V2,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'WorkflowConfig',
-        components: { Setup, Loader, ErrorView, Preview },
+        components: { Setup, Loader, ErrorView, Config, Preview },
         // mixins: [WorkflowMixin],
         props: {
             workflowObject: {
@@ -188,6 +105,8 @@
                 error,
                 configMapParsed,
                 getGlobalArguments,
+                featureEnabledMap,
+                WORKFLOW_CENTER_V2,
             }
         },
     })

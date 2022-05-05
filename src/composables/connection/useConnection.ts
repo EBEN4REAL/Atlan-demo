@@ -9,7 +9,7 @@ import {
 } from '~/constant/projection'
 import { assetInterface } from '~/types/assets/asset.interface'
 
-export const MAX_CONNECTIONS = 200
+export const MAX_CONNECTIONS = 400
 export const CONNECTION_ASSET_TYPE = 'Connection'
 export const CONNECTION_ATTRIBUTES = [
     'connectorName',

@@ -197,6 +197,7 @@ import ExplorerTriggerFilled from '~/assets/images/icons/explorer-trigger-filled
 import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
 import EmptyResult from '~/assets/images/icons/empty_result.svg'
 import Schedule from '~/assets/images/icons/schedule.svg'
+import Unscheduled from '~/assets/images/icons/unscheduled.svg'
 import Minimap from '~/assets/images/icons/minimap.svg'
 import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
@@ -412,6 +413,8 @@ import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
 import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
 import VqbDraft from '~/assets/images/icons/VqbDraft.svg'
 import Clock from '~/assets/images/icons/clock.svg'
+import ClockStart from '~/assets/images/icons/clock-start.svg'
+import ClockStop from '~/assets/images/icons/clock-stop.svg'
 import Mail from '~/assets/images/icons/mail.svg'
 import Collapsed from '~/assets/images/icons/Collapsed.svg'
 
@@ -442,6 +445,7 @@ import Comment from '~/assets/images/icons/Comment.svg'
 import Resources2 from '~/assets/images/illustrations/resources/resources.svg'
 import RunningQuery from '~/assets/images/icons/tabs/Running.svg'
 import FailedQuery from '~/assets/images/icons/tabs/Error.svg'
+import SlackTabEmpty from '~/assets/images/illustrations/empty_slack_tab.svg'
 import SuccessQuery from '~/assets/images/icons/tabs/success-check.svg'
 import QuestionRound from '~/assets/images/icons/question-round.svg'
 import QuestionRoundSmall from '~/assets/images/icons/question-round-small.svg'
@@ -470,6 +474,7 @@ import PreviewQuery from '~/assets/images/icons/preview.svg'
 import Trident from '~/assets/images/icons/trident.svg'
 
 export default {
+    SlackTabEmpty,
     PreviewQuery,
     QueryOutputFail,
     QueryOutputNeutral,
@@ -712,6 +717,7 @@ export default {
     EmptyResult,
     Flash,
     Schedule,
+    Unscheduled,
     Minimap,
     FullScreenBoth,
     Minus,
@@ -870,6 +876,8 @@ export default {
     VqbDeprecated,
     VqbDraft,
     Clock,
+    ClockStart,
+    ClockStop,
     ClassificationShield,
     ClassificationAtlan,
     ClassificationPropagated,

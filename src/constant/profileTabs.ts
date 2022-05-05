@@ -69,7 +69,7 @@ export const profileTabs = [
     },
     {
         id: 'uploadHistory',
-        label: 'Upload history',
+        label: 'Upload History',
         component: 'uploadHistory',
         includes: ['AtlasGlossary'],
         icon: 'LinkedAssets',

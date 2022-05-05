@@ -6,10 +6,11 @@
         v-model:visible="visible"
         width="800px"
         :class="$style.modalStyles"
+        :centered="true"
     >
         <!-- modal title -->
         <template #title>
-            <div class="bg-gray-200 flex items-center">
+            <div class=" flex items-center">
                 <span class="text-base font-bold text-gray-700"
                     >New Bulk Upload</span
                 >
@@ -153,7 +154,7 @@
                     getGlossaryByGuid(props?.entity?.guid)?.isBulkUploadRunning
                 ) {
                     message.error({
-                        content: `Sorry, this action cannot be completed because there is an ongoing upload for this glossary. Retry again later.`,
+                        content: `This action cannot be completed because there is only one upload supported at a time`,
                         duration: 5,
                     })
                 } else {

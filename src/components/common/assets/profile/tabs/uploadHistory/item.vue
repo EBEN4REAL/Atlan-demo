@@ -5,8 +5,8 @@
             <div class="w-full">
                 <div class="flex justify-between items-center w-full">
                     <div class="flex items-center space-x-2">
-                        <span class="font-bold text-gray-500 font-base">{{
-                            name(run)
+                        <span class="font-bold text-gray-500 font-base ml-0.5">{{
+                            runName
                         }}</span>
                         <span
                             class="status-badge text-xs"
@@ -24,15 +24,15 @@
                         </span>
                     </div>
                     <div
-                        v-if="phase(run)==='Succeeded'"
+                        v-if="phase(run) === 'Succeeded'"
                         class="items-center justify-end"
                     >
                         <div
-                            class="border w-40 border-gray-200 bg-white cursor-pointer rounded-lg px-2 py-1"
+                            class="border border-gray-200 bg-white cursor-pointer rounded-lg px-2 py-1"
                             @click="handleDownloadArtifacts"
                         >
                             <atlan-icon icon="Download" class="mx-1" />
-                            Download CSV
+                            Results CSV
                         </div>
                     </div>
                 </div>
@@ -69,21 +69,16 @@
                 class="flex items-center space-x-1"
             >
                 <atlan-icon icon="Term" class="mb-0.5" />
-                <span class="text-gray-500 text-xs"
-                    >{{ finalStatus?.terms?.total_count }} terms uploaded</span
-                >
-                <span
-                    v-if="finalStatus?.terms?.updated_count"
-                    class="text-gray-500 text-xs"
-                    >-</span
-                >
                 <span
                     v-if="finalStatus?.terms?.updated_count"
                     class="text-gray-500 text-xs"
                     >{{ finalStatus?.terms?.updated_count }} updated</span
                 >
                 <span
-                    v-if="finalStatus?.terms?.created_count"
+                    v-if="
+                        finalStatus?.terms?.created_count &&
+                        finalStatus?.terms?.updated_count
+                    "
                     class="text-gray-500 text-xs"
                     >-</span
                 >
@@ -93,7 +88,11 @@
                     >{{ finalStatus?.terms?.created_count }} created</span
                 >
                 <span
-                    v-if="finalStatus?.terms?.error_count"
+                    v-if="
+                        finalStatus?.terms?.error_count &&
+                        (finalStatus?.terms?.created_count ||
+                            finalStatus?.terms?.updated_count)
+                    "
                     class="text-gray-500 text-xs"
                     >-</span
                 >
@@ -108,22 +107,16 @@
                 class="flex items-center space-x-1 mt-1"
             >
                 <atlan-icon icon="Category" class="mb-0.5" />
-                <span class="text-gray-500 text-xs"
-                    >{{ finalStatus?.categories?.total_count }} new categories
-                    detected</span
-                >
-                <span
-                    v-if="finalStatus?.categories?.created_count"
-                    class="text-gray-500 text-xs"
-                    >-</span
-                >
                 <span
                     v-if="finalStatus?.categories?.created_count"
                     class="text-gray-500 text-xs"
                     >{{ finalStatus?.categories?.created_count }} created</span
                 >
                 <span
-                    v-if="finalStatus?.categories?.error_count"
+                    v-if="
+                        finalStatus?.categories?.error_count &&
+                        finalStatus?.categories?.created_count
+                    "
                     class="text-gray-500 text-xs"
                     >-</span
                 >
@@ -163,6 +156,10 @@
         props: {
             run: {
                 type: Object as PropType<LiveRun>,
+                required: true,
+            },
+            runName: {
+                type: String,
                 required: true,
             },
         },

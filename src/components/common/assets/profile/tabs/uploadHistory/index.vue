@@ -11,7 +11,7 @@
     </div>
     <div v-else-if="!isLoading && runs?.length">
         <div v-for="(run, i) in runList" :key="i" class="m-5">
-            <RunItem :run="run" />
+            <RunItem :run="run" :run-name="`Bulk Upload ${runList?.length-i}`"/>
         </div>
     </div>
     <div

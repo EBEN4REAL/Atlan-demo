@@ -474,12 +474,6 @@
                 useAddEvent('insights', 'results_panel', 'cta_clicked', {
                     query_tab_id: activeInlineTab.value.key,
                     action: 'copy',
-                    click_index:
-                        insights_Store.previewTabs.findIndex(
-                            (el) =>
-                                el.asset.guid ===
-                                insights_Store.activePreviewGuid
-                        ) + 1,
                     is_full_screen: fullScreenMode.value,
                 })
             }
@@ -531,12 +525,6 @@
                 useAddEvent('insights', 'results_panel', 'cta_clicked', {
                     query_tab_id: activeInlineTab.value.key,
                     action: 'download',
-                    click_index:
-                        insights_Store.previewTabs.findIndex(
-                            (el) =>
-                                el.asset.guid ===
-                                insights_Store.activePreviewGuid
-                        ) + 1,
                     is_full_screen: fullScreenMode.value,
                 })
             }
@@ -635,6 +623,11 @@
 
             const toggleFullScreenMode = () => {
                 if (!fullScreenMode.value) {
+                    useAddEvent('insights', 'results_panel', 'cta_clicked', {
+                        query_tab_id: activeInlineTab.value.key,
+                        action: 'full_screen',
+                        is_full_screen: fullScreenMode.value,
+                    })
                     // ADD event here
                 }
                 fullScreenMode.value = !fullScreenMode.value

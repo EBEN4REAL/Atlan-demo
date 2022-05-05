@@ -319,8 +319,8 @@
                     (el) => el.asset.guid === guid
                 )
                 useAddEvent('insights', 'results_panel', 'tab_switched', {
-                    previous_index: clickIndex + 1,
-                    click_index: previousIndex + 1,
+                    previous_index: previousIndex + 1,
+                    click_index: clickIndex + 1,
                     is_full_screen: false,
                 })
                 insights_Store.activePreviewGuid = guid

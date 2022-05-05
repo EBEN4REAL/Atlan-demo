@@ -360,8 +360,8 @@ const keyMap = {
             link_copied: {
                 action: 'insights_query_link_copied',
             },
-            panelAdd: {
-                action: 'insights_vqb_panel_added',
+            panel_add: {
+                action: 'insights_vqb_panel_add',
                 properties: (props) => ({
                     panel_type: props?.panel_type,
                     panel_source: props?.panel_source,
@@ -393,7 +393,6 @@ const keyMap = {
                 properties: (props) => ({
                     action: props.action,
                     query_tab_id: props?.query_tab_id,
-                    click_index: props?.click_index,
                     is_full_screen: props?.is_full_screen,
                 }),
             },

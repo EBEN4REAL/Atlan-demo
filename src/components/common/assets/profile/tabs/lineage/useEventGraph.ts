@@ -874,7 +874,7 @@ export default function useEventGraph({
         }
 
         const config = computed(() => ({
-            depth: depthCounter.value,
+            depth: depthCounter.value * 2,
             guid: portId,
             direction: 'BOTH',
             attributes: LineageAttributesPortLevel,

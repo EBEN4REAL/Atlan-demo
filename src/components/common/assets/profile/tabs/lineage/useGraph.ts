@@ -403,44 +403,6 @@ export default function useGraph(graph) {
             },
             ports: {
                 groups: {
-                    // ctaPortLeft: {
-                    //     position: { name: 'left' },
-                    //     markup: [
-                    //         {
-                    //             tagName: 'circle',
-                    //             selector: 'portBody',
-                    //         },
-                    //     ],
-                    //     attrs: {
-                    //         portBody: {
-                    //             r: 14,
-                    //             strokeWidth: 0,
-                    //             stroke: '#000000',
-                    //             fill: '#000000',
-                    //             width: 1,
-                    //             height: 1,
-                    //         },
-                    //     },
-                    // },
-                    // ctaPortRight: {
-                    //     position: { name: 'right' },
-                    //     markup: [
-                    //         {
-                    //             tagName: 'circle',
-                    //             selector: 'portBody',
-                    //         },
-                    //     ],
-                    //     attrs: {
-                    //         portBody: {
-                    //             r: 14,
-                    //             strokeWidth: 0,
-                    //             stroke: '#000000',
-                    //             fill: '#000000',
-                    //             width: 1,
-                    //             height: 1,
-                    //         },
-                    //     },
-                    // },
                     invisiblePort: {
                         markup: [
                             {

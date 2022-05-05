@@ -113,7 +113,7 @@
                                 <Tooltip
                                     :tooltip-text="`${selectedCollection?.attributes?.name}`"
                                     classes="cursor-pointer text-base font-bold mr-1
-                                text-gray-700 w-full hover:underline"
+                                text-gray-700 hover:underline"
                                     @click.stop="
                                         () => openInSidebar(selectedCollection)
                                     "

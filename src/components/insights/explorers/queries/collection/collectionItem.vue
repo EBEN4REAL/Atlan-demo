@@ -41,7 +41,7 @@
                 <template #menuTrigger>
                     <div v-if="username === item?.createdBy" class="pl-5">
                         <AtlanIcon
-                            icon="KebabMenu"
+                            icon="KebabMenuHorizontal"
                             class="w-4 h-4 my-auto"
                         ></AtlanIcon>
                     </div>

@@ -113,7 +113,10 @@
                                 <Tooltip
                                     :tooltip-text="`${selectedCollection?.attributes?.name}`"
                                     classes="cursor-pointer text-base font-bold mr-1
-                                text-gray-700 w-full"
+                                text-gray-700 w-full hover:underline"
+                                    @click.stop="
+                                        () => openInSidebar(selectedCollection)
+                                    "
                                 >
                                 </Tooltip>
                                 <div class="flex-shrink-0 w-5">
@@ -149,6 +152,7 @@
         inject,
         onMounted,
         watch,
+        Ref,
     } from 'vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
@@ -159,6 +163,10 @@
     import CollectionItem from './collectionItem.vue'
     import map from '~/constant/accessControl/map'
     import Tooltip from '@/common/ellipsis/index.vue'
+
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
+    import { assetInterface } from '~/types/assets/asset.interface'
 
     export default defineComponent({
         name: 'CollectionSelector',
@@ -184,6 +192,16 @@
             ) as ComputedRef<activeInlineTabInterface>
             const selectedValue = ref(
                 activeInlineTab.value.explorer.queries.collection.guid
+            )
+
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
+
+            const { isSameNodeOpenedInSidebar } = useSchema()
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                inlineTabs,
+                activeInlineTab
             )
 
             watch(
@@ -308,6 +326,23 @@
                 emit('toggleCollectionModal')
             }
 
+            const openInSidebar = (t: assetInterface) => {
+                // i button clicked on the same node -> close the sidebar
+                if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
+                    /* Close it if it is already opened */
+                    closeAssetSidebar(activeInlineTab.value)
+                } else {
+                    const activeInlineTabCopy: activeInlineTabInterface = {
+                        ...activeInlineTab.value,
+                    }
+
+                    // console.log('query entity1: ', t)
+                    activeInlineTabCopy.assetSidebar.assetInfo = t
+                    activeInlineTabCopy.assetSidebar.isVisible = true
+                    openAssetSidebar(activeInlineTabCopy, 'not_editor')
+                }
+            }
+
             watch(queryCollectionsLoading, (newLoading) => {
                 if (!newLoading) {
                     selectDefaultValue()
@@ -343,6 +378,7 @@
                 hasCollectionReadPermission,
                 isCollectionCreatedByCurrentUser,
                 ellipsis: ref(true),
+                openInSidebar,
             }
         },
     })

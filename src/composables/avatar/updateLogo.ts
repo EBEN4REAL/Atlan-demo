@@ -31,12 +31,13 @@ export default function uploadOrgLogo() {
         uploadKey.value = Date.now().toString()
     })
 
-    const upload = (imageData: any) => {
+    const upload = async (imageData: any) => {
         const formDataObject = new FormData()
         formDataObject.append('image', imageData)
         formData.value = formDataObject
 
-        mutate()
+        await mutate()
+
     }
 
     return {

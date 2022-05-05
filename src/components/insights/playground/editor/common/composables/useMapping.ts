@@ -4,7 +4,6 @@ export const mappingKeywords = {
     BY: 'COLUMN',
     ON: 'COLUMN',
     OR: 'COLUMN',
-    NOT: 'COLUMN',
     AND: 'COLUMN',
     SET: 'COLUMN',
     DISTINCT: 'COLUMN',
@@ -34,9 +33,16 @@ export const nextKeywords = {
     UNION: ['SELECT'],
     HAVING: ['COUNT'],
 }
+export const typesKeywordsMap = {
+    FILTER: {
+        values: ['BETWEEN', 'LIKE', 'IN', 'IS', 'IS NULL', 'NULL', 'NOT', 'IN'],
+        trigger: ['WHERE'],
+    },
+}
 export function useMapping() {
     const mappingKeywordsKeys = Object.keys(mappingKeywords)
     return {
+        typesKeywordsMap,
         mappingKeywordsKeys,
         mappingKeywords,
     }

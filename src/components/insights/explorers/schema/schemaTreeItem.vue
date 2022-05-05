@@ -1605,8 +1605,8 @@
 
             const dropdownTableOptions = [
                 {
-                    title: 'Set in explorer context',
-                    key: 'Set in explorer context',
+                    title: 'Set explorer context',
+                    key: 'Set explorer context',
                     class: `
                                                 ${
                                                     readOnly?.value
@@ -1642,8 +1642,8 @@
 
             const dropdownOptions = [
                 {
-                    title: 'Set in editor context',
-                    key: 'Set in editor context',
+                    title: 'Set editor context',
+                    key: 'Set editor context',
                     class: `
                                                 ${
                                                     readOnly?.value
@@ -1668,8 +1668,8 @@
                     },
                 },
                 {
-                    title: 'Set in explorer context',
-                    key: 'Set in explorer context',
+                    title: 'Set explorer context',
+                    key: 'Set explorer context',
                     class: `
                                                 ${
                                                     readOnly?.value

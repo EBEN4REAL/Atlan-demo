@@ -815,7 +815,7 @@ export async function useAutoSuggestions(
                                         label: keyword,
                                         kind: monaco.languages
                                             .CompletionItemKind.Keyword,
-                                        insertText: keyword,
+                                        insertText: `${keyword}()`,
                                     }
                                 }
                             )

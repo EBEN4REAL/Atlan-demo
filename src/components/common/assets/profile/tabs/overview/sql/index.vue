@@ -39,7 +39,6 @@
         defineAsyncComponent,
         ref,
         Ref,
-        toRefs,
     } from 'vue'
 
     import Summary from '@common/widgets/summary/index.vue'
@@ -72,9 +71,7 @@
                 default: false,
             },
         },
-        setup(props) {
-            const { selectedAsset } = toRefs(props)
-
+        setup() {
             const { connectorName } = useAssetInfo()
 
             const activePreviewTabKey: Ref<'column' | 'table'> = ref('column')

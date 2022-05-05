@@ -28,6 +28,9 @@ app.use(createPinia())
 const head = createHead()
 app.use(head)
 
+// treat 'svg:style' as custom elements
+app.config.compilerOptions.isCustomElement = (tag) => tag === 'svg:style'
+
 const routes = setupLayouts(generatedRoutes)
 const router = createRouter({ history: createWebHistory(), routes })
 const authStore = useAuthStore()

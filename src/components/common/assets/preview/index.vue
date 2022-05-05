@@ -583,13 +583,14 @@
                 { debounce: 200, immediate: true }
             )
 
-            const router = useRouter()
-
             const handleAction = (key) => {
                 emit('closeDrawer')
                 switch (key) {
                     case 'open':
-                        router.push(getProfilePath(selectedAsset.value))
+                        window.open(
+                            getProfilePath(selectedAsset.value),
+                            '_blank'
+                        )
                         useAddEvent('discovery', 'cta_action', 'clicked', {
                             action: 'open_asset',
                             asset_type: selectedAsset.value.typeName,

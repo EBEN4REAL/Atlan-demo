@@ -22,6 +22,7 @@ export const getNodeTypeText = {
     Process: 'Process',
     Table: 'Table',
     View: 'View',
+    MaterialisedView: 'MaterialisedView',
     // PowerBI
     PowerBIDashboard: 'Dashboard',
     PowerBIDataflow: 'Dataflow',
@@ -32,6 +33,7 @@ export const getNodeTypeText = {
     PowerBITile: 'Tile',
     PowerBIWorkspace: 'Workspace',
     // Looker
+    LookerView: 'View',
     LookerTile: 'Tile',
     LookerFolder: 'Folder',
     LookerDashboard: 'Dashboard',

@@ -50,7 +50,7 @@
         <transition-group
             tag="div"
             name="unlink-done"
-            class="flex flex-col flex-grow p-4 overflow-y-auto gap-y-3"
+            class="flex flex-col flex-grow p-4 pt-0 overflow-y-auto gap-y-3"
         >
             <div v-for="issue in issues" :key="issue.id">
                 <IssueCard
@@ -166,7 +166,9 @@
         unlinkInProgressID.value = id
 
         message.loading({
-            content: `unlinking issues from "${asset.value.displayText}"`,
+            content: `unlinking issues from "${
+                asset.value.displayText || asset.value.attributes.qualifiedName
+            }"`,
             key,
             duration: 2,
         })
@@ -203,7 +205,10 @@
                     asset_type: asset.value.typeName,
                 })
                 message.success({
-                    content: `"${key}: ${summary}" has been unlinked from "${asset.value.displayText}"`,
+                    content: `"${key}: ${summary}" has been unlinked from "${
+                        asset.value.displayText ||
+                        asset.value.attributes.qualifiedName
+                    }"`,
                     key,
                     duration: 3,
                 })

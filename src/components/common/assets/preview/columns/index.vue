@@ -43,23 +43,23 @@
         ></AggregationTabs>
 
         <div
-            v-if="isLoading"
-            class="flex items-center justify-center flex-grow"
-        >
-            <AtlanLoader class="h-10" />
-        </div>
-        <div
-            v-if="!isLoading && error"
+            v-if="!isValidating && error"
             class="flex items-center justify-center flex-grow"
         >
             <ErrorView></ErrorView>
         </div>
-        <div v-else-if="list.length === 0 && !isLoading" class="flex-grow">
+        <div v-else-if="list.length === 0 && !isValidating" class="flex-grow">
             <EmptyView
                 empty-screen="NoAssetsFound"
                 image-class="h-44"
                 desc="No columns found"
             ></EmptyView>
+        </div>
+        <div
+            v-else-if="list.length === 0 && isValidating"
+            class="flex items-center justify-center flex-grow"
+        >
+            <AtlanLoader class="h-10" />
         </div>
         <!-- {{ list }} -->
         <AssetList
@@ -74,6 +74,7 @@
                 <ColumnItem
                     :item="item"
                     class="px-2 my-1"
+                    :similar-list="similarListByName(item)"
                     @update="handleListUpdate"
                 />
             </template>
@@ -107,6 +108,8 @@
     import useEvaluate from '~/composables/auth/useEvaluate'
     import { assetInterface } from '~/types/assets/asset.interface'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import { useSimilarList } from '~/composables/discovery/useSimilarList'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -270,6 +273,37 @@
                 quickChange()
             }
 
+            const suggestionLimit = ref(0)
+            const suggestionOffset = ref(0)
+            const suggestionFacets = ref({
+                typeNames: ['Column'],
+                orExists: ['description', 'userDescription'],
+                similarities: [],
+            })
+            const suggestionAggregations = ref(['name'])
+
+            const { quickChange: quickSuggestionChange, list: suggestionList } =
+                useSimilarList({
+                    limit: suggestionLimit,
+                    offset: suggestionOffset,
+                    facets: suggestionFacets,
+                    aggregations: suggestionAggregations,
+                })
+
+            const { title } = useAssetInfo()
+
+            const similarListByName = (asset) => {
+                const suggestion = suggestionList.value.find(
+                    (item) => title(asset)?.toLowerCase() === item?.key
+                )
+
+                if (suggestion?.group_by_description?.buckets) {
+                    return suggestion?.group_by_description?.buckets
+                }
+
+                return []
+            }
+
             watch(
                 () => [...freshList.value],
                 () => {
@@ -282,6 +316,16 @@
                         })),
                     }
                     refresh()
+
+                    // For getting description suggestions for all the columns
+                    suggestionFacets.value = {
+                        ...suggestionFacets.value,
+                        similarities: freshList.value.map((item) =>
+                            title(item)
+                        ),
+                    }
+
+                    quickSuggestionChange()
                 }
             )
 
@@ -306,6 +350,7 @@
                 isValidating,
                 handleListUpdate,
                 columnAttributes,
+                similarListByName,
             }
         },
     })

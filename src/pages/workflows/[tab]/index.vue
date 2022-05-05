@@ -5,7 +5,16 @@
             :class="$style.profiletab"
             class="flex-1"
         >
-            <a-tab-pane v-for="tab in mainTabs" :key="tab.id" :tab="tab.label">
+            <a-tab-pane v-for="tab in mainTabs" :key="tab.id">
+                <template #tab>
+                    <router-link
+                        :to="{ params: { tab: tab.id } }"
+                        class="select-none"
+                        @click.stop=""
+                    >
+                        {{ tab.label }}
+                    </router-link>
+                </template>
                 <component
                     :is="tab.component"
                     :key="tab.id"
@@ -19,8 +28,13 @@
 <script lang="ts">
     import { computed, defineComponent, defineAsyncComponent } from 'vue'
     import { useHead } from '@vueuse/head'
+    import { whenever } from '@vueuse/core'
     import { useRoute, useRouter } from 'vue-router'
     import { mainTabs } from '~/workflowsv2/constants/tabs'
+    import {
+        featureEnabledMap,
+        WORKFLOW_CENTER_V2,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'WorkflowV2Tabs',
@@ -39,11 +53,31 @@
             ),
         },
         setup() {
-            useHead({
-                title: 'Workflows Center V2',
-            })
             const route = useRoute()
             const router = useRouter()
+
+            const getTitle = (key: string) => {
+                switch (key) {
+                    case 'monitor':
+                        return 'Monitor Workflows'
+                    case 'manage':
+                        return 'Manage Workflows'
+                    case 'marketplace':
+                        return 'Metadata Marketplace'
+                    default:
+                        return 'Workflow Center'
+                }
+            }
+
+            if (featureEnabledMap.value[WORKFLOW_CENTER_V2]) {
+                if ((route.params.tab?.length || 0) > 17) {
+                    const newRoute = route.fullPath.replace(
+                        '/workflows/',
+                        '/workflows/profile/'
+                    )
+                    router.replace(newRoute)
+                }
+            }
 
             const activeKey = computed({
                 get: () => route?.params?.tab,
@@ -51,6 +85,11 @@
                     router.push({ params: { tab: key } })
                 },
             })
+
+            useHead({
+                title: 'Workflow Center',
+            })
+
             return { activeKey, mainTabs }
         },
     })

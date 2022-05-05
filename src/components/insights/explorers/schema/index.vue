@@ -70,7 +70,7 @@
             :style="
                 fullSreenState
                     ? 'height: calc( 100vh - 140px )'
-                    : 'height: calc( 100vh - 40px )'
+                    : 'height: calc( 100vh - 188px )'
             "
         >
             <schema-tree
@@ -460,7 +460,6 @@
             watchOnce(
                 UrlDetectedAsset,
                 () => {
-                    debugger
                     if (!UrlDetectedAsset.value?.attributes?.qualifiedName)
                         return
 

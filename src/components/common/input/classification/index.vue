@@ -14,7 +14,7 @@
                     class="px-3 py-2 mx-4 mb-3 bg-gray-100"
                 >
                     You don't have edit access. Suggest Classifications and
-                    <span class="text-primary cursor-pointer">
+                    <span class="cursor-pointer text-primary">
                         <a-popover placement="rightBottom">
                             <template #content>
                                 <AdminList></AdminList>
@@ -92,7 +92,9 @@
                         :name="classification.name"
                         :display-name="classification?.displayName"
                         :is-propagated="isPropagated(classification)"
-                        :allow-delete="allowDelete"
+                        :allow-delete="
+                            allowDelete && !isPropagated(classification)
+                        "
                         :color="classification.options?.color"
                         @delete="handleDeleteClassification"
                         :created-by="classification?.createdBy"
@@ -197,11 +199,24 @@
             const { guid, editPermission, selectedAsset } = toRefs(props)
             const localValue = ref(modelValue.value)
             const { role } = whoami()
+
+            const isPropagated = (classification) => {
+                if (!guid?.value) {
+                    return false
+                }
+                return guid.value !== classification.entityGuid
+            }
+
             const selectedValue = ref({
-                classifications: modelValue.value.map((i) => i.typeName),
+                classifications: modelValue.value
+                    .filter((i) => !isPropagated(i))
+                    .map((j) => j.typeName),
             })
+
             const existingClassifications = computed(() =>
-                modelValue.value.map((i) => i.typeName)
+                modelValue.value
+                    .filter((i) => !isPropagated(i))
+                    .map((j) => j.typeName)
             )
             const requestLoading = ref()
             const newClassifications = ref([])
@@ -212,13 +227,6 @@
 
             const { classificationList } = useTypedefData()
 
-            const isPropagated = (classification) => {
-                if (!guid?.value) {
-                    return false
-                }
-                return guid.value !== classification.entityGuid
-            }
-
             const list = computed(() => {
                 const { matchingIdsResult } = mergeArray(
                     classificationList.value,
@@ -226,6 +234,7 @@
                     'name',
                     'typeName'
                 )
+
                 return matchingIdsResult
             })
 
@@ -238,16 +247,21 @@
 
             const handleDeleteClassification = (name) => {
                 localValue.value = localValue.value.filter(
-                    (i) => i.typeName !== name
+                    (i) => i.typeName !== name || isPropagated(i)
                 )
                 selectedValue.value = {
-                    classifications: localValue.value.map((i) => i.typeName),
+                    classifications: modelValue.value
+                        .filter((i) => !isPropagated(i))
+                        .map((j) => j.typeName),
                 }
                 handleChange()
             }
 
             const handleSelectedChange = () => {
-                localValue.value = []
+                localValue.value = modelValue.value.filter((i) =>
+                    isPropagated(i)
+                )
+
                 selectedValue.value.classifications?.forEach((i) => {
                     if (
                         !localValue.value.find(
@@ -264,8 +278,12 @@
                 })
 
                 if (!props.editPermission) {
-                    newClassifications.value = localValue.value
-                    localValue.value = []
+                    newClassifications.value = localValue.value.filter(
+                        (i) => !isPropagated(i)
+                    )
+                    localValue.value = modelValue.value.filter((i) =>
+                        isPropagated(i)
+                    )
                 }
             }
 
@@ -283,7 +301,9 @@
             watch(modelValue, () => {
                 localValue.value = modelValue.value
                 selectedValue.value = {
-                    classifications: localValue.value.map((i) => i.typeName),
+                    classifications: modelValue.value
+                        .filter((i) => !isPropagated(i))
+                        .map((j) => j.typeName),
                 }
             })
 

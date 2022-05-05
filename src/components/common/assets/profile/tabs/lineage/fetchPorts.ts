@@ -2,26 +2,27 @@ import { computed, ref } from 'vue'
 import bodybuilder from 'bodybuilder'
 import { assetInterface } from '~/types/assets/asset.interface'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
-import { getNodeTypeText } from './util'
+import { LineageAttributesPortLevel } from '~/constant/projection'
 
 export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
     const portTypeNameMap = {
         Table: 'Column',
         View: 'Column',
         MaterialisedView: 'Column',
-        TableauDatasource: 'TableauDatasourceField',
+        TableauDatasource: ['TableauDatasourceField', 'TableauCalculatedField'],
+        // LookerExplore: 'LookerField',
+        // LookerView: 'LookerField',
+    }
+    const nodeTypeNameMap = {
+        Table: 'table',
+        View: 'view',
+        MaterialisedView: 'view',
+        TableauDatasource: 'datasource',
+        // LookerExplore: 'lookerExplore',
+        // LookerView: 'lookerView',
     }
     const base = bodybuilder()
-    const attributes = [
-        'dataType',
-        'qualifiedName',
-        'certificateStatus',
-        'table',
-        'view',
-        'isPrimary',
-        'isForeign',
-        'announcementType',
-    ]
+    const attributes = LineageAttributesPortLevel
     const facets = [
         {
             id: 'active',
@@ -35,7 +36,7 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
             key: '__typeName.keyword',
             value: portTypeNameMap[typeName],
             type: 'must',
-            prop: 'term',
+            prop: Array.isArray(portTypeNameMap[typeName]) ? 'terms' : 'term',
         },
         {
             id: 'haslineage',
@@ -46,13 +47,12 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
         },
         {
             id: 'parent',
-            key: `${getNodeTypeText[typeName].toLowerCase()}QualifiedName`,
+            key: `${nodeTypeNameMap[typeName]}QualifiedName`,
             value: qualifiedName,
             type: 'must',
-            prop:
-                typeName === 'TableauDatasource'
-                    ? 'match_phrase_prefix'
-                    : 'term',
+            prop: ['Table', 'View', 'MaterialisedView'].includes(typeName)
+                ? 'term'
+                : 'match_phrase_prefix',
         },
     ]
 

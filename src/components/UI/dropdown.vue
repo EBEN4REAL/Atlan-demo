@@ -1,15 +1,6 @@
 <template>
     <a-dropdown trigger="click">
-        <AtlanBtn
-            class="flex-none"
-            size="sm"
-            color="secondary"
-            padding="compact"
-            :data-test-id="dataTestId"
-            @click.prevent
-        >
-            <AtlanIcon icon="KebabMenu" class="-mx-1 text-gray" />
-        </AtlanBtn>
+        <IconButton :data-test-id="dataTestId" icon="KebabMenu" />
 
         <template #overlay>
             <a-menu>
@@ -34,7 +25,6 @@
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
-    import AtlanBtn from '~/components/UI/button.vue'
 
     type option = {
         title: string
@@ -45,7 +35,7 @@
 
     export default defineComponent({
         name: 'Dropdown',
-        components: { AtlanBtn },
+        components: {},
         props: {
             options: {
                 type: Array as PropType<option[]>,
@@ -57,15 +47,12 @@
                 required: false,
             },
         },
-        setup(props) {
-            const { options } = props
-
+        setup() {
             const handleMenuItemClick = (option: any) => {
                 option.handleClick()
             }
 
             return {
-                options,
                 handleMenuItemClick,
             }
         },

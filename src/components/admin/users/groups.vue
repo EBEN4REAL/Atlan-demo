@@ -80,7 +80,7 @@
                 emit('handleManageGroups', userData)
             }
             watch(visiblePopover, () => {
-                if (visiblePopover.value && groupList.value.length === 0) {
+                if (visiblePopover.value) {
                     getUserGroupList()
                 }
             })
@@ -109,9 +109,9 @@
         overflow: auto;
         height: auto;
     }
-    .group-count {
-        &:hover {
-            text-decoration: underline;
-        }
-    }
+    // .group-count {
+    // &:hover {
+    //     text-decoration: underline;
+    // }
+    // }
 </style>

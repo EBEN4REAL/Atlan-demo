@@ -34,6 +34,8 @@
                             ref="ownerInputRef"
                             v-model="localValue"
                             :show-none="false"
+                            :enable-tabs="enableTabs"
+                            @change="handleChangeData"
                         ></OwnerFacets>
 
                         <OwnerFacets
@@ -41,7 +43,7 @@
                             ref="ownerInputRef"
                             v-model="newOwners"
                             :show-none="false"
-                            :disabledValues="localValue"
+                            :disabled-values="localValue"
                         ></OwnerFacets>
                     </div>
 
@@ -54,8 +56,8 @@
                         <a-button
                             type="primary"
                             :loading="requestLoading"
-                            @click="handleRequest"
                             class="bg-primary"
+                            @click="handleRequest"
                             >Submit Request</a-button
                         >
                     </div>
@@ -82,24 +84,33 @@
                     placement="left"
                     :edit-permission="editPermission && showShortcut"
                 >
-                    <a-button
-                        v-if="showAddBtn"
-                        :disabled="role === 'Guest' && !editPermission"
-                        shape="circle"
-                        size="small"
-                        class="text-center shadow"
-                        :class="{
-                            editPermission:
-                                'hover:bg-primary-light hover:border-primary',
-                        }"
-                        @click="() => (isEdit = true)"
-                    >
-                        <span
-                            ><AtlanIcon
-                                icon="Add"
-                                class="h-3"
-                            ></AtlanIcon></span
-                    ></a-button>
+                    <div v-if="showAddBtn">
+                        <div
+                            v-if="customAddButton"
+                            @click="
+                                () =>
+                                    role === 'Guest' && !editPermission
+                                        ? false
+                                        : (isEdit = true)
+                            "
+                        >
+                            <slot name="addButton"></slot>
+                        </div>
+                        <a-button
+                            v-else
+                            :disabled="role === 'Guest' && !editPermission"
+                            shape="circle"
+                            size="small"
+                            class="text-center shadow"
+                            :class="{
+                                editPermission:
+                                    'hover:bg-primary-light hover:border-primary',
+                            }"
+                            @click="() => (isEdit = true)"
+                        >
+                            <span> <AtlanIcon icon="Add" class="h-3" /> </span
+                        ></a-button>
+                    </div>
                 </Shortcut>
             </a-tooltip>
 
@@ -117,6 +128,7 @@
                     ></UserPill>
                 </PopOverUser>
             </template>
+            <slot name="users"></slot>
 
             <template v-for="name in localValue?.ownerGroups" :key="name">
                 <PopOverGroup :item="name">
@@ -134,11 +146,13 @@
                 v-if="
                     !showAddBtn &&
                     localValue?.ownerGroups?.length < 1 &&
-                    localValue?.ownerUsers?.length < 1
+                    localValue?.ownerUsers?.length < 1 &&
+                    showEmptyOwner
                 "
-                class="text-gray-600 ml-1"
-                >No owners assigned</span
+                class="ml-1 text-gray-600"
             >
+                No owners assigned
+            </span>
         </div>
     </div>
 </template>
@@ -199,6 +213,10 @@
             ),
         },
         props: {
+            enableTabs: {
+                type: Array as PropType<Array<any>>,
+                default: () => ['users', 'groups'],
+            },
             editPermission: {
                 type: Boolean,
                 required: false,
@@ -253,8 +271,18 @@
                 required: false,
                 default: () => ({}),
             },
+            showEmptyOwner: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
+            customAddButton: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'changeData'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const { selectedAsset, inProfile, editPermission } = toRefs(props)
@@ -415,7 +443,9 @@
             const handleCancelRequest = () => {
                 isEdit.value = false
             }
-
+            const handleChangeData = () => {
+                emit('changeData', localValue)
+            }
             return {
                 ownerGroups,
                 ownerUsers,
@@ -434,6 +464,7 @@
                 handleRequest,
                 handleCancelRequest,
                 newOwners,
+                handleChangeData,
             }
         },
     })

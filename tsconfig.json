@@ -26,7 +26,8 @@
             "./*": ["src/*"],
             "@/*": ["src/components/*"],
             "@common/*": ["src/components/common/*"]
-        }
+        },
+        "jsx": "preserve"
     },
     "exclude": ["dist", "node_modules"]
 }

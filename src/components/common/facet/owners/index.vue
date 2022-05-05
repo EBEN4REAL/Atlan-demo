@@ -79,6 +79,7 @@
                 :select-group-key="selectGroupKey"
                 :disabledKeys="disabledValues?.ownerGroups"
                 :user-id="userId"
+                @change="handleChange"
             ></Groups>
         </div>
         <div v-if="showNone" class="px-4 pt-1">
@@ -186,7 +187,7 @@
                 required:false,
             },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'update:selectedRecords'],
         setup(props, { emit }) {
             const { modelValue, selectedRecords } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
@@ -267,7 +268,6 @@
             }
             const handleChange = () => {
                 modelValue.value = localValue.value
-                console.log('change')
                 emit('change')
             }
 

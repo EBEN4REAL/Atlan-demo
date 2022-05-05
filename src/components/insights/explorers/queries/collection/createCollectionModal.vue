@@ -76,7 +76,7 @@
                                 class="w-full mt-3 -ml-6 border-gray-300 rounded-lg box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
                             >
                                 <template #content>
-                                    <EmojiPicker
+                                    <IconPicker
                                         :emoji="selectedEmoji"
                                         picker-element-id="create-collection-emoji-picker"
                                         @select="handleEmojiSelect"
@@ -288,7 +288,7 @@
     import Owners from './owner.vue'
     import whoami from '~/composables/user/whoami'
     import Avatar from '~/components/common/avatar/index.vue'
-    import EmojiPicker from '~/components/common/avatar/emojiPickerCM.vue'
+    import IconPicker from '~/components/common/IconPicker/IconPicker.vue'
 
     export default defineComponent({
         name: 'CreateCollectionModal',
@@ -303,7 +303,7 @@
             Owners,
             Avatar,
             Tooltip,
-            EmojiPicker,
+            IconPicker,
         },
         props: {
             showCollectionModal: {

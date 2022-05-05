@@ -64,7 +64,7 @@
                         </div>
                     </div>
                     <template #content
-                        ><EmojiPickerCM
+                        ><IconPicker
                             :emoji="form.options.emoji"
                             :image="imageFile"
                             :picker-element-id="'update-CM-emoji-picker'"
@@ -100,13 +100,12 @@
     import { useTypedefStore } from '~/store/typedef'
 
     import AtlanButton from '@/UI/button.vue'
-
-    import EmojiPickerCM from '~/components/common/avatar/emojiPickerCM.vue'
+    import IconPicker from '~/components/common/IconPicker/IconPicker.vue'
     import useUploadImage from '~/composables/image/uploadImage'
     import useCustomMetadataAvatar from './composables/useCustomMetadataAvatar'
 
     export default defineComponent({
-        components: { AtlanButton, EmojiPickerCM },
+        components: { AtlanButton, IconPicker },
         props: {
             isEdit: {
                 type: Boolean,

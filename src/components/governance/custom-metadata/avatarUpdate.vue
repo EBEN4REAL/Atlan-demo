@@ -17,7 +17,7 @@
                 :is-updating="isUpdating"
             />
             <template #content>
-                <EmojiPickerCM
+                <IconPicker
                     :emoji="metadata.options.emoji"
                     :image="metadata.options.imageId"
                     :loading="isUpdating"
@@ -38,11 +38,11 @@
     import useCustomMetadataAvatar from './composables/useCustomMetadataAvatar'
 
     import CustomMetadataAvatar from './CustomMetadataAvatar.vue'
-    import EmojiPickerCM from '~/components/common/avatar/emojiPickerCM.vue'
+    import IconPicker from '~/components/common/IconPicker/IconPicker.vue'
 
     export default defineComponent({
         components: {
-            EmojiPickerCM,
+            IconPicker,
             CustomMetadataAvatar,
         },
         props: {

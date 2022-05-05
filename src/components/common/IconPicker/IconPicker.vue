@@ -64,7 +64,7 @@
     import { defineProps, defineEmits, ref } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { FileItem } from '~/types/typedefs/customMetadata.interface'
-    import EmojiPicker from '~/components/common/avatar/EmojiPickerWrapper.vue'
+    import EmojiPicker from '~/components/common/IconPicker/EmojiPickerWrapper.vue'
 
     const emit = defineEmits(['select', 'remove', 'upload'])
     const props = defineProps({

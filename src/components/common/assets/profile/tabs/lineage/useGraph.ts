@@ -86,7 +86,7 @@ const portDataTypeIcons = {
 const biPortDataTypeIcons = {
     TableauCalculatedField: tableauCalculatedField,
     TableauDatasourceField: tableauDatasourceField,
-    LookerField: lookerField,
+    // LookerField: lookerField,
 }
 
 const columnKeyTypeIcons = {
@@ -99,8 +99,8 @@ const portsLabelMap = {
     View: 'columns',
     MaterialisedView: 'columns',
     TableauDatasource: 'fields',
-    LookerExplore: 'fields',
-    LookerView: 'fields',
+    // LookerExplore: 'fields',
+    // LookerView: 'fields',
 }
 
 const getPortsCTALabel = (typeName, portsCount, highlightPorts) => {
@@ -132,8 +132,8 @@ export default function useGraph(graph) {
             'View',
             'MaterialisedView',
             'TableauDatasource',
-            'LookerExplore',
-            'LookerView',
+            // 'LookerExplore',
+            // 'LookerView',
         ].includes(typeName)
 
         const computedData = {

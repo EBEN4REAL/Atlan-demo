@@ -3,6 +3,7 @@
         :activeKey="active"
         @update:activeKey="$emit('update:active', $event)"
         class="flex-none w-full mt-2 minimal-tab-bar"
+        @change="handleChange"
     >
         <a-tab-pane v-for="item in data" :key="item.key">
             <template #tab v-if="hasLabel">
@@ -26,7 +27,7 @@
     import { defineComponent, PropType, ref } from 'vue'
     export default defineComponent({
         name: 'MinimalTab',
-        emits: ['update:active'],
+        emits: ['update:active', 'change'],
         props: {
             active: {
                 type: String,
@@ -37,8 +38,13 @@
                 required: true,
             },
         },
-        setup(props, { slots }) {
+        setup(props, { slots, emit }) {
             const hasLabel = ref(false)
+
+            const handleChange = (activeKey) => {
+                console.log(activeKey)
+                emit('change', activeKey)
+            }
 
             // Check if the slot exists by name and has content.
             // It returns an empty array if it's empty.
@@ -46,6 +52,7 @@
                 hasLabel.value = true
             }
             return {
+                handleChange,
                 hasLabel,
             }
         },

@@ -210,9 +210,7 @@
                             v-else-if="column.key === 'memberCount'"
                             @click.stop="handleAddMembers(group)"
                         >
-                            <div
-                                class="cursor-pointer text-primary hover:underline"
-                            >
+                            <div class="cursor-pointer text-primary">
                                 {{
                                     value >= 2
                                         ? value + ' members'
@@ -259,7 +257,7 @@
                                     </div>
                                 </template>
                                 <div
-                                    class="text-left cursor-pointer text-primary hover:underline"
+                                    class="text-left cursor-pointer text-primary"
                                 >
                                     <span>{{
                                         group?.personas?.length > 1
@@ -412,7 +410,7 @@
                 filter: {},
                 sort: '-createdAt',
             })
-            console.log(groupListAPIParams)
+
             const {
                 groupList,
                 totalGroupsCount,

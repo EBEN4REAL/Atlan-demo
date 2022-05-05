@@ -626,7 +626,6 @@
                     useAddEvent('insights', 'results_panel', 'cta_clicked', {
                         query_tab_id: activeInlineTab.value.key,
                         action: 'full_screen',
-                        is_full_screen: fullScreenMode.value,
                     })
                     // ADD event here
                 }

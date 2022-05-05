@@ -553,7 +553,10 @@ async function getSuggestionsUsingType(
             'name.keyword': `${currentWord}.*`,
         },
     })
-
+    // body.value.dsl.query('match', 'name.keyword', {
+    //     query: query,
+    //     boost: 120,
+    // })
     switch (type) {
         case 'TABLE': {
             body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
@@ -826,6 +829,13 @@ export async function useAutoSuggestions(
     // removing subqueries if present
     function removeSubQueries(str: string) {
         let _str = str
+        // removing () -> content
+        if (_str.match(/\((.*)\)/gm) !== null) {
+            _str.match(/\((.*)\)/gm).forEach((el) => {
+                _str = _str.replace(el, '')
+            })
+        }
+        // removing single bracket content
         if (_str.match(/\((.*)/gm) !== null) {
             _str.match(/\((.*)/gm).forEach((el) => {
                 _str = _str.replace(el, '')
@@ -835,9 +845,7 @@ export async function useAutoSuggestions(
     }
 
     let leftSideStringFromCurPos = removeSubQueries(
-        editorTextTillCursorPos
-            .replace(/\"/g, '')
-            .replaceAll('\\([^\\(]*\\)', '')
+        editorTextTillCursorPos.replace(/\"/g, '')
     ).split(/[ ,\n;"')(]+/gm)
     contextStore.value.left = [
         ...contextStore.value.left,
@@ -850,9 +858,7 @@ export async function useAutoSuggestions(
     )
 
     let rightSideStringFromCurPos = removeSubQueries(
-        editorTextAfterCursorPos
-            .replace(/\"/g, '')
-            .replaceAll('\\([^\\(]*\\)', '')
+        editorTextAfterCursorPos.replace(/\"/g, '')
     ).split(/[ ,\n;"')(]+/gm)
     contextStore.value.right = extractTablesFromContext(
         rightSideStringFromCurPos
@@ -967,7 +973,6 @@ export async function useAutoSuggestions(
 
                         return new Promise((resolve, reject) => {
                             suggestionsPromise.then((value) => {
-                                debugger
                                 const AliasesKeys: string[] = []
                                 Object.keys(aliasesMap.value).forEach(
                                     (key: any) => {

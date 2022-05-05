@@ -460,7 +460,6 @@
             watchOnce(
                 UrlDetectedAsset,
                 () => {
-                    debugger
                     if (!UrlDetectedAsset.value?.attributes?.qualifiedName)
                         return
 

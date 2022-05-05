@@ -24,14 +24,14 @@
                     <AtlanButton2
                         color="secondary"
                         label="Try again"
-                        prefixIcon="Retry"
+                        prefix-icon="Retry"
                         @click="reload"
                     />
                 </div>
             </ErrorView>
         </div>
         <template v-else-if="!isLoading && isValidEntity">
-            <div class="relative flex items-center py-3">
+            <div class="relative flex items-center py-4">
                 <Avatar
                     v-if="isValidUser"
                     :image-url="updatedImageUrl || imageUrl"
@@ -53,8 +53,8 @@
                 </div>
 
                 <div class="w-full">
-                    <div class="flex content-center text-gray-500">
-                        <div class="w-4/5">
+                    <div class="flex content-center pr-3 text-gray-500">
+                        <div class="">
                             <div
                                 class="flex text-base content-center items-center capitalize text-gray-700 mb-0.5"
                             >
@@ -75,6 +75,7 @@
                             <span class="mr-1 text-sm truncate w-28">
                                 {{ name }}
                             </span>
+
                             <span v-if="details" class="mr-1 text-sm">
                                 <span class="text-gray-300">&bull;</span>
                                 <span class="ml-1">{{ details }}</span>
@@ -108,6 +109,34 @@
                                     >
                                 </a-tooltip>
                             </span>
+                        </div>
+                        <div v-auth="map.UPDATE_GROUP" class="ml-auto">
+                            <a-button-group v-if="previewType === 'group'">
+                                <MemberPopover
+                                    :selected-group="selectedGroup"
+                                    @members-added="handleChangeTab('members')"
+                                >
+                                    <template #label>
+                                        <AtlanButton2
+                                            color="secondary"
+                                            prefix-icon="Add"
+                                            class="rounded-md rounded-r-none py-2 px-1.5 text-sm"
+                                            label="Add Users"
+                                        />
+                                    </template>
+                                </MemberPopover>
+                                <AtlanButton2
+                                    class="rounded-md border-l-0 rounded-l-none py-2 px-1.5"
+                                    color="secondary"
+                                    prefix-icon="Edit"
+                                    @click="
+                                        () => {
+                                            handleChangeTab('about')
+                                            changeTogleEdit(true)
+                                        }
+                                    "
+                                />
+                            </a-button-group>
                         </div>
                         <!-- <div class="ml-auto">
                             <a-button
@@ -175,10 +204,14 @@
     import AtlanButton from '@/UI/button.vue'
     import { useUserOrGroupPreview } from '~/composables/drawer/showUserOrGroupPreview'
     import Shortcut from '@/common/popover/shortcut.vue'
+    import MemberPopover from '@/admin/groups/groupPreview/memberPopover.vue'
+    import map from '~/constant/accessControl/map'
+    import { useGroupPreview } from '~/composables/group/showGroupPreview'
 
     export default defineComponent({
         name: 'UserOrGroupPreview',
         components: {
+            MemberPopover,
             UserAbout: defineAsyncComponent(
                 () => import('../users/userPreview/about.vue')
             ),
@@ -228,7 +261,7 @@
             const { previewType } = toRefs(props)
             const updatedImageUrl = ref(null)
             const isUserPreview = computed(() => previewType.value === 'user')
-
+            const { changeTogleEdit } = useGroupPreview()
             const {
                 isLoading,
                 error,
@@ -328,6 +361,8 @@
                 updatedImageUrl,
                 userUpdated,
                 handleChangeTab,
+                map,
+                changeTogleEdit,
             }
         },
     })

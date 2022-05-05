@@ -758,10 +758,32 @@
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
 
-            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
+            const {
+                showUserPreview,
+                setUserUniqueAttribute,
+                showPreview: isUserPreviewOpen,
+                closePreview: closeUserPreview,
+            } = useUserPreview()
+            const {
+                showGroupPreview,
+                setGroupUniqueAttribute,
+                showPreview: isGroupPreviewOpen,
+                closePreview: closeGroupPreview,
+            } = useGroupPreview()
+
             const showUserPreviewDrawer = (user: any) => {
+                if (isGroupPreviewOpen.value) closeGroupPreview()
                 setUserUniqueAttribute(user.id)
                 showUserPreview()
+            }
+
+            const showGroupPreviewDrawer = (
+                group: any,
+                activeTabKey = 'about'
+            ) => {
+                if (isUserPreviewOpen.value) closeUserPreview()
+                setGroupUniqueAttribute(group.id)
+                showGroupPreview()
             }
 
             const handleUpdate = () => {
@@ -866,16 +888,6 @@
                     })
             }
 
-            // BEGIN: GROUP PREVIEW
-            const { showGroupPreview, setGroupUniqueAttribute } =
-                useGroupPreview()
-            const showGroupPreviewDrawer = (
-                group: any,
-                activeTabKey = 'about'
-            ) => {
-                setGroupUniqueAttribute(group.id)
-                showGroupPreview()
-            }
             const handleCancel = () => {
                 userGroupData.value.ownerUsers = persona.value.users ?? []
                 userGroupData.value.ownerGroups = persona.value.groups ?? []

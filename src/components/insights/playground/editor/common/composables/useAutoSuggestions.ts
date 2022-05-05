@@ -172,6 +172,30 @@ export function getContext(
     /* _______________________________ */
 }
 
+// for moving the preference based suggestions to the top
+function sortByContextQualifiedNames(entities: any[]) {
+    const _obj =
+        body.value.dsl.query.function_score.query.bool.filter.bool.should[0]
+            ?.terms
+    if (_obj?.tableQualifiedName?.length > 0 && entities?.length > 0) {
+        entities.forEach((entity, index) => {
+            if (entity.attributes.qualifiedName) {
+                _obj?.tableQualifiedName?.forEach((tableQualifiedName) => {
+                    if (
+                        entity.attributes.qualifiedName.includes(
+                            tableQualifiedName
+                        )
+                    ) {
+                        const _t = entities.splice(index, 1)
+                        entities.unshift(_t[0])
+                    }
+                })
+            }
+        })
+    }
+    return entities
+}
+
 export function entitiesToEditorKeyword(
     response: Promise<autosuggestionResponse>,
     type: string,
@@ -201,7 +225,9 @@ export function entitiesToEditorKeyword(
     const turndownService = new TurndownService()
     return new Promise((resolve) => {
         response.then((res) => {
-            const entities = res.entities ?? []
+            let entities = res.entities ?? []
+            entities = sortByContextQualifiedNames(entities)
+
             let words: suggestionKeywordInterface[] = []
             let len = entities.length
             // console.log('suggestion: ', {

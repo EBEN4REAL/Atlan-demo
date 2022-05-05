@@ -10,7 +10,7 @@
     >
         <!-- modal title -->
         <template #title>
-            <div class=" flex items-center">
+            <div class="flex items-center">
                 <span class="text-base font-bold text-gray-700"
                     >New Bulk Upload</span
                 >
@@ -78,7 +78,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, computed, watch } from 'vue'
     import FormGen from '~/components/common/formGenerator/index.vue'
     import useBulkUpload from '@/glossary/modal/useBulkUpload'
     import { isWorkflowRunning } from '@/glossary/modal/useBulkUpload'
@@ -86,6 +86,8 @@
     import CSVData from '~/assets/samples/terms-template.json'
     import { downloadFile } from '~/utils/library/download'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
+    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
 
     export default defineComponent({
         components: { FormGen },
@@ -148,18 +150,55 @@
                 },
             ]) // this drives the upload form
 
+            const facets = computed(() => ({
+                prefix: `atlan-gtc-bulk-upload-${props.entity.guid?.slice(-8)}`,
+                filterOut: [
+                    'atlan-typedef-seeder',
+                    'atlan', // atlan-upadate
+                    'cloud-es-log-policy',
+                    'cloud-backups',
+                ],
+            }))
+            const { displayName, name, phase } = useWorkflowInfo()
+
+            const preference = ref({
+                sort: 'metadata.creationTimestamp-desc',
+            })
+
             // function to show modal
             const showModal = () => {
-                if (
-                    getGlossaryByGuid(props?.entity?.guid)?.isBulkUploadRunning
-                ) {
+                const showMessage = () => {
                     message.error({
                         content: `This action cannot be completed because there is only one upload supported at a time`,
                         duration: 5,
                     })
-                } else {
-                    visible.value = true
                 }
+                if (
+                    !getGlossaryByGuid(props?.entity?.guid)?.isBulkUploadRunning
+                ) {
+                    const {
+                        list: runs,
+                        quickChange,
+                        resetState,
+                        isLoading,
+                        data,
+                    } = useRunDiscoverList({
+                        facets,
+                        limit: ref(1),
+                        offset: ref(0),
+                        preference,
+                    })
+                    watch(runs, () => {
+                        const isFirstWfRunning =
+                            phase(runs.value[0]) === 'Running'
+                        if (isFirstWfRunning) {
+                            showMessage()
+                            getGlossaryByGuid(
+                                props?.entity?.guid
+                            ).isBulkUploadRunning = true
+                        } else visible.value = true
+                    })
+                } else showMessage()
             }
             const handleCancel = () => {
                 visible.value = false

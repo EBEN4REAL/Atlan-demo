@@ -1616,8 +1616,8 @@
 
                                             `,
                     disabled: false,
-                    icon: 'Add',
-                    iconClass: 'w-4 h-4 my-auto mr-1.5',
+                    // icon: 'Add',
+                    // iconClass: 'w-4 h-4 my-auto mr-1.5',
                     wrapperClass: 'flex items-center ',
                     component: MenuItem,
                     handleClick: ({ item }) => {
@@ -1628,8 +1628,8 @@
                     title: 'Place name in editor',
                     key: 'AddAssetName',
                     component: MenuItem,
-                    icon: 'AddAssetName',
-                    iconClass: 'w-4 h-4 my-auto mr-1.5 focus:outline-none',
+                    // icon: 'AddAssetName',
+                    // iconClass: 'w-4 h-4 my-auto mr-1.5 focus:outline-none',
                     wrapperClass: 'flex items-center ',
                     class: '',
                     hide: showVQB.value,
@@ -1653,8 +1653,8 @@
 
                                             `,
                     disabled: false,
-                    icon: 'Add',
-                    iconClass: 'w-4 h-4 my-auto mr-1.5',
+                    // icon: 'Add',
+                    // iconClass: 'w-4 h-4 my-auto mr-1.5',
                     wrapperClass: 'flex items-center ',
                     component: MenuItem,
                     handleClick: ({ item }) => {
@@ -1679,8 +1679,8 @@
 
                                             `,
                     disabled: false,
-                    icon: 'Add',
-                    iconClass: 'w-4 h-4 my-auto mr-1.5',
+                    // icon: 'Add',
+                    // iconClass: 'w-4 h-4 my-auto mr-1.5',
                     wrapperClass: 'flex items-center ',
                     component: MenuItem,
                     handleClick: ({ item }) => {
@@ -1697,8 +1697,8 @@
                     title: 'Place name in editor',
                     key: 'AddAssetName',
                     component: MenuItem,
-                    icon: 'AddAssetName',
-                    iconClass: 'w-4 h-4 my-auto mr-1.5 focus:outline-none',
+                    // icon: 'AddAssetName',
+                    // iconClass: 'w-4 h-4 my-auto mr-1.5 focus:outline-none',
                     wrapperClass: 'flex items-center ',
                     class: '',
                     hide: showVQB.value,

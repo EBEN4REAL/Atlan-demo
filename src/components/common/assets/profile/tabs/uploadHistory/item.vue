@@ -1,15 +1,20 @@
 <template>
     <div class="w-full my-4 bg-gray-100 rounded-lg">
         <div class="flex p-4 items-center w-full">
-            <atlan-icon :icon="WFIcon" class="h-5 mr-2" />
+            <div
+                class="p-2 rounded-lg flex items-center justify-center m-1 bg-white mr-2"
+            >
+                <atlan-icon :icon="WFIcon" class="h-5" />
+            </div>
             <div class="w-full">
                 <div class="flex justify-between items-center w-full">
                     <div class="flex items-center space-x-2">
-                        <span class="font-bold text-gray-500 font-base ml-0.5">{{
-                            runName
-                        }}</span>
                         <span
-                            class="status-badge text-xs"
+                            class="font-bold text-gray-500 font-base ml-0.5"
+                            >{{ runName }}</span
+                        >
+                        <span
+                            class="status-badge text-xs mb-1"
                             style="padding: 7px 12px 5px"
                             :class="[
                                 getRunTextClass(run),
@@ -18,6 +23,9 @@
                         >
                             <div class="dot" :class="getRunClassBg(run)" />
                             {{
+                                getRunStatus(
+                                    runStatusMap[run.status.phase]?.label
+                                ) ||
                                 runStatusMap[run.status.phase]?.label ||
                                 run?.status?.phase
                             }}
@@ -264,6 +272,26 @@
                 getArtifacts(name(props.run), nodeName, 'results')
             }
 
+            const getRunStatus = (value: String): String => {
+                if (
+                    value?.toLowerCase() === 'success' &&
+                    (finalStatus.value?.terms?.error_count ||
+                        finalStatus.value?.categories?.error_count)
+                )
+                    return 'Completed with errors'
+                if (
+                    value?.toLowerCase() === 'success' &&
+                    !(
+                        finalStatus.value?.terms?.error_count ||
+                        finalStatus.value?.categories?.error_count
+                    )
+                )
+                    return 'Completed'
+
+                if (value?.toLowerCase() === 'running') return 'In progress'
+                return value
+            }
+
             watch(selectedRun, () => {
                 if (!['Running', 'Pending'].includes(phase(props.run)))
                     getResults(selectedRun.value?.status?.nodes)
@@ -282,6 +310,7 @@
                 phase,
                 handleDownloadArtifacts,
                 WFIcon,
+                getRunStatus,
             }
         },
     })
@@ -290,7 +319,7 @@
 <style lang="less" scoped>
     .status-badge {
         @apply flex items-center;
-        @apply text-xs font-bold tracking-wider uppercase;
+        @apply text-xs font-bold tracking-wider capitalize;
         @apply rounded-full;
     }
     .dot {

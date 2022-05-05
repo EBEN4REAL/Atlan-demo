@@ -39,11 +39,11 @@
             /></span>
         </div>
         <div
-            class="flex justify-center items-center px-4 mx-4 bg-gray-50 border border-dashed border-gray-400 rounded-xl my-4"
+            class="flex justify-center items-center px-4 mx-4 bg-gray-50 border border-dashed border-gray-300 rounded-xl my-4"
         >
-            <atlan-icon icon="CSVLogo" class="h-36 mt-2" />
+            <atlan-icon icon="CSVLogo" class="h-40 mt-2" />
             <div class="">
-               <FormGen :config="formConfig" @vchange="handleFormChange" />
+                <FormGen :config="formConfig" @vchange="handleFormChange" />
             </div>
         </div>
         <!-- Modal footer -->
@@ -61,9 +61,10 @@
                 >
                     <div class="flex flex-col">
                         <atlan-icon :icon="i?.icon" class="h-28 mb-2" />
-                        <span class="text-gray-500 text-xs text-left w-40 mx-2">{{
-                            i?.text
-                        }}</span>
+                        <span
+                            class="text-gray-500 text-xs text-left w-40 mx-2"
+                            >{{ i?.text }}</span
+                        >
                     </div>
                     <div
                         v-if="illutrationMap?.length !== index + 1"
@@ -83,6 +84,7 @@
     import { message } from 'ant-design-vue'
     import CSVData from '~/assets/samples/terms-template.json'
     import { downloadFile } from '~/utils/library/download'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     export default defineComponent({
         components: { FormGen },
@@ -97,6 +99,7 @@
         setup(props, { emit }) {
             // data
             const visible = ref<boolean>(false)
+            const { getGlossaryByGuid } = useGlossaryData()
             const fileS3Key = ref('') // s3 key is what we get from the files api
             // http on local https on production
             const getBasePath = function (): any {
@@ -146,7 +149,9 @@
 
             // function to show modal
             const showModal = () => {
-                if (isWorkflowRunning.value) {
+                if (
+                    getGlossaryByGuid(props?.entity?.guid)?.isBulkUploadRunning
+                ) {
                     message.error({
                         content: `Sorry, this action cannot be completed because there is an ongoing upload for this glossary. Retry again later.`,
                         duration: 5,

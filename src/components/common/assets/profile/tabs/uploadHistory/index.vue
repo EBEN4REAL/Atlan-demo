@@ -10,7 +10,7 @@
         ></a-spin>
     </div>
     <div v-else-if="!isLoading && runs?.length">
-        <div v-for="run in runs" :key="item" class="m-5">
+        <div v-for="(run, i) in runList" :key="i" class="m-5">
             <RunItem :run="run" />
         </div>
     </div>
@@ -47,12 +47,19 @@
         PropType,
         computed,
         toRefs,
+        inject,
     } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import { LiveRun } from '~/types/workflow/runs.interface'
+    // components
+    import BulkUploadModal from '@/glossary/modal/bulkUploadModal.vue'
+    import RunItem from '~/components/common/assets/profile/tabs/uploadHistory/item.vue'
     // composables
     import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
-    import RunItem from '~/components/common/assets/profile/tabs/uploadHistory/item.vue'
-    import BulkUploadModal from '@/glossary/modal/bulkUploadModal.vue'
+    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import { isWorkflowRunning } from '@/glossary/modal/useBulkUpload'
+    import { useRunningWf } from './useRunningWf'
 
     export default defineComponent({
         name: 'UploadHistoryTab',
@@ -67,7 +74,14 @@
             // data
             const limit = ref(30)
             const offset = ref(0)
+            const { getGlossaryByGuid } = useGlossaryData()
             const guid = ref(props.selectedAsset?.guid)
+            const runList = ref<LiveRun[]>([])
+            const runningWf = ref<LiveRun>()
+            const reInitTree = inject('reInitTree')
+            const isWfRunningForGtc = computed(
+                () => getGlossaryByGuid(guid?.value)?.isBulkUploadRunning
+            )
             const facets = computed(() => ({
                 prefix: `atlan-gtc-bulk-upload-${guid.value?.slice(-8)}`,
                 filterOut: [
@@ -77,6 +91,7 @@
                     'cloud-backups',
                 ],
             }))
+            const { displayName, name, phase } = useWorkflowInfo()
 
             const preference = ref({
                 sort: 'metadata.creationTimestamp-desc',
@@ -95,13 +110,54 @@
                 preference,
             })
 
+            const toggleRunningWfFlag = (value: Boolean) => {
+                getGlossaryByGuid(guid?.value).isBulkUploadRunning = value
+            }
+            const checkForRunningWf = (runs) => {
+                const isFirstWfRunning = phase(runs[0]) === 'Running'
+                // const isFirstWfRunning = phase(runs[0]) === 'Succeeded'
+                if (isFirstWfRunning) toggleRunningWfFlag(true)
+                return isFirstWfRunning
+            }
+
+            const startFetch = () => {
+                const { runningWfList } = useRunningWf({
+                    WFName: name(runList.value[0]),
+                    guid: props.selectedAsset?.guid,
+                })
+                watch(runningWfList, () => {
+                    if (runningWfList.value?.length) {
+                        console.log(runningWfList.value)
+                        if (
+                            !['Running', 'Pending'].includes(
+                                phase(runningWfList.value[0])
+                            )
+                        ) {
+                            quickChange()
+                            toggleRunningWfFlag(false)
+                            reInitTree()
+                            isWorkflowRunning.value = false
+                        }
+                    }
+                })
+            }
             watch(runs, () => {
                 console.log(runs.value)
-                console.log(data.value)
+                runList.value = runs.value
+                if (runList.value.length && checkForRunningWf(runs.value)) {
+                    startFetch()
+                }
+            })
+            watch(isWorkflowRunning, () => {
+                setTimeout(() => {
+                    quickChange()
+                }, 1000)
             })
             return {
                 runs,
                 isLoading,
+                runList,
+                runningWf,
             }
         },
     })

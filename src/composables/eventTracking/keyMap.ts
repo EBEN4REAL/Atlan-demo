@@ -306,6 +306,9 @@ const keyMap = {
             deleted: {
                 action: 'gtc_term_deleted',
             },
+            bulk_upload_initiated:{
+                action: 'gtc_term_bulk_upload_initiated',
+            }
         },
         category: {
             created: {

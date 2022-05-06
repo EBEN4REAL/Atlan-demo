@@ -90,6 +90,7 @@
     import { useRoute, useRouter } from 'vue-router'
     import FormGen from '~/components/common/formGenerator/index.vue'
     import useBulkUpload from '@/glossary/modal/useBulkUpload'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { isWorkflowRunning } from '@/glossary/modal/useBulkUpload'
     import { message } from 'ant-design-vue'
     import CSVData from '~/assets/samples/terms-template.json'
@@ -227,8 +228,9 @@
                         fileS3Key,
                         glossaryName: props?.entity?.displayText,
                     })
-                    startUpload()
+                     startUpload()
                     visible.value = false // close modal on hit submit
+                    useAddEvent('gtc', 'term', 'bulk_upload_initiated')
                 }
             }
 

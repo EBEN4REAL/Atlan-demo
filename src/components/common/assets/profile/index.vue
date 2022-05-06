@@ -111,6 +111,11 @@
                     router.replace(`/${page.value}/${route.params.id}/${key}`),
             })
 
+            const changeActiveTab=(value)=>{
+                console.log("changing active tab")
+                activeKey.value=value
+            }
+            provide('changeActiveTab', changeActiveTab)
             return {
                 getProfileTabs,
                 activeKey,

@@ -208,9 +208,9 @@
     <div v-if="errorM || treeErrorM || fileError" class="text-red-600">
         {{ errorM || treeErrorM || 'Some error occured.' }}
     </div>
-    <div v-else-if="fileSuccess" class="text-green-600">
-        {{ 'Successfully uploaded.' }}
-    </div>
+    <!-- <div v-else-if="fileSuccess" class="text-green-600"> -->
+    <!--     {{ 'Successfully uploaded.' }} -->
+    <!-- </div> -->
 </template>
 
 <script lang="ts">

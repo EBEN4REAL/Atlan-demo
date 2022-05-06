@@ -77,7 +77,14 @@ const useBulkUpload = ({
             entrypoint: 'main',
         },
     }))
-
+    const handleStartedUpload = () => {
+        message.success({
+            content: `Starting bulk upload! now`,
+            duration: 2,
+        })
+        getGlossaryByGuid(guid).isBulkUploadRunning = true
+        isWorkflowRunning.value = true
+    }
     // run workflow after updating
     // can be removed if update workflow endpoint gets ( submit = true attribute)
     const run = (name) => {
@@ -95,12 +102,7 @@ const useBulkUpload = ({
         const { data } = runWorkflowByName(runBody, true)
 
         watch(data, () => {
-            isWorkflowRunning.value = true
-            getGlossaryByGuid(guid).isBulkUploadRunning = true
-            message.success({
-                content: `Starting bulk upload!`,
-                duration: 2,
-            })
+            handleStartedUpload()
         })
     }
 
@@ -110,13 +112,7 @@ const useBulkUpload = ({
         execute(true)
         watch([data, error], (v) => {
             if (data.value && !error.value) {
-                message.success({
-                    content: `Starting bulk upload!`,
-                    key: `bulkUpload`,
-                    duration: 2,
-                })
-                isWorkflowRunning.value = true
-                getGlossaryByGuid(guid).isBulkUploadRunning = true
+                handleStartedUpload()
             } else {
                 const errMsg = error.value?.response?.data?.message
                 message.error({

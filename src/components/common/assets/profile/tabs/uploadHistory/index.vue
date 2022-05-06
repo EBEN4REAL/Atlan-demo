@@ -142,7 +142,6 @@
                 })
             }
             watch(runs, () => {
-                console.log(runs.value)
                 runList.value = runs.value
                 if (runList.value.length && checkForRunningWf(runs.value)) {
                     startFetch()

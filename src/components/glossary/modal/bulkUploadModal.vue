@@ -33,11 +33,11 @@
                 ><atlan-icon icon="Download" class="mr-1 mb-0.5" />Download
                 sample template here</span
             >
-            <span class="mx-2">|</span>
-            <span class="cursor-pointer flex items-center"
-                >View upload guidelines here
-                <atlan-icon icon="External" class="ml-1 mb-0.5"
-            /></span>
+            <!-- <span class="mx-2">|</span> -->
+            <!-- <span class="cursor-pointer flex items-center" -->
+            <!--     >View upload guidelines here -->
+            <!--     <atlan-icon icon="External" class="ml-1 mb-0.5" -->
+            <!-- /></span> -->
         </div>
         <div
             class="flex justify-center items-center px-4 mx-4 bg-gray-50 border border-dashed border-gray-300 rounded-xl my-4"
@@ -78,7 +78,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, watch } from 'vue'
+    import { defineComponent, ref, computed, watch, inject } from 'vue'
+    import { useRoute, useRouter } from 'vue-router'
     import FormGen from '~/components/common/formGenerator/index.vue'
     import useBulkUpload from '@/glossary/modal/useBulkUpload'
     import { isWorkflowRunning } from '@/glossary/modal/useBulkUpload'
@@ -104,6 +105,7 @@
             const visible = ref<boolean>(false)
             const { getGlossaryByGuid } = useGlossaryData()
             const fileS3Key = ref('') // s3 key is what we get from the files api
+            const router = useRouter()
             // http on local https on production
             const getBasePath = function (): any {
                 if (process.env.NODE_ENV === 'development')
@@ -189,6 +191,10 @@
                         preference,
                     })
                     watch(runs, () => {
+                        if (!runs.value.length) {
+                            visible.value = true
+                            return
+                        }
                         const isFirstWfRunning =
                             phase(runs.value[0]) === 'Running'
                         if (isFirstWfRunning) {
@@ -234,10 +240,25 @@
                 ].join('\r\n')
 
                 console.log(csv)
-                const fileName = 'Sample'
+                const fileName = `${props?.entity?.displayText} - Atlan Bulk Terms Template`
 
                 downloadFile(csv, fileName)
             }
+
+            const isWfRunningForGtc = computed(
+                () =>
+                    getGlossaryByGuid(props?.entity?.guid)?.isBulkUploadRunning
+            )
+
+            const changeActiveTab = inject('changeActiveTab')
+
+            watch(isWfRunningForGtc, () => {
+                if (isWfRunningForGtc.value) {
+                    setTimeout(() => {
+                        changeActiveTab('uploadHistory')
+                    }, 1000)
+                }
+            })
 
             return {
                 handleCancel,

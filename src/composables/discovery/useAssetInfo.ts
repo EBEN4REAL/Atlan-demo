@@ -437,7 +437,8 @@ export default function useAssetInfo() {
             return `/insights?col_id=${asset.guid}`
         } else if (
             assetType(asset) === 'Process' ||
-            assetType(asset) === 'ColumnProcess'
+            assetType(asset) === 'ColumnProcess' ||
+            assetType(asset) === 'BIProcess'
         ) {
             return null
         } else if (appendOverview) {

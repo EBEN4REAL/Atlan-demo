@@ -247,6 +247,15 @@ export const assetTypeList: {
         categoryType: 'Lineage',
     },
     {
+        id: 'BIProcess',
+        label: 'BI Process',
+        isDiscoverable: false,
+        image: 'Process',
+        relationships: ['columnProcesses', 'process'],
+        groupOrder: 9,
+        categoryType: 'Lineage',
+    },
+    {
         id: 'TableauSite',
         label: 'Site',
         fullLabel: 'Tableau Site',

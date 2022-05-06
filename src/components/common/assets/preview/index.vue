@@ -32,7 +32,7 @@
                 </div>
                 <Tooltip
                     v-if="
-                        ['process', 'columnprocess'].includes(
+                        ['process', 'columnprocess', 'biprocess'].includes(
                             selectedAsset.typeName?.toLowerCase()
                         )
                     "
@@ -177,9 +177,11 @@
                                     route?.params?.id &&
                                     assetType(selectedAsset) === 'Column'
                                 ) &&
-                                !['Process', 'ColumnProcess'].includes(
-                                    selectedAsset.typeName
-                                )
+                                ![
+                                    'Process',
+                                    'ColumnProcess',
+                                    'BIProcess',
+                                ].includes(selectedAsset.typeName)
                             "
                             class="flex items-center justify-center p-2"
                             @click="handleAction('open')"

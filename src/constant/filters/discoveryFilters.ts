@@ -269,7 +269,7 @@ export const discoveryFilters = [
         id: 'process',
         label: 'PROCESS',
         component: 'properties',
-        includes: ['Process', 'ColumnProcess'],
+        includes: ['Process', 'ColumnProcess', 'BIProcess'],
         attributes: [
             {
                 name: 'sql',

@@ -91,6 +91,7 @@
                                             [
                                                 'process',
                                                 'columnprocess',
+                                                'biprocess',
                                             ].includes(
                                                 item.typeName?.toLowerCase()
                                             )

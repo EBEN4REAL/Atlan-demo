@@ -21,7 +21,7 @@
 
             <template
                 v-if="
-                    !['Process', 'ColumnProcess'].includes(
+                    !['Process', 'ColumnProcess', 'BIProcess'].includes(
                         selectedAsset.typeName
                     )
                 "

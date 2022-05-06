@@ -126,22 +126,21 @@
                 type.value = 'information'
             }
 
-            watch(visibleModal, () => {
-                if (visibleModal.value) {
-                    if (newAnnoucement.value) {
-                        resetInput()
-                    } else {
-                        initInput()
+            watch(
+                visibleModal,
+                () => {
+                    debugger
+                    if (visibleModal.value) {
+                        if (newAnnoucement.value) {
+                            resetInput()
+                        } else {
+                            initInput()
+                        }
                     }
-                }
-            })
-            onMounted(() => {
-                if (newAnnoucement.value) {
-                    resetInput()
-                } else {
-                    initInput()
-                }
-            })
+                },
+                { immediate: true }
+            )
+
             const icon = computed(() => {
                 switch (type.value) {
                     case 'information':

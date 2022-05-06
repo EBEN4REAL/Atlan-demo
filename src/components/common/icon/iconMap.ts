@@ -301,7 +301,7 @@ import EmptyLogs from '~/assets/images/workflows/empty-logs-state.svg'
 import WarningIcon from '~/assets/images/icons/warning.svg'
 
 import Download from '~/assets/images/icons/download.svg'
-import Upload from '~/assets/images/icons/upload.svg'
+import Upload from '~/assets/images/icons/upload2.svg'
 import Enum from '~/assets/images/icons/label.svg'
 import Boolean from '~/assets/images/dataType/boolean.svg'
 import String from '~/assets/images/dataType/string.svg'
@@ -478,6 +478,7 @@ import CommonError2 from '~/assets/images/icons/common-error-2.svg'
 import CommonError3 from '~/assets/images/icons/common-error-3.svg'
 import CommonError4 from '~/assets/images/icons/common-error-4.svg'
 import CSVLogo from '~/assets/images/icons/csv-logo.svg'
+import PaperClip from '~/assets/images/icons/paper-clip.svg'
 
 export default {
     SlackTabEmpty,
@@ -938,5 +939,6 @@ export default {
     CommonError2,
     CommonError3,
     CommonError4,
-    CSVLogo
+    CSVLogo,
+    PaperClip,
 }

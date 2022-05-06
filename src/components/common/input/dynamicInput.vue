@@ -153,7 +153,7 @@
             </a-button>
         </div>
         <div v-if="fileList?.length" class="flex items-center mt-3 space-x-1">
-            <atlan-icon icon="Link" />
+            <atlan-icon icon="PaperClip" />
             <span class="text-gray-500">{{ fileList[0]?.name }}</span>
             <span class="text-gray-500">|</span>
             <atlan-icon

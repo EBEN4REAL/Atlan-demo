@@ -14,7 +14,7 @@
                 <span class="text-base font-bold text-gray-700"
                     >New Bulk Upload</span
                 >
-                <atlan-icon icon="CaretRight" class="mx-2" />
+                <atlan-icon icon="CaretRight" class="mx-1" />
                 <atlan-icon icon="Glossary" class="mr-1" />
                 <span class="text-base text-gray-700">{{
                     entity?.displayText
@@ -23,12 +23,12 @@
         </template>
         <!-- Modal body -->
 
-        <span class="text-gray-700 px-4 pt-2"
+        <span class="text-gray-700 px-4 pt-4"
             >Getting started with bulk upload?</span
         >
         <div class="flex items-center my-1 text-primary px-4">
             <span
-                class="cursor-pointer flex items-center"
+                class="cursor-pointer flex items-center px-2 py-1 rounded-lg bg-white border border-gray-200 text-gray-700 hover:text-primary font-bold"
                 @click="handleDownload"
                 ><atlan-icon icon="Download" class="mr-1 mb-0.5" />Download
                 sample template here</span
@@ -63,7 +63,12 @@
                     <div class="flex flex-col">
                         <atlan-icon :icon="i?.icon" class="h-28 mb-2" />
                         <span
-                            class="text-gray-500 text-xs text-left w-40 mx-2"
+                            class="text-gray-500 text-xs text-left mx-2"
+                            :class="
+                                index === illutrationMap?.length - 1
+                                    ? 'w-36'
+                                    : 'w-40'
+                            "
                             >{{ i?.text }}</span
                         >
                     </div>
@@ -282,7 +287,7 @@
             @apply bg-white !important;
         }
         :global(.ant-modal-header) {
-            @apply bg-primary-light mb-2 !important;
+            @apply bg-primary-light mb-4 !important;
         }
     }
 </style>

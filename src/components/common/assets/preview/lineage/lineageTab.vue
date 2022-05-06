@@ -199,12 +199,20 @@
                 },
                 {
                     key: 'UPSTREAM',
-                    label: 'Upstream',
+                    label: ['Process', 'ColumnProcess', 'BIProcess'].includes(
+                        selectedAsset.value.typeName
+                    )
+                        ? 'Inputs'
+                        : 'Upstream',
                     count: allEntities.value.upstream.length,
                 },
                 {
                     key: 'DOWNSTREAM',
-                    label: 'Downstream',
+                    label: ['Process', 'ColumnProcess', 'BIProcess'].includes(
+                        selectedAsset.value.typeName
+                    )
+                        ? 'Output'
+                        : 'Downstream',
                     count: allEntities.value.downstream.length,
                 },
             ])

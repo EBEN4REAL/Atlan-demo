@@ -64,6 +64,21 @@
                     }}</span>
                 </div>
             </div>
+            <div
+                v-if="['Running', 'Failed', 'Pending'].includes(phase(run))"
+                class="flex items-center justify-end py-2"
+                @click="handleRedirectToWF"
+            >
+                <span
+                    class="text-primary flex items-center space-x-1 cursor-pointer w-24"
+                >
+                    <atlan-icon
+                        icon="WorkflowsActive"
+                        class="h-4 mb-0.5 mr-1 text-primary"
+                    />
+                    View details
+                </span>
+            </div>
         </div>
         <div
             v-if="
@@ -87,9 +102,8 @@
                         finalStatus?.terms?.created_count &&
                         finalStatus?.terms?.updated_count
                     "
-                    class=" w-1 rounded-full bg-gray-400 h-1"
-                    ></div
-                >
+                    class="w-1 rounded-full bg-gray-400 h-1"
+                ></div>
                 <span
                     v-if="finalStatus?.terms?.created_count"
                     class="text-gray-500 text-sm"
@@ -101,9 +115,8 @@
                         (finalStatus?.terms?.created_count ||
                             finalStatus?.terms?.updated_count)
                     "
-                    class=" w-1 rounded-full bg-gray-400 h-1"
-                    ></div
-                >
+                    class="w-1 rounded-full bg-gray-400 h-1"
+                ></div>
                 <span
                     v-if="finalStatus?.terms?.error_count"
                     class="text-error text-sm"
@@ -125,9 +138,8 @@
                         finalStatus?.categories?.error_count &&
                         finalStatus?.categories?.created_count
                     "
-                    class=" w-1 rounded-full bg-gray-400 h-1"
-                    ></div
-                >
+                    class="w-1 rounded-full bg-gray-400 h-1"
+                ></div>
                 <span
                     v-if="finalStatus?.categories?.error_count"
                     class="text-error text-sm"
@@ -147,6 +159,7 @@
         computed,
         toRefs,
     } from 'vue'
+    import { useRoute, useRouter } from 'vue-router'
     import { message } from 'ant-design-vue'
     import { LiveRun } from '~/types/workflow/runs.interface'
     import { runStatusMap } from '~/workflowsv2/constants/maps'
@@ -188,6 +201,7 @@
                 name,
                 phase,
             } = useWorkflowInfo()
+            const router = useRouter()
             const path = computed(() => ({
                 name: name(props?.run),
             }))
@@ -292,6 +306,13 @@
                 return value
             }
 
+            const handleRedirectToWF = () => {
+                const url = `workflows/profile/${workflowTemplateName(
+                    props.run
+                )}/runs?name=${name(props.run)}`
+                console.log(url)
+                router.push(url)
+            }
             watch(selectedRun, () => {
                 if (!['Running', 'Pending'].includes(phase(props.run)))
                     getResults(selectedRun.value?.status?.nodes)
@@ -311,6 +332,7 @@
                 handleDownloadArtifacts,
                 WFIcon,
                 getRunStatus,
+                handleRedirectToWF,
             }
         },
     })

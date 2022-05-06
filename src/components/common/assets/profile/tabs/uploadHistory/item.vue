@@ -307,10 +307,9 @@
             }
 
             const handleRedirectToWF = () => {
-                const url = `workflows/profile/${workflowTemplateName(
+                const url = `/workflows/profile/${workflowTemplateName(
                     props.run
                 )}/runs?name=${name(props.run)}`
-                console.log(url)
                 router.push(url)
             }
             watch(selectedRun, () => {

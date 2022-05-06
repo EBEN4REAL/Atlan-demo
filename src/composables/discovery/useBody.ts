@@ -526,17 +526,7 @@ export function useBody(
                             if (element.operator === 'isNotNull') {
                                 base.filter('exists', element.operand)
                             }
-                            if (
-                                element.operator === 'boolean' &&
-                                element.operand === '__hasLineage'
-                            ) {
-                                element.value
-                                    ? base.filter('exists', element.operand)
-                                    : base.notFilter('exists', element.operand)
-                            } else if (
-                                element.value != null &&
-                                element.value !== ''
-                            ) {
+                            if (element.value != null && element.value !== '') {
                                 if (element.operator === 'equals') {
                                     base.filter(
                                         'term',

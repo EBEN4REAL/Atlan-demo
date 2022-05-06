@@ -106,6 +106,7 @@
                         /> -->
                                 <OwnersSelector
                                     v-model:modelValue="userGroupData"
+                                    :show-invited-users="true"
                                     :show-none="false"
                                     :enable-tabs="enableTabs"
                                     select-group-key="id"
@@ -268,12 +269,41 @@
                                                     }
                                                 "
                                             >
-                                                <span class="text-primary">{{
-                                                    item.name ||
-                                                    item.username ||
-                                                    item.email ||
-                                                    '-'
-                                                }}</span>
+                                                <div class="flex items-center">
+                                                    <a-tooltip>
+                                                        <template #title>
+                                                            {{
+                                                                `${
+                                                                    item.name ||
+                                                                    item.username ||
+                                                                    item.email ||
+                                                                    '-'
+                                                                }`
+                                                            }}
+                                                        </template>
+                                                        <div
+                                                            class="max-w-xs truncate text-primary"
+                                                        >
+                                                            {{
+                                                                `${
+                                                                    item.name ||
+                                                                    item.username ||
+                                                                    item.email ||
+                                                                    '-'
+                                                                }`
+                                                            }}
+                                                        </div>
+                                                    </a-tooltip>
+                                                    <div
+                                                        v-if="
+                                                            item.emailVerified ===
+                                                            false
+                                                        "
+                                                        class="border border-alert mb-0.5 ml-3 px-1.5 rounded-2xl text-alert text-xs"
+                                                    >
+                                                        Invited
+                                                    </div>
+                                                </div>
                                             </div>
                                             <span class="text-xs text-gray-500">
                                                 @{{ item.username }}</span

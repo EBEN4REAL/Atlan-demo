@@ -3,10 +3,12 @@
         class="w-52"
         allow-clear
         show-search
+        :class="$style.baseSelector"
         :bordered="type !== 'minimal'"
         :value="value"
         :get-popup-container="(target) => target.parentNode"
         @update:value="$emit('update:value', $event)"
+        dropdown-class-name="w-64"
     >
         <template #suffixIcon>
             <AtlanLoader v-if="loading" />
@@ -25,6 +27,9 @@
                         item.emoji
                     }}</span>
                     {{ item.label }}
+                    <span v-if="item.count" class="text-gray-500"
+                        >({{ item.count }})</span
+                    >
                 </div>
             </a-select-option>
         </template>
@@ -40,6 +45,7 @@
         icon?: string
         colorDot?: string
         emoji?: string
+        count?: number
     }
 
     export default defineComponent({
@@ -67,5 +73,14 @@
         height: 6px;
         width: 6px;
         border-radius: 50%;
+    }
+</style>
+
+<style lang="less" module>
+    .baseSelector {
+        :global(.ant-select-selector) {
+            @apply rounded-lg !important;
+            box-shadow: 0px 1px 0px 0px hsla(0, 0%, 0%, 0.05);
+        }
     }
 </style>

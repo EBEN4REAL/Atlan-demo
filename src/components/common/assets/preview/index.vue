@@ -188,7 +188,10 @@
                         </a-button>
                     </a-tooltip>
 
-                    <a-tooltip title="Query">
+                    <a-tooltip
+                        title="Query"
+                        v-if="featureEnabledMap[INSIGHT_WORKSPACE_LEVEL_TAB]"
+                    >
                         <QueryDropdown
                             v-if="
                                 showCTA('query') &&
@@ -380,6 +383,10 @@
     } from '~/composables/integrations/slack/useAskAQuestion'
     import { issuesCount } from '~/composables/integrations/jira/useJiraTickets'
     import integrationStore from '~/store/integrations/index'
+    import {
+        featureEnabledMap,
+        INSIGHT_WORKSPACE_LEVEL_TAB,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -599,13 +606,14 @@
                 { debounce: 200, immediate: true }
             )
 
-            const router = useRouter()
-
             const handleAction = (key) => {
                 emit('closeDrawer')
                 switch (key) {
                     case 'open':
-                        router.push(getProfilePath(selectedAsset.value))
+                        window.open(
+                            getProfilePath(selectedAsset.value),
+                            '_blank'
+                        )
                         useAddEvent('discovery', 'cta_action', 'clicked', {
                             action: 'open_asset',
                             asset_type: selectedAsset.value.typeName,
@@ -726,6 +734,8 @@
             )
 
             return {
+                INSIGHT_WORKSPACE_LEVEL_TAB,
+                featureEnabledMap,
                 jiraAppInstalled,
                 disableSlackAsk,
                 tabChildRef,

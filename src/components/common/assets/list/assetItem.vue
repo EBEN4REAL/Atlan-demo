@@ -570,7 +570,10 @@
 
                                                     {{ databaseName(item) }}
                                                 </div>
-                                                <div class="pl-3 font-bold">
+                                                <div
+                                                    v-if="page === 'assets'"
+                                                    class="pl-3 font-bold"
+                                                >
                                                     <a-button
                                                         shape="circle"
                                                         type="dashed"
@@ -613,7 +616,10 @@
 
                                                     {{ schemaName(item) }}
                                                 </div>
-                                                <div class="pl-3 font-bold">
+                                                <div
+                                                    v-if="page === 'assets'"
+                                                    class="pl-3 font-bold"
+                                                >
                                                     <a-button
                                                         shape="circle"
                                                         type="dashed"
@@ -1165,7 +1171,7 @@
                             <div class="flex flex-wrap items-center gap-x-1">
                                 <div
                                     v-if="
-                                        clsfList.length > 0 &&
+                                        clsfList?.length > 0 &&
                                         preference?.display?.includes(
                                             'classifications'
                                         )

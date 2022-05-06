@@ -5,6 +5,7 @@
                 v-model:active="activeTabKey"
                 class="minimal-tab"
                 :data="tabConfig"
+                @change="closeOtherDrawers"
             >
                 <template #label="t">
                     <div class="flex items-center overflow-hidden">
@@ -397,6 +398,8 @@
     } from './composables/useEditPersona'
     import { refetchPersona } from './composables/usePersonaList'
     import RaisedTab from '@/UI/raisedTab.vue'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { useGroupPreview } from '~/composables/group/showGroupPreview'
 
     export default defineComponent({
         name: 'PersonaBody',
@@ -440,6 +443,20 @@
                 addpolicyVisible.value = true
                 isEdit.value = false
             }
+            const {
+                closePreview: closeUserPreview,
+                showPreview: isUserPreviewOpen,
+            } = useUserPreview()
+            const {
+                closePreview: closeGroupPreview,
+                showPreview: isGroupPreviewOpen,
+            } = useGroupPreview()
+
+            const closeOtherDrawers = (activeKey) => {
+                if (isUserPreviewOpen.value) closeUserPreview()
+                if (isGroupPreviewOpen.value) closeGroupPreview()
+            }
+
             const addPolicyDropdownConfig = [
                 {
                     title: 'Metadata Policy',
@@ -700,6 +717,8 @@
             })
 
             return {
+                closeOtherDrawers,
+                closeUserPreview,
                 addStatus,
                 updateStatus,
                 removeStatus,

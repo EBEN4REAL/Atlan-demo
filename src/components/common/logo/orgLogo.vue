@@ -6,13 +6,13 @@
             :style="{ height: `${avatarSize}px` }"
         >
             <a-upload
-                accept="image/*"
+                accept=".png, .jpg, .jpeg"
                 class="cursor-pointer"
                 :custom-request="handleUploadAvatar"
                 :show-upload-list="false"
             >
                 <div
-                    v-if="!isReady && uploadStarted"
+                    v-if="!isReady && uploadStarted && !error"
                     class="hidden text-center bg-primary-light sm:block"
                     :class="[
                         bordered ? 'mb-2' : '',
@@ -63,12 +63,13 @@
 
 <script lang="ts">
     import { ref, watch, PropType } from 'vue'
+    import { message } from 'ant-design-vue'
     import { getNameInitials, getNameInTitleCase } from '~/utils/string'
     import { useTenantStore } from '~/store/tenant'
     import uploadLogo from '~/composables/avatar/updateLogo'
 
     export default {
-        name: 'Avatar',
+        name: 'OrgLogo',
         props: {
             avatarName: {
                 type: String,
@@ -108,21 +109,35 @@
                 }
             )
 
-            const { upload, isReady, uploadKey } = uploadLogo()
+            const { upload, isReady, uploadKey, error } = uploadLogo()
             const handleUploadAvatar = async (uploaded) => {
                 console.log('handle Upload', uploaded)
-                upload(uploaded.file)
                 uploadStarted.value = true
-
+                await upload(uploaded.file)
+                if (error.value) {
+                    const errMsg = error.value?.response?.data?.message
+                    message.error({
+                        key: 'upload',
+                        content:
+                            errMsg ?? 'Image upload failed, please try again.',
+                    })
+                } else if (isReady?.value)
+                    message.success({
+                        key: 'upload',
+                        content: 'Image uploaded',
+                    })
                 updatedImageUrl.value = `${updatedImageUrl.value}?${uploadKey.value}`
+                tenantStore.setLogo(
+                    `${updatedImageUrl.value}?${uploadKey.value}`
+                )
 
                 return true
             }
             watch(uploadKey, () => {
                 context.emit('imageUpdated', updatedImageUrl)
-                tenantStore.setLogo(updatedImageUrl.value)
             })
             return {
+                error,
                 handleUploadAvatar,
                 isReady,
                 uploadStarted,

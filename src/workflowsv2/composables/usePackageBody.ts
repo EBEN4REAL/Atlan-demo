@@ -111,7 +111,6 @@ export function usePackageBody(
     base.size(limit || 0)
 
     try {
-        // console.log(facets)
         Object.keys(facets ?? {}).forEach((mkey) => {
             const filterObject = facets?.[mkey]
             switch (mkey) {
@@ -121,7 +120,9 @@ export function usePackageBody(
                             path: 'metadata',
                             ...bodybuilder()
                                 .query(
-                                    'term',
+                                    Array.isArray(filterObject)
+                                        ? 'terms'
+                                        : 'term',
                                     'metadata.name.keyword',
                                     filterObject
                                 )

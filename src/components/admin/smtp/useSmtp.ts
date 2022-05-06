@@ -83,11 +83,12 @@ export function useSmtp() {
     const { data, isLoading, error, isReady, mutate } = Tenant.UpdateTenant(body, { asyncOptions: { immediate: false } })
     const errorMessage = ref('')
 
-    const saveSmtpConfig = async () => {
+    const saveSmtpConfig = async (cb = () => {}) => {
         formRef.value
             .validate()
             .then(async () => {
                 await mutate()
+                cb()
                 watch([error, data], () => {
                     if (data.value)
                         errorMessage.value = ''

@@ -62,7 +62,9 @@
 
     const store = integrationStore()
     const { tenantJiraStatus } = toRefs(store)
-    const projectList = computed(() => tenantJiraStatus.value.projectList)
+    const projectList = computed(
+        () => tenantJiraStatus.value.projectList.filter((p) => !p.isPrivate) // ? hide projects that are private as other parts wont work as expected for no/limited access
+    )
 
     const { isLoading, error, lastPage, mutate, isReady } = fetchJiraProjects()
 

@@ -40,6 +40,7 @@ import {
     percent,
     tableauCalculatedField,
     tableauDatasourceField,
+    lookerField,
 } from './icons'
 import { dataTypeCategoryList } from '~/constant/dataType'
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -85,6 +86,7 @@ const portDataTypeIcons = {
 const biPortDataTypeIcons = {
     TableauCalculatedField: tableauCalculatedField,
     TableauDatasourceField: tableauDatasourceField,
+    // LookerField: lookerField,
 }
 
 const columnKeyTypeIcons = {
@@ -97,6 +99,8 @@ const portsLabelMap = {
     View: 'columns',
     MaterialisedView: 'columns',
     TableauDatasource: 'fields',
+    // LookerExplore: 'fields',
+    // LookerView: 'fields',
 }
 
 const getPortsCTALabel = (typeName, portsCount, highlightPorts) => {
@@ -128,6 +132,8 @@ export default function useGraph(graph) {
             'View',
             'MaterialisedView',
             'TableauDatasource',
+            // 'LookerExplore',
+            // 'LookerView',
         ].includes(typeName)
 
         const computedData = {
@@ -397,44 +403,6 @@ export default function useGraph(graph) {
             },
             ports: {
                 groups: {
-                    ctaPortLeft: {
-                        position: { name: 'left' },
-                        markup: [
-                            {
-                                tagName: 'circle',
-                                selector: 'portBody',
-                            },
-                        ],
-                        attrs: {
-                            portBody: {
-                                r: 14,
-                                strokeWidth: 0,
-                                stroke: '#000000',
-                                fill: '#000000',
-                                width: 1,
-                                height: 1,
-                            },
-                        },
-                    },
-                    ctaPortRight: {
-                        position: { name: 'right' },
-                        markup: [
-                            {
-                                tagName: 'circle',
-                                selector: 'portBody',
-                            },
-                        ],
-                        attrs: {
-                            portBody: {
-                                r: 14,
-                                strokeWidth: 0,
-                                stroke: '#000000',
-                                fill: '#000000',
-                                width: 1,
-                                height: 1,
-                            },
-                        },
-                    },
                     invisiblePort: {
                         markup: [
                             {

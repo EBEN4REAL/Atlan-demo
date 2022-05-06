@@ -1,14 +1,14 @@
 <template>
     <a-checkbox-group
         v-model:value="localValue"
-        class="w-full px-4"
+        class="w-full px-3"
         @change="handleChange"
     >
         <div class="flex flex-col w-full">
             <template v-for="el in item.data" :key="el.id">
                 <a-checkbox
                     :value="el.id"
-                    class="flex-row-reverse items-center w-full mb-1 atlan-reverse"
+                    class="flex-row-reverse items-center w-full px-1 pb-1 rounded atlan-reverse hover:bg-primary-menu"
                 >
                     <div class="flex items-center w-48 pt-2">
                         <div

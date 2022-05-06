@@ -79,7 +79,7 @@ const useBulkUpload = ({
     }))
     const handleStartedUpload = () => {
         message.success({
-            content: `Starting bulk upload! now`,
+            content: `Starting bulk upload!`,
             duration: 2,
         })
         getGlossaryByGuid(guid).isBulkUploadRunning = true

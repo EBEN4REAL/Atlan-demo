@@ -16,19 +16,27 @@
                         <span
                             class="status-badge text-xs mb-1"
                             style="padding: 7px 12px 5px"
-                            :class="[
-                                getRunTextClass(run),
-                                getRunClassBgLight(run),
-                            ]"
+                            :class="[getCustomClassesByPhase(run)]"
                         >
-                            <div class="dot" :class="getRunClassBg(run)" />
-                            {{
-                                getRunStatus(
-                                    runStatusMap[run.status.phase]?.label
-                                ) ||
-                                runStatusMap[run.status.phase]?.label ||
-                                run?.status?.phase
-                            }}
+                            <div
+                                class="dot"
+                                :class="
+                                    getRunStatus(
+                                        runStatusMap[run.status.phase]?.label
+                                    ) === 'Warnings'
+                                        ? 'bg-yellow-300'
+                                        : getRunClassBg(run)
+                                "
+                            />
+                            <span>
+                                {{
+                                    getRunStatus(
+                                        runStatusMap[run.status.phase]?.label
+                                    ) ||
+                                    runStatusMap[run.status.phase]?.label ||
+                                    run?.status?.phase
+                                }}
+                            </span>
                         </span>
                     </div>
                     <div
@@ -64,16 +72,17 @@
                     }}</span>
                 </div>
             </div>
-            <a-tooltip>
-                <template #title>Retry Run</template>
-                <div
-                    v-if="['Failed'].includes(phase(run))"
-                    class="border bg-white mr-2 rounded-lg p-1 px-2 cursor-pointer"
-                    @click="handleRetry"
-                >
-                    <atlan-icon icon="Retry" class="h-4" />
-                </div>
-            </a-tooltip>
+            <!-- hidden for v1 -->
+            <!-- <a-tooltip> -->
+            <!--     <template #title>Retry Run</template> -->
+            <!--     <div -->
+            <!--         v-if="['Failed'].includes(phase(run))" -->
+            <!--         class="border bg-white mr-2 rounded-lg p-1 px-2 cursor-pointer" -->
+            <!--         @click="handleRetry" -->
+            <!--     > -->
+            <!--         <atlan-icon icon="Retry" class="h-4" /> -->
+            <!--     </div> -->
+            <!-- </a-tooltip> -->
             <div
                 v-if="['Running', 'Failed', 'Pending'].includes(phase(run))"
                 class="flex items-center justify-end py-2"
@@ -83,7 +92,7 @@
                     class="text-primary flex items-center space-x-1 cursor-pointer w-24"
                 >
                     <atlan-icon
-                        icon="WorkflowsActive"
+                        icon="Workflow"
                         class="h-4 mb-0.5 mr-1 text-primary"
                     />
                     View details
@@ -194,13 +203,19 @@
                 type: String,
                 required: true,
             },
+            glossaryName: {
+                type: String,
+                required: true,
+            },
         },
         emits: ['refetch'],
-        setup(props,{emit}) {
+        setup(props, { emit }) {
             const finalStatus = ref({})
             const {
                 displayName,
                 getRunTextClass,
+                getRunTextClassByPhase,
+                getRunClassByPhase,
                 getRunClassBgLight,
                 getRunClassBg,
                 duration,
@@ -228,6 +243,7 @@
                     return 'RunSuccess'
                 if (phase(props.run) === 'Failed') return 'IssuesAnnouncement'
                 if (phase(props.run) === 'Running') return 'RunProgress'
+                if (phase(props.run) === 'Pending') return 'Upload'
                 return 'WarningAnnouncement'
             })
 
@@ -292,7 +308,7 @@
                 })
                 watch(data, () => {
                     if (data.value && !error.value) {
-                        const fileName = 'Results CSV'
+                        const fileName = `${props.glossaryName} - Atlan Bulk Terms Results`
                         downloadFile(data.value, fileName)
                     } else {
                         message.error(`Could not get file!`, 5)
@@ -316,16 +332,7 @@
                     (finalStatus.value?.terms?.error_count ||
                         finalStatus.value?.categories?.error_count)
                 )
-                    return 'Completed with errors'
-                if (
-                    value?.toLowerCase() === 'success' &&
-                    !(
-                        finalStatus.value?.terms?.error_count ||
-                        finalStatus.value?.categories?.error_count
-                    )
-                )
-                    return 'Completed'
-
+                    return 'Warnings'
                 if (value?.toLowerCase() === 'running') return 'In progress'
                 return value
             }
@@ -335,6 +342,15 @@
                     props.run
                 )}/runs?name=${name(props.run)}`
                 router.push(url)
+            }
+
+            const getCustomClassesByPhase = (run) => {
+                if (
+                    getRunStatus(runStatusMap[run.status.phase]?.label) ===
+                    'Warnings'
+                )
+                    return 'text-new-yellow-600 bg-new-yellow-100'
+                return `${getRunTextClass(run)} ${getRunClassBgLight(run)}`
             }
             watch(selectedRun, () => {
                 if (!['Running', 'Pending'].includes(phase(props.run)))
@@ -357,6 +373,9 @@
                 getRunStatus,
                 handleRedirectToWF,
                 handleRetry,
+                getRunTextClassByPhase,
+                getRunClassByPhase,
+                getCustomClassesByPhase,
             }
         },
     })

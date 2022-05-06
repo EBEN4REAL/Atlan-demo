@@ -14,6 +14,7 @@
             <RunItem
                 :run="run"
                 :run-name="`Bulk Upload ${runList?.length - i}`"
+                :glossary-name="selectedAsset?.displayText"
                 @refetch="handleRefetch"
             />
         </div>

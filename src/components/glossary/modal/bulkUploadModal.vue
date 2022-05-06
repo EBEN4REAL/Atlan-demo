@@ -22,6 +22,9 @@
             </div>
         </template>
         <!-- Modal body -->
+        <template #closeIcon>
+            <atlan-icon icon="Close" class="h-6"/>
+        </template>
 
         <span class="text-gray-700 px-4 pt-4"
             >Getting started with bulk upload?</span

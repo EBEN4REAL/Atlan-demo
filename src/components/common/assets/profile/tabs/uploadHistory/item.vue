@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full my-4 bg-gray-100 rounded-lg">
+    <div class="w-full my-4 bg-gray-100 rounded-lg shadow-md">
         <div class="flex p-4 items-center w-full">
             <div
                 class="p-2 rounded-lg flex items-center justify-center m-1 bg-white mr-2"
@@ -9,10 +9,9 @@
             <div class="w-full">
                 <div class="flex justify-between items-center w-full">
                     <div class="flex items-center space-x-2">
-                        <span
-                            class="font-bold text-gray-500 font-base ml-0.5"
-                            >{{ runName }}</span
-                        >
+                        <span class="font-bold text-gray-500 font-base">{{
+                            runName
+                        }}</span>
                         <span
                             class="status-badge text-xs mb-1"
                             style="padding: 7px 12px 5px"
@@ -23,7 +22,7 @@
                                 :class="
                                     getRunStatus(
                                         runStatusMap[run.status.phase]?.label
-                                    ) === 'Warnings'
+                                    )?.toLowerCase() === 'needs attention'
                                         ? 'bg-yellow-300'
                                         : getRunClassBg(run)
                                 "
@@ -54,8 +53,7 @@
                 </div>
 
                 <div class="flex items-center space-x-2">
-                    <span class="flex items-center text-gray-500"
-                        ><atlan-icon icon="User" class="h-4 mr-1 mb-0.5" />
+                    <span class="flex items-center text-gray-500">
                         Initiated by
                         <Avatar
                             :image-url="creatorUsername(run)"
@@ -70,6 +68,16 @@
                     <span class="text-gray-500 text-xs">{{
                         startedAt(run, true)
                     }}</span>
+                    <span
+                        v-if="!['Running', 'Pending'].includes(phase(run))"
+                        class="text-gray-500 text-xs mx-2"
+                        >|</span
+                    >
+                    <span
+                        v-if="!['Running', 'Pending'].includes(phase(run))"
+                        class="text-gray-500 text-xs"
+                        >Completed in {{ duration(run) }}</span
+                    >
                 </div>
             </div>
             <!-- hidden for v1 -->
@@ -89,11 +97,11 @@
                 finalStatus?.terms?.total_count ||
                 finalStatus?.categories?.total_count
             "
-            class="bg-white p-4 rounded-b-lg border-t"
+            class="bg-white p-4 px-0 rounded-b-lg border-t"
         >
             <div
                 v-if="finalStatus?.terms?.total_count"
-                class="flex items-center space-x-2"
+                class="flex items-center space-x-2 px-4"
             >
                 <atlan-icon icon="Term" class="mb-0.5" />
                 <span
@@ -129,7 +137,7 @@
             </div>
             <div
                 v-if="finalStatus?.categories?.total_count"
-                class="flex items-center space-x-2 mt-1"
+                class="flex items-center space-x-2 mt-2 px-4"
             >
                 <atlan-icon icon="Category" class="mb-0.5" />
                 <span
@@ -150,6 +158,17 @@
                     >{{ finalStatus?.categories?.error_count }} failed</span
                 >
             </div>
+            <div
+                v-if="
+                    getRunStatus(
+                        runStatusMap[run.status.phase]?.label
+                    )?.toLowerCase() === 'needs attention'
+                "
+                class="mt-2 pt-2 border-t  text-gray-500"
+            >
+                <atlan-icon icon="Info" class="mr-1 h-4 ml-4" />
+                Re-upload the updated file to successfully resolve the errors.
+            </div>
         </div>
         <div
             v-if="['Running', 'Failed', 'Pending'].includes(phase(run))"
@@ -166,13 +185,13 @@
                 >Sorry, your upload wasn’t completed successfully.</span
             >
             <span
-                class="text-primary flex items-center space-x-1 cursor-pointer pt-2 px-4 "
+                class="text-primary flex items-center space-x-1 cursor-pointer pt-2 px-4 parent"
                 @click="handleRedirectToWF"
             >
                 View upload details here
                 <atlan-icon
                     icon="ArrowRight"
-                    class="h-4 mb-0.5 ml-1 text-primary"
+                    class="h-4 mb-0.5 ml-1 text-primary child"
                 />
             </span>
         </div>
@@ -237,6 +256,7 @@
                 packageName,
                 name,
                 phase,
+                finishedAt,
             } = useWorkflowInfo()
             const router = useRouter()
             const path = computed(() => ({
@@ -342,7 +362,7 @@
                     (finalStatus.value?.terms?.error_count ||
                         finalStatus.value?.categories?.error_count)
                 )
-                    return 'Warnings'
+                    return 'Needs attention'
                 if (value?.toLowerCase() === 'running') return 'In progress'
                 return value
             }
@@ -356,8 +376,9 @@
 
             const getCustomClassesByPhase = (run) => {
                 if (
-                    getRunStatus(runStatusMap[run.status.phase]?.label) ===
-                    'Warnings'
+                    getRunStatus(
+                        runStatusMap[run.status.phase]?.label
+                    )?.toLowerCase() === 'needs attention'
                 )
                     return 'text-new-yellow-600 bg-new-yellow-100'
                 return `${getRunTextClass(run)} ${getRunClassBgLight(run)}`
@@ -386,6 +407,8 @@
                 getRunTextClassByPhase,
                 getRunClassByPhase,
                 getCustomClassesByPhase,
+                finishedAt,
+                duration,
             }
         },
     })
@@ -394,7 +417,7 @@
 <style lang="less" scoped>
     .status-badge {
         @apply flex items-center;
-        @apply text-xs font-bold tracking-wider capitalize;
+        @apply text-xs font-bold tracking-wider uppercase;
         @apply rounded-full;
     }
     .dot {
@@ -403,5 +426,20 @@
         border-radius: 50%;
         margin-bottom: 2px;
         margin-right: 6px;
+    }
+    .parent:hover > .child {
+        animation: move-right 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+
+        @keyframes move-right {
+            from {
+                transform: translate(0px);
+                translate: scaleX(1);
+            }
+            to {
+                transform: translate(6px);
+                translate: scaleX(1.5);
+                height: 30px;
+            }
+        }
     }
 </style>

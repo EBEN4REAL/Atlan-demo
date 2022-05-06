@@ -124,7 +124,9 @@
 
     <!-- async tree select end -->
     <div class="flex flex-col items-center">
-        <span  v-if="fileList.length < 1" class="font-bold text-gray-700">Select a CSV file to upload</span>
+        <span v-if="fileList.length < 1" class="font-bold text-gray-700"
+            >Select a CSV file to upload</span
+        >
 
         <div
             v-if="dataType === 'upload'"
@@ -138,9 +140,7 @@
                 :before-upload="beforeUpload"
                 :showUploadList="false"
             >
-                <a-button v-if="fileList.length < 1">
-                    Select File
-                </a-button>
+                <a-button v-if="fileList.length < 1"> Select File </a-button>
             </a-upload>
             <a-button
                 v-if="fileList?.length"
@@ -156,13 +156,16 @@
             <atlan-icon icon="PaperClip" />
             <span class="text-gray-500">{{ fileList[0]?.name }}</span>
             <span class="text-gray-500">|</span>
-            <atlan-icon
-                icon="Delete"
-                class="text-red-500 cursor-pointer"
-                @click="fileList = []"
-            />
+            <a-tooltip>
+                <template #title>Remove file</template>
+                <atlan-icon
+                    icon="Delete"
+                    class="text-red-500 cursor-pointer"
+                    @click="fileList = []"
+                />
+            </a-tooltip>
         </div>
-   </div>
+    </div>
 
     <a-input-number
         v-if="dataType === 'number'"

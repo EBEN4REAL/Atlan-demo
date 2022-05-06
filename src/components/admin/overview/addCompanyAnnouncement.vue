@@ -129,7 +129,6 @@
             watch(
                 visibleModal,
                 () => {
-                    debugger
                     if (visibleModal.value) {
                         if (newAnnoucement.value) {
                             resetInput()

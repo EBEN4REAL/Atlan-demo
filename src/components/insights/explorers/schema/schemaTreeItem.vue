@@ -931,7 +931,7 @@
                         }
                         useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'place_name_in_editor',
-                            trigger: 'quick_action',
+                            trigger: 'kebab_menu',
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: t.typeName,
                         })
@@ -1720,12 +1720,6 @@
                     hide: showVQB.value,
                     disabled: false,
                     handleClick: ({ item }) => {
-                        useAddEvent('insights', 'schema_tree', 'item_click', {
-                            action: 'place_name_in_editor',
-                            trigger: 'kebab_menu',
-                            query_tab_id: activeInlineTab.value.key,
-                            asset_type: item.typeName,
-                        })
                         actionClick('add', item)
                     },
                 },

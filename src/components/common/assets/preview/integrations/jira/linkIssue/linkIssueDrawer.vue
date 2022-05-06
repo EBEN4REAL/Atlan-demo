@@ -267,7 +267,9 @@
     const handleIssueLink = () => {
         alllinkPromises = []
         message.loading({
-            content: `linking issues to "${asset.value.displayText}"`,
+            content: `linking issues to "${
+                asset.value.displayText || asset.value.attributes.qualifiedName
+            }"`,
             key: 'link',
             duration: 2,
         })
@@ -282,7 +284,10 @@
                 message.success({
                     content: `${count} ${
                         count > 1 ? 'issues' : 'issue'
-                    } have been linked to "${asset.value.displayText}"`,
+                    } have been linked to "${
+                        asset.value.displayText ||
+                        asset.value.attributes.qualifiedName
+                    }"`,
                     key: 'linkSuccess',
                     duration: 3,
                 })
@@ -291,7 +296,10 @@
                 message.error({
                     content: `Failed to link ${rejectedCount} ${
                         rejectedCount > 1 ? 'issues' : 'issue'
-                    } to "${asset.value.displayText}"`,
+                    } to "${
+                        asset.value.displayText ||
+                        asset.value.attributes.qualifiedName
+                    }"`,
                     key: 'linkFailure',
                     duration: 3,
                 })

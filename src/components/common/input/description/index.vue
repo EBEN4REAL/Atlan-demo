@@ -43,7 +43,7 @@
                     </a-typography-paragraph>
                     <span
                         v-else-if="!isEdit && description(selectedAsset) === ''"
-                        class="text-gray-600"
+                        :class="usedInInfo ? 'text-gray-600' : 'text-gray-500'"
                         >No description available</span
                     >
                     <a-textarea
@@ -148,6 +148,11 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            usedInInfo: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
         },
         emits: ['update:modelValue', 'change'],

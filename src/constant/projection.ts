@@ -25,7 +25,6 @@ export const InternalAttributes = [
     '__state',
     '__guid',
     '__historicalGuids',
-    '__classificationsText',
     '__classificationNames',
     '__propagatedClassificationNames',
     '__customAttributes',
@@ -274,7 +273,6 @@ export const BasicSearchAttributes = [
     '__state',
     '__guid',
     '__historicalGuids',
-    '__classificationsText',
     '__classificationNames',
     '__propagatedClassificationNames',
     '__customAttributes',
@@ -342,25 +340,25 @@ export const BasicSearchAttributes = [
 export const LineageAttributes = [
     // General
     'qualifiedName',
-    'name',
-    'displayName',
     'certificateStatus',
-    'link',
-    'dataType',
-    'columnCount',
-    'rowCount',
     'announcementType',
-    // BI Relationships
-    'workspace',
-    'report',
-    'dashboard',
-    'model',
-    'folder',
-    'project',
+    'name',
+    // SQL - For when a column assets appears top level
+    'table',
+    'view',
+]
+
+export const LineageAttributesPortLevel = [
+    // General
+    'qualifiedName',
+    'certificateStatus',
+    'announcementType',
+    'dataType',
+    'isPrimary',
+    'isForeign',
     // SQL
     'table',
     'view',
-    '__customAttributes',
 ]
 
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

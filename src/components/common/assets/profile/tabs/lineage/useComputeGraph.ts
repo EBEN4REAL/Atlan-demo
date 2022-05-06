@@ -20,6 +20,7 @@ export default async function useComputeGraph({
     lineage,
     currZoom,
     isComputeDone,
+    controlPrefRetainer,
 }) {
     const lineageStore = useLineageStore()
     lineageStore.cyclicRelations = []
@@ -43,8 +44,16 @@ export default async function useComputeGraph({
     nodes.value = []
 
     /* Nodes */
-    let columnEntity = {}
-    const columnEntityIds = []
+    const portIds = []
+    const isPortTypeName = (typeName) => {
+        const typeNames = [
+            'Column',
+            'TableauDatasourceField',
+            'TableauCalculatedField',
+            // 'LookerField',
+        ]
+        return typeNames.includes(typeName)
+    }
 
     const sameSourceCount = ref({})
     const sameTargetCount = ref({})
@@ -78,7 +87,8 @@ export default async function useComputeGraph({
             const { typeName: fromTypeName, guid: fromGuid } = getAsset(from)
             const { typeName: toTypeName, guid: toGuid } = getAsset(to)
 
-            if (fromTypeName === 'Column' || toTypeName === 'Column') return
+            if (isPortTypeName(fromTypeName) || isPortTypeName(toTypeName))
+                return
 
             if (from === to) return
 
@@ -88,8 +98,6 @@ export default async function useComputeGraph({
             else return
 
             if (isNodeExist(fromGuid) && isNodeExist(toGuid)) return
-
-            if ([fromTypeName, toTypeName].includes('column')) return
 
             // same source
             if (sameSourceCount.value[from]) {
@@ -178,24 +186,14 @@ export default async function useComputeGraph({
 
         guidEntityMapValues.forEach((entity) => {
             const ent = { ...entity }
-            const { attributes, typeName, guid } = ent
+            const { typeName, guid } = ent
 
             if (isNodeExist(guid)?.id) return
             if (allTargetsHiddenIds.value.includes(entity.guid)) return
             if (allSourcesHiddenIds.value.includes(entity.guid)) return
 
-            if (typeName === 'Column') {
-                const parentGuid =
-                    attributes?.table?.guid || attributes?.view?.guid
-                if (!columnEntity[parentGuid])
-                    columnEntity = {
-                        ...columnEntity,
-                        [parentGuid]: [ent],
-                    }
-                else columnEntity[parentGuid].push(ent)
-
-                columnEntityIds.push(guid)
-
+            if (isPortTypeName(typeName)) {
+                portIds.push(guid)
                 return
             }
 
@@ -245,7 +243,7 @@ export default async function useComputeGraph({
 
             if (from === to) return
 
-            if (columnEntityIds.find((y) => [from, to].includes(y))) return
+            if (portIds.find((y) => [from, to].includes(y))) return
 
             if (allTargetsHiddenIds.value.find((y) => [from, to].includes(y)))
                 return
@@ -282,9 +280,10 @@ export default async function useComputeGraph({
 
     createNodeEdges(lineage.value)
 
-    /* createColCTAPorts */
-    const createColCTAPorts = () => {
-        const { relations, baseEntityGuid } = mergedLineageData.value
+    /* createCTAPorts */
+    const createCTAPorts = () => {
+        const { relations, baseEntityGuid, childrenCounts } =
+            mergedLineageData.value
 
         const { predecessors, successors } = useGetNodes(graph, baseEntityGuid)
 
@@ -292,9 +291,21 @@ export default async function useComputeGraph({
             !!relations.find((x) => x.fromEntityId === id) &&
             !!relations.find((x) => x.toEntityId === id)
 
-        graph.value.freeze('createColCTAPorts')
+        const hasHoPa = (id) => {
+            let res = false
+            const isRootNode = graph.value.isRootNode(id)
+            const isLeafNode = graph.value.isLeafNode(id)
+            if (isRootNode) res = !!childrenCounts?.[id]?.INPUT
+            if (isLeafNode) res = !!childrenCounts?.[id]?.OUTPUT
+            return res
+        }
+
+        graph.value.freeze('createCTAPorts')
         graph.value.getNodes().forEach((node) => {
             const isColNode = isCollapsible(node.id)
+            const isHoPaNode = hasHoPa(node.id)
+            const isRootNode = graph.value.isRootNode(node.id)
+            const isLeafNode = graph.value.isLeafNode(node.id)
 
             if (
                 (isColNode && successors.includes(node.id)) ||
@@ -317,36 +328,6 @@ export default async function useComputeGraph({
                     ctaPortLeftId: id,
                 })
             }
-        })
-        graph.value.unfreeze('createColCTAPorts')
-    }
-
-    /* createHoPaCTAPorts */
-    const createHoPaCTAPorts = () => {
-        const { relations, childrenCounts } = mergedLineageData.value
-
-        const checkNode = (id, prop) => {
-            let res = true
-            relations.forEach((x) => {
-                if (x[prop] === id) res = false
-            })
-            return res
-        }
-
-        const hasHoPa = (id) => {
-            let res = false
-            const isRootNode = checkNode(id, 'toEntityId')
-            const isLeafNode = checkNode(id, 'fromEntityId')
-            if (isRootNode) res = !!childrenCounts?.[id]?.INPUT
-            if (isLeafNode) res = !!childrenCounts?.[id]?.OUTPUT
-            return res
-        }
-
-        graph.value.freeze('createHoPaCTAPorts')
-        graph.value.getNodes().forEach((node) => {
-            const isHoPaNode = hasHoPa(node.id)
-            const isRootNode = checkNode(node.id, 'toEntityId')
-            const isLeafNode = checkNode(node.id, 'fromEntityId')
 
             if ((isRootNode || isLeafNode) && isHoPaNode) {
                 const pos = isLeafNode ? 'ctaPortRight' : 'ctaPortLeft'
@@ -362,8 +343,37 @@ export default async function useComputeGraph({
                         ctaPortLeftId: id,
                     })
             }
+
+            const { ctaPortRightIcon, ctaPortLeftIcon } = node.getData()
+            if (!ctaPortRightIcon && !ctaPortLeftIcon) return
+
+            let widthVal = 268
+            let xVal = 1
+
+            if (ctaPortRightIcon && ctaPortLeftIcon) {
+                widthVal = 298
+                xVal = -14
+            }
+            if (ctaPortRightIcon && !ctaPortLeftIcon) {
+                widthVal = 284
+            }
+            if (!ctaPortRightIcon && ctaPortLeftIcon) {
+                widthVal = 284
+                xVal = -14
+            }
+
+            node.setPortProp(
+                `${node.id}-invisiblePort`,
+                'attrs/portBody/width',
+                widthVal
+            )
+            node.setPortProp(
+                `${node.id}-invisiblePort`,
+                'attrs/portBody/x',
+                xVal
+            )
         })
-        graph.value.unfreeze('createHoPaCTAPorts')
+        graph.value.unfreeze('createCTAPorts')
     }
 
     /* Render */
@@ -392,8 +402,8 @@ export default async function useComputeGraph({
             },
         })
 
-        createColCTAPorts()
-        createHoPaCTAPorts()
+        createCTAPorts()
+        controlPrefRetainer()
     }
     renderLayout()
     isComputeDone.value = true

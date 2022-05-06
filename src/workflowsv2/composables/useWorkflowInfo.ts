@@ -1,10 +1,18 @@
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import advanced from 'dayjs/plugin/advancedFormat'
+import { useTimeAgo } from '@vueuse/core'
+
 import parser from 'cron-parser'
 import cronstrue from 'cronstrue'
 import { useConnectionStore } from '~/store/connection'
 import { getDurationStringFromSec } from '~/utils/time'
 
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.extend(advanced)
 dayjs.extend(relativeTime)
 
 export default function useWorkflowInfo() {
@@ -63,29 +71,27 @@ export default function useWorkflowInfo() {
 
     const phaseMessage = (item: any) => item.status?.message
 
-    const startedAt = (item: any, relative: any) => {
+    const startedAt = (
+        item: any,
+        relative: any,
+        format = 'dddd, MMMM D YYYY, HH:mm:ss'
+    ) => {
         if (phase(item) === 'Pending') return 'Yet to start'
-        else
-            return (
-                (relative
-                    ? dayjs().from(item.status?.startedAt, true)
-                    : dayjs(item.status?.startedAt).format(
-                          'dddd, MMMM D YYYY, HH:mm:ss'
-                      )) + ' ago'
-            )
+
+        return relative
+            ? dayjs().from(item.status?.startedAt, true) + ' ago'
+            : dayjs(item.status?.startedAt).format(format)
     }
-    const finishedAt = (item: any, relative: any) => {
-        if (!item?.status?.finishedAt) {
-            return 'N/A'
-        }
-        if (relative) {
-            if (item?.status?.finishedAt) {
-                return dayjs().from(item?.status?.finishedAt, true)
-            }
-        }
-        return dayjs(item?.status?.finishedAt).format(
-            'dddd, MMMM D YYYY, HH:mm:ss'
-        )
+    const finishedAt = (
+        item: any,
+        relative: any,
+        format = 'dddd, MMMM D YYYY, HH:mm:ss'
+    ) => {
+        if (!item?.status?.finishedAt) return 'N/A'
+
+        return relative
+            ? dayjs().from(item?.status?.finishedAt, true)
+            : dayjs(item?.status?.finishedAt).format(format)
     }
 
     const difference = (startTime, endTime) => {
@@ -143,7 +149,7 @@ export default function useWorkflowInfo() {
             tz: cronTimezone(item),
         }
         const interval = parser.parseExpression(cron(item), options)
-        const temp = []
+        const temp: string[] = []
 
         temp.push(interval.next().toString())
         temp.push(interval.next().toString())
@@ -151,12 +157,33 @@ export default function useWorkflowInfo() {
         return temp
     }
 
-    const cronString = (item) => {
-        if (cron(item)) {
-            return `${cronstrue.toString(cron(item), {
-                use24HourTimeFormat: true,
-            })}(${cronTimezone(item)})`
+    const nextRunRelativeTime = (item) => {
+        const options = {
+            tz: cronTimezone(item),
         }
+        const interval = parser.parseExpression(cron(item), options)
+        const nextRunTime = interval.next().toString()
+        return useTimeAgo(new Date(nextRunTime)).value
+    }
+
+    const cronString = (item, verbose = false) => {
+        if (cron(item)) {
+            let str = cronstrue.toString(cron(item), {
+                use24HourTimeFormat: true,
+                verbose,
+            })
+
+            if (
+                dayjs().tz(cronTimezone(item)).format('z') !==
+                dayjs.tz(Date.now(), dayjs.tz.guess()).format('z')
+            )
+                str += verbose
+                    ? ` (${cronTimezone(item)})`
+                    : ` (${dayjs().tz(cronTimezone(item)).format('z')})`
+
+            return str
+        }
+        return undefined
     }
 
     const cronObject = (item) => ({
@@ -180,45 +207,64 @@ export default function useWorkflowInfo() {
     const isCronWorkflow = (workflow) =>
         !!workflow?.metadata?.annotations?.['orchestration.atlan.com/schedule']
 
-    const getRunClassByPhase = (tempStatus) => {
-        switch (tempStatus) {
+    const getRunClassByPhase = (status) => {
+        switch (status) {
             case 'Succeeded':
-                return 'bg-green-500 bg-opacity-10'
+                return 'bg-new-green-100'
             case 'Running':
-                return 'bg-yellow-300 bg-opacity-10'
+                return 'bg-new-yellow-100 animate-pulse'
             case 'Failed':
             case 'Error':
             case 'Stopped':
-                return 'bg-red-500 bg-opacity-10'
+                return 'bg-new-red-100'
             default:
-                return 'bg-gray-200'
+                return 'bg-new-gray-100'
         }
     }
 
-    const getRunTextClassByPhase = (tempStatus) => {
-        switch (tempStatus) {
+    const getRunClassBgByPhase = (status) => {
+        switch (status) {
             case 'Succeeded':
-                return 'text-green-500'
+                return 'bg-new-green-500'
             case 'Running':
-                return 'text-yellow-500'
+                return 'bg-new-yellow-300'
+            case 'Failed':
             case 'Error':
-                return 'text-warning'
+            case 'Stopped':
+                return 'bg-new-red-400'
+            default:
+                return 'bg-new-gray-300'
+        }
+    }
+
+    const getRunTextClassByPhase = (status) => {
+        switch (status) {
+            case 'Succeeded':
+                return 'text-new-green-500'
+            case 'Running':
+                return 'text-new-yellow-600'
+            case 'Error':
             case 'Failed':
             case 'Stopped':
-                return 'text-red-500'
+                return 'text-new-red-500'
             default:
-                return 'text-gray-500'
+                return 'text-new-gray-600'
         }
     }
 
-    const getRunBorderClassByPhase = (tempStatus) => {
-        if (tempStatus === 'Succeeded')
-            return 'border-green-500 border-opacity-75'
-        if (tempStatus === 'Failed') return 'border-red-500 border-opacity-75'
-        if (tempStatus === 'Error') return 'border-warning border-opacity-75'
-        if (tempStatus === 'Running')
-            return 'border-yellow-500 border-opacity-75'
-        return 'border-gray-400'
+    const getRunBorderClassByPhase = (status) => {
+        switch (status) {
+            case 'Succeeded':
+                return 'border-green-500 border-opacity-75'
+            case 'Running':
+                return 'border-yellow-500 border-opacity-75'
+            case 'Error':
+            case 'Failed':
+            case 'Stopped':
+                return 'border-red-500 border-opacity-75'
+            default:
+                return 'border-gray-400'
+        }
     }
 
     const getRunIconByPhase = (item) => {
@@ -238,7 +284,8 @@ export default function useWorkflowInfo() {
         }
     }
 
-    const getRunClass = (item) => getRunClassByPhase(phase(item))
+    const getRunClassBgLight = (item) => getRunClassByPhase(phase(item))
+    const getRunClassBg = (item) => getRunClassBgByPhase(phase(item))
 
     const getRunBorderClass = (item) => getRunBorderClassByPhase(phase(item))
 
@@ -279,7 +326,7 @@ export default function useWorkflowInfo() {
         item?.metadata?.labels['orchestration.atlan.com/type']
 
     const packageName = (item) =>
-        item?.metadata?.annotations['package.argoproj.io/name']
+        item?.metadata?.annotations?.['package.argoproj.io/name']
 
     const useCases = (item) => {
         let temp =
@@ -295,9 +342,12 @@ export default function useWorkflowInfo() {
 
     const connectorStore = useConnectionStore()
 
-    const displayName = (item, workflowName) => {
-        // debugger
-        let suffix = workflowName.split(`${name(item)}-`).pop()
+    const displayName = (
+        item: Record<string, any>,
+        workflowName: string,
+        spec?: Record<string, any>
+    ) => {
+        let suffix = workflowName?.split(`${name(item)}-`).pop()
         if (packageType(item) === 'connector') {
             suffix = suffix.replaceAll('-', '/')
             const found = connectorStore.list.find(
@@ -308,7 +358,31 @@ export default function useWorkflowInfo() {
             }
             return suffix
         }
-        return suffix
+        if (packageType(item) === 'schedule-query') {
+            return (
+                spec?.templates[0]?.dag?.tasks?.[0]?.arguments?.parameters?.find(
+                    (prm) => prm.name === 'report-name'
+                )?.value ||
+                suffix ||
+                workflowName
+            )
+        }
+        return suffix || workflowName
+    }
+
+    const connectorGuid = (item, workflowName) => {
+        // debugger
+        let suffix = workflowName?.split(`${name(item)}-`).pop()
+        if (packageType(item) === 'connector') {
+            suffix = suffix.replaceAll('-', '/')
+
+            const found = connectorStore.list.find(
+                (i) => i.attributes.qualifiedName === suffix
+            )
+
+            if (found) return found?.guid
+        }
+        return undefined
     }
 
     const getGlobalArguments = (item) => {
@@ -327,6 +401,11 @@ export default function useWorkflowInfo() {
         return map
     }
 
+    const workflowTemplateName = (item) =>
+        item?.metadata?.labels?.[
+            'workflows.argoproj.io/workflow-template'
+        ] as string
+
     return {
         name,
         creationTimestamp,
@@ -342,7 +421,8 @@ export default function useWorkflowInfo() {
         cron,
         isCronRun,
         isCronWorkflow,
-        getRunClass,
+        getRunClassBgLight,
+        getRunClassBg,
         getRunTooltip,
         getRunBorderClass,
         getRunTextClass,
@@ -350,12 +430,14 @@ export default function useWorkflowInfo() {
         modifierUsername,
         packageType,
         displayName,
+        connectorGuid,
         packageName,
         phaseMessage,
         isStopped,
         allowSchedule,
         cronObject,
         nextRuns,
+        nextRunRelativeTime,
         getGlobalArguments,
         useCases,
         supportLink,
@@ -365,5 +447,6 @@ export default function useWorkflowInfo() {
         getRunBorderClassByPhase,
         getRunTextClassByPhase,
         getRunIconByPhase,
+        workflowTemplateName,
     }
 }

@@ -19,6 +19,7 @@
                         <DynamicInput
                             v-model="smtpFormModal[config.id]"
                             :data-type="config.type"
+                            @change="disabledSave = false"
                         />
                     </a-form-item>
                 </template>
@@ -37,6 +38,7 @@
                         <a-input
                             v-model:value="smtpFormModal.user"
                             type="text"
+                            @change="disabledSave.value = false"
                             @blur="triggerBlur(userFieldRef)"
                         />
                     </a-form-item>
@@ -52,7 +54,7 @@
                         </template>
                         <a-input-password
                             v-model:value="password"
-                            @change="setPassword"
+                            @change="handleChangePassword"
                         />
                     </a-form-item>
                 </div>
@@ -135,10 +137,11 @@
                             <span>Something went wrong</span>
                         </div>
                         <AtlanButton2
+                            :disabled="disabledSave"
                             size="large"
                             :loading="isLoading"
                             :label="isLoading ? 'Saving...' : 'Save'"
-                            @click.prevent="saveSmtpConfig"
+                            @click.prevent="saveSmtpConfigSave"
                         />
                     </div>
                 </div>
@@ -148,7 +151,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, ref } from 'vue'
     import DefaultLayout from '@/admin/layout.vue'
     import { useSmtp } from '@/admin/smtp/useSmtp'
     import { smtp_form, rules } from '~/constant/smtp'
@@ -158,6 +161,7 @@
         name: 'SmtpForm',
         components: { DefaultLayout, DynamicInput },
         setup() {
+            const disabledSave = ref(true)
             const {
                 data,
                 isLoading,
@@ -182,7 +186,15 @@
                 mutate: test,
                 testErrorMessage,
             } = testSmtpConfig()
-
+            const saveSmtpConfigSave = () => {
+                saveSmtpConfig(() => {
+                    disabledSave.value = true
+                })
+            }
+            const handleChangePassword = () => {
+                setPassword()
+                disabledSave.value = false
+            }
             return {
                 testDone,
                 setPassword,
@@ -204,6 +216,9 @@
                 errorMessage,
                 saveSmtpConfig,
                 triggerBlur,
+                disabledSave,
+                saveSmtpConfigSave,
+                handleChangePassword,
             }
         },
     })

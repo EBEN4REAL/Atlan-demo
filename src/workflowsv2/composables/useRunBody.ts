@@ -17,7 +17,7 @@ export function useRunBody(
 
     try {
         const state = ref('ACTIVE')
-        // console.log(facets)
+
         Object.keys(facets ?? {}).forEach((mkey) => {
             const filterObject = facets[mkey]
             switch (mkey) {
@@ -113,7 +113,7 @@ export function useRunBody(
                     break
                 }
                 case 'creators': {
-                    if (filterObject?.ownerUsers) {
+                    if (filterObject?.ownerUsers?.length) {
                         base.andFilter('nested', {
                             path: 'metadata',
                             ...bodybuilder()
@@ -127,14 +127,31 @@ export function useRunBody(
                     }
                     break
                 }
-                case 'startDate': {
+                case 'dateRange': {
                     if (filterObject) {
                         base.andFilter('nested', {
                             path: 'metadata',
                             ...bodybuilder()
-                                .query('range', 'metadata.creationTimestamp', {
-                                    gt: filterObject,
-                                })
+                                .query(
+                                    'range',
+                                    'metadata.creationTimestamp',
+                                    filterObject
+                                )
+                                .build(),
+                        })
+                    }
+                    break
+                }
+                case 'filterOut': {
+                    if (filterObject?.length) {
+                        base.notFilter('nested', {
+                            path: 'spec',
+                            ...bodybuilder()
+                                .query(
+                                    'terms',
+                                    'spec.workflowTemplateRef.name.keyword',
+                                    filterObject
+                                )
                                 .build(),
                         })
                     }

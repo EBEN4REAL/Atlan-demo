@@ -146,7 +146,15 @@
                 refresh: refreshCredByID,
                 isLoading: isLoadingByID,
                 error: errorByID,
-            } = useQueryCredentialByID(path, { query: query?.value }, false)
+            } = useQueryCredentialByID(
+                path,
+                {
+                    query: query?.value,
+                    schemaExcludePattern: exclude?.value,
+                    schemaIncludePattern: include.value,
+                },
+                false
+            )
 
             onMounted(() => {
                 if (credentialID.value) {

@@ -2,13 +2,13 @@
     <div class="flex items-center">
         <div v-if="allowUpload">
             <a-upload
-                accept="image/*"
+                accept=".png, .jpg, .jpeg"
                 class="cursor-pointer"
                 :custom-request="handleUploadAvatar"
                 :show-upload-list="false"
             >
                 <div
-                    v-if="!isReady && uploadStarted"
+                    v-if="!isReady && uploadStarted && !error"
                     class="hidden text-sm text-center bg-primary-light sm:block"
                     :style="{
                         width: avatarSize + 'px',
@@ -66,6 +66,7 @@
     import { ref, watch, PropType, toRefs, unref } from 'vue'
     import { getNameInitials, getNameInTitleCase } from '~/utils/string'
     import uploadAvatar from '~/composables/avatar/uploadAvatar'
+    import { message } from 'ant-design-vue'
 
     export default {
         name: 'Avatar',
@@ -103,19 +104,31 @@
                     updatedImageUrl.value = props.imageUrl
                 }
             )
-            const { upload, isReady, uploadKey, refreshImage } = uploadAvatar()
+            const { upload, isReady, uploadKey, refreshImage, error } =
+                uploadAvatar()
             const handleUploadAvatar = async (uploaded) => {
                 console.log('handle Upload', uploaded)
-                upload(uploaded.file)
                 uploadStarted.value = true
+                await upload(uploaded.file)
+                if (error.value) {
+                    const errMsg = error.value?.response?.data?.message
+                    message.error({
+                        key: 'upload',
+                        content:
+                            errMsg ?? 'Image upload failed, please try again.',
+                    })
+                } else if (isReady?.value)
+                    message.success({
+                        key: 'upload',
+                        content: 'Image uploaded',
+                    })
                 updatedImageUrl.value = `${updatedImageUrl.value}?${uploadKey.value}`
-
+                emit('imageUpdated', updatedImageUrl)
                 return true
             }
-            watch(uploadKey, () => {
-                emit('imageUpdated', updatedImageUrl)
-            })
+
             return {
+                error,
                 handleUploadAvatar,
                 isReady,
                 uploadStarted,

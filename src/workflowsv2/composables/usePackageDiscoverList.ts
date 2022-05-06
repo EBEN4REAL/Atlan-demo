@@ -43,6 +43,7 @@ export function usePackageDiscoverList({
         defaultBody.value = {
             ...dsl,
             _source: source?.value,
+            // suppressLogs: true,
         }
     }
 

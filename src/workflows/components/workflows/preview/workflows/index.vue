@@ -151,7 +151,7 @@
                             message.error('Failed to delete workflow')
                         else {
                             message.success('Workflow deleted')
-                            quickChange(true)
+                            setTimeout(() => quickChange(true), 400)
                         }
                     },
                 })

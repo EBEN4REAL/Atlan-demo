@@ -182,6 +182,25 @@ const keyMap = {
                     asset_type: props.asset_type,
                 }),
             },
+            categories_updated: {
+                action: 'discovery_metadata_categories_updated',
+                properties: (props) => ({
+                    count: props.count,
+                }),
+            },
+            related_terms_updated: {
+                action: 'discovery_metadata_related_terms_updated',
+                properties: (props) => ({
+                    count: props.count,
+                }),
+            },
+            suggestion_applied: {
+                action: 'discovery_metadata_suggestion_applied',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    suggestion_index: props.index,
+                }),
+            },
         },
         announcement: {
             created: {
@@ -341,8 +360,8 @@ const keyMap = {
             link_copied: {
                 action: 'insights_query_link_copied',
             },
-            panelAdd: {
-                action: 'insights_vqb_panel_added',
+            panel_add: {
+                action: 'insights_vqb_panel_add',
                 properties: (props) => ({
                     panel_type: props?.panel_type,
                     panel_source: props?.panel_source,
@@ -354,6 +373,51 @@ const keyMap = {
                     saved_query: !!props?.saved_query,
                     visual_query: !!props?.visual_query,
                     limit_100: !!props.limit_100,
+                }),
+            },
+        },
+        schema_tree: {
+            item_click: {
+                action: 'insights_schema_explorer_tree_item_clicked',
+                properties: (props) => ({
+                    action: props?.action,
+                    trigger: props?.trigger,
+                    query_tab_id: props?.query_tab_id,
+                    asset_type: props?.asset_type,
+                }),
+            },
+        },
+        results_panel: {
+            cta_clicked: {
+                action: 'insights_results_panel_cta_clicked',
+                properties: (props) => ({
+                    action: props.action,
+                    query_tab_id: props?.query_tab_id,
+                    is_full_screen: props?.is_full_screen,
+                }),
+            },
+            tab_switched: {
+                action: 'insights_results_panel_tab_switched',
+                properties: (props) => ({
+                    click_index: props?.click_index,
+                    previous_index: props?.previous_index,
+                    is_full_screen: props?.is_full_screen,
+                }),
+            },
+        },
+        preview_tabs: {
+            closed: {
+                action: 'insights_preview_tabs_closed',
+                properties: (props) => ({
+                    query_tab_id: props?.query_tab_id,
+                    click_index: props?.click_index,
+                }),
+            },
+
+            right_click_action: {
+                action: 'insights_preview_tabs_right_click_action',
+                properties: (props) => ({
+                    action: props?.action,
                 }),
             },
         },
@@ -472,6 +536,7 @@ const keyMap = {
                     denied: !!props.denied,
                     user_count: props.user_count,
                     group_count: props.group_count,
+                    all_users_enabled: !!props.all_users_enabled,
                 }),
             },
             policy_updated: {
@@ -482,6 +547,7 @@ const keyMap = {
                     denied: !!props.denied,
                     user_count: props.user_count,
                     group_count: props.group_count,
+                    all_users_enabled: !!props.all_users_enabled,
                 }),
             },
             policy_deleted: {

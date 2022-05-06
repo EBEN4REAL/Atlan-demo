@@ -121,7 +121,7 @@
             const isAdminConnection = (item) => {
                 if (
                     createdBy(item) === username.value ||
-                    adminUsers(item).includes(username) ||
+                    adminUsers(item).includes(username.value) ||
                     adminGroups(item).some((group) =>
                         groups.value.includes(group)
                     )

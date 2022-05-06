@@ -141,7 +141,7 @@
         background-color: #f4f4f4;
     }
     .vqb {
-        height: calc(100% - 4.5rem);
+        height: calc(100% - 0.65rem);
         overflow-y: auto;
     }
     .vqb-scroll-lock {

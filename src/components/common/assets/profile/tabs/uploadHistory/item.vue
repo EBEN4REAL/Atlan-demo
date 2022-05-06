@@ -64,6 +64,16 @@
                     }}</span>
                 </div>
             </div>
+            <a-tooltip>
+                <template #title>Retry Run</template>
+                <div
+                    v-if="['Failed'].includes(phase(run))"
+                    class="border bg-white mr-2 rounded-lg p-1 px-2 cursor-pointer"
+                    @click="handleRetry"
+                >
+                    <atlan-icon icon="Retry" class="h-4" />
+                </div>
+            </a-tooltip>
             <div
                 v-if="['Running', 'Failed', 'Pending'].includes(phase(run))"
                 class="flex items-center justify-end py-2"
@@ -166,6 +176,7 @@
     // composables
     import { useArtifacts } from '@/glossary/modal/useBulkUpload'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
+    import { retryRunByName } from '~/workflowsv2/composables/useWorkflowList'
     import useRunItem from '~/workflows/composables/package/useRunItem'
     import { downloadFile } from '~/utils/library/download'
     // components
@@ -184,7 +195,8 @@
                 required: true,
             },
         },
-        setup(props) {
+        emits: ['refetch'],
+        setup(props,{emit}) {
             const finalStatus = ref({})
             const {
                 displayName,
@@ -225,6 +237,18 @@
                 isLoading,
                 error,
             } = useRunItem(path, true)
+
+            const handleRetry = () => {
+                const {
+                    data: retriedRun,
+                    error,
+                    isLoading,
+                } = retryRunByName(name(props.run))
+                watch(retriedRun, () => {
+                    console.log(retriedRun)
+                })
+                emit('refetch')
+            }
 
             // returns filter nodes containing results
             const getFilteredNodes = (nodes) => {
@@ -332,6 +356,7 @@
                 WFIcon,
                 getRunStatus,
                 handleRedirectToWF,
+                handleRetry,
             }
         },
     })

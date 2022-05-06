@@ -11,7 +11,11 @@
     </div>
     <div v-else-if="!isLoading && runs?.length">
         <div v-for="(run, i) in runList" :key="i" class="m-5">
-            <RunItem :run="run" :run-name="`Bulk Upload ${runList?.length-i}`"/>
+            <RunItem
+                :run="run"
+                :run-name="`Bulk Upload ${runList?.length - i}`"
+                @refetch="handleRefetch"
+            />
         </div>
     </div>
     <div
@@ -141,6 +145,12 @@
                     }
                 })
             }
+
+            const handleRefetch = () => {
+                setTimeout(() => {
+                    quickChange()
+                }, 300)
+            }
             watch(runs, () => {
                 runList.value = runs.value
                 if (runList.value.length && checkForRunningWf(runs.value)) {
@@ -157,6 +167,7 @@
                 isLoading,
                 runList,
                 runningWf,
+                handleRefetch,
             }
         },
     })

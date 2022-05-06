@@ -151,7 +151,6 @@ export default function useFacetUsers(
     let debounce: any = null
 
     const resetFilter = () => {
-        debugger
         if (params.value.has('filter')) {
             // reseting the list if user has does a server search else this messes up the list index
             const filters = JSON.parse(params.value?.get('filter'))?.$and

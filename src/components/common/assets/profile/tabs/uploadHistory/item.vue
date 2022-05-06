@@ -83,21 +83,6 @@
             <!--         <atlan-icon icon="Retry" class="h-4" /> -->
             <!--     </div> -->
             <!-- </a-tooltip> -->
-            <div
-                v-if="['Running', 'Failed', 'Pending'].includes(phase(run))"
-                class="flex items-center justify-end py-2"
-                @click="handleRedirectToWF"
-            >
-                <span
-                    class="text-primary flex items-center space-x-1 cursor-pointer w-24"
-                >
-                    <atlan-icon
-                        icon="Workflow"
-                        class="h-4 mb-0.5 mr-1 text-primary"
-                    />
-                    View details
-                </span>
-            </div>
         </div>
         <div
             v-if="
@@ -165,6 +150,31 @@
                     >{{ finalStatus?.categories?.error_count }} failed</span
                 >
             </div>
+        </div>
+        <div
+            v-if="['Running', 'Failed', 'Pending'].includes(phase(run))"
+            class="flex py-2 bg-white flex-col rounded-b-lg"
+        >
+            <span
+                v-if="phase(run) === 'Running'"
+                class="text-gray-500 border-b pt-1 pb-2 px-4"
+                >This upload will take some time, please check back later.</span
+            >
+            <span
+                v-if="phase(run) === 'Failed'"
+                class="text-gray-500 border-b pt-1 pb-2 px-4"
+                >Sorry, your upload wasn’t completed successfully.</span
+            >
+            <span
+                class="text-primary flex items-center space-x-1 cursor-pointer pt-2 px-4 "
+                @click="handleRedirectToWF"
+            >
+                View upload details here
+                <atlan-icon
+                    icon="ArrowRight"
+                    class="h-4 mb-0.5 ml-1 text-primary"
+                />
+            </span>
         </div>
     </div>
 </template>

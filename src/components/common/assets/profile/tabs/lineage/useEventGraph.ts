@@ -63,7 +63,7 @@ export default function useEventGraph({
     const portToSelect = computed(() => lineageStore.getPortToSelect())
     const depthCounter = ref(1)
     const isGraphLoading = ref(false)
-    const colToggledNodes = ref({})
+    const portToggledNodes = ref({})
 
     /** METHODS */
     /** Utils */
@@ -553,11 +553,11 @@ export default function useEventGraph({
             } else {
                 if (path === 'right')
                     n.updateData({
-                        ctaPortRightLoading: false,
+                        ctaRightLoading: false,
                     })
                 if (path === 'left')
                     n.updateData({
-                        ctaPortLeftLoading: false,
+                        ctaLeftLoading: false,
                     })
             }
         })
@@ -593,15 +593,15 @@ export default function useEventGraph({
                 message.info('No lineage to show')
                 if (path === 'right')
                     n.updateData({
-                        ctaPortRightIcon: '',
-                        ctaPortRightId: '',
-                        ctaPortRightLoading: false,
+                        ctaRightIcon: '',
+                        ctaRightId: '',
+                        ctaRightLoading: false,
                     })
                 if (path === 'left')
                     n.updateData({
-                        ctaPortLeftIcon: '',
-                        ctaPortLeftId: '',
-                        ctaPortLeftLoading: false,
+                        ctaLeftIcon: '',
+                        ctaLeftId: '',
+                        ctaLeftLoading: false,
                     })
             }
 
@@ -677,10 +677,10 @@ export default function useEventGraph({
                     const newPorts = []
 
                     if (lineageStore.hasPortsList(node.id)) {
-                        const { ports: c } = lineageStore.getNodesPortList(
+                        const { ports: p } = lineageStore.getNodesPortList(
                             node.id
                         )
-                        newPorts.push(...c)
+                        newPorts.push(...p)
                     }
 
                     newPorts.push(...ports)
@@ -974,16 +974,16 @@ export default function useEventGraph({
     }
 
     // addX6Ports
-    const addX6Ports = (node, c) => {
-        const cols = c.filter((x) => x.guid)
-        const colsPortData = cols
+    const addX6Ports = (node, p) => {
+        const ports = p.filter((x) => x.guid)
+        const portsPortData = ports
             .filter((x) => !node.hasPort(x.guid))
             .map((x) => ({
                 id: x.guid,
                 group: 'portsList',
                 zIndex: 0,
             }))
-        node.addPorts(colsPortData)
+        node.addPorts(portsPortData)
     }
 
     // addShowMorePort
@@ -1042,24 +1042,46 @@ export default function useEventGraph({
         return res
     }
 
+    // controlShowMorePort
+    const controlShowMorePort = (node) => {
+        if (!node) return
+
+        const { id } = node
+        if (!lineageStore.hasPortsList(id)) return
+
+        const { ports: p, total: t } = lineageStore.getNodesPortList(id)
+
+        if (p.length < t) addShowMorePort(node)
+        if (p.length >= t) removeShowMorePort(node)
+    }
+
     // addLineagePorts
     const addLineagePorts = (nodesForPortLineage, portLineage) => {
         dimNodesEdges(true)
 
         const { guidEntityMap, relations } = portLineage
-        Object.entries(nodesForPortLineage).forEach(([k, cols]) => {
+        Object.entries(nodesForPortLineage).forEach(([k, ports]) => {
             const parentNode = getX6Node(k)
             if (!parentNode) return
 
-            const { ports, hasPorts } = parentNode.getData()
+            const { hasPorts } = parentNode.getData()
             if (!hasPorts) return
 
-            if (ports.length) removePorts(parentNode)
-            addPorts(parentNode, cols, false, {
-                portsCount: null,
-                highlightPorts: true,
+            const highlightPorts = ports.map((p) => p.guid)
+
+            const portsToAdd = [...ports]
+
+            if (lineageStore.hasPortsList(parentNode.id)) {
+                const { ports: p } = lineageStore.getNodesPortList(
+                    parentNode.id
+                )
+                portsToAdd.push(...p)
+            }
+            addPorts(parentNode, portsToAdd, false, {
+                highlightPorts,
             })
-            removeShowMorePort(parentNode)
+
+            controlShowMorePort(parentNode)
         })
 
         const fromToSet = new Set()
@@ -1229,13 +1251,13 @@ export default function useEventGraph({
 
     // controlHoPaCTALoader
     const controlHoPaCTALoader = (node, portId) => {
-        const path = portId.includes('ctaPortRight') ? 'right' : 'left'
-        if (path === 'right') node.updateData({ ctaPortRightLoading: true })
-        if (path === 'left') node.updateData({ ctaPortLeftLoading: true })
+        const path = portId.includes('ctaRight') ? 'right' : 'left'
+        if (path === 'right') node.updateData({ ctaRightLoading: true })
+        if (path === 'left') node.updateData({ ctaLeftLoading: true })
     }
 
-    // controlHoPaCTAPort
-    const controlHoPaCTAPort = (node, portId) => {
+    // controlHoriPagiCTA
+    const controlHoriPagiCTA = (node, portId) => {
         if (isGraphLoading.value) return
 
         if (selectedNodeId.value) controlSelectedNodeAction(node, portId)
@@ -1250,10 +1272,10 @@ export default function useEventGraph({
         }
     }
 
-    // controlColCTAPort
-    const controlColCTAPort = (node, portId) => {
+    // controlHoriToggleCTA
+    const controlHoriToggleCTA = (node, portId) => {
         let newState = ''
-        const path = portId.includes('ctaPortRight') ? 'right' : 'left'
+        const path = portId.includes('ctaRight') ? 'right' : 'left'
         const { predecessors, successors } = useGetNodes(graph, node.id)
         const nodesToToggle = graph.value
             .getNodes()
@@ -1263,12 +1285,12 @@ export default function useEventGraph({
                     : predecessors.includes(n.id)
             )
 
-        graph.value.freeze('controlColCTAPort')
+        graph.value.freeze('controlHoriToggleCTA')
         nodesToToggle.forEach((n) => {
             const cell = graph.value.getCellById(n.id)
             let shouldToggle = true
 
-            Object.entries(colToggledNodes.value).forEach(([k, v]) => {
+            Object.entries(portToggledNodes.value).forEach(([k, v]) => {
                 if (v.includes(n.id) && k !== node.id) shouldToggle = false
             })
 
@@ -1280,22 +1302,22 @@ export default function useEventGraph({
 
             if (newState === 'col') n.toBack()
         })
-        graph.value.unfreeze('controlColCTAPort')
+        graph.value.unfreeze('controlHoriToggleCTA')
 
         if (newState === 'exp') {
-            colToggledNodes.value = {
-                ...colToggledNodes.value,
+            portToggledNodes.value = {
+                ...portToggledNodes.value,
                 [node.id]: nodesToToggle.map((x) => x.id),
             }
-        } else delete colToggledNodes.value[node.id]
+        } else delete portToggledNodes.value[node.id]
 
         if (path === 'right')
             node.updateData({
-                ctaPortRightIcon: newState,
+                ctaRightIcon: newState,
             })
         if (path === 'left')
             node.updateData({
-                ctaPortLeftIcon: newState,
+                ctaLeftIcon: newState,
             })
 
         if (!selectedPortId.value && newState === 'col') {
@@ -1433,15 +1455,15 @@ export default function useEventGraph({
             resetState()
 
             const parentNode = getX6Node(_parentNodeId)
-            const { ports: c, total: t } = lineageStore.getNodesPortList(
+            const { ports: p, total: t } = lineageStore.getNodesPortList(
                 parentNode.id
             )
 
-            addPorts(parentNode, c, false, {
+            addPorts(parentNode, p, false, {
                 portsCount: t,
             })
             removeShowMorePort(parentNode)
-            if (c.length < t) addShowMorePort(parentNode)
+            if (p.length < t) addShowMorePort(parentNode)
 
             translateSubsequentNodes(parentNode)
             selectPort(parentNode, _selectedPortId)
@@ -1494,21 +1516,31 @@ export default function useEventGraph({
         const _expandedNodes = [...expandedNodes.value]
         _expandedNodes.forEach((nodeId) => {
             const x6Node = getX6Node(nodeId)
-            const { ports } = x6Node.getData()
-            if (parentNode?.id !== nodeId && ports.length > 0) {
-                graph.value
-                    .getEdges()
-                    .filter((edge) => edge.id.includes('port'))
-                    .forEach((edge) => {
-                        const cell = graph.value.getCellById(edge.id)
-                        cell.remove()
+            if (parentNode?.id !== nodeId) {
+                if (lineageStore.hasPortsList(x6Node?.id)) {
+                    graph.value
+                        .getEdges()
+                        .filter((edge) => edge.id.includes('port'))
+                        .forEach((edge) => {
+                            const cell = graph.value.getCellById(edge.id)
+                            cell.remove()
+                        })
+                    x6Node.updateData({
+                        highlightPorts: [],
+                        selectedPortId: '',
                     })
-                x6Node.updateData({ highlightPorts: false, selectedPortId: '' })
+                } else {
+                    removePorts(x6Node, {
+                        portsCount: null,
+                        highlightPorts: [],
+                    })
+                    resetNodeTranslatedNodes(x6Node)
+                }
             }
 
             if (parentNode?.id === nodeId)
                 parentNode.updateData({
-                    highlightPorts: false,
+                    highlightPorts: [],
                     selectedPortId: '',
                 })
         })
@@ -1574,27 +1606,27 @@ export default function useEventGraph({
         if (controlPortClickEvent(e, 'isctaleft')) {
             const ele = controlPortClickEvent(e, 'isctaleft')
             const portId = ele.getAttribute('isctaleft')
-            if (portId.includes('-coll')) controlColCTAPort(node, portId)
-            if (portId.includes('-hoPa')) controlHoPaCTAPort(node, portId)
+            if (portId.includes('-hoTo')) controlHoriToggleCTA(node, portId)
+            if (portId.includes('-hoPa')) controlHoriPagiCTA(node, portId)
             return
         }
 
         if (controlPortClickEvent(e, 'isctaright')) {
             const ele = controlPortClickEvent(e, 'isctaright')
             const portId = ele.getAttribute('isctaright')
-            if (portId.includes('-coll')) controlColCTAPort(node, portId)
-            if (portId.includes('-hoPa')) controlHoPaCTAPort(node, portId)
+            if (portId.includes('-hoTo')) controlHoriToggleCTA(node, portId)
+            if (portId.includes('-hoPa')) controlHoriPagiCTA(node, portId)
             return
         }
 
-        if (controlPortClickEvent(e, 'iscollist')) {
+        if (controlPortClickEvent(e, 'isportlist')) {
             controlCaret(node)
             return
         }
 
-        if (controlPortClickEvent(e, 'iscolitem')) {
-            const ele = controlPortClickEvent(e, 'iscolitem')
-            const portId = ele.getAttribute('iscolitem')
+        if (controlPortClickEvent(e, 'isportitem')) {
+            const ele = controlPortClickEvent(e, 'isportitem')
+            const portId = ele.getAttribute('isportitem')
 
             if (portId === selectedPortId.value) resetState()
             else {
@@ -1604,7 +1636,7 @@ export default function useEventGraph({
             return
         }
 
-        if (controlPortClickEvent(e, 'iscolshowmore')) {
+        if (controlPortClickEvent(e, 'isportshowmore')) {
             const { ports } = lineageStore.getNodesPortList(node.id)
             const newOffset = ports.length
 
@@ -1711,10 +1743,15 @@ export default function useEventGraph({
                         x.store.data.entity.attributes.qualifiedName ===
                         parentName
                 )
-            removePorts(parentNode, {
-                portsCount: null,
-            })
-            addPorts(parentNode, [newVal])
+            const portsToAdd = [newVal]
+            if (lineageStore.hasPortsList(parentNode.id)) {
+                const { ports: p } = lineageStore.getNodesPortList(
+                    parentNode.id
+                )
+                portsToAdd.push(...p)
+            }
+            addPorts(parentNode, portsToAdd)
+            controlShowMorePort(parentNode)
 
             translateSubsequentNodes(parentNode)
             selectPort(parentNode, newVal.guid)

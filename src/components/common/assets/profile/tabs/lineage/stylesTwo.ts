@@ -169,7 +169,7 @@ body, .v-line {
 
 
 
-.node-hoPaCTA, .x6-edge-labels, .popover, g[port-group="ctaPortRight"], g[port-group="ctaPortLeft"] {
+.node-hoPaCTA, .x6-edge-labels, .popover, g[port-group="ctaRight"], g[port-group="ctaLeft"] {
     display: none !important;
 }
 

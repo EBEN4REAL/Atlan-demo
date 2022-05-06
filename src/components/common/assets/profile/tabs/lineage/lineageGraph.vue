@@ -410,7 +410,7 @@
                 @apply opacity-0 absolute bottom-20 left-0 py-1 px-2 text-xs transition-opacity rounded-md shadow-md bg-black bg-opacity-70 text-white;
             }
 
-            & .ctaPortRight {
+            & .ctaRight {
                 @apply absolute bg-white h-8 w-8 rounded-full flex justify-center items-center;
                 border-width: 1.5px;
                 border-style: solid;
@@ -424,7 +424,7 @@
                 }
             }
 
-            & .ctaPortLeft {
+            & .ctaLeft {
                 @apply absolute bg-white h-8 w-8 rounded-full flex justify-center items-center;
                 border-width: 1.5px;
                 border-style: solid;

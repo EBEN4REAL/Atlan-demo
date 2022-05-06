@@ -1,11 +1,11 @@
 import { computed, ref, ComputedRef, watch, Ref } from 'vue'
 import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
 
+import group from '@common/pills/group.vue'
 import { userInterface } from '~/types/users/user.interface'
 import { Users } from '~/services/service/users'
 import useUserData from '~/composables/user/useUserData'
 import useGroupMembers from '~/composables/group/useGroupMembers'
-import group from '@common/pills/group.vue'
 
 export default function useFacetUsers(
     config: {
@@ -14,6 +14,7 @@ export default function useFacetUsers(
         immediate?: boolean
         groupId?: Ref<string>
         excludeMe?: boolean
+        showInvitedUsers?: boolean
     } = { immediate: true }
 ) {
     const params = ref(new URLSearchParams())
@@ -35,9 +36,11 @@ export default function useFacetUsers(
         params.value.append('columns', 'lastName')
         params.value.append('columns', 'username')
         params.value.append('columns', 'id')
+        params.value.append('columns', 'emailVerified')
     }
-
-    params.value.append('filter', '{"$and":[{"emailVerified":true}]}')
+    if (!config.showInvitedUsers) {
+        params.value.append('filter', '{"$and":[{"emailVerified":true}]}')
+    }
 
     const { data, mutate, isLoading, error, isReady } = Users.List(params, {
         asyncOptions: {
@@ -99,12 +102,10 @@ export default function useFacetUsers(
             if (data.value.records && data.value.records?.length > 0) {
                 list.value.push(...data.value.records)
             }
+        } else if (data.value.records && data.value.records?.length > 0) {
+            list.value = [...data.value.records]
         } else {
-            if (data.value.records && data.value.records?.length > 0) {
-                list.value = [...data.value.records]
-            } else {
-                list.value = []
-            }
+            list.value = []
         }
 
         enrichRecords()
@@ -117,24 +118,24 @@ export default function useFacetUsers(
                 let res = [...list.value]
                 res = res.filter((el) => el.username !== username)
                 return res
-            } else return [...list.value]
+            } return [...list.value]
         }
         const tempList = list.value.filter((obj) => obj.username !== username)
         const myIndex = list.value.findIndex((obj) => obj.username === username)
 
         if (config?.excludeMe) {
             return [...tempList]
-        } else {
-            return [
-                {
-                    firstName,
-                    id,
-                    username,
-                    lastName: `${lastName} (me)`,
-                },
-                ...tempList,
-            ]
         }
+        return [
+            {
+                firstName,
+                id,
+                username,
+                lastName: `${lastName} (me)`,
+            },
+            ...tempList,
+        ]
+
     })
 
     // const total: ComputedRef<number> = computed(() => data.value?.totalRecord)
@@ -154,7 +155,11 @@ export default function useFacetUsers(
             // reseting the list if user has does a server search else this messes up the list index
             const filters = JSON.parse(params.value?.get('filter'))?.$and
             // as email verified filter is always applied, need to check if more than 1 is applied istead
-            if (filters?.length > 1) {
+
+            if (config.showInvitedUsers && filters?.length) {
+                params.value.delete('filter')
+                mutate()
+            } else if (!config.showInvitedUsers && filters?.length > 1) {
                 params.value.set('filter', '{"$and":[{"emailVerified":true}]}')
                 mutate()
             }
@@ -177,7 +182,7 @@ export default function useFacetUsers(
                 'filter',
                 JSON.stringify({
                     $and: [
-                        { emailVerified: true },
+                        ...(config.showInvitedUsers ? [] : [{ emailVerified: true }]),
                         {
                             $or: [
                                 { firstName: { $ilike: `%${value}%` } },

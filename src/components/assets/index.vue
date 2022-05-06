@@ -315,6 +315,7 @@
     import ConnectorSelect from './hierarchy/connector.vue'
 
     import Heirarchy from './hierarchy/index.vue'
+
     const ANALYTICS_KEYS = {
         connector: 'connector',
     }
@@ -688,10 +689,12 @@
                     updateBulkSelectedAssets(...args)
                 }
                 if (firstAssetAutoClicked.value) {
-                    useAddEvent('discovery', 'asset_card', 'clicked', {
-                        click_index: args[1],
-                        keyboard_shortcut: args[2],
-                    })
+                    useDebounceFn(() => {
+                        useAddEvent('discovery', 'asset_card', 'clicked', {
+                            click_index: args[1],
+                            keyboard_shortcut: args[2],
+                        })
+                    }, 600)
                 }
 
                 if (handlePreview && !disableHandlePreview.value) {

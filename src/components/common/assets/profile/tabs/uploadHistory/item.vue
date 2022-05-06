@@ -74,63 +74,63 @@
         >
             <div
                 v-if="finalStatus?.terms?.total_count"
-                class="flex items-center space-x-1"
+                class="flex items-center space-x-2"
             >
                 <atlan-icon icon="Term" class="mb-0.5" />
                 <span
                     v-if="finalStatus?.terms?.updated_count"
-                    class="text-gray-500 text-xs"
+                    class="text-gray-500 text-sm"
                     >{{ finalStatus?.terms?.updated_count }} updated</span
                 >
-                <span
+                <div
                     v-if="
                         finalStatus?.terms?.created_count &&
                         finalStatus?.terms?.updated_count
                     "
-                    class="text-gray-500 text-xs"
-                    >-</span
+                    class=" w-1 rounded-full bg-gray-400 h-1"
+                    ></div
                 >
                 <span
                     v-if="finalStatus?.terms?.created_count"
-                    class="text-gray-500 text-xs"
+                    class="text-gray-500 text-sm"
                     >{{ finalStatus?.terms?.created_count }} created</span
                 >
-                <span
+                <div
                     v-if="
                         finalStatus?.terms?.error_count &&
                         (finalStatus?.terms?.created_count ||
                             finalStatus?.terms?.updated_count)
                     "
-                    class="text-gray-500 text-xs"
-                    >-</span
+                    class=" w-1 rounded-full bg-gray-400 h-1"
+                    ></div
                 >
                 <span
                     v-if="finalStatus?.terms?.error_count"
-                    class="text-error text-xs"
+                    class="text-error text-sm"
                     >{{ finalStatus?.terms?.error_count }} failed</span
                 >
             </div>
             <div
                 v-if="finalStatus?.categories?.total_count"
-                class="flex items-center space-x-1 mt-1"
+                class="flex items-center space-x-2 mt-1"
             >
                 <atlan-icon icon="Category" class="mb-0.5" />
                 <span
                     v-if="finalStatus?.categories?.created_count"
-                    class="text-gray-500 text-xs"
+                    class="text-gray-500 text-sm"
                     >{{ finalStatus?.categories?.created_count }} created</span
                 >
-                <span
+                <div
                     v-if="
                         finalStatus?.categories?.error_count &&
                         finalStatus?.categories?.created_count
                     "
-                    class="text-gray-500 text-xs"
-                    >-</span
+                    class=" w-1 rounded-full bg-gray-400 h-1"
+                    ></div
                 >
                 <span
                     v-if="finalStatus?.categories?.error_count"
-                    class="text-error text-xs"
+                    class="text-error text-sm"
                     >{{ finalStatus?.categories?.error_count }} failed</span
                 >
             </div>

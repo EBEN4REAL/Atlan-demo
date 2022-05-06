@@ -125,11 +125,11 @@
                 },
                 {
                     icon: 'CommonError2',
-                    text: 'Use a comma separated list to add multiple values for a column',
+                    text: 'Use a comma separated list to add multiple values for a column.',
                 },
                 {
                     icon: 'CommonError3',
-                    text: "Add terms in the desired category hierarchy using the ,'@' symbol.",
+                    text: "Add terms in the desired category hierarchy using the '@' symbol.",
                 },
                 {
                     icon: 'CommonError4',

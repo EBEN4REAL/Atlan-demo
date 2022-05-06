@@ -689,12 +689,10 @@
                     updateBulkSelectedAssets(...args)
                 }
                 if (firstAssetAutoClicked.value) {
-                    useDebounceFn(() => {
-                        useAddEvent('discovery', 'asset_card', 'clicked', {
-                            click_index: args[1],
-                            keyboard_shortcut: args[2],
-                        })
-                    }, 600)
+                    useAddEvent('discovery', 'asset_card', 'clicked', {
+                        click_index: args[1],
+                        keyboard_shortcut: args[2],
+                    })
                 }
 
                 if (handlePreview && !disableHandlePreview.value) {

@@ -38,7 +38,7 @@ export default function useFacetUsers(
         params.value.append('columns', 'id')
         params.value.append('columns', 'emailVerified')
     }
-    if(!config.showInvitedUsers){
+    if (!config.showInvitedUsers) {
         params.value.append('filter', '{"$and":[{"emailVerified":true}]}')
     }
 
@@ -103,10 +103,10 @@ export default function useFacetUsers(
                 list.value.push(...data.value.records)
             }
         } else if (data.value.records && data.value.records?.length > 0) {
-                list.value = [...data.value.records]
-            } else {
-                list.value = []
-            }
+            list.value = [...data.value.records]
+        } else {
+            list.value = []
+        }
 
         enrichRecords()
     })
@@ -125,17 +125,17 @@ export default function useFacetUsers(
 
         if (config?.excludeMe) {
             return [...tempList]
-        } 
-            return [
-                {
-                    firstName,
-                    id,
-                    username,
-                    lastName: `${lastName} (me)`,
-                },
-                ...tempList,
-            ]
-        
+        }
+        return [
+            {
+                firstName,
+                id,
+                username,
+                lastName: `${lastName} (me)`,
+            },
+            ...tempList,
+        ]
+
     })
 
     // const total: ComputedRef<number> = computed(() => data.value?.totalRecord)
@@ -151,15 +151,17 @@ export default function useFacetUsers(
     let debounce: any = null
 
     const resetFilter = () => {
+        debugger
         if (params.value.has('filter')) {
             // reseting the list if user has does a server search else this messes up the list index
             const filters = JSON.parse(params.value?.get('filter'))?.$and
             // as email verified filter is always applied, need to check if more than 1 is applied istead
-            if(!config.showInvitedUsers && filters?.length > 1){
-                params.value.set('filter', '{"$and":[{"emailVerified":true}]}')
-                  mutate()
-            }else if (filters?.length) {
+
+            if (config.showInvitedUsers && filters?.length) {
                 params.value.delete('filter')
+                mutate()
+            } else if (!config.showInvitedUsers && filters?.length > 1) {
+                params.value.set('filter', '{"$and":[{"emailVerified":true}]}')
                 mutate()
             }
         }
@@ -181,7 +183,7 @@ export default function useFacetUsers(
                 'filter',
                 JSON.stringify({
                     $and: [
-                        ...(config.showInvitedUsers ? [] :[{ emailVerified: true }]),
+                        ...(config.showInvitedUsers ? [] : [{ emailVerified: true }]),
                         {
                             $or: [
                                 { firstName: { $ilike: `%${value}%` } },

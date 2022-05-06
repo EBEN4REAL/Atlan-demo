@@ -147,6 +147,7 @@
                     'atlan', // atlan-upadate
                     'cloud-es-log-policy',
                     'cloud-backups',
+                    'fantastic-octopus'
                 ],
             }))
 

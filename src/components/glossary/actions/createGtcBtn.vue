@@ -91,7 +91,7 @@
                     </AddGTCModal>
                 </a-menu-item>
                 <a-menu-item
-                    v-if="role?.toLowerCase()==='admin'"
+                    v-if="role?.toLowerCase() === 'admin'"
                     @click="closeMenu"
                 >
                     <AddGTCModal
@@ -112,6 +112,27 @@
                         </template>
                     </AddGTCModal>
                 </a-menu-item>
+                <a-menu-item
+                    v-if="getGlossaryByQF(selectedGlossaryQf)?.guid"
+                    key="bulk"
+                    class="flex items-center"
+                    @click="closeMenu"
+                >
+                    <BulkUploadModal :entity="getGlossaryByQF(selectedGlossaryQf)">
+                        <template #trigger>
+                            <div class="flex items-center">
+                                <AtlanIcon
+                                    icon="Upload"
+                                    class="m-0 mr-2 text-primary"
+                                />
+                                <p class="p-0 m-0 text-gray-700 capitalize">
+                                    Bulk upload terms
+                                </p>
+                            </div>
+                        </template>
+                    </BulkUploadModal>
+                </a-menu-item>
+ 
             </a-menu>
         </template>
     </a-dropdown>
@@ -120,13 +141,16 @@
     import { defineComponent, computed, ref } from 'vue'
     // data
     import useGlossaryStore from '~/store/glossary'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     // components
     import AddGTCModal from '@/glossary/modal/addGtcModal.vue'
+    import BulkUploadModal from '@/glossary/modal/bulkUploadModal.vue'
     import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         components: {
             AddGTCModal,
+            BulkUploadModal,
         },
         props: {
             selectedGlossaryQf: {
@@ -147,6 +171,7 @@
             const { role } = whoami()
             const glossaryStore = useGlossaryStore()
             const isVisible = ref(false)
+            const { getGlossaryByQF } = useGlossaryData()
             const closeMenu = () => {
                 isVisible.value = false
             }
@@ -176,6 +201,7 @@
                 handleAdd,
                 closeMenu,
                 isVisible,
+                getGlossaryByQF,
             }
         },
     })

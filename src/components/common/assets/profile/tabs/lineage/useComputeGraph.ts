@@ -280,8 +280,8 @@ export default async function useComputeGraph({
 
     createNodeEdges(lineage.value)
 
-    /* createCTAPorts */
-    const createCTAPorts = () => {
+    /* createCTAs */
+    const createCTAs = () => {
         const { relations, baseEntityGuid, childrenCounts } =
             mergedLineageData.value
 
@@ -300,7 +300,7 @@ export default async function useComputeGraph({
             return res
         }
 
-        graph.value.freeze('createCTAPorts')
+        graph.value.freeze('createCTAs')
         graph.value.getNodes().forEach((node) => {
             const isColNode = isCollapsible(node.id)
             const isHoPaNode = hasHoPa(node.id)
@@ -311,10 +311,10 @@ export default async function useComputeGraph({
                 (isColNode && successors.includes(node.id)) ||
                 (baseEntityGuid === node.id && successors.length)
             ) {
-                const id = `${node.id}-ctaPortRight-coll`
+                const id = `${node.id}-ctaRight-hoTo`
                 node.updateData({
-                    ctaPortRightIcon: 'col',
-                    ctaPortRightId: id,
+                    ctaRightIcon: 'col',
+                    ctaRightId: id,
                 })
             }
 
@@ -322,42 +322,42 @@ export default async function useComputeGraph({
                 (isColNode && predecessors.includes(node.id)) ||
                 (baseEntityGuid === node.id && predecessors.length)
             ) {
-                const id = `${node.id}-ctaPortLeft-coll`
+                const id = `${node.id}-ctaLeft-hoTo`
                 node.updateData({
-                    ctaPortLeftIcon: 'col',
-                    ctaPortLeftId: id,
+                    ctaLeftIcon: 'col',
+                    ctaLeftId: id,
                 })
             }
 
             if ((isRootNode || isLeafNode) && isHoPaNode) {
-                const pos = isLeafNode ? 'ctaPortRight' : 'ctaPortLeft'
+                const pos = isLeafNode ? 'ctaRight' : 'ctaLeft'
                 const id = `${node.id}-${pos}-hoPa`
-                if (pos === 'ctaPortRight')
+                if (pos === 'ctaRight')
                     node.updateData({
-                        ctaPortRightIcon: 'exp',
-                        ctaPortRightId: id,
+                        ctaRightIcon: 'exp',
+                        ctaRightId: id,
                     })
-                if (pos === 'ctaPortLeft')
+                if (pos === 'ctaLeft')
                     node.updateData({
-                        ctaPortLeftIcon: 'exp',
-                        ctaPortLeftId: id,
+                        ctaLeftIcon: 'exp',
+                        ctaLeftId: id,
                     })
             }
 
-            const { ctaPortRightIcon, ctaPortLeftIcon } = node.getData()
-            if (!ctaPortRightIcon && !ctaPortLeftIcon) return
+            const { ctaRightIcon, ctaLeftIcon } = node.getData()
+            if (!ctaRightIcon && !ctaLeftIcon) return
 
             let widthVal = 268
             let xVal = 1
 
-            if (ctaPortRightIcon && ctaPortLeftIcon) {
+            if (ctaRightIcon && ctaLeftIcon) {
                 widthVal = 298
                 xVal = -14
             }
-            if (ctaPortRightIcon && !ctaPortLeftIcon) {
+            if (ctaRightIcon && !ctaLeftIcon) {
                 widthVal = 284
             }
-            if (!ctaPortRightIcon && ctaPortLeftIcon) {
+            if (!ctaRightIcon && ctaLeftIcon) {
                 widthVal = 284
                 xVal = -14
             }
@@ -373,7 +373,7 @@ export default async function useComputeGraph({
                 xVal
             )
         })
-        graph.value.unfreeze('createCTAPorts')
+        graph.value.unfreeze('createCTAs')
     }
 
     /* Render */
@@ -402,7 +402,7 @@ export default async function useComputeGraph({
             },
         })
 
-        createCTAPorts()
+        createCTAs()
         controlPrefRetainer()
     }
     renderLayout()

@@ -17,13 +17,13 @@
                 <atlan-icon icon="CaretRight" class="mx-1" />
                 <atlan-icon icon="Glossary" class="mr-1" />
                 <span class="text-base text-gray-700">{{
-                    entity?.displayText
+                    glossaryName
                 }}</span>
             </div>
         </template>
         <!-- Modal body -->
         <template #closeIcon>
-            <atlan-icon icon="Close" class="h-6"/>
+            <atlan-icon icon="Close" class="h-6" />
         </template>
 
         <span class="text-gray-700 px-4 pt-4"
@@ -102,10 +102,13 @@
     export default defineComponent({
         components: { FormGen },
         props: {
-            entity: {
-                type: Object,
+            guid: {
+                type: String,
                 required: true,
-                default: () => {},
+            },
+            glossaryName: {
+                type: String,
+                required: true,
             },
         },
         emits: [],
@@ -162,7 +165,7 @@
             ]) // this drives the upload form
 
             const facets = computed(() => ({
-                prefix: `atlan-gtc-bulk-upload-${props.entity.guid?.slice(-8)}`,
+                prefix: `atlan-gtc-bulk-upload-${props.guid?.slice(-8)}`,
                 filterOut: [
                     'atlan-typedef-seeder',
                     'atlan', // atlan-upadate
@@ -185,7 +188,7 @@
                     })
                 }
                 if (
-                    !getGlossaryByGuid(props?.entity?.guid)?.isBulkUploadRunning
+                    !getGlossaryByGuid(props?.guid)?.isBulkUploadRunning
                 ) {
                     const {
                         list: runs,
@@ -209,7 +212,7 @@
                         if (isFirstWfRunning) {
                             showMessage()
                             getGlossaryByGuid(
-                                props?.entity?.guid
+                                props?.guid
                             ).isBulkUploadRunning = true
                         } else visible.value = true
                     })
@@ -224,11 +227,11 @@
                 if (data.key) {
                     fileS3Key.value = data.key
                     const { startUpload } = useBulkUpload({
-                        guid: props?.entity?.guid,
+                        guid: props?.guid,
                         fileS3Key,
-                        glossaryName: props?.entity?.displayText,
+                        glossaryName: props?.displayText,
                     })
-                     startUpload()
+                    startUpload()
                     visible.value = false // close modal on hit submit
                     useAddEvent('gtc', 'term', 'bulk_upload_initiated')
                 }
@@ -250,20 +253,20 @@
                 ].join('\r\n')
 
                 console.log(csv)
-                const fileName = `${props?.entity?.displayText} - Atlan Bulk Terms Template`
+                const fileName = `${props?.displayText} - Atlan Bulk Terms Template`
 
                 downloadFile(csv, fileName)
             }
 
             const isWfRunningForGtc = computed(
                 () =>
-                    getGlossaryByGuid(props?.entity?.guid)?.isBulkUploadRunning
+                    getGlossaryByGuid(props?.guid)?.isBulkUploadRunning
             )
 
             const changeActiveTab = inject('changeActiveTab')
 
             watch(isWfRunningForGtc, () => {
-                if (isWfRunningForGtc.value) {
+                if (isWfRunningForGtc.value && changeActiveTab) {
                     setTimeout(() => {
                         changeActiveTab('uploadHistory')
                     }, 1000)

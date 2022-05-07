@@ -31,7 +31,7 @@
             You will be able to view progress, monitor and debug various
             uploads</span
         >
-        <BulkUploadModal :entity="selectedAsset">
+        <BulkUploadModal :guid="selectedAsset?.guid" :glossary-name="selectedAsset?.displayText">
             <template #trigger>
                 <div
                     class="px-2 py-1 flex items-center border rounded-lg bg-white mt-4 cursor-pointer"

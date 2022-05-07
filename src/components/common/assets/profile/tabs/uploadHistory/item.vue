@@ -317,7 +317,7 @@
                     const status = el.outputs?.parameters.find(
                         (i) => (i.name = 'status')
                     )
-                    if (el?.displayName === 'create-final-csv') {
+                    if (el?.displayName === 'create-final-csv' && status?.value) {
                         finalStatus.value.terms = JSON.parse(status?.value)
                     } else if (el?.displayName === 'extract-category-status') {
                         finalStatus.value.categories = JSON.parse(status?.value)

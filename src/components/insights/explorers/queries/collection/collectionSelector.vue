@@ -327,6 +327,9 @@
             }
 
             const openInSidebar = (t: assetInterface) => {
+                // Close collection selector if sidebar is open
+                if (isVisible.value) isVisible.value = false
+
                 // i button clicked on the same node -> close the sidebar
                 if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
                     /* Close it if it is already opened */

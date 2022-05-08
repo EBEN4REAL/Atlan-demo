@@ -54,6 +54,7 @@
                                 :item="collection"
                                 :handle-change="handleChange"
                                 :selected-collection="selectedCollection"
+                                :openInSidebar="openInSidebar"
                             />
                         </div>
                         <div
@@ -115,7 +116,11 @@
                                     classes="cursor-pointer text-base font-bold mr-1
                                 text-gray-700 hover:underline"
                                     @click.stop="
-                                        () => openInSidebar(selectedCollection)
+                                        () =>
+                                            openInSidebar(
+                                                selectedCollection,
+                                                true
+                                            )
                                     "
                                 >
                                 </Tooltip>
@@ -342,9 +347,12 @@
                 emit('toggleCollectionModal')
             }
 
-            const openInSidebar = (t: assetInterface) => {
-                // Close collection selector if sidebar is open
-                if (isVisible.value) isVisible.value = false
+            const openInSidebar = (
+                t: assetInterface,
+                closeCollectionSelector: Boolean
+            ) => {
+                // Close dropdown when collection sidebar is opened by clicking on the collection name
+                if (closeCollectionSelector) isVisible.value = false
 
                 // i button clicked on the same node -> close the sidebar
                 if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {

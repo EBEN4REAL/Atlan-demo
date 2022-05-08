@@ -2,7 +2,7 @@
     <div
         :key="item.guid"
         :class="[
-            'flex items-center justify-between px-4 cursor-pointer hover:bg-primary-light group relative overflow-x-hidden w-full',
+            'flex items-center justify-between px-4 cursor-pointer hover:bg-new-gray-100 group relative overflow-x-hidden w-full',
             selectedCollection?.guid === item?.guid ? 'bg-primary-light' : '',
         ]"
         style="height: 34px"
@@ -33,17 +33,34 @@
                 ></AtlanIcon>
             </div>
         </div>
-        <div class="absolute opacity-100 group right-3 y-center">
+        <div
+            class="absolute flex pl-5 opacity-0 group-hover:opacity-100 right-3 y-center"
+        >
+            <div
+                class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-200"
+                @click.stop="openInSidebar(item, false)"
+            >
+                <AtlanIcon
+                    icon="SidebarSwitch"
+                    class="w-4 h-4 my-auto outline-none"
+                ></AtlanIcon>
+            </div>
             <InsightsThreeDotMenu
+                v-if="username === item?.createdBy"
                 @click.stop="() => {}"
                 :options="dropdownOptions"
+                class="pl-1"
             >
                 <template #menuTrigger>
-                    <div v-if="username === item?.createdBy" class="pl-5">
-                        <AtlanIcon
-                            icon="KebabMenuHorizontal"
-                            class="w-4 h-4 my-auto"
-                        ></AtlanIcon>
+                    <div class="">
+                        <div
+                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-200"
+                        >
+                            <AtlanIcon
+                                icon="KebabMenuHorizontal"
+                                class="w-4 h-4 my-auto text-new-gray-600"
+                            ></AtlanIcon>
+                        </div>
                     </div>
                 </template>
             </InsightsThreeDotMenu>
@@ -138,6 +155,11 @@
             selectedCollection: {
                 type: Object,
                 required: false,
+            },
+            openInSidebar: {
+                type: Function,
+                required: false,
+                default: () => {},
             },
         },
         setup(props, { emit }) {

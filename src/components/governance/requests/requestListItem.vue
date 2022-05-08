@@ -103,7 +103,7 @@
                     :excludeFields="['terms', 'categories']"
                 >
                     <div>
-                        <span class=" mb-1">{{
+                        <span class="mb-1">{{
                             request.payload?.relationshipAttributes?.anchor
                                 ?.attributes?.name
                         }}</span>
@@ -159,6 +159,11 @@
                 :data="request?.sourceEntity?.attributes"
                 :request="request"
             />
+            <BMPiece
+                v-else-if="request.requestType === 'bm_attribute'"
+                :data="request"
+            />
+
             <AttrPiece
                 v-else-if="request.destinationAttribute"
                 :name="request.destinationAttribute"
@@ -448,6 +453,7 @@
     import UserPiece from './pieces/user.vue'
     import DatePiece from './pieces/date.vue'
     import TermPiece from './pieces/term.vue'
+    import BMPiece from './pieces/bm.vue'
     import CategoryPiece from './pieces/category.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import IconStatus from './iconStatus.vue'
@@ -485,6 +491,7 @@
             AssetDrawer,
             CategoryPiece,
             GlossaryPopover,
+            BMPiece,
             AdminList: defineAsyncComponent(
                 () => import('@/common/info/adminList.vue')
             ),

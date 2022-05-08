@@ -16,10 +16,14 @@
             >
                 <div
                     class="flex items-center p-2 rounded hover:bg-new-gray-200"
+                    :class="isCollectionPopoverVisible ? 'bg-new-gray-200' : ''"
                 >
                     <CollectionSelector
                         @update:data="updateCollection"
                         @toggleCollectionModal="toggleCollectionModal"
+                        v-model:isCollectionPopoverVisible="
+                            isCollectionPopoverVisible
+                        "
                     ></CollectionSelector>
                     <!-- TODO:@rohan: disable items when its in search mode !searchQuery?.length && !totalFilteredCount -->
                     <InsightsThreeDotMenu
@@ -442,6 +446,9 @@
             const assetSidebarUpdatedData = inject(
                 'assetSidebarUpdatedData'
             ) as Ref<Object>
+
+            // For maintaining hover state and status of collection selector dropdown
+            const isCollectionPopoverVisible = ref(false)
 
             // console.log('collection permission: ', {
             //     isCollectionCreatedByCurrentUser,
@@ -1177,6 +1184,7 @@
                 errorNode,
                 refetchNode,
                 dropdownOptions,
+                isCollectionPopoverVisible,
             }
         },
     })

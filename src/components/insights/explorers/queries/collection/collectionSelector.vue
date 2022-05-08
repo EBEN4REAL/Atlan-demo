@@ -157,6 +157,7 @@
         onMounted,
         watch,
         Ref,
+        toRefs,
     } from 'vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
@@ -175,8 +176,19 @@
     export default defineComponent({
         name: 'CollectionSelector',
         components: { AtlanIcon, SearchAndFilter, CollectionItem, Tooltip },
-        emits: ['update:data', 'toggleCollectionModal'],
+        props: {
+            isCollectionPopoverVisible: {
+                type: Boolean,
+                default: () => false,
+            },
+        },
+        emits: [
+            'update:data',
+            'update:isCollectionPopoverVisible',
+            'toggleCollectionModal',
+        ],
         setup(props, { emit }) {
+            const { isCollectionPopoverVisible } = toRefs(props)
             // store
             const authStore = useAuthStore()
             const inputRef = ref()
@@ -359,6 +371,7 @@
                 setTimeout(() => {
                     if (!isVisible.value) queryText.value = ''
                 }, 0)
+                emit('update:isCollectionPopoverVisible', isVisible.value)
             })
 
             onMounted(async () => {
@@ -384,6 +397,7 @@
                 hasCollectionWritePermission,
                 hasCollectionReadPermission,
                 isCollectionCreatedByCurrentUser,
+                isCollectionPopoverVisible,
                 ellipsis: ref(true),
                 openInSidebar,
             }

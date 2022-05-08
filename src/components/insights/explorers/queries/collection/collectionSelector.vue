@@ -120,10 +120,14 @@
                                 >
                                 </Tooltip>
                                 <div class="flex-shrink-0 w-5">
-                                    <AtlanIcon
-                                        icon="ChevronDown"
-                                        class="w-4 h-4 text-gray-500"
-                                    ></AtlanIcon>
+                                    <div
+                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                    >
+                                        <AtlanIcon
+                                            icon="ChevronDown"
+                                            class="w-4 h-4 text-gray-500"
+                                        ></AtlanIcon>
+                                    </div>
                                 </div>
                             </div>
                         </div>

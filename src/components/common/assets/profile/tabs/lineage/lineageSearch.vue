@@ -50,7 +50,7 @@
                 :item="item"
                 class="search-results__item"
                 disable-links
-                @click="setSearchItem(item)"
+                @click="setSearchItem(item, index)"
             ></AssetItem>
         </div>
     </div>
@@ -67,10 +67,13 @@
         watch,
         nextTick,
     } from 'vue'
-    import { whenever } from '@vueuse/core'
+    import { useDebounceFn, whenever } from '@vueuse/core'
 
     /** Utils */
     import { getNodeSourceImage, getSource } from './util'
+
+    /** Composables */
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     /** Components */
     import AssetItem from '@/common/assets/preview/lineage/list/assetItem.vue'
@@ -116,16 +119,38 @@
             })
 
             /** METHODS */
+
+            // searchEvent
+            const sendSearchEvent = useDebounceFn(() => {
+                useAddEvent('lineage', 'search', 'changed', {
+                    result_count: filteredItems.value.length,
+                    search_query: query.value.toLowerCase(),
+                })
+            }, 600)
+
+            const sendSearchResultClickEvent = useDebounceFn((item, index) => {
+                useAddEvent('lineage', 'search_result', 'clicked', {
+                    click_index: index,
+                    result_count: filteredItems.value.length,
+                    asset_type: item.typeName?.toLowerCase(),
+                    connector: item.attributes?.connectorName,
+                })
+            }, 600)
+
             // setQuery
             const setQuery = (e) => {
                 query.value = e.target.value
+
+                sendSearchEvent()
             }
 
             // setSearchItem
-            const setSearchItem = (item) => {
+            const setSearchItem = (item, index) => {
                 searchItem.value = item.guid
                 onSelectAsset(item, true)
                 emit('select', item.guid)
+
+                sendSearchResultClickEvent(item, index)
             }
 
             // onBlur

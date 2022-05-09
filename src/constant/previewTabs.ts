@@ -20,6 +20,16 @@ export const previewTabs = [
         analyticsKey: 'columns',
     },
     {
+        name: 'Objects',
+        component: 's3Objects',
+        includes: ['S3Bucket'],
+        icon: 'S3Object',
+        tooltip: 'Objects',
+        scrubbed: false,
+        requiredInProfile: true,
+        analyticsKey: 's3objects',
+    },
+    {
         name: 'Lineage',
         component: 'lineage',
         excludes: [
@@ -47,16 +57,6 @@ export const previewTabs = [
         scrubbed: false,
         requiredInProfile: true,
         analyticsKey: 'lineage',
-    },
-    {
-        name: 'Objects',
-        component: 's3Objects',
-        includes: ['S3Bucket'],
-        icon: 'S3Object',
-        tooltip: 'Objects',
-        scrubbed: false,
-        requiredInProfile: true,
-        analyticsKey: 's3objects',
     },
     {
         name: 'Relations',

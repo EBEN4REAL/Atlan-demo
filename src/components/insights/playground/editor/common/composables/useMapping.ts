@@ -53,6 +53,14 @@ export const contextStore = ref({
 
 export const aliasesMap = ref({})
 export const mappingKeywordsKeys = Object.keys(mappingKeywords)
+export function getAllMappedKeywords() {
+    let arr: string[] = []
+    arr = [...Object.keys(mappingKeywords)]
+    arr = [...arr, ...Object.keys(nextKeywords)]
+    arr = [...arr, ...typesKeywordsMap.FILTER.values]
+    arr = [...arr, ...typesKeywordsMap.AGGREGATE.values]
+    return arr
+}
 export function useMapping() {
     const mappingKeywordsKeys = Object.keys(mappingKeywords)
     return {

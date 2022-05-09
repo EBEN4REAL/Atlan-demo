@@ -1,7 +1,7 @@
 import { unref, ref, Ref } from 'vue'
 import getSqlKeywords from '~/components/insights/playground/editor/monaco/sqlKeywords'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
-import { useMapping, nextKeywords } from './useMapping'
+import { useMapping, nextKeywords, getAllMappedKeywords } from './useMapping'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
@@ -639,31 +639,52 @@ async function getSuggestionsUsingType(
                 let tableQualifiedNames = []
 
                 if (contextStore.value.right.length > 0) {
-                    tableQualifiedNames = contextStore.value.right.map((e) => {
-                        return `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}/${e.name}`
-                    }) as any
+                    tableQualifiedNames = contextStore.value.right
+                        .filter(
+                            (e) =>
+                                !getAllMappedKeywords().includes(
+                                    e.name.toUpperCase()
+                                )
+                        )
+                        .map((e) => {
+                            return `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}/${e.name}`
+                        }) as any
                 }
                 if (contextStore.value.left.length > 0) {
                     if (tableQualifiedNames.length > 0) {
                         tableQualifiedNames = [
                             ...tableQualifiedNames,
-                            contextStore.value.left.map((e) => {
-                                return `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}/${e.name}`
-                            }) as any,
+                            contextStore.value.left
+                                .filter(
+                                    (e) =>
+                                        !getAllMappedKeywords().includes(
+                                            e.name.toUpperCase()
+                                        )
+                                )
+                                .map((e) => {
+                                    return `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}/${e.name}`
+                                }) as any,
                         ] as any
                     } else {
-                        tableQualifiedNames = contextStore.value.left.map(
-                            (e) => {
+                        tableQualifiedNames = contextStore.value.left
+                            .filter(
+                                (e) =>
+                                    !getAllMappedKeywords().includes(
+                                        e.name.toUpperCase()
+                                    )
+                            )
+                            .map((e) => {
                                 return `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}/${e.name}`
-                            }
-                        ) as any
+                            }) as any
                     }
                 }
 
                 body.value.dsl.query.function_score.query.bool.filter.bool.should.push(
                     {
                         terms: {
-                            tableQualifiedName: tableQualifiedNames,
+                            tableQualifiedName: tableQualifiedNames.filter(
+                                (e) => typeof e === 'string'
+                            ),
                         },
                     }
                 )

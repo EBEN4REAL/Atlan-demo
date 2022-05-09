@@ -106,8 +106,10 @@ export function createAliasesMap(text: string) {
                     mappingKeywordsKeys,
                     typesKeywordsMap
                 )
-                key = leftTexts.reverse()[0]
-                value = rightTexts[0]
+                key = leftTexts
+                    .reverse()[0]
+                    .replace(/[&\/\\#,+()~%.:*?<>{}\n\s]/g, '')
+                value = rightTexts[0].replace(/[&\/\\#,+()~%.:*?<>{}\n\s]/g, '')
                 aliasMap[key] = {
                     key: key,
                     value: value,

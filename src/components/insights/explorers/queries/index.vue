@@ -64,7 +64,7 @@
                     </InsightsThreeDotMenu>
                 </div>
                 <div
-                    class="flex flex-row mx-2 mt-3 space-x-2"
+                    class="flex flex-row mx-2 mt-2 space-x-2"
                     v-if="treeData?.length"
                 >
                     <a-input

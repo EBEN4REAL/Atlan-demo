@@ -688,6 +688,19 @@ async function getSuggestionsUsingType(
                         },
                     }
                 )
+                // function_score boost
+                tableQualifiedNames
+                    .filter((e) => typeof e === 'string')
+                    .forEach((tableQualifiedName) => {
+                        body.value.dsl.query.function_score.functions.push({
+                            filter: {
+                                match: {
+                                    tableQualifiedName: tableQualifiedName,
+                                },
+                            },
+                            weight: 15,
+                        })
+                    })
             }
 
             if (cancelTokenSource.value !== undefined) {

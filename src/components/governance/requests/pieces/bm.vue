@@ -32,7 +32,18 @@
                 </div>
             </template>
 
-            <div class="py-1 rounded-full cursor-pointer w-40">
+            <div class="py-1 rounded-full cursor-pointer w-40 flex items-center">
+                <PreviewTabsIcon
+                    :icon="iconInfo?.icon"
+                    :image="iconInfo?.image"
+                    :emoji="iconInfo?.emoji"
+                    height="h-4"
+                    width="w-4"
+                    class="mr-1"
+                    :display-mode="true"
+                    emoji-size="text-md"
+                />
+
                 <Truncate
                     :tooltip-text="label"
                     placement="left"
@@ -59,20 +70,18 @@
         ref,
         onMounted,
     } from 'vue'
-    import Pill from '~/components/UI/pill/pill.vue'
     // composables
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
     import useCustomMetadataFacet from '~/composables/custommetadata/useCustomMetadataFacet'
     import useAuth from '~/composables/auth/useAuth'
     import page from '~/constant/accessControl/page'
-    import SingleTab from '@/common/input/customMetadata/singleTab.vue'
     import Truncate from '@/common/ellipsis/index.vue'
+    import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
 
     export default defineComponent({
         components: {
-            Pill,
             Truncate,
-            SingleTab,
+            PreviewTabsIcon,
             ReadOnly: defineAsyncComponent(
                 () =>
                     import(
@@ -102,6 +111,7 @@
             } = useCustomMetadataHelpers()
 
             const { checkAccess } = useAuth()
+            const iconInfo = ref({ image: '', emoji: '' })
             const attributeNames = ref(
                 Object.keys(props.data?.payload)?.map((i) => i)
             )
@@ -109,27 +119,30 @@
             const label = ref(props?.data?.destinationAttribute)
             const guid = ref(props?.data?.destinationAttribute)
             const applicableList = ref()
-            console.log(attributeNames.value)
             const { getList: cmList } = useCustomMetadataFacet()
-            console.log(cmList(props.data?.entityType))
             const getAttributes = () => {
                 const list = cmList(props.data?.entityType).filter(
                     (el) => el?.id === props.data?.destinationAttribute
                 )
+                console.log(list[0])
                 if (list[0]?.label) {
                     label.value = list[0].label
                 }
                 if (list[0]?.guid) {
                     guid.value = list[0].guid
                 }
+                if (list[0]?.options) {
+                    iconInfo.value.image =
+                        list[0]?.options?.imageId || list[0]?.options?.logoUrl
+                    iconInfo.value.emoji = list[0]?.options?.emoji
+                }
+
                 applicableList.value = getApplicableAttributes(
                     list[0],
                     props.data?.entityType
                 )
                 applicableList.value?.forEach((i, index) => {
                     if (attributeNames.value?.includes(i?.name)) {
-                        console.log(props.data?.payload[i?.name])
-                        console.log(applicableList.value[index])
                         applicableList.value[index].value =
                             props.data?.payload[i?.name]
                     }
@@ -143,6 +156,7 @@
                 checkAccess,
                 page,
                 guid,
+                iconInfo
             }
         },
     })

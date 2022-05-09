@@ -8,7 +8,7 @@
         class="flex flex-col w-full overflow-hidden gap-y-2"
     >
         <!-- header starts here -->
-        <div class="flex items-center justify-between px-5 py-4 gap-x-4">
+        <div class="flex items-center justify-between px-5 pt-4 gap-x-4">
             <span class="flex items-center">
                 <PreviewTabsIcon
                     :icon="tab.icon"
@@ -52,15 +52,7 @@
                     </div>
                 </a-tooltip>
             </span>
-            <div
-                v-if="
-                    selectedAssetUpdatePermission(
-                        selectedAsset,
-                        isDrawer,
-                        'ENTITY_UPDATE_BUSINESS_METADATA'
-                    ) && !viewOnly
-                "
-            >
+            <div v-if="role !== 'Guest' && !viewOnly">
                 <div
                     v-if="
                         readOnly &&
@@ -84,12 +76,28 @@
                     </span>
                     <AtlanButton2
                         :disabled="!isEdit"
-                        label="Update"
+                        :label="hasEditPermission!==undefined && !hasEditPermission ? 'Request': 'Update'"
                         @click="handleUpdate"
                     />
                 </div>
             </div>
         </div>
+        <div
+            v-if="hasEditPermission!==undefined && !hasEditPermission && role !== 'Guest' && !viewOnly"
+            class="px-3 py-2 mt-3 bg-gray-100"
+        >
+            You don't have edit access. Suggest your changes
+            <span class="cursor-pointer text-primary">
+                <a-popover placement="rightBottom">
+                    <template #content>
+                        <AdminList></AdminList>
+                    </template>
+                    <span>Admins</span>
+                </a-popover>
+            </span>
+            can review your request.
+        </div>
+
         <!-- header ends here -->
 
         <template v-if="data?.options?.isLocked === 'true'">
@@ -100,7 +108,7 @@
             </div>
         </template>
 
-        <div class="flex flex-col flex-grow pl-5 pr-5 overflow-y-auto">
+        <div class="flex flex-col flex-grow pl-5 pr-5 overflow-y-auto pt-4">
             <!-- showing non empty starts here -->
             <template v-if="readOnly">
                 <template
@@ -248,15 +256,7 @@
                                     :paragraph="{ rows: 2 }"
                                 />
                             </div>
-                            <template
-                                v-else-if="
-                                    selectedAssetUpdatePermission(
-                                        selectedAsset,
-                                        isDrawer,
-                                        'ENTITY_UPDATE_BUSINESS_METADATA'
-                                    ) && !viewOnly
-                                "
-                            >
+                            <template v-else-if="role !== 'Guest' && !viewOnly">
                                 <PropertyPopover
                                     :applicable-list="applicableList"
                                 />
@@ -271,13 +271,7 @@
                             </template>
                         </div>
                         <AtlanButton2
-                            v-if="
-                                selectedAssetUpdatePermission(
-                                    selectedAsset,
-                                    isDrawer,
-                                    'ENTITY_UPDATE_BUSINESS_METADATA'
-                                ) && !viewOnly
-                            "
+                            v-if="role !== 'Guest' && !viewOnly"
                             label="Start Editing"
                             prefixIcon="Edit"
                             @click="() => (readOnly = false)"
@@ -363,6 +357,8 @@
     import InternalCMBanner from '@/common/customMetadata/internalCMBanner.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { useTypedefStore } from '~/store/typedef'
+    import { useCreateRequests } from '~/composables/requests/useCreateRequests'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -372,6 +368,9 @@
             Truncate,
             ReadOnly: defineAsyncComponent(() => import('./readOnly.vue')),
             EditState: defineAsyncComponent(() => import('./editState.vue')),
+            AdminList: defineAsyncComponent(
+                () => import('@/common/info/adminList.vue')
+            ),
             EmptyView,
             PreviewTabsIcon,
         },
@@ -406,6 +405,7 @@
             const readOnly = ref(readOnlyInCm.value)
 
             const loading = ref(false)
+            const { role } = whoami()
             const showMore = ref(false)
             const viewOnly = ref(data.value.options?.isLocked === 'true')
             const guid = ref()
@@ -431,6 +431,14 @@
             })
 
             const { title, selectedAssetUpdatePermission } = useAssetInfo()
+            const hasEditPermission = computed(() =>
+                selectedAssetUpdatePermission(
+                    selectedAsset.value,
+                    props.isDrawer,
+                    'ENTITY_UPDATE_BUSINESS_METADATA'
+                )
+            )
+            console.log(hasEditPermission.value)
             const {
                 getDatatypeOfAttribute,
                 isLink,
@@ -519,8 +527,44 @@
 
             const isEdit = ref(false)
 
+            // raise request if user doesn't have access to update BM
+            const handleRequest = () => {
+                console.log(payload.value)
+                const {
+                    error: requestError,
+                    isLoading: isRequestLoading,
+                    isReady: requestReady,
+                } = useCreateRequests({
+                    assetGuid: selectedAsset.value?.guid,
+                    assetQf: selectedAsset.value?.attributes?.qualifiedName,
+                    assetType: selectedAsset.value?.typeName,
+                    CMPayload: payload.value,
+                    requestType: 'bm_attribute',
+                })
+                whenever(requestError, () => {
+                    if (requestError.value) {
+                        message.error(`Request failed`)
+                        isEdit.value = false
+                        readOnly.value = true
+                        setAttributesList()
+                    }
+                })
+                whenever(requestReady, () => {
+                    if (requestReady.value) {
+                        message.success(`Request raised`)
+                        isEdit.value = false
+                        readOnly.value = true
+                        setAttributesList()
+                    }
+                })
+            }
             const handleUpdate = () => {
                 payload.value = payloadConstructor()
+                if (!hasEditPermission.value && !viewOnly.value) {
+                    console.log('Raise request')
+                    handleRequest()
+                    return
+                }
                 const { error, isReady, isLoading } =
                     Types.updateAssetBMChanges(
                         selectedAsset.value?.guid,
@@ -701,6 +745,8 @@
                 handleChange,
                 loading,
                 selectedAssetUpdatePermission,
+                role,
+                hasEditPermission,
             }
         },
     })

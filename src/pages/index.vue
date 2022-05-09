@@ -12,6 +12,9 @@
                     <SearchAndStats />
                     <Announcements class="mt-6" />
                 </div>
+                <div class="mt-6">
+                    <PersonaPurpose />
+                </div>
                 <!-- 
                 <div class="mt-6">
                     <Persona></Persona>
@@ -67,6 +70,7 @@
     import RecentAnnouncements from '@/home/main/recentAnnouncements.vue'
     import PopularQueries from '@/home/main/popoularQueries.vue'
     import MyRaisedRequests from '~/components/home/main/myRaisedRequests.vue'
+    import PersonaPurpose from '~/components/common/widgets/personaPurpose/index.vue'
 
     export default defineComponent({
         name: 'HomePage',
@@ -82,6 +86,7 @@
             RecentAnnouncements,
             PopularQueries,
             MyRaisedRequests,
+            PersonaPurpose,
         },
         props: {},
         setup() {

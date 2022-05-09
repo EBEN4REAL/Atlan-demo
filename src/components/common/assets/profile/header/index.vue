@@ -302,44 +302,46 @@
                     "
                     title=""
                 >
-                    <QueryDropdown
-                        v-if="
-                            assetType(item) === 'Table' ||
-                            assetType(item) === 'View' ||
-                            assetType(item) === 'TablePartition' ||
-                            assetType(item) === 'MaterialisedView'
-                        "
-                        @handleClick="goToInsights"
-                    >
-                        <template #button>
-                            <a-button
-                                class="flex items-center justify-center p-2"
-                            >
-                                <div class="flex items-center">
-                                    <AtlanIcon
-                                        icon="Query"
-                                        class="mr-1 -mt-0.5 text-primary"
-                                    />
-                                    <span class="">Query </span>
-                                </div>
-                            </a-button>
-                        </template>
-                    </QueryDropdown>
+                    <div v-if="featureEnabledMap[INSIGHT_WORKSPACE_LEVEL_TAB]">
+                        <QueryDropdown
+                            v-if="
+                                assetType(item) === 'Table' ||
+                                assetType(item) === 'View' ||
+                                assetType(item) === 'TablePartition' ||
+                                assetType(item) === 'MaterialisedView'
+                            "
+                            @handleClick="goToInsights"
+                        >
+                            <template #button>
+                                <a-button
+                                    class="flex items-center justify-center p-2"
+                                >
+                                    <div class="flex items-center">
+                                        <AtlanIcon
+                                            icon="Query"
+                                            class="mr-1 -mt-0.5 text-primary"
+                                        />
+                                        <span class="">Query </span>
+                                    </div>
+                                </a-button>
+                            </template>
+                        </QueryDropdown>
 
-                    <a-button
-                        v-else
-                        block
-                        class="flex items-center justify-center p-2"
-                        @click="handleClick"
-                    >
-                        <div class="flex items-center">
-                            <AtlanIcon
-                                icon="Query"
-                                class="mr-1 -mt-0.5 text-primary"
-                            />
-                            <span class="">Query </span>
-                        </div>
-                    </a-button>
+                        <a-button
+                            v-else
+                            block
+                            class="flex items-center justify-center p-2"
+                            @click="handleClick"
+                        >
+                            <div class="flex items-center">
+                                <AtlanIcon
+                                    icon="Query"
+                                    class="mr-1 -mt-0.5 text-primary"
+                                />
+                                <span class="">Query </span>
+                            </div>
+                        </a-button>
+                    </div>
                 </a-tooltip>
 
                 <a-button
@@ -443,6 +445,10 @@
     import useGTCPermissions, {
         fetchGlossaryPermission,
     } from '~/composables/glossary/useGTCPermissions'
+    import {
+        featureEnabledMap,
+        INSIGHT_WORKSPACE_LEVEL_TAB,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -624,6 +630,8 @@
             // if (glossary.value) fetch()
 
             return {
+                featureEnabledMap,
+                INSIGHT_WORKSPACE_LEVEL_TAB,
                 // glossary,
                 // glossaryUpdatePermission,
                 // glossaryDeletePermission,

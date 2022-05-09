@@ -9,7 +9,10 @@
                 :footer="null"
             >
                 <AddCompanyAnnouncement
+                    :visible-modal="announcementModalVisible"
+                    :new-annoucement="newAnnoucement"
                     class="p-4"
+                    :update-status="updateStatus"
                     @updateAnnouncement="updateAnnouncement"
                     @close="announcementModalVisible = false"
                 />
@@ -36,12 +39,12 @@
                         <AtlanButton2
                             :disabled="updateStatus === 'loading'"
                             :loading="updateStatus === 'loading'"
-                            @click="updateTenantDisplayName"
                             :label="
                                 updateStatus !== 'loading'
                                     ? 'Update'
                                     : 'Updating'
                             "
+                            @click="updateTenantDisplayName"
                         />
                     </div>
                 </div>
@@ -54,32 +57,44 @@
                         :avatar-name="name"
                         :avatar-size="100"
                         :bordered="false"
-                        class="mt-2"
+                        class="mt-2 avatar-logo"
                     />
-                    <div class="absolute bottom-0 p-1 bg-white left-20">
+                    <div
+                        class="absolute bottom-0 p-1 bg-white rounded-full left-20"
+                    >
                         <div
-                            class="p-1 bg-gray-100 border border-gray-300 px-1 py-0.5 text-gray-500"
+                            class="p-1 bg-gray-100 border border-gray-300 px-1 py-0.5 text-gray-500 rounded-full"
                         >
-                            <AtlanIcon icon="Pencil"></AtlanIcon>
+                            <AtlanIcon icon="Camera" />
                         </div>
                     </div>
-                    <div class="ml-5 text-2xl text-gray-700">
+                    <div class="ml-5 mr-1 text-2xl text-gray-700">
                         {{ name }}
                     </div>
+                    <AtlanIcon
+                        icon="Pencil"
+                        class="cursor-pointer"
+                        @click="showEditTenantNameModal = true"
+                    />
                 </div>
                 <div class="flex items-center gap-x-3">
-                    <AtlanButton2
+                    <!-- <AtlanButton2
                         size="large"
                         color="secondary"
                         label="Edit"
                         @click="showEditTenantNameModal = true"
-                    />
+                    /> -->
 
                     <AtlanButton2
                         size="large"
-                        prefixIcon="Megaphone"
+                        prefix-icon="Megaphone"
                         label="New Announcement"
-                        @click="announcementModalVisible = true"
+                        @click="
+                            () => {
+                                newAnnoucement = true
+                                announcementModalVisible = true
+                            }
+                        "
                     />
                 </div>
             </div>
@@ -134,6 +149,7 @@
 </template>
 <script lang="ts">
     import { defineComponent, computed, Ref, ref, watch, toRefs } from 'vue'
+    import { message } from 'ant-design-vue'
     import DefaultLayout from '~/components/admin/layout.vue'
     import OrgLogo from '~/components/common/logo/orgLogo.vue'
     import useTenantData from '~/composables/tenant/useTenantData'
@@ -142,7 +158,6 @@
     import useOverviewCards from '~/components/admin/overview/composables/useOverviewCards'
     import AddCompanyAnnouncement from '~/components/admin/overview/addCompanyAnnouncement.vue'
     import CompanyAnnouncement from '~/components/common/widgets/announcement/companyAnnouncement.vue'
-
     import useUserData from '~/composables/user/useUserData'
     import { useTenantStore } from '~/store/tenant'
 
@@ -158,6 +173,7 @@
             const { overviewCards } = useOverviewCards()
             const showEditTenantNameModal = ref(false)
             const announcementModalVisible = ref(false)
+            const newAnnoucement = ref(true)
             const { name, tenantRaw } = useTenantData()
             const newTenantName: Ref<string> = ref('')
             newTenantName.value = name.value
@@ -168,7 +184,7 @@
 
             const { logoUrl } = toRefs(tenant)
 
-            const updateTenant = (payload) => {
+            const updateTenant = (payload, cb = () => {}) => {
                 try {
                     updateStatus.value = 'loading'
                     const { data, error, isLoading } = useTenantUpdate(payload)
@@ -180,10 +196,12 @@
                                 updateStatus.value = 'success'
                                 showEditTenantNameModal.value = false
                                 announcementModalVisible.value = false
+                                cb(true)
                                 setTimeout(() => {
                                     updateStatus.value = ''
                                 }, 2500)
                             } else {
+                                cb(false)
                                 updateStatus.value = 'error'
                                 showEditTenantNameModal.value = false
                                 announcementModalVisible.value = false
@@ -210,6 +228,7 @@
                 updateTenant(payload)
             }
             const editAnnouncement = () => {
+                newAnnoucement.value = false
                 announcementModalVisible.value = true
             }
             const deleteAnnouncement = () => {
@@ -220,7 +239,27 @@
                 tenantLocal.attributes.announcementUpdatedAt =
                     Date.now().toString()
                 tenantLocal.attributes.announcementUpdatedBy = username
-                updateTenant(tenantLocal)
+                const messageKey = Date.now()
+                message.loading({
+                    content: 'Deleting announcement',
+                    duration: 0,
+                    key: messageKey,
+                })
+                updateTenant(tenantLocal, (isSuccess: boolean) => {
+                    if (isSuccess) {
+                        message.success({
+                            content: 'Announcement deleted',
+                            duration: 1.5,
+                            key: messageKey,
+                        })
+                    } else {
+                        message.error({
+                            content: 'Failed to delete announcement',
+                            duration: 1.5,
+                            key: messageKey,
+                        })
+                    }
+                })
             }
             const getStatusIcon = (state) => {
                 if (state === 'loading') return 'CircleLoader'
@@ -249,11 +288,23 @@
                 updateAnnouncement,
                 editAnnouncement,
                 deleteAnnouncement,
+                newAnnoucement,
             }
         },
     })
 </script>
-<style lang="less" scoped>
+<style lang="less">
+    .avatar-logo {
+        .overlay-edit-avatar {
+            border-radius: 8px !important;
+        }
+        .ant-avatar-image {
+            img {
+                border-radius: 8px !important;
+                padding: 0px !important;
+            }
+        }
+    }
     .overview-card {
         // width: 20.1875rem;
 

@@ -15,6 +15,11 @@ export default function useGlossaryData() {
         return found
     }
 
+    const getGlossaryByGuid = (guid: string) => {
+        const found = glossaryStore.list.find((i) => i?.guid === guid)
+        return found
+    }
+
     const glossaryList = computed(() =>
         glossaryStore.list.sort((a, b) =>
             a.attributes.name > b.attributes.name
@@ -82,5 +87,6 @@ export default function useGlossaryData() {
         selectedGlossary,
         getGlossaryByQF,
         getFirstGlossaryQF,
+        getGlossaryByGuid,
     }
 }

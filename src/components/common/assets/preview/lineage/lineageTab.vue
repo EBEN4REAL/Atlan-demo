@@ -146,6 +146,10 @@
 
             const discoveryStore = useAssetStore()
 
+            const processPreference = computed(() =>
+                discoveryStore?.preferences?.display?.includes('process')
+            )
+
             const defaultLineageConfig = computed(() => ({
                 depth: depth.value,
                 guid: guid.value,
@@ -153,7 +157,7 @@
                     selectedAsset.value.typeName
                 )
                     ? false
-                    : discoveryStore?.preferences?.display?.includes('process'),
+                    : !processPreference.value,
                 allowDeletedProcess: false,
                 entityFilters: {
                     attributeName: '__state',

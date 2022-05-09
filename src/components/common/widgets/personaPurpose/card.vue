@@ -37,7 +37,7 @@
             />
             <div
                 v-if="item.users?.length > 3"
-                class="flex items-center justify-center w-6 h-6 text-sm text-gray-600 bg-gray-100 rounded-full"
+                class="flex items-center justify-center w-6 h-6 mt-1 text-xs text-gray-600 bg-gray-100 rounded-full"
                 :style="{
                     'z-index': `4`,
                     transform: `translateX(-24px)`,

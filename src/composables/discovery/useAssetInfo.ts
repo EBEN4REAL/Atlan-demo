@@ -207,6 +207,8 @@ export default function useAssetInfo() {
 
     const parentView = (asset: assetInterface) => attributes(asset)?.view
 
+    const parentProcess = (asset: assetInterface) => attributes(asset)?.process
+
     const tableName = (asset: assetInterface) =>
         attributes(asset)?.tableName ?? ''
 
@@ -1391,6 +1393,7 @@ export default function useAssetInfo() {
         parentSchema,
         parentTable,
         parentView,
+        parentProcess,
         sourceChildCount,
         tableCount,
         viewCount,

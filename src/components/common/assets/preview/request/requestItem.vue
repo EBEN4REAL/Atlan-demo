@@ -3,7 +3,7 @@
         <div
             class="relative mx-1 border border-gray-200 rounded-lg cursor-pointer hover:border-primary card-container"
         >
-            <div class="flex items-center bg-gray-100 px-3 py-3">
+            <div class="flex items-center bg-gray-100 px-3 py-3 rounded-lg">
                 <div
                     v-if="item.requestType === 'term_link' && isGlossary"
                     class="text-sm font-bold text-gray-500"
@@ -208,7 +208,10 @@
                 </div>
                 <div v-else-if="item.destinationAttribute === 'ownerUsers'">
                     <!-- <PopOverUser :item="item.destinationValue"> -->
-                    <div v-if="item?.destinationValueArray?.length" class=" flex items-center">
+                    <div
+                        v-if="item?.destinationValueArray?.length"
+                        class="flex items-center"
+                    >
                         <UserPill
                             class="classification-pill"
                             :username="item.destinationValueArray[0]"
@@ -239,9 +242,7 @@
                                 v-if="item?.destinationValueArray?.length > 1"
                                 class="text-primary flex items-center cursor-pointer"
                                 >+
-                                {{
-                                    item?.destinationValueArray?.length - 1
-                                }}
+                                {{ item?.destinationValueArray?.length - 1 }}
                                 more</span
                             >
                         </a-popover>
@@ -291,6 +292,14 @@
                     :data="item.payload"
                     :show-label="false"
                     requestType="create_category"
+                />
+
+                <BMPiece
+                    v-else-if="
+                        item?.requestType === 'bm_attribute' && item?.payload
+                    "
+                    :data="item"
+                    :show-label="false"
                 />
 
                 <div v-else class="text-sm text-gray-700 truncate">
@@ -393,6 +402,7 @@
     import Pill from '~/components/UI/pill/pill.vue'
     import ClassificationPill from '@/common/pills/classification.vue'
     import TermPiece from '@/governance/requests/pieces/term.vue'
+    import BMPiece from '@/governance/requests//pieces/bm.vue'
     import CategoryPiece from '@/governance/requests/pieces/category.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
@@ -433,6 +443,7 @@
             UserPill,
             CertificatePill,
             TermPiece,
+            BMPiece,
             CategoryPiece,
             // PopOverUser,
             // PopOverGroup,

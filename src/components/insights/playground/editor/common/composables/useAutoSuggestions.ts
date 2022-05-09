@@ -1,11 +1,17 @@
 import { unref, ref, Ref } from 'vue'
 import getSqlKeywords from '~/components/insights/playground/editor/monaco/sqlKeywords'
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
-import { useMapping, nextKeywords } from './useMapping'
+import { useMapping, nextKeywords, getAllMappedKeywords } from './useMapping'
 import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
 import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
+import {
+    createAliasesMap,
+    extractTablesFromContext,
+    getSchemaAndDatabaseFromSqlQueryText,
+} from './autoSuggestionUtils'
+import { contextStore, aliasesMap } from './useMapping'
 
 // import HEKA_SERVICE_API from '~/services/heka/index'
 import { Insights } from '~/services/sql/query'
@@ -166,6 +172,30 @@ export function getContext(
     /* _______________________________ */
 }
 
+// for moving the preference based suggestions to the top
+function sortByContextQualifiedNames(entities: any[]) {
+    const _obj =
+        body.value.dsl.query.function_score.query.bool.filter.bool.should[0]
+            ?.terms
+    if (_obj?.tableQualifiedName?.length > 0 && entities?.length > 0) {
+        entities.forEach((entity, index) => {
+            if (entity.attributes.qualifiedName) {
+                _obj?.tableQualifiedName?.forEach((tableQualifiedName) => {
+                    if (
+                        entity.attributes.qualifiedName.includes(
+                            tableQualifiedName
+                        )
+                    ) {
+                        const _t = entities.splice(index, 1)
+                        entities.unshift(_t[0])
+                    }
+                })
+            }
+        })
+    }
+    return entities
+}
+
 export function entitiesToEditorKeyword(
     response: Promise<autosuggestionResponse>,
     type: string,
@@ -195,7 +225,9 @@ export function entitiesToEditorKeyword(
     const turndownService = new TurndownService()
     return new Promise((resolve) => {
         response.then((res) => {
-            const entities = res.entities ?? []
+            let entities = res.entities ?? []
+            entities = sortByContextQualifiedNames(entities)
+
             let words: suggestionKeywordInterface[] = []
             let len = entities.length
             // console.log('suggestion: ', {
@@ -209,7 +241,7 @@ export function entitiesToEditorKeyword(
 
                 switch (type) {
                     case 'TABLE': {
-                        // debugger
+                        //
                         // console.log('su type: ', 'table')
                         /* When Schema Or database not selected TableQN will be used */
                         // let entityType = `${type}`
@@ -350,7 +382,6 @@ export function getLastMappedKeyword(
 ) {
     // console.log(tokens)
     let tokens = token_param.map((token) => token?.toUpperCase())
-    debugger
     for (let i = tokens.length - 1; i >= 0; i--) {
         /* type- TABLE/COLUMN/SQL keyword */
         if (mappingKeywordsKeys.includes(tokens[i])) {
@@ -418,6 +449,7 @@ const refreshBody = () => {
                                             },
                                         },
                                     ],
+                                    should: [],
                                 },
                             },
                         },
@@ -547,7 +579,10 @@ async function getSuggestionsUsingType(
             'name.keyword': `${currentWord}.*`,
         },
     })
-
+    // body.value.dsl.query('match', 'name.keyword', {
+    //     query: query,
+    //     boost: 120,
+    // })
     switch (type) {
         case 'TABLE': {
             body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
@@ -595,6 +630,79 @@ async function getSuggestionsUsingType(
                 }
             )
 
+            if (
+                (contextStore.value.left.length > 0 ||
+                    contextStore.value.right.length > 0) &&
+                connectorsInfo.databaseName &&
+                connectorsInfo.schemaName
+            ) {
+                let tableQualifiedNames = []
+
+                if (contextStore.value.right.length > 0) {
+                    tableQualifiedNames = contextStore.value.right
+                        .filter(
+                            (e) =>
+                                !getAllMappedKeywords().includes(
+                                    e.name.toUpperCase()
+                                )
+                        )
+                        .map((e) => {
+                            return `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}/${e.name}`
+                        }) as any
+                }
+                if (contextStore.value.left.length > 0) {
+                    if (tableQualifiedNames.length > 0) {
+                        tableQualifiedNames = [
+                            ...tableQualifiedNames,
+                            contextStore.value.left
+                                .filter(
+                                    (e) =>
+                                        !getAllMappedKeywords().includes(
+                                            e.name.toUpperCase()
+                                        )
+                                )
+                                .map((e) => {
+                                    return `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}/${e.name}`
+                                }) as any,
+                        ] as any
+                    } else {
+                        tableQualifiedNames = contextStore.value.left
+                            .filter(
+                                (e) =>
+                                    !getAllMappedKeywords().includes(
+                                        e.name.toUpperCase()
+                                    )
+                            )
+                            .map((e) => {
+                                return `${connectorsInfo.connectionQualifiedName}/${connectorsInfo.databaseName}/${connectorsInfo.schemaName}/${e.name}`
+                            }) as any
+                    }
+                }
+
+                body.value.dsl.query.function_score.query.bool.filter.bool.should.push(
+                    {
+                        terms: {
+                            tableQualifiedName: tableQualifiedNames.filter(
+                                (e) => typeof e === 'string'
+                            ),
+                        },
+                    }
+                )
+                // function_score boost
+                tableQualifiedNames
+                    .filter((e) => typeof e === 'string')
+                    .forEach((tableQualifiedName) => {
+                        body.value.dsl.query.function_score.functions.push({
+                            filter: {
+                                match: {
+                                    tableQualifiedName: tableQualifiedName,
+                                },
+                            },
+                            weight: 15,
+                        })
+                    })
+            }
+
             if (cancelTokenSource.value !== undefined) {
                 cancelTokenSource.value.cancel()
             }
@@ -638,6 +746,10 @@ export async function useAutoSuggestions(
     activeInlineTab: Ref<activeInlineTabInterface>,
     cancelTokenSource: Ref<any>
 ) {
+    // reset Context on every run
+    contextStore.value.left = []
+    contextStore.value.right = []
+
     // console.log(changes, 'changes')
     const changedText = changes.text
     /* -------_EXITING CONDITIONS-------------- */
@@ -658,8 +770,21 @@ export async function useAutoSuggestions(
     const attributeValue =
         activeInlineTab.value?.playground?.editor?.context.attributeValue
     const connectionQualifiedName = getConnectionQualifiedName(attributeValue)
-    const databaseName = getDatabaseName(attributeValue ?? '')
-    const schemaName = getSchemaName(attributeValue ?? '')
+    let databaseName = getDatabaseName(attributeValue ?? '')
+    let schemaName = getSchemaName(attributeValue ?? '')
+
+    // taking context from sql query if there are no DB |Schema
+    const { _schemaName, _databaseName } = getSchemaAndDatabaseFromSqlQueryText(
+        editorInstance?.getValue(),
+        {
+            connectionQualifiedName,
+            databaseName,
+            schemaName,
+        }
+    )
+    databaseName = _databaseName
+    schemaName = _schemaName
+
     /* ------------For BETA----------- */
     // const connectionQualifiedName =
     //     'default/snowflake/atlan-snowflake-crawler-wpwvc'
@@ -674,14 +799,128 @@ export async function useAutoSuggestions(
     // console.log(connectorsInfo, 'connectorsInfo')
 
     const editorText: string = editorInstance?.getValue()
+
     /* Getting the text till cursor pos because we hav to generate the tokens */
     const textTillChangedIndex = editorInstance
         ?.getModel()
         .getOffsetAt({ lineNumber: endLineNumber, column: endColumn })
+
     const editorTextTillCursorPos = editorText.slice(
         0,
         textTillChangedIndex + 1
     )
+
+    /////////////ALIASES/////////////////
+
+    aliasesMap.value = createAliasesMap(editorText)
+
+    // trimming [dot]s if any
+    const _tempTokens = editorTextTillCursorPos
+        .split(' ')
+        .filter((e) => e !== '')
+    let currAliasWord = _tempTokens[_tempTokens.length - 1]
+    let _currWord = currAliasWord,
+        lastIndex = -1
+    if (_currWord.length > 1) {
+        for (let i = _currWord.length - 2; i >= 0; i--) {
+            if (
+                _currWord[i] === _currWord[_currWord.length - 1] &&
+                _currWord[_currWord.length - 1] === '.'
+            ) {
+                lastIndex = i
+            } else {
+                break
+            }
+        }
+    }
+    if (lastIndex > 0) {
+        currAliasWord = currAliasWord.slice(0, lastIndex + 1)
+    } else if (currAliasWord[currAliasWord.length - 1] === '.') {
+        currAliasWord = currAliasWord.slice(0, currAliasWord.length - 1)
+    }
+
+    /////////////////////////////////////
+
+    let subquery = false,
+        subqueryStartIndex = -1,
+        subQueryEndIndex = -1
+
+    // check if it is a subquery
+    // for left side
+    for (let i = editorText.length; i >= 0; i--) {
+        if (editorText[i] === '(') {
+            subqueryStartIndex = i
+            if (i + 1 < editorText.length)
+                for (let j = i + 1; j < editorText.length; j++) {
+                    if (editorText[j] === ')') {
+                        subquery = true
+                        subQueryEndIndex = j
+                        break
+                    }
+                }
+        }
+    }
+    if (subquery) {
+        ///////////////////////////////////////////////////////////
+        let subQueryleftSideStringFromCurPos = editorText
+            .slice(subqueryStartIndex, textTillChangedIndex + 1)
+            .replace(/\"/g, '')
+            .split(/[ ,\n;"')(]+/gm)
+        contextStore.value.left = extractTablesFromContext(
+            subQueryleftSideStringFromCurPos
+        ).filter((el) => el.name !== '')
+
+        let subQueryrightSideStringFromCurPos = editorText
+            .slice(textTillChangedIndex, subQueryEndIndex + 1)
+            .replace(/\"/g, '')
+            .split(/[ ,\n;"')(]+/gm)
+        contextStore.value.right = extractTablesFromContext(
+            subQueryrightSideStringFromCurPos
+        ).filter((el) => el.name !== '')
+
+        //////////////////////////////////////////////
+    }
+
+    ///////////////////////////////////////////////////
+    // removing subqueries if present
+    function removeSubQueries(str: string) {
+        let _str = str
+        // removing () -> content
+        if (_str.match(/\((.*)\)/gm) !== null) {
+            _str.match(/\((.*)\)/gm).forEach((el) => {
+                _str = _str.replace(el, '')
+            })
+        }
+        // removing single bracket content
+        if (_str.match(/\((.*)/gm) !== null) {
+            _str.match(/\((.*)/gm).forEach((el) => {
+                _str = _str.replace(el, '')
+            })
+        }
+        return _str
+    }
+
+    let leftSideStringFromCurPos = removeSubQueries(
+        editorTextTillCursorPos.replace(/\"/g, '')
+    ).split(/[ ,\n;"')(]+/gm)
+    contextStore.value.left = [
+        ...contextStore.value.left,
+        ...extractTablesFromContext(leftSideStringFromCurPos),
+    ].filter((el) => el.name !== '')
+
+    const editorTextAfterCursorPos = editorText.slice(
+        textTillChangedIndex,
+        editorText.length
+    )
+
+    let rightSideStringFromCurPos = removeSubQueries(
+        editorTextAfterCursorPos.replace(/\"/g, '')
+    ).split(/[ ,\n;"')(]+/gm)
+    contextStore.value.right = extractTablesFromContext(
+        rightSideStringFromCurPos
+    ).filter((el) => el.name !== '')
+
+    /////////////////////////////////////////////////////////
 
     let tokens = editorTextTillCursorPos.split(/[ ,\n;"')(]+/gm)
     // console.log(tokens, 'tokk')
@@ -693,14 +932,22 @@ export async function useAutoSuggestions(
     })
     // tokens.push(' ')
     let currentWord = tokens[tokens.length - 1]
-    debugger
     // TABLE[DOT]  // check if previous is [dot]
     if (currentWord === '.' || currentWord.includes('.')) {
+        let aliasMode = false
         const dotSplitWord = currentWord.split('.')
 
         // fetch table columns
         if (tokens.length > 1) {
-            const tableName = tokens[tokens.length - 2]
+            let tableName = tokens[tokens.length - 2]
+            // if it is a alias
+            Object.keys(aliasesMap.value).forEach((key) => {
+                if (aliasesMap.value[key].value === currAliasWord) {
+                    tableName = key
+                    aliasMode = true
+                }
+            })
+
             const type = 'Column'
             refreshBody()
             body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
@@ -717,7 +964,7 @@ export async function useAutoSuggestions(
                     },
                 }
             )
-            if (dotSplitWord.length > 1) {
+            if (dotSplitWord.length > 1 && dotSplitWord[1].length > 0) {
                 body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
                     {
                         regexp: {
@@ -771,7 +1018,7 @@ export async function useAutoSuggestions(
             switch (lastMatchedKeyword.functionType) {
                 case 'FILTER': {
                     if (lastMatchedKeyword.tokenPosition === 0) {
-                        return getSuggestionsUsingType(
+                        const suggestionsPromise = getSuggestionsUsingType(
                             lastMatchedKeyword.type,
                             lastMatchedKeyword.token,
                             currentWord,
@@ -779,6 +1026,39 @@ export async function useAutoSuggestions(
                             cancelTokenSource,
                             context
                         )
+
+                        return new Promise((resolve, reject) => {
+                            suggestionsPromise.then((value) => {
+                                const AliasesKeys: string[] = []
+                                Object.keys(aliasesMap.value).forEach(
+                                    (key: any) => {
+                                        AliasesKeys.push(
+                                            aliasesMap.value[key]
+                                                .value as string
+                                        )
+                                    }
+                                )
+                                let AliasesKeywordsMap = AliasesKeys.map(
+                                    (keyword) => {
+                                        return {
+                                            label: keyword,
+                                            kind: monaco.languages
+                                                .CompletionItemKind.Keyword,
+                                            insertText: keyword,
+                                        }
+                                    }
+                                )
+
+                                let _suggestions = [
+                                    ...value.suggestions,
+                                    ...AliasesKeywordsMap,
+                                ]
+                                resolve({
+                                    suggestions: _suggestions,
+                                    incomplete: true,
+                                })
+                            })
+                        })
                     } else {
                         const filterKeywords = typesKeywordsMap['FILTER'].values
                         let suggestions = filterKeywords.map((keyword) => {
@@ -790,8 +1070,30 @@ export async function useAutoSuggestions(
                             }
                         })
 
+                        ///////////////////////////
+
+                        const AliasesKeys: string[] = []
+                        Object.keys(aliasesMap.value).forEach((key: any) => {
+                            AliasesKeys.push(
+                                aliasesMap.value[key].value as string
+                            )
+                        })
+                        let AliasesKeywordsMap = AliasesKeys.map((keyword) => {
+                            return {
+                                label: keyword,
+                                kind: monaco.languages.CompletionItemKind
+                                    .Keyword,
+                                insertText: keyword,
+                            }
+                        })
+
+                        let _suggestions = [
+                            ...suggestions,
+                            ...AliasesKeywordsMap,
+                        ]
+
                         return Promise.resolve({
-                            suggestions: suggestions,
+                            suggestions: _suggestions,
                             incomplete: true,
                         })
                     }
@@ -806,7 +1108,6 @@ export async function useAutoSuggestions(
                             cancelTokenSource,
                             context
                         ).then((value) => {
-                            debugger
                             const filterKeywords =
                                 typesKeywordsMap['AGGREGATE'].values
                             let filterKeywordsMap = filterKeywords.map(
@@ -820,9 +1121,29 @@ export async function useAutoSuggestions(
                                 }
                             )
 
+                            const AliasesKeys: string[] = []
+                            Object.keys(aliasesMap.value).forEach(
+                                (key: any) => {
+                                    AliasesKeys.push(
+                                        aliasesMap.value[key].value as string
+                                    )
+                                }
+                            )
+                            let AliasesKeywordsMap = AliasesKeys.map(
+                                (keyword) => {
+                                    return {
+                                        label: keyword,
+                                        kind: monaco.languages
+                                            .CompletionItemKind.Keyword,
+                                        insertText: keyword,
+                                    }
+                                }
+                            )
+
                             let _suggestions = [
                                 ...value.suggestions,
                                 ...filterKeywordsMap,
+                                ...AliasesKeywordsMap,
                             ]
                             resolve({
                                 suggestions: _suggestions,
@@ -832,7 +1153,7 @@ export async function useAutoSuggestions(
                     })
                 }
                 default: {
-                    return getSuggestionsUsingType(
+                    const suggestionsPromise = getSuggestionsUsingType(
                         lastMatchedKeyword.type,
                         lastMatchedKeyword.token,
                         currentWord,
@@ -840,6 +1161,37 @@ export async function useAutoSuggestions(
                         cancelTokenSource,
                         context
                     )
+                    return new Promise((resolve, reject) => {
+                        suggestionsPromise.then((value) => {
+                            const AliasesKeys: string[] = []
+                            Object.keys(aliasesMap.value).forEach(
+                                (key: any) => {
+                                    AliasesKeys.push(
+                                        aliasesMap.value[key].value as string
+                                    )
+                                }
+                            )
+                            let AliasesKeywordsMap = AliasesKeys.map(
+                                (keyword) => {
+                                    return {
+                                        label: keyword,
+                                        kind: monaco.languages
+                                            .CompletionItemKind.Keyword,
+                                        insertText: keyword,
+                                    }
+                                }
+                            )
+
+                            let _suggestions = [
+                                ...value.suggestions,
+                                ...AliasesKeywordsMap,
+                            ]
+                            resolve({
+                                suggestions: _suggestions,
+                                incomplete: true,
+                            })
+                        })
+                    })
                 }
             }
         }

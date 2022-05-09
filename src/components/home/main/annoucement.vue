@@ -9,6 +9,7 @@
         >
             <AddCompanyAnnouncement
                 class="p-4"
+                :visible-modal="announcementModalVisible"
                 @updateAnnouncement="updateAnnouncement"
                 @close="announcementModalVisible = false"
             />

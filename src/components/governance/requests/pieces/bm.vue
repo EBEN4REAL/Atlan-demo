@@ -1,6 +1,8 @@
 <template>
     <div>
-        <div class="pr-2 mt-1 text-gray-500">Custom Metadata Update</div>
+        <div v-if="showLabel" class="pr-2 mt-1 text-gray-500">
+            Custom Metadata Update
+        </div>
         <a-popover placement="bottomLeft">
             <template #content>
                 <div class="p-2 rounded-md">
@@ -30,7 +32,7 @@
                 </div>
             </template>
 
-            <div class="py-1 rounded-full cursor-pointer hover:underline">
+            <div class="py-1 rounded-full cursor-pointer w-40">
                 <Truncate
                     :tooltip-text="label"
                     placement="left"
@@ -42,7 +44,7 @@
                               }
                             : {}
                     "
-                    :classes="'hover:text-primary'"
+                    :classes="'hover:text-primary hover:underline'"
                 />
             </div>
         </a-popover>
@@ -82,6 +84,11 @@
             data: {
                 type: Object,
                 required: true,
+            },
+            showLabel: {
+                type: Boolean,
+                required: false,
+                default: () => true,
             },
         },
         setup(props) {

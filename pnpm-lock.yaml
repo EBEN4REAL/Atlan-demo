@@ -63,7 +63,7 @@ specifiers:
   cronstrue: ^1.123.0
   dayjs: ^1.10.7
   dotenv: ^16.0.0
-  emoji-mart-vue-fast: ^10.2.1
+  emoji-picker-element: ^1.11.2
   eslint: ^8.8.0
   eslint-config-airbnb-base: ^15.0.0
   eslint-config-prettier: ^8.3.0
@@ -174,7 +174,7 @@ dependencies:
   cron-parser: 4.2.1
   cronstrue: 1.123.0
   dayjs: 1.10.7
-  emoji-mart-vue-fast: 10.2.1_vue@3.2.30
+  emoji-picker-element: 1.11.3
   event-source-polyfill: github.com/atlanhq/EventSource/f12e560428065c00f61c7eb2a8ae773115e6e7c7
   highlight.js: 11.4.0
   json-2-csv: 3.17.0
@@ -1401,14 +1401,6 @@ packages:
       '@babel/helper-create-regexp-features-plugin': 7.16.7_@babel+core@7.17.2
       '@babel/helper-plugin-utils': 7.16.7
     dev: true
-
-  /@babel/polyfill/7.12.1:
-    resolution: {integrity: sha512-X0pi0V6gxLi6lFZpGmeNa4zxtwEmCs42isWLNjZZDE0Y8yVfgu0T2OAHlzBbdYlqbW/YXVvoBHpATEM+goCj8g==}
-    deprecated: 🚨 This package has been deprecated in favor of separate inclusion of a polyfill and regenerator-runtime (when needed). See the @babel/polyfill docs (https://babeljs.io/docs/en/babel-polyfill) for more information.
-    dependencies:
-      core-js: 2.6.12
-      regenerator-runtime: 0.13.9
-    dev: false
 
   /@babel/preset-env/7.16.11_@babel+core@7.17.2:
     resolution: {integrity: sha512-qcmWG8R7ZW6WBRPZK//y+E3Cli151B20W1Rv7ln27vuPaXU/8TKms6jFdiJtF7UDTxcrb7mZd88tAeK9LjdT8g==}
@@ -3611,12 +3603,6 @@ packages:
       semver: 7.0.0
     dev: true
 
-  /core-js/2.6.12:
-    resolution: {integrity: sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==}
-    deprecated: core-js@<3.4 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Please, upgrade your dependencies to the actual version of core-js.
-    requiresBuild: true
-    dev: false
-
   /core-js/3.20.3:
     resolution: {integrity: sha512-vVl8j8ph6tRS3B8qir40H7yw7voy17xL0piAjlbBUsH7WIfzoedL/ZOr1OV9FyZQLWXsayOJyV4tnRyXR85/ag==}
     requiresBuild: true
@@ -3980,15 +3966,8 @@ packages:
       '@emmetio/css-abbreviation': 2.1.4
     dev: true
 
-  /emoji-mart-vue-fast/10.2.1_vue@3.2.30:
-    resolution: {integrity: sha512-PtKihhsXBEEw1jHwnoRyJAnJP1OlK4EJrEze58EbUUV7iHWGLub+yuiNSj2Uo1JBHraz4fw/pH98nFysVoe0qg==}
-    peerDependencies:
-      vue: '>2.0.0'
-    dependencies:
-      '@babel/polyfill': 7.12.1
-      '@babel/runtime': 7.16.7
-      vue: 3.2.30
-      vue-virtual-scroller: 1.0.10_vue@3.2.30
+  /emoji-picker-element/1.11.3:
+    resolution: {integrity: sha512-2pPwqgZ1JLn7hdu3LdJpfyREmvCWP5gKhkGFqAK/mIXKz/uYx+U6DZsMoGAHjdkh+njE+CEkHjHW3eTq/eYAfQ==}
     dev: false
 
   /emoji-regex/8.0.0:
@@ -7193,10 +7172,6 @@ packages:
       compute-scroll-into-view: 1.0.17
     dev: false
 
-  /scrollparent/2.0.1:
-    resolution: {integrity: sha1-cV1bnMV3YPsivczDvvtb/gaxoxc=}
-    dev: false
-
   /select-hose/2.0.0:
     resolution: {integrity: sha1-Yl2GWPhlr0Psliv8N2o3NZpJlMo=}
     dev: true
@@ -8463,18 +8438,6 @@ packages:
       loader-utils: 2.0.2
     dev: true
 
-  /vue-observe-visibility/0.4.6:
-    resolution: {integrity: sha512-xo0CEVdkjSjhJoDdLSvoZoQrw/H2BlzB5jrCBKGZNXN2zdZgMuZ9BKrxXDjNP2AxlcCoKc8OahI3F3r3JGLv2Q==}
-    dev: false
-
-  /vue-resize/0.4.5_vue@3.2.30:
-    resolution: {integrity: sha512-bhP7MlgJQ8TIkZJXAfDf78uJO+mEI3CaLABLjv0WNzr4CcGRGPIAItyWYnP6LsPA4Oq0WE+suidNs6dgpO4RHg==}
-    peerDependencies:
-      vue: ^2.3.0
-    dependencies:
-      vue: 3.2.30
-    dev: false
-
   /vue-router/4.0.12_vue@3.2.30:
     resolution: {integrity: sha512-CPXvfqe+mZLB1kBWssssTiWg4EQERyqJZes7USiqfW9B5N2x+nHlnsM1D3b5CaJ6qgCvMmYJnz+G0iWjNCvXrg==}
     peerDependencies:
@@ -8512,17 +8475,6 @@ packages:
     dependencies:
       is-plain-object: 3.0.1
       vue: 3.2.30
-    dev: false
-
-  /vue-virtual-scroller/1.0.10_vue@3.2.30:
-    resolution: {integrity: sha512-Hn4qSBDhRY4XdngPioYy/ykDjrLX/NMm1fQXm/4UQQ/Xv1x8JbHGFZNftQowTcfICgN7yc31AKnUk1UGLJ2ndA==}
-    peerDependencies:
-      vue: ^2.6.11
-    dependencies:
-      scrollparent: 2.0.1
-      vue: 3.2.30
-      vue-observe-visibility: 0.4.6
-      vue-resize: 0.4.5_vue@3.2.30
     dev: false
 
   /vue/2.6.14:

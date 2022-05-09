@@ -379,7 +379,7 @@
                                             actionClick(
                                                 'play',
                                                 item,
-                                                (isPreview = true)
+                                                (isPlay = true)
                                             )
                                     "
                                 >
@@ -861,7 +861,7 @@
             const actionClick = (
                 action: string,
                 t: assetInterface,
-                isPreview?: boolean
+                isPlay?: boolean
             ) => {
                 // for assetQuote Info of different sources
                 const assetQuoteType = getDialectInfo(
@@ -910,7 +910,7 @@
                                 }
                             )
                         }
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'place_name_in_editor',
                             trigger: 'quick_action',
                             query_tab_id: activeInlineTab.value.key,
@@ -921,20 +921,30 @@
                     }
                     // This case is used for preview & Play
                     case 'play': {
-                        if (isPreview) {
-                            useAddEvent('insights', 'schemaTree', 'itemClick', {
-                                action: 'preview',
-                                trigger: 'quick_action',
-                                query_tab_id: activeInlineTab.value.key,
-                                asset_type: t.typeName,
-                            })
+                        if (!isPlay) {
+                            useAddEvent(
+                                'insights',
+                                'schema_tree',
+                                'item_click',
+                                {
+                                    action: 'preview_data',
+                                    trigger: 'quick_action',
+                                    query_tab_id: activeInlineTab.value.key,
+                                    asset_type: t.typeName,
+                                }
+                            )
                         } else {
-                            useAddEvent('insights', 'schemaTree', 'itemClick', {
-                                action: 'query_run',
-                                trigger: 'quick_action',
-                                query_tab_id: activeInlineTab.value.key,
-                                asset_type: t.typeName,
-                            })
+                            useAddEvent(
+                                'insights',
+                                'schema_tree',
+                                'item_click',
+                                {
+                                    action: 'query_run',
+                                    trigger: 'quick_action',
+                                    query_tab_id: activeInlineTab.value.key,
+                                    asset_type: t.typeName,
+                                }
+                            )
                         }
                         const activeInlineTabCopy: activeInlineTabInterface =
                             JSON.parse(
@@ -971,7 +981,7 @@
                         // new text
                         let context =
                             activeInlineTabCopy.explorer.schema.connectors
-                        if (isPreview) {
+                        if (isPlay) {
                             // select context from editor
                             context =
                                 activeInlineTabCopy.playground.editor.context
@@ -998,7 +1008,7 @@
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
 
-                                    if (isPreview) {
+                                    if (isPlay) {
                                         const tabKey = handleAddNewTab(
                                             newQuery,
                                             {
@@ -1023,7 +1033,7 @@
 
                                     return
                                 } else {
-                                    if (isPreview) {
+                                    if (isPlay) {
                                         const tabIndex =
                                             inlineTabs.value.findIndex(
                                                 (tab) =>
@@ -1056,7 +1066,7 @@
 
                                     if (cqn !== queryConnectionQualifiedName) {
                                         newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                        if (isPreview) {
+                                        if (isPlay) {
                                             const tabKey = handleAddNewTab(
                                                 newQuery,
                                                 {
@@ -1085,7 +1095,7 @@
                                             dbqn !== queryDatabaseQualifiedName
                                         ) {
                                             newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                            if (isPreview) {
+                                            if (isPlay) {
                                                 const tabIndex =
                                                     inlineTabs.value.findIndex(
                                                         (tab) =>
@@ -1104,7 +1114,7 @@
                                 } else {
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                    if (isPreview) {
+                                    if (isPlay) {
                                         const tabIndex =
                                             inlineTabs.value.findIndex(
                                                 (tab) =>
@@ -1143,7 +1153,7 @@
                                         .join('/')
 
                                     if (cqn !== queryConnectionQualifiedName) {
-                                        if (isPreview) {
+                                        if (isPlay) {
                                             const tabKey = handleAddNewTab(
                                                 newQuery,
                                                 {
@@ -1173,7 +1183,7 @@
                                         ) {
                                             // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                             newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                            if (isPreview) {
+                                            if (isPlay) {
                                                 const tabIndex =
                                                     inlineTabs.value.findIndex(
                                                         (tab) =>
@@ -1192,7 +1202,7 @@
                                             ) {
                                                 // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                                 newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                                if (isPreview) {
+                                                if (isPlay) {
                                                     const tabIndex =
                                                         inlineTabs.value.findIndex(
                                                             (tab) =>
@@ -1220,7 +1230,7 @@
                                     console.log('match here')
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                    if (isPreview) {
+                                    if (isPlay) {
                                         const tabIndex =
                                             inlineTabs.value.findIndex(
                                                 (tab) =>
@@ -1240,7 +1250,7 @@
                         break
                     }
                     case 'info': {
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'open_sidebar',
                             trigger: 'quick_action',
                             query_tab_id: activeInlineTab.value.key,
@@ -1557,6 +1567,12 @@
                     limitRows.value,
                     useSchemaExplorerContext
                 )
+                useAddEvent('insights', 'schema_tree', 'item_click', {
+                    action: 'preview_data',
+                    trigger: 'quick_action',
+                    query_tab_id: activeInlineTab.value.key,
+                    asset_type: item?.entity.typeName,
+                })
 
                 playQuery(selectedText, item?.entity)
             }
@@ -1579,7 +1595,7 @@
                     wrapperClass: 'flex items-center ',
                     component: MenuItem,
                     handleClick: ({ item }) => {
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'set_editor_context',
                             trigger: 'kebab_menu',
                             query_tab_id: activeInlineTab.value.key,
@@ -1599,7 +1615,7 @@
                     hide: showVQB.value,
                     disabled: false,
                     handleClick: ({ item }) => {
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'place_name_in_editor',
                             trigger: 'kebab_menu',
                             query_tab_id: activeInlineTab.value.key,

@@ -1814,6 +1814,35 @@
             const dropdownTableContextMenuOptions = showVQB.value
                 ? [
                       {
+                          title: 'Set explorer context',
+                          key: 'Set explorer context',
+                          class: `
+                                                ${
+                                                    readOnly?.value
+                                                        ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
+                                                        : 'cursor-pointer'
+                                                }
+
+                                            `,
+                          disabled: false,
+                          wrapperClass: 'flex items-center ',
+                          component: MenuItem,
+                          handleClick: ({ item }) => {
+                              setContext(item, 'explorer')
+                              useAddEvent(
+                                  'insights',
+                                  'schema_tree',
+                                  'item_click',
+                                  {
+                                      action: 'set_explorer_context',
+                                      trigger: 'right_click',
+                                      query_tab_id: activeInlineTab.value.key,
+                                      asset_type: item.typeName,
+                                  }
+                              )
+                          },
+                      },
+                      {
                           title: `Open ${item?.value?.typeName?.toLowerCase()} sidebar`,
                           key: 'sidebar',
                           component: MenuItem,
@@ -1847,16 +1876,6 @@
                   ]
                 : [
                       {
-                          title: 'Place name in editor',
-                          key: 'place_name',
-                          class: '',
-                          disabled: false,
-                          component: MenuItem,
-                          handleClick: ({ item }) => {
-                              actionClick('add', item)
-                          },
-                      },
-                      {
                           title: `Open ${item?.value?.typeName?.toLowerCase()} sidebar`,
                           key: 'sidebar',
                           component: MenuItem,
@@ -1883,10 +1902,49 @@
                                   : 'Another query is running',
                           key: 'query',
                           component: MenuItem,
-                          class: '',
+                          class: 'border-b border-gray-300',
                           disabled: false,
                           handleClick: ({ item }) => {
                               actionClick('play', item, true)
+                          },
+                      },
+                      {
+                          title: 'Set explorer context',
+                          key: 'Set explorer context',
+                          class: `
+                                                ${
+                                                    readOnly?.value
+                                                        ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
+                                                        : 'cursor-pointer'
+                                                }
+
+                                            `,
+                          disabled: false,
+                          wrapperClass: 'flex items-center ',
+                          component: MenuItem,
+                          handleClick: ({ item }) => {
+                              setContext(item, 'explorer')
+                              useAddEvent(
+                                  'insights',
+                                  'schema_tree',
+                                  'item_click',
+                                  {
+                                      action: 'set_explorer_context',
+                                      trigger: 'right_click',
+                                      query_tab_id: activeInlineTab.value.key,
+                                      asset_type: item.typeName,
+                                  }
+                              )
+                          },
+                      },
+                      {
+                          title: 'Place name in editor',
+                          key: 'place_name',
+                          class: '',
+                          disabled: false,
+                          component: MenuItem,
+                          handleClick: ({ item }) => {
+                              actionClick('add', item)
                           },
                       },
                   ]

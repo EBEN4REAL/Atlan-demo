@@ -9,7 +9,7 @@
                 <div class="p-3 pb-4 content-popover-group-persona">
                     <div class="flex justify-between">Personas</div>
                     <div
-                        class="flex flex-wrap max-w-xs gap-2 mt-3 overflow-y-scroll max-h-32"
+                        class="flex flex-wrap max-w-xs gap-2 mt-3 overflow-auto max-h-32"
                     >
                         <div
                             v-for="persona in personas"

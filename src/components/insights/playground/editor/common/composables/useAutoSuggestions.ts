@@ -813,15 +813,11 @@ export async function useAutoSuggestions(
 
     // check if it is a subquery
     // for left side
-    for (let i = textTillChangedIndex; i >= 0; i--) {
+    for (let i = editorText.length; i >= 0; i--) {
         if (editorText[i] === '(') {
             subqueryStartIndex = i
-            if (textTillChangedIndex + 1 < editorText.length)
-                for (
-                    let j = textTillChangedIndex + 1;
-                    j < editorText.length;
-                    j++
-                ) {
+            if (i + 1 < editorText.length)
+                for (let j = i + 1; j < editorText.length; j++) {
                     if (editorText[j] === ')') {
                         subquery = true
                         subQueryEndIndex = j

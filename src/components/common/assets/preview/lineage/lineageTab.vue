@@ -148,7 +148,7 @@
 
             const processPreference = computed(() => {
                 if (discoveryStore?.preferences?.displayProcess) {
-                    return true
+                    return discoveryStore?.preferences?.displayProcess
                 }
                 return false
             })

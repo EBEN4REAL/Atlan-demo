@@ -70,7 +70,7 @@
             displayProcess: {
                 type: Boolean,
                 required: false,
-                default: true,
+                default: false,
             },
         },
         emits: ['updateDisplay', 'update:modelValue', 'update:displayProcess'],

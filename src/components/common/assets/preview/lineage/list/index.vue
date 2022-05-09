@@ -8,7 +8,7 @@
             <template #postFilter>
                 <Preferences
                     v-model="preference.display"
-                    v-model:process="preference.displayProcess"
+                    v-model:displayProcess="preference.displayProcess"
                     @updateDisplay="handlePreferenceChange"
                 />
             </template>
@@ -77,7 +77,7 @@
             const queryText = ref('')
             const selectedType = ref('__all')
 
-            const preference = ref({ display: [] })
+            const preference = ref({ display: [], displayProcess: false })
 
             const { title } = useAssetInfo()
 

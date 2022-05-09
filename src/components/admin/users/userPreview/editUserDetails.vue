@@ -95,15 +95,15 @@
             </div>
         </a-form>
         <div class="absolute bottom-0 flex justify-end w-full py-2 bg-white">
-            <a-button
+            <AtlanButton2
                 class="mr-2 border-0 shadow-none"
-                type="minimal"
+                color="secondary"
                 :disabled="isRequestLoading"
                 @click="onCancel"
             >
                 Cancel
-            </a-button>
-            <a-button
+            </AtlanButton2>
+            <AtlanButton2
                 block
                 class="w-1/3"
                 type="primary"
@@ -111,7 +111,7 @@
                 @click="onSubmit"
             >
                 Save
-            </a-button>
+            </AtlanButton2>
         </div>
     </div>
 </template>

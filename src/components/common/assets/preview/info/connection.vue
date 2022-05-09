@@ -14,7 +14,7 @@
         v-if="
             attributes(selectedAsset)?.category?.toLowerCase() != 'bi' &&
             attributes(selectedAsset)?.category?.toLowerCase() != 'saas' &&
-            attributes(selectedAsset)?.category?.toLowerCase() != 'objectsource'
+            attributes(selectedAsset)?.category?.toLowerCase() != 'objectstore'
         "
         class="flex flex-col"
     >

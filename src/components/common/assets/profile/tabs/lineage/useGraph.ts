@@ -103,13 +103,11 @@ const portsLabelMap = {
     // LookerView: 'fields',
 }
 
-const getPortsCTALabel = (typeName, portsCount, highlightPorts) => {
+const getPortsCTALabel = (typeName, portsCount) => {
     const label = portsLabelMap[typeName]
     return portsCount || portsCount === 0
         ? `${portsCount} ${label}`
-        : // : highlightPorts
-          // ? `${label}`
-          `view ${label}`
+        : `view ${label}`
 }
 
 export default function useGraph(graph) {
@@ -149,14 +147,14 @@ export default function useGraph(graph) {
             isSelectedNode: false,
             isHighlightedNode: false,
             isGrayed: false,
-            highlightPorts: false,
+            highlightPorts: [],
             hiddenCount: 0,
-            ctaPortRightIcon: '',
-            ctaPortRightId: '',
-            ctaPortRightLoading: false,
-            ctaPortLeftIcon: '',
-            ctaPortLeftId: '',
-            ctaPortLeftLoading: false,
+            ctaRightIcon: '',
+            ctaRightId: '',
+            ctaRightLoading: false,
+            ctaLeftIcon: '',
+            ctaLeftId: '',
+            ctaLeftLoading: false,
             ...dataObj,
         }
 
@@ -205,10 +203,11 @@ export default function useGraph(graph) {
 
                                 const isSelectedPort =
                                     data?.selectedPortId === port.guid
-                                const isHighlightedPort = data?.highlightPorts
+                                const isHighlightedPort =
+                                    data?.highlightPorts.includes(port.guid)
 
                                 res += `
-                                <div id="${port.guid}" iscolitem="${
+                                <div id="${port.guid}" isportitem="${
                                     port.guid
                                 }" class="node-port flex justify-between items-center relative 
                                 ${isSelectedPort ? 'selected-port' : ''}
@@ -254,7 +253,7 @@ export default function useGraph(graph) {
                                 </div>`
                             } else
                                 res += `
-                                <div iscolshowmore="true" class="node-port flex justify-center text-new-blue-400 items-center pl-2">
+                                <div isportshowmore="true" class="node-port flex justify-center text-new-blue-400 items-center pl-2">
                                     <span> Show more ${
                                         portsLabelMap[typeName]
                                     } </span>
@@ -328,8 +327,8 @@ export default function useGraph(graph) {
                             </div>
                             <div class="lineage-node__ports 
                                     ${isNodeWithPorts ? '' : 'hidden'}">
-                                <div iscollist="true" class="lineage-node__ports-cta ${
-                                    data?.highlightPorts || data?.selectedPortId
+                                <div isportlist="true" class="lineage-node__ports-cta ${
+                                    data?.highlightPorts.length || data?.selectedPortId
                                         ? 'opacity-30 cursor-not-allowed'
                                         : ''
                                 }">
@@ -338,7 +337,6 @@ export default function useGraph(graph) {
                                             ${getPortsCTALabel(
                                                 typeName,
                                                 data?.portsCount,
-                                                data?.highlightPorts
                                             )}
                                         </span>
                                         <span>
@@ -363,14 +361,14 @@ export default function useGraph(graph) {
                                 </div>
                             </div>
                             ${
-                                data?.ctaPortLeftIcon
+                                data?.ctaLeftIcon
                                     ? `<div isctaleft="${
-                                          data?.ctaPortLeftId
-                                      }" class="ctaPortLeft">
+                                          data?.ctaLeftId
+                                      }" class="ctaLeft">
                                ${
-                                   data?.ctaPortLeftLoading
+                                   data?.ctaLeftLoading
                                        ? iconLoaderFixed
-                                       : data?.ctaPortLeftIcon === 'col'
+                                       : data?.ctaLeftIcon === 'col'
                                        ? iconCollapse
                                        : iconExpand
                                }
@@ -378,14 +376,14 @@ export default function useGraph(graph) {
                                     : ''
                             }
                             ${
-                                data?.ctaPortRightIcon
+                                data?.ctaRightIcon
                                     ? `<div isctaright="${
-                                          data?.ctaPortRightId
-                                      }" class="ctaPortRight">
+                                          data?.ctaRightId
+                                      }" class="ctaRight">
                                 ${
-                                    data?.ctaPortRightLoading
+                                    data?.ctaRightLoading
                                         ? iconLoaderFixed
-                                        : data?.ctaPortRightIcon === 'col'
+                                        : data?.ctaRightIcon === 'col'
                                         ? iconCollapse
                                         : iconExpand
                                 }
@@ -403,44 +401,6 @@ export default function useGraph(graph) {
             },
             ports: {
                 groups: {
-                    ctaPortLeft: {
-                        position: { name: 'left' },
-                        markup: [
-                            {
-                                tagName: 'circle',
-                                selector: 'portBody',
-                            },
-                        ],
-                        attrs: {
-                            portBody: {
-                                r: 14,
-                                strokeWidth: 0,
-                                stroke: '#000000',
-                                fill: '#000000',
-                                width: 1,
-                                height: 1,
-                            },
-                        },
-                    },
-                    ctaPortRight: {
-                        position: { name: 'right' },
-                        markup: [
-                            {
-                                tagName: 'circle',
-                                selector: 'portBody',
-                            },
-                        ],
-                        attrs: {
-                            portBody: {
-                                r: 14,
-                                strokeWidth: 0,
-                                stroke: '#000000',
-                                fill: '#000000',
-                                width: 1,
-                                height: 1,
-                            },
-                        },
-                    },
                     invisiblePort: {
                         markup: [
                             {

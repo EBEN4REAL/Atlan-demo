@@ -315,6 +315,7 @@
     import ConnectorSelect from './hierarchy/connector.vue'
 
     import Heirarchy from './hierarchy/index.vue'
+
     const ANALYTICS_KEYS = {
         connector: 'connector',
     }
@@ -690,6 +691,7 @@
                 if (firstAssetAutoClicked.value) {
                     useAddEvent('discovery', 'asset_card', 'clicked', {
                         click_index: args[1],
+                        keyboard_shortcut: args[2],
                     })
                 }
 
@@ -834,7 +836,7 @@
             const route = useRoute()
             const isAssetProfile = computed(() => !!route.params.id)
             const onKeyboardNavigate = (index, asset) => {
-                handleClickAssetItem(asset, index)
+                handleClickAssetItem(asset, index, 'keyboard')
                 console.log('onKeyboardNavigate', {
                     isAssetProfile: isAssetProfile.value,
                     index,

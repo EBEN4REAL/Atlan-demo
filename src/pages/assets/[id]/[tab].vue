@@ -132,7 +132,9 @@
                     localSelected.value.typeName,
                     { profileActiveTab: profileActiveTab.value }
                 )
-                sendPageTrack()
+                if (!isLoading.value) {
+                    sendPageTrack()
+                }
             })
 
             watch(profileActiveTab, () => {
@@ -142,7 +144,7 @@
             })
 
             onMounted(() => {
-                if (!isLoading.value) {
+                if (!fetchKey.value) {
                     sendPageTrack()
                 }
             })

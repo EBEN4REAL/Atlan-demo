@@ -128,6 +128,7 @@ export const AssetAttributes = [
     'picklistValues',
     'formula',
     'isPublished',
+    'process',
 ]
 
 export const SQLAttributes = [
@@ -263,6 +264,7 @@ export const MinimalAttributes = [
     'isDist',
     'order',
     'isPublished',
+    'process',
 ]
 
 export const BasicSearchAttributes = [

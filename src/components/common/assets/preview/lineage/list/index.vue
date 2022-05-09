@@ -1,14 +1,18 @@
 <template>
     <div class="px-5 pb-0 mt-1">
-        <SearchAndFilter
+        <SearchAdvanced
             v-model:value="queryText"
             :placeholder="getPlaceholder"
-            size="minimal"
+            :autofocus="true"
         >
-            <template #filter>
-                <Preferences v-model:display="preference.display" />
+            <template #postFilter>
+                <Preferences
+                    v-model="preference.display"
+                    v-model:displayProcess="preference.displayProcess"
+                    @updateDisplay="handlePreferenceChange"
+                />
             </template>
-        </SearchAndFilter>
+        </SearchAdvanced>
     </div>
 
     <AggregationTabs
@@ -37,8 +41,8 @@
 
 <script lang="ts">
     import { computed, defineComponent, PropType, ref, toRefs } from 'vue'
-    import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import Preferences from '../preferences.vue'
+    import SearchAdvanced from '@/common/input/searchAdvanced.vue'
 
     // import AssetList from './assetList.vue'
     // import AssetItem from './assetItem.vue'
@@ -54,7 +58,7 @@
     export default defineComponent({
         name: 'LineageList',
         components: {
-            SearchAndFilter,
+            SearchAdvanced,
             Preferences,
             AggregationTabs,
             AssetList,
@@ -73,7 +77,7 @@
             const queryText = ref('')
             const selectedType = ref('__all')
 
-            const preference = ref({ display: [] })
+            const preference = ref({ display: [], displayProcess: false })
 
             const { title } = useAssetInfo()
 
@@ -81,6 +85,12 @@
 
             if (discoveryStore.preferences) {
                 preference.value = discoveryStore.preferences
+            }
+
+            const handlePreferenceChange = (id) => {
+                discoveryStore.setPreferences(
+                    JSON.parse(JSON.stringify(preference.value))
+                )
             }
 
             const searchedAssets = computed(() => {
@@ -148,6 +158,7 @@
                 filteredAssets,
                 assetTypes,
                 selectedType,
+                handlePreferenceChange,
             }
         },
     })

@@ -169,7 +169,7 @@
                     class="px-4 py-2"
                     @click="closeMenu"
                 >
-                    <BulkUploadModal :entity="asset">
+                    <BulkUploadModal :guid="asset?.guid" :glossary-name="asset?.displayText">
                         <template #trigger>
                             <div class="flex items-center">
                                 <AtlanIcon

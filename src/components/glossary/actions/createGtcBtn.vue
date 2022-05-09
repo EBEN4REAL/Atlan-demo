@@ -113,12 +113,12 @@
                     </AddGTCModal>
                 </a-menu-item>
                 <a-menu-item
-                    v-if="getGlossaryByQF(selectedGlossaryQf)?.guid"
+                    v-if="selectedGlossary?.guid"
                     key="bulk"
                     class="flex items-center"
                     @click="closeMenu"
                 >
-                    <BulkUploadModal :entity="getGlossaryByQF(selectedGlossaryQf)">
+                    <BulkUploadModal :guid="selectedGlossary?.guid" :glossary-name="selectedGlossary?.displayText">
                         <template #trigger>
                             <div class="flex items-center">
                                 <AtlanIcon
@@ -202,6 +202,7 @@
                 closeMenu,
                 isVisible,
                 getGlossaryByQF,
+                selectedGlossary
             }
         },
     })

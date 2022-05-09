@@ -130,6 +130,7 @@
                             count: assetMap.value[aType.id],
                             id: aType.id,
                             label: aType.label,
+                            image: aType.image || '',
                         })
                     }
                 })

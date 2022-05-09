@@ -1638,6 +1638,12 @@
                     component: MenuItem,
                     handleClick: ({ item }) => {
                         setContext(item, 'explorer')
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
+                            action: 'set_explorer_context',
+                            trigger: 'kebab_menu',
+                            query_tab_id: activeInlineTab.value.key,
+                            asset_type: item.typeName,
+                        })
                     },
                 },
                 {
@@ -1700,13 +1706,13 @@
                     wrapperClass: 'flex items-center ',
                     component: MenuItem,
                     handleClick: ({ item }) => {
-                        // useAddEvent('insights', 'schemaTree', 'itemClick', {
-                        //     action: 'set_editor_context',
-                        //     trigger: 'kebab_menu',
-                        //     query_tab_id: activeInlineTab.value.key,
-                        //     asset_type: item.typeName,
-                        // })
                         setContext(item, 'explorer')
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
+                            action: 'set_explorer_context',
+                            trigger: 'kebab_menu',
+                            query_tab_id: activeInlineTab.value.key,
+                            asset_type: item.typeName,
+                        })
                     },
                 },
                 {

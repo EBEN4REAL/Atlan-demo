@@ -146,10 +146,18 @@ export function useBody(
 
                 if (found) {
                     if (found.tags.length > 0) {
-                        base.filter('terms', '__traitNames', found.tags)
-                        // base.filter('bool', (q) => {
-                        //     q.orFilter('terms', '__traitNames', found.tags)
-                        // })
+                        /*  base.filter('terms', '__traitNames', found.tags) */
+
+                        base.filter('bool', (q) => {
+                            q.orFilter('terms', '__traitNames', found.tags)
+                            q.orFilter(
+                                'terms',
+                                '__propagatedTraitNames',
+                                found.tags
+                            )
+
+                            return q
+                        })
                     }
                 }
                 // const connectionIdList = personaStore.getConnectionList(

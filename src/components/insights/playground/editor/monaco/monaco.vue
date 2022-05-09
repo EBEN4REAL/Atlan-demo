@@ -1,7 +1,7 @@
 <template>
     <div ref="monacoRoot" class="relative monacoeditor"></div>
-    <div
-        id="custom-drpdn"
+    <!-- <div
+        id="auto-suggestions"
         class="absolute max-w-md py-2 overflow-auto bg-gray-100 shadow max-h-64"
     >
         <div
@@ -17,10 +17,25 @@
                 @click.stop="handleApplySuggestion(listItem)"
                 class="px-2"
             >
-                {{ listItem.label }}
+                <AtlanIcon
+                    :icon="
+                        getAssetIconWithCertification(
+                            listItem?.documentation?.entity
+                        )
+                    "
+                    class="mr-1"
+                ></AtlanIcon
+                >{{ listItem.label }}
             </div>
         </div>
-    </div>
+    </div> -->
+    <SuggestionList
+        id="auto-suggestions"
+        @applySuggestions="handleApplySuggestion"
+        :suggestions="list"
+        :isAutoComplete="isAutoComplete"
+        :editor="editor"
+    />
 </template>
 
 <script lang="ts">
@@ -78,6 +93,8 @@
         updateEditorModelOnTabOpen,
         updateEditorModel,
     } from '~/components/insights/playground/editor/monaco/useModel'
+    import { capitalizeFirstLetter } from '~/utils/string'
+    import SuggestionList from '~/components/insights/playground/editor/monaco/suggestionList.vue'
 
     // @ts-ignore
     self.MonacoEnvironment = {
@@ -89,6 +106,7 @@
     export default defineComponent({
         emits: ['editorInstance'],
         props: {},
+        components: { SuggestionList },
 
         setup(props, { emit }) {
             const list = ref([])
@@ -256,16 +274,35 @@
             )
 
             const { assetType, certificateStatus } = useAssetInfo()
+            const getAssetIconWithCertification = (asset) => {
+                // debugger
+                if (!asset) return ''
+                const type =
+                    capitalizeFirstLetter(
+                        assetType(asset)?.toLowerCase() ||
+                            asset.typeName.toLowerCase() ||
+                            ''
+                    ) || ''
+                const certification =
+                    capitalizeFirstLetter(
+                        certificateStatus(asset)?.toLowerCase() || ''
+                    ) || ''
+
+                if (type && certification) return `${type}${certification}`
+                if (type) return `${type}`
+                return ''
+            }
             const isAutoComplete = ref(false)
             const hideAutoCompletion = () => {
-                const el = document.getElementById('custom-drpdn')
+                const el = document.getElementById('auto-suggestions')
                 el?.classList.add('hidden')
                 isAutoComplete.value = false
             }
             const showAutoCompletion = () => {
-                const el = document.getElementById('custom-drpdn')
+                const el = document.getElementById('auto-suggestions')
                 el?.classList.remove('hidden')
                 isAutoComplete.value = true
+                selectedSuggestionIndex.value = 0
                 // document.activeElement.blur()
                 // setEditorFocusedState(false, editorFocused)
             }
@@ -289,7 +326,7 @@
                 const cursorRect = cursor.getBoundingClientRect()
                 const parentRect = parentEl.getBoundingClientRect()
                 console.log('BOOO', cursor.offsetLeft, cursor.offsetTop)
-                const divA = document.getElementById('custom-drpdn')
+                const divA = document.getElementById('auto-suggestions')
                 console.log(divA)
                 divA.style.top = `${cursor.offsetTop + 27}px`
                 divA.style.left = `${cursor.offsetLeft + 65}px`
@@ -673,28 +710,28 @@
                 // editor?.addCommand(16, function () {
                 //     traverseUp()
                 // })
-                const keyDownEv = editor?.onKeyDown((e) => {
-                    if (e.keyCode === 18 && isAutoComplete.value) {
-                        // debugger
-                        traverseDown()
-                        e.preventDefault()
-                        e.stopPropagation()
-                    }
-                    if (e.keyCode === 16 && isAutoComplete.value) {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        traverseUp()
-                    }
-                    if (e.keyCode === 3 && isAutoComplete.value) {
-                        // document.activeElement.blur()
-                        e.preventDefault()
-                        e.stopPropagation()
-                        handleApplySuggestion(
-                            list.value[selectedSuggestionIndex.value]
-                        )
-                    }
-                    // console.log('YAYAYAYAYA', e.keyCode)
-                })
+                // const keyDownEv = editor?.onKeyDown((e) => {
+                //     if (e.keyCode === 18 && isAutoComplete.value) {
+                //         // debugger
+                //         traverseDown()
+                //         e.preventDefault()
+                //         e.stopPropagation()
+                //     }
+                //     if (e.keyCode === 16 && isAutoComplete.value) {
+                //         e.preventDefault()
+                //         e.stopPropagation()
+                //         traverseUp()
+                //     }
+                //     if (e.keyCode === 3 && isAutoComplete.value) {
+                //         // document.activeElement.blur()
+                //         e.preventDefault()
+                //         e.stopPropagation()
+                //         handleApplySuggestion(
+                //             list.value[selectedSuggestionIndex.value]
+                //         )
+                //     }
+                //     // console.log('YAYAYAYAYA', e.keyCode)
+                // })
                 // editor.addAction({
                 //     id: 'test',
                 //     label: 'test',
@@ -957,6 +994,11 @@
                     if (activeInlineTab.value) {
                         if (tabs.value[_index.value]?.playground?.isVQB) return
                         findAndChangeCustomVariablesColor(true)
+                        // debugger
+                        const parentElement =
+                            document.getElementsByClassName('monacoeditor')[0]
+                        const el = document.getElementById('auto-suggestions')
+                        parentElement.appendChild(el)
                     }
                 }
             )
@@ -971,7 +1013,7 @@
             onMounted(() => {
                 const parentElement =
                     document.getElementsByClassName('monacoeditor')[0]
-                const el = document.getElementById('custom-drpdn')
+                const el = document.getElementById('auto-suggestions')
                 parentElement.appendChild(el)
                 tabs.value.forEach((tab) => {
                     const newModel = monaco.editor.createModel(
@@ -995,12 +1037,15 @@
             })
 
             return {
+                editor,
+                isAutoComplete,
                 editorStates,
                 outputPaneSize,
                 monacoRoot,
                 list,
                 handleApplySuggestion,
                 selectedSuggestionIndex,
+                getAssetIconWithCertification,
             }
         },
     })

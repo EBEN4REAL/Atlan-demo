@@ -8,6 +8,7 @@
             <template #postFilter>
                 <Preferences
                     v-model="preference.display"
+                    v-model:process="preference.displayProcess"
                     @updateDisplay="handlePreferenceChange"
                 />
             </template>

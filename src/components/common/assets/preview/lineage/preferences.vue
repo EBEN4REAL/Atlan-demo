@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col p-3 rounded gap-y-3">
+    <div class="flex flex-col p-3 rounded gap-y-5">
         <div class="flex items-center justify-between">
             <span class="text-gray-500">Depth</span>
             <a-dropdown :trigger="['click']">
@@ -27,6 +27,14 @@
                 </template>
             </a-dropdown>
         </div>
+        <div class="flex items-center justify-between">
+            <p class="text-sm text-gray-500">Show Process Nodes</p>
+
+            <a-switch
+                v-model:checked="localProcessValue"
+                @change="handleChange"
+            />
+        </div>
         <div>
             <p class="mb-2 text-sm text-gray-500">Show/Hide</p>
             <div class="flex flex-wrap">
@@ -47,6 +55,7 @@
     import { useVModels } from '@vueuse/core'
 
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
+    import { displayProperties } from '~/constant/displayProperties'
 
     export default defineComponent({
         components: { CustomRadioButton },
@@ -58,14 +67,20 @@
                     return {}
                 },
             },
+            displayProcess: {
+                type: Boolean,
+                required: false,
+                default: true,
+            },
         },
-        emits: ['updateDisplay'],
+        emits: ['updateDisplay', 'update:modelValue', 'update:displayProcess'],
         setup(props, { emit }) {
-            const { modelValue } = useVModels(props, emit)
+            const { modelValue, displayProcess } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
+            const localProcessValue = ref(displayProcess.value)
             const handleChange = (id) => {
                 modelValue.value = localValue.value
-
+                displayProcess.value = localProcessValue.value
                 emit('updateDisplay', id)
             }
 
@@ -75,25 +90,6 @@
             const currentDepth = inject('currentDepth')
 
             const filterInjection = inject('updateFilters')
-
-            const displayProperties = [
-                {
-                    id: 'description',
-                    label: 'Description',
-                },
-                {
-                    id: 'terms',
-                    label: 'Terms',
-                },
-                {
-                    id: 'classifications',
-                    label: 'Classifications',
-                },
-                {
-                    id: 'process',
-                    label: 'Process',
-                },
-            ]
 
             const lineageDepths = [
                 { id: 1, label: 'Depth 1' },
@@ -120,6 +116,7 @@
                 updateDepth,
                 handleChange,
                 localValue,
+                localProcessValue,
             }
         },
     })

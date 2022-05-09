@@ -146,9 +146,12 @@
 
             const discoveryStore = useAssetStore()
 
-            const processPreference = computed(() =>
-                discoveryStore?.preferences?.display?.includes('process')
-            )
+            const processPreference = computed(() => {
+                if (discoveryStore?.preferences?.displayProcess) {
+                    return true
+                }
+                return false
+            })
 
             const defaultLineageConfig = computed(() => ({
                 depth: depth.value,
@@ -261,7 +264,7 @@
             provide('assetTypesLengthMap', assetTypesLengthMap)
 
             /** WATCHERS */
-            watch([depth, guid], () => {
+            watch([depth, guid, processPreference], () => {
                 mutateUpstream()
                 mutateDownstream()
             })

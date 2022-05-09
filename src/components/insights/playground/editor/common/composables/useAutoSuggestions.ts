@@ -178,7 +178,8 @@ export function entitiesToEditorKeyword(
     context: {
         attributeName: string
         attributeValue: string
-    }
+    },
+    isDotBased: boolean = false // wether to include table with column or not T.C
 ) {
     const { getConnectorName } = useConnector()
     // for assetQuote Info of different sources
@@ -307,7 +308,9 @@ export function entitiesToEditorKeyword(
                                 entity: entities[i],
                             },
                             sortText: sortString,
-                            insertText: `${contextPrefix}${assetQuoteType}${tableName}${assetQuoteType}.${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`,
+                            insertText: isDotBased
+                                ? `${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`
+                                : `${contextPrefix}${assetQuoteType}${tableName}${assetQuoteType}.${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`,
                         }
                         words.push(keyword)
                         // }
@@ -342,17 +345,30 @@ function getLocalSQLSugggestions(currWrd: string) {
 export function getLastMappedKeyword(
     token_param: string[],
     mappingKeywords,
-    mappingKeywordsKeys
+    mappingKeywordsKeys,
+    typesKeywordsMap: Record<string, Record<string, string[]>>
 ) {
     // console.log(tokens)
     let tokens = token_param.map((token) => token?.toUpperCase())
+    debugger
     for (let i = tokens.length - 1; i >= 0; i--) {
         /* type- TABLE/COLUMN/SQL keyword */
         if (mappingKeywordsKeys.includes(tokens[i])) {
+            let functionType: undefined | string = undefined
+            let tokenPosition = tokens.length - 1 - (i + 1) // counting start from last 0->extreme
+            const _keys = Object.keys(typesKeywordsMap)
+            _keys.forEach((key) => {
+                if (typesKeywordsMap[key].trigger.includes(tokens[i])) {
+                    functionType = key
+                }
+            })
+
             return {
                 token: tokens[i],
                 index: i,
                 type: mappingKeywords[tokens[i]],
+                functionType,
+                tokenPosition,
             }
         }
     }
@@ -632,7 +648,8 @@ export async function useAutoSuggestions(
     /* ------------------------------------------------------------- */
     const { getConnectionQualifiedName, getDatabaseName, getSchemaName } =
         useConnector()
-    const { mappingKeywordsKeys, mappingKeywords } = useMapping()
+    const { mappingKeywordsKeys, mappingKeywords, typesKeywordsMap } =
+        useMapping()
     const endColumn = changes.range.endColumn
     const endLineNumber = changes.range.endLineNumber
 
@@ -671,31 +688,160 @@ export async function useAutoSuggestions(
     /* Remove tokens which are special characters */
     tokens = tokens.filter((token) => {
         let t = true
-        t = !token.match(/[-[\]{};/\n()*+?'."\\/^$|#\s\t]/g) && token !== ''
+        t = !token.match(/[-[\]{};/\n()*+?'"\\/^$|#\s\t]/g) && token !== ''
         return t
     })
     // tokens.push(' ')
     let currentWord = tokens[tokens.length - 1]
+    debugger
+    // TABLE[DOT]  // check if previous is [dot]
+    if (currentWord === '.' || currentWord.includes('.')) {
+        const dotSplitWord = currentWord.split('.')
 
+        // fetch table columns
+        if (tokens.length > 1) {
+            const tableName = tokens[tokens.length - 2]
+            const type = 'Column'
+            refreshBody()
+            body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
+                {
+                    term: {
+                        tableQualifiedName: `${connectionQualifiedName}/${databaseName}/${schemaName}/${tableName}`,
+                    },
+                }
+            )
+            body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
+                {
+                    term: {
+                        '__typeName.keyword': type,
+                    },
+                }
+            )
+            if (dotSplitWord.length > 1) {
+                body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
+                    {
+                        regexp: {
+                            'name.keyword': `${dotSplitWord[1]}.*`,
+                        },
+                    }
+                )
+            }
+            if (cancelTokenSource.value !== undefined) {
+                cancelTokenSource.value.cancel()
+            }
+            cancelTokenSource.value = axios.CancelToken.source()
+            const entitiesResponsPromise = Insights.GetAutoSuggestions(
+                body,
+                cancelTokenSource
+            )
+
+            let suggestionsPromise = entitiesToEditorKeyword(
+                entitiesResponsPromise,
+                type.toUpperCase(),
+                currentWord,
+                connectorsInfo,
+                context,
+                true
+            )
+            // console.log('connector: ', connectorsInfo)
+
+            return suggestionsPromise
+        }
+    }
     /* If it is a first/nth character of first word */
     if (tokens.length < 2) {
         return getLocalSQLSugggestions(currentWord)
     } else {
         const lastMatchedKeyword:
             | undefined
-            | { token: string; index: number; type: string } =
-            getLastMappedKeyword(tokens, mappingKeywords, mappingKeywordsKeys)
+            | {
+                  token: string
+                  index: number
+                  type: string
+                  functionType: string
+                  tokenPosition: number
+              } = getLastMappedKeyword(
+            tokens,
+            mappingKeywords,
+            mappingKeywordsKeys,
+            typesKeywordsMap
+        )
         // console.log('inside', lastMatchedKeyword, tokens)
-
         if (lastMatchedKeyword) {
-            return getSuggestionsUsingType(
-                lastMatchedKeyword.type,
-                lastMatchedKeyword.token,
-                currentWord,
-                connectorsInfo,
-                cancelTokenSource,
-                context
-            )
+            switch (lastMatchedKeyword.functionType) {
+                case 'FILTER': {
+                    if (lastMatchedKeyword.tokenPosition === 0) {
+                        return getSuggestionsUsingType(
+                            lastMatchedKeyword.type,
+                            lastMatchedKeyword.token,
+                            currentWord,
+                            connectorsInfo,
+                            cancelTokenSource,
+                            context
+                        )
+                    } else {
+                        const filterKeywords = typesKeywordsMap['FILTER'].values
+                        let suggestions = filterKeywords.map((keyword) => {
+                            return {
+                                label: keyword,
+                                kind: monaco.languages.CompletionItemKind
+                                    .Keyword,
+                                insertText: keyword,
+                            }
+                        })
+
+                        return Promise.resolve({
+                            suggestions: suggestions,
+                            incomplete: true,
+                        })
+                    }
+                }
+                case 'AGGREGATE': {
+                    return new Promise((resolve, reject) => {
+                        getSuggestionsUsingType(
+                            lastMatchedKeyword.type,
+                            lastMatchedKeyword.token,
+                            currentWord,
+                            connectorsInfo,
+                            cancelTokenSource,
+                            context
+                        ).then((value) => {
+                            debugger
+                            const filterKeywords =
+                                typesKeywordsMap['AGGREGATE'].values
+                            let filterKeywordsMap = filterKeywords.map(
+                                (keyword) => {
+                                    return {
+                                        label: keyword,
+                                        kind: monaco.languages
+                                            .CompletionItemKind.Keyword,
+                                        insertText: `${keyword}()`,
+                                    }
+                                }
+                            )
+
+                            let _suggestions = [
+                                ...value.suggestions,
+                                ...filterKeywordsMap,
+                            ]
+                            resolve({
+                                suggestions: _suggestions,
+                                incomplete: true,
+                            })
+                        })
+                    })
+                }
+                default: {
+                    return getSuggestionsUsingType(
+                        lastMatchedKeyword.type,
+                        lastMatchedKeyword.token,
+                        currentWord,
+                        connectorsInfo,
+                        cancelTokenSource,
+                        context
+                    )
+                }
+            }
         }
     }
 

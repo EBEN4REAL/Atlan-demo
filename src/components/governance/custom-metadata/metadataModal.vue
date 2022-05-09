@@ -31,6 +31,7 @@
                 <a-popover
                     v-model:visible="emojiVisibility"
                     :trigger="['click']"
+                    destroy-on-close
                 >
                     <div
                         class="cursor-pointer"
@@ -63,9 +64,11 @@
                         </div>
                     </div>
                     <template #content
-                        ><EmojiPicker
+                        ><IconPicker
                             :emoji="form.options.emoji"
                             :image="imageFile"
+                            :picker-element-id="'update-CM-emoji-picker'"
+                            :allow-image-upload="true"
                             @select="emojiSelect"
                             @remove="emojiRemove"
                             @upload="handleUpload"
@@ -97,13 +100,12 @@
     import { useTypedefStore } from '~/store/typedef'
 
     import AtlanButton from '@/UI/button.vue'
-
-    import EmojiPicker from '@/common/avatar/emojiPicker.vue'
+    import IconPicker from '~/components/common/IconPicker/IconPicker.vue'
     import useUploadImage from '~/composables/image/uploadImage'
     import useCustomMetadataAvatar from './composables/useCustomMetadataAvatar'
 
     export default defineComponent({
-        components: { AtlanButton, EmojiPicker },
+        components: { AtlanButton, IconPicker },
         props: {
             isEdit: {
                 type: Boolean,

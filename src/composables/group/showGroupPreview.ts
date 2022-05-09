@@ -7,7 +7,7 @@ const groupId = ref('')
 const groupAlias = ref('')
 const uniqueAttribute = ref('')
 const defaultTab = ref('about')
-
+const toogleEdit = ref(false)
 
 const blacklistedTabs = ref([])
 const allowedTabs = ref([])
@@ -73,7 +73,9 @@ export function useGroupPreview() {
         allowedTabs.value = []
         showPreview.value = false
     })
-
+    const changeTogleEdit = (val) => {
+        toogleEdit.value = val
+}
     return {
         showPreview,
         groupId,
@@ -87,5 +89,7 @@ export function useGroupPreview() {
         closePreview,
         defaultTab,
         setDefaultTab,
+        changeTogleEdit,
+        toogleEdit
     }
 }

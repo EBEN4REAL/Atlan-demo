@@ -310,7 +310,10 @@
                     ? assetSidebarPaneSize.value
                     : 0
             )
-            const activeTabId = ref(getActiveExplorerTab() || tabsList[0].id)
+            const getActiveExplorerTabId =
+                getActiveExplorerTab() &&
+                tabsList.find((tab) => tab.id === getActiveExplorerTab())?.id
+            const activeTabId = ref(getActiveExplorerTabId || tabsList[0].id)
 
             const activeTab = computed(() =>
                 tabsList.find((tab) => tab.id === activeTabId.value)

@@ -29,86 +29,95 @@
             </span>
         </div>
         <div class="mb-7">
-            <div
-                v-for="(email, index) in emails"
-                :key="index"
-                class="relative items-center mb-4 group"
-            >
-                <div class="relative">
-                    <a-input
-                        :id="`email-${index}`"
-                        v-model:value="email.value"
-                        class="inputHeight"
-                        placeholder="Email"
-                        @keyup.enter="onAddNewUser"
-                    >
-                    </a-input>
-                    <a-select
-                        v-model:value="email.role"
-                        tabindex="-1"
-                        class="absolute"
-                        dropdown-class-name="border-0 transparent outline-none"
-                    >
-                        <template #suffixIcon>
-                            <AtlanIcon icon="CaretDown" />
-                        </template>
-                        <a-select-option
-                            v-for="role in roleList"
-                            :key="role.id"
-                            :value="role.name"
-                        >
-                            <span class="capitalize">{{ role.name }}</span>
-                        </a-select-option>
-                    </a-select>
-                </div>
+            <a-form ref="formRef" layout="vertical" class="" :model="formState">
                 <div
-                    v-if="emails.length > 1"
-                    class="absolute bg-transparent border-0 opacity-0 cursor-pointer top-1 -right-5 group-hover:opacity-100"
-                    @click="deleteUserInput(index)"
+                    v-for="(email, name) in formState"
+                    :key="name"
+                    class="relative items-center mb-4 group"
                 >
-                    <AtlanIcon
-                        icon="Cross"
-                        class="text-lg text-gray-400 hover:text-blue-500"
-                    />
-                </div>
-            </div>
-            <div id="add-email-button" class="relative items-center group">
-                <div class="relative w-100">
-                    <a-input
-                        class="inputHeight"
-                        placeholder="Email"
-                        @focus="onAddNewUser"
-                    >
-                    </a-input>
-                    <a-select
-                        v-model:value="defaultRoleOnAdd"
-                        class="absolute"
-                        dropdown-class-name="border-0 outline-none"
-                    >
-                        <template #suffixIcon>
-                            <AtlanIcon icon="CaretDown" />
-                        </template>
-                        <a-select-option
-                            v-for="role in roleList"
-                            :key="role.id"
-                            :value="role.name"
+                    <div class="relative">
+                        <a-form-item
+                            :name="[name, 'value']"
+                            :rules="emailRule"
+                            validate-first
                         >
-                            <span class="capitalize">{{ role.name }}</span>
-                        </a-select-option>
-                    </a-select>
+                            <a-input
+                                :id="`email-${name}`"
+                                v-model:value="email.value"
+                                class="inputHeight"
+                                placeholder="Email"
+                                @keyup.enter="onAddNewUser"
+                                @change="triggerValidate"
+                            >
+                            </a-input>
+                        </a-form-item>
+                        <a-select
+                            v-model:value="email.role"
+                            tabindex="-1"
+                            class="absolute"
+                            dropdown-class-name="border-0 transparent outline-none"
+                        >
+                            <template #suffixIcon>
+                                <AtlanIcon icon="CaretDown" />
+                            </template>
+                            <a-select-option
+                                v-for="role in roleList"
+                                :key="role.id"
+                                :value="role.name"
+                            >
+                                <span class="capitalize">{{ role.name }}</span>
+                            </a-select-option>
+                        </a-select>
+                    </div>
+                    <div
+                        v-if="Object.keys(formState).length > 1"
+                        class="absolute bg-transparent border-0 opacity-0 cursor-pointer top-2 -right-5 group-hover:opacity-100"
+                        @click="deleteUserInput(name)"
+                    >
+                        <AtlanIcon
+                            icon="Cross"
+                            class="text-lg text-gray-400 hover:text-blue-500"
+                        />
+                    </div>
                 </div>
-            </div>
+                <div id="add-email-button" class="relative items-center group">
+                    <div class="relative w-100">
+                        <a-input
+                            class="inputHeight"
+                            placeholder="Email"
+                            @focus="onAddNewUser"
+                        >
+                        </a-input>
+                        <a-select
+                            v-model:value="defaultRoleOnAdd"
+                            class="absolute"
+                            dropdown-class-name="border-0 outline-none"
+                        >
+                            <template #suffixIcon>
+                                <AtlanIcon icon="CaretDown" />
+                            </template>
+                            <a-select-option
+                                v-for="role in roleList"
+                                :key="role.id"
+                                :value="role.name"
+                            >
+                                <span class="capitalize">{{ role.name }}</span>
+                            </a-select-option>
+                        </a-select>
+                    </div>
+                </div>
+            </a-form>
         </div>
 
         <div class="flex justify-end">
             <div>
-                <a-button class="mr-3 border-0" @click="$emit('close')"
+                <a-button class="mr-3 border-0" @click="handleCancelInviteUser"
                     >Cancel
                 </a-button>
                 <a-button
                     type="primary"
                     html-type="submit"
-                    :disabled="isSubmitInvites"
+                    :disabled="disableSubmit"
                     :loading="loading"
                     @click="handleSubmit"
                 >
@@ -189,57 +198,107 @@
             const defaultRoleOnAdd = ref('member')
             const { roleList } = useRoles()
 
-            const emails = ref([{ ...allRoles.member }])
-            const loading = ref(false)
-            const isSubmitInvites = computed(() => {
-                const reqIndex = emails.value.findIndex((email) => !email.value)
-                return reqIndex !== -1
+            const disableSubmit = ref(true)
+            const formRef = ref()
+            const formState = ref({
+                [new Date().getTime()]: { ...allRoles.member },
             })
+            const triggerValidate = async () => {
+                try {
+                    const validationStatus = await formRef.value.validate()
+                    disableSubmit.value = false
+                } catch (e) {
+                    disableSubmit.value = true
+                }
+            }
+
+            /** Validating if current email has already been added on any field above (not below) */
+            const validator = async (_rule, value: string) => {
+                const valueArray: string[] = []
+                const { field } = _rule
+                const entries = Object.entries(formState.value)
+                let x = 0
+                for (x = 0; x < entries.length; x += 1) {
+                    const [k, state] = entries[x]
+                    if (field.includes(k)) break
+                    else valueArray.push(state.value)
+                }
+                if (valueArray.includes(value))
+                    // eslint-disable-next-line prefer-promise-reject-errors
+                    return Promise.reject('Duplicate email')
+                return Promise.resolve()
+            }
+
+            const emailRule = ref([
+                {
+                    required: true,
+                    message: 'Please enter a valid email',
+                    type: 'email',
+                    trigger: ['submit'],
+                },
+                {
+                    required: true,
+                    message: 'Duplicate email',
+                    type: 'email',
+                    validator,
+                    trigger: ['submit'],
+                },
+            ])
+
+            const loading = ref(false)
             const groupListAPIParams = reactive({
                 limit: 5,
                 offset: 0,
                 filter: { attributes: { $elemMatch: { isDefault: ['true'] } } },
                 // sort: '-created_at',
             })
-            const {
-                groupList,
-                totalGroupsCount,
-                filteredGroupsCount,
-                STATES,
-                state,
-            } = useGroups(groupListAPIParams)
+            const { groupList, STATES, state } = useGroups(groupListAPIParams)
             onMounted(() => {
                 const newInput = document.getElementById(
-                    `email-${emails?.value?.length - 1}`
+                    `email-${
+                        Object.keys(formState.value)[
+                            Object.keys(formState?.value).length - 1
+                        ]
+                    }`
                 )
                 if (newInput) newInput.focus()
             })
-            const deleteUserInput = (index) => {
-                emails.value.splice(index, 1)
-                if (!emails.value.length) {
-                    emails.value = [{ ...allRoles.member }]
+
+            const deleteUserInput = (id) => {
+                delete formState.value[id]
+                if (!Object.keys(formState.value).length) {
+                    formState.value = {
+                        [new Date().getTime()]: { ...allRoles.member },
+                    }
+                }
+                nextTick(() => {
+                    triggerValidate()
+                })
+            }
+
+            const onAddNewUser = () => {
+                formState.value[new Date().getTime()] = {
+                    ...allRoles[defaultRoleOnAdd.value],
                 }
             }
-            const onAddNewUser = () => {
-                emails.value = [
-                    ...emails.value,
-                    { ...allRoles[defaultRoleOnAdd.value] },
-                ]
-            }
+
             watch(
-                emails,
-                (newVal, oldVal) => {
-                    console.log(newVal.length, oldVal.length)
-                    if (newVal.length !== oldVal.length)
-                        nextTick(() => {
-                            const newInput = document.getElementById(
-                                `email-${emails?.value?.length - 1}`
-                            )
-                            if (newInput) newInput.focus()
-                        })
+                () => Object.keys(formState.value),
+                () => {
+                    nextTick(() => {
+                        const newInput = document.getElementById(
+                            `email-${
+                                Object.keys(formState.value)[
+                                    Object.keys(formState?.value).length - 1
+                                ]
+                            }`
+                        )
+                        if (newInput) newInput.focus()
+                    })
                 },
                 { deep: true }
             )
+
             const getRoleId = (email) => {
                 console.log(email)
                 const roleObj =
@@ -250,46 +309,10 @@
                         : {}
                 return roleObj.id || ''
             }
-            const validateEmail = (email) => {
-                const re =
-                    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                return re.test(String(email).toLowerCase())
-            }
-            const highLightAsError = (index) => {
-                const input = document.getElementById(`email-${index}`)
-                if (input) {
-                    input.classList.add('border-red-500')
-                    input.classList.add('text-red-500')
-                    setTimeout(() => {
-                        input.classList.remove('border-red-500')
-                        input.classList.remove('text-red-500')
-                    }, 1000)
-                }
-            }
-            const validateEmails = () => {
-                const invalidFields = emails.value.filter(
-                    (x) => !validateEmail(x.value)
-                )
-                emails.value.forEach((x, index) => {
-                    const isEmail = validateEmail(x.value)
-                    if (!isEmail) {
-                        highLightAsError(index)
-                    }
-                })
-                if (invalidFields?.length)
-                    message.error(
-                        `${invalidFields?.length} invalid email input field${
-                            invalidFields?.length ? 's' : ''
-                        }`
-                    )
-                return !invalidFields.length
-            }
+
             const handleSubmit = async (event) => {
-                // event.preventDefault() // no need to handle not in a form or lin
-                const allValidEmails = validateEmails()
-                if (!allValidEmails) return
                 const requestPayload = ref({
-                    users: emails.value.map((email) => ({
+                    users: Object.values(formState.value).map((email) => ({
                         email: email.value,
                         roleName: `$${email.role}`,
                         roleId: getRoleId(email),
@@ -305,8 +328,11 @@
                             context.emit('handleInviteSent')
                             message.success('Invites sent')
                             useAddEvent('admin', 'user', 'added', {
-                                count: emails.value.length,
+                                count: Object.keys(formState.value).length,
                             })
+                            formState.value = {
+                                [new Date().getTime()]: { ...allRoles.member },
+                            }
                         } else if (error && error.value) {
                             // Since there might be errors associated with more
                             // than one email address, we display all of them.
@@ -314,11 +340,10 @@
                                 error.value.response.data ?? {}
                             )
                             for (let i = 0; i < keys.length; i += 1) {
-                                message.error(
-                                    `${keys[i]}: ${
-                                        error.value.response.data[keys[i]]
-                                    }`
-                                )
+                                if (keys[i] === 'message')
+                                    message.error(
+                                        `${error.value.response.data[keys[i]]}`
+                                    )
                             }
                             context.emit('close')
                         }
@@ -326,22 +351,34 @@
                     { immediate: true }
                 )
             }
+
             const capitalize = (string) =>
                 string ? string.charAt(0).toUpperCase() + string.slice(1) : ''
+
+            const handleCancelInviteUser = () => {
+                context.emit('close')
+                formState.value = {
+                    [new Date().getTime()]: { ...allRoles.member },
+                }
+            }
             return {
+                triggerValidate,
+                formRef,
+                emailRule,
+                formState,
                 capitalize,
                 roleList,
-                emails,
                 handleSubmit,
                 onAddNewUser,
                 deleteUserInput,
-                isSubmitInvites,
+                disableSubmit,
                 loading,
                 defaultRoleOnAdd,
                 // for fetching groups
                 STATES,
                 state,
                 groupList,
+                handleCancelInviteUser,
             }
         },
         data() {

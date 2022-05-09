@@ -164,10 +164,10 @@ export const exportStyles = `
                                 padding: unset !important;
                                 width: 268px !important;
                             }
-                            g[port-group="ctaPortRight"] {
+                            g[port-group="ctaRight"] {
                                 display: none !important;
                             }
-                            g[port-group="ctaPortLeft"] {
+                            g[port-group="ctaLeft"] {
                                 display: none !important;
                             }
                             

@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "2.52.5",
+  "version": "2.57.0",
   "scripts": {
     "dev": "vite --port 3333 --open",
     "build-dev": "vite build --mode development",
@@ -52,7 +52,7 @@
     "cron-parser": "^4.2.1",
     "cronstrue": "^1.123.0",
     "dayjs": "^1.10.7",
-    "emoji-mart-vue-fast": "^10.2.1",
+    "emoji-picker-element": "^1.11.2",
     "event-source-polyfill": "git://github.com/atlanhq/EventSource.git",
     "highlight.js": "^11.4.0",
     "json-2-csv": "^3.17.0",
@@ -184,7 +184,7 @@
         "dayjs/plugin/relativeTime",
         "dayjs/plugin/timezone",
         "dayjs/plugin/utc",
-        "emoji-mart-vue-fast/src",
+        "emoji-picker-element",
         "event-source-polyfill",
         "json-2-csv",
         "katex",

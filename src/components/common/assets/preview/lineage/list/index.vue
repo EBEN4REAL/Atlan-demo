@@ -6,7 +6,10 @@
             :autofocus="true"
         >
             <template #postFilter>
-                <Preferences v-model:display="preference.display" />
+                <Preferences
+                    v-model="preference.display"
+                    @updateDisplay="handlePreferenceChange"
+                />
             </template>
         </SearchAdvanced>
     </div>
@@ -83,6 +86,12 @@
                 preference.value = discoveryStore.preferences
             }
 
+            const handlePreferenceChange = (id) => {
+                discoveryStore.setPreferences(
+                    JSON.parse(JSON.stringify(preference.value))
+                )
+            }
+
             const searchedAssets = computed(() => {
                 if (queryText.value) {
                     return assets.value.filter((asset) =>
@@ -148,6 +157,7 @@
                 filteredAssets,
                 assetTypes,
                 selectedType,
+                handlePreferenceChange,
             }
         },
     })

@@ -31,10 +31,10 @@
             <p class="mb-2 text-sm text-gray-500">Show/Hide</p>
             <div class="flex flex-wrap">
                 <CustomRadioButton
-                    :model-value="display"
+                    v-model="localValue"
                     :list="displayProperties"
                     is-multiple
-                    @update:model-value="$emit('update:display', $event)"
+                    @change="handleChange"
                 ></CustomRadioButton>
             </div>
         </div>
@@ -43,27 +43,57 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, inject, ref, computed, PropType } from 'vue'
+    import { defineComponent, inject, ref, computed } from 'vue'
+    import { useVModels } from '@vueuse/core'
 
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
-    import { displayProperties } from '~/constant/displayProperties'
 
     export default defineComponent({
         components: { CustomRadioButton },
         props: {
-            display: {
-                type: Array as PropType<string[]>,
-                default: () => [],
+            modelValue: {
+                type: Object,
+                required: false,
+                default() {
+                    return {}
+                },
             },
         },
-        emits: ['update:display'],
+        emits: ['updateDisplay'],
         setup(props, { emit }) {
+            const { modelValue } = useVModels(props, emit)
+            const localValue = ref(modelValue.value)
+            const handleChange = (id) => {
+                modelValue.value = localValue.value
+
+                emit('updateDisplay', id)
+            }
+
             /** INJECTIONS */
             const assetTypesLengthMapInjection = inject('assetTypesLengthMap')
             const depthInjection = inject('updateDepth')
             const currentDepth = inject('currentDepth')
 
             const filterInjection = inject('updateFilters')
+
+            const displayProperties = [
+                {
+                    id: 'description',
+                    label: 'Description',
+                },
+                {
+                    id: 'terms',
+                    label: 'Terms',
+                },
+                {
+                    id: 'classifications',
+                    label: 'Classifications',
+                },
+                {
+                    id: 'process',
+                    label: 'Process',
+                },
+            ]
 
             const lineageDepths = [
                 { id: 1, label: 'Depth 1' },
@@ -88,6 +118,8 @@
                 currentDepth,
                 currDepthLabel,
                 updateDepth,
+                handleChange,
+                localValue,
             }
         },
     })

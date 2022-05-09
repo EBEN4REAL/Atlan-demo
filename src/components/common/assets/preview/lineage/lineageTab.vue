@@ -95,6 +95,7 @@
     // Services
     import useLineageService from '~/services/meta/lineage/lineage_service'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         name: 'LineagePreviewTab',
@@ -143,10 +144,16 @@
                     selectedAsset.value.attributes.name
             )
 
+            const discoveryStore = useAssetStore()
+
             const defaultLineageConfig = computed(() => ({
                 depth: depth.value,
                 guid: guid.value,
-                hideProcess: false,
+                hideProcess: ['Process', 'ColumnProcess', 'BIProcess'].includes(
+                    selectedAsset.value.typeName
+                )
+                    ? false
+                    : discoveryStore?.preferences?.display?.includes('process'),
                 allowDeletedProcess: false,
                 entityFilters: {
                     attributeName: '__state',

@@ -1,34 +1,36 @@
 <template>
     <div>
         <div class="pr-2 mt-1 text-gray-500">Custom Metadata Update</div>
-        <a-popover>
+        <a-popover placement="bottomLeft">
             <template #content>
-                <div
-                    class="p-2"
-                    v-for="a in applicableList"
-                    :key="a?.displayName"
-                >
-                    <div class="flex mb-1 font-normal text-gray-500">
-                        {{ a?.displayName }}
-                        <a-tooltip>
-                            <template #title>
-                                <span>{{ a?.options?.description }}</span>
-                            </template>
-                            <div class="">
-                                <AtlanIcon
-                                    v-if="a?.options?.description"
-                                    class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
-                                    icon="Info"
-                                />
-                            </div>
-                        </a-tooltip>
-                    </div>
+                <div class="p-2 rounded-md">
+                    <div
+                        class="p-2"
+                        v-for="a in applicableList"
+                        :key="a?.displayName"
+                    >
+                        <div class="flex mb-1 font-normal text-gray-500">
+                            {{ a?.displayName }}
+                            <a-tooltip>
+                                <template #title>
+                                    <span>{{ a?.options?.description }}</span>
+                                </template>
+                                <div class="">
+                                    <AtlanIcon
+                                        v-if="a?.options?.description"
+                                        class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
+                                        icon="Info"
+                                    />
+                                </div>
+                            </a-tooltip>
+                        </div>
 
-                    <ReadOnly :attribute="a" />
+                        <ReadOnly :attribute="a" />
+                    </div>
                 </div>
             </template>
 
-            <div class="py-1 rounded-full cursor-pointer  hover:underline">
+            <div class="py-1 rounded-full cursor-pointer hover:underline">
                 <Truncate
                     :tooltip-text="label"
                     placement="left"
@@ -113,13 +115,18 @@
                 if (list[0]?.guid) {
                     guid.value = list[0].guid
                 }
-                console.log(
-                    getApplicableAttributes(list[0], props.data?.entityType)
-                )
                 applicableList.value = getApplicableAttributes(
                     list[0],
                     props.data?.entityType
                 )
+                applicableList.value?.forEach((i, index) => {
+                    if (attributeNames.value?.includes(i?.name)) {
+                        console.log(props.data?.payload[i?.name])
+                        console.log(applicableList.value[index])
+                        applicableList.value[index].value =
+                            props.data?.payload[i?.name]
+                    }
+                })
             }
             onMounted(getAttributes)
 
@@ -128,7 +135,7 @@
                 label,
                 checkAccess,
                 page,
-                guid
+                guid,
             }
         },
     })

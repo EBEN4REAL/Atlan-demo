@@ -546,6 +546,7 @@
                         message.error(`Request failed`)
                         isEdit.value = false
                         readOnly.value = true
+                        setAttributesList()
                     }
                 })
                 whenever(requestReady, () => {
@@ -553,6 +554,7 @@
                         message.success(`Request raised`)
                         isEdit.value = false
                         readOnly.value = true
+                        setAttributesList()
                     }
                 })
             }

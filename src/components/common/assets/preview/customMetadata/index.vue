@@ -76,7 +76,7 @@
                     </span>
                     <AtlanButton2
                         :disabled="!isEdit"
-                        label="Update"
+                        :label="hasEditPermission!==undefined && !hasEditPermission ? 'Request': 'Update'"
                         @click="handleUpdate"
                     />
                 </div>

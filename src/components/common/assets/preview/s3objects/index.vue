@@ -12,31 +12,36 @@
                 <span class="ml-1 font-semibold text-gray-500">Objects</span>
             </span>
         </div>
+
         <div
-            v-if="isLoading"
-            class="flex items-center justify-center flex-grow"
-        >
-            <AtlanLoader class="h-10" />
-        </div>
-        <div
-            v-else-if="!isLoading && error"
+            v-if="
+                !isValidating &&
+                error &&
+                error?.message !== 'operation cancelled'
+            "
             class="flex items-center justify-center flex-grow"
         >
             <ErrorView></ErrorView>
         </div>
 
         <div
-            v-else-if="list.length === 0 && !isLoading && queryText === ''"
+            v-else-if="list.length === 0 && !isValidating && queryText === ''"
             class="flex-grow"
         >
             <EmptyView
                 empty-screen="NoAssetsFound"
-                desc="This bucket doesn't contain any objects"
+                desc="No objects present in this bucket"
             ></EmptyView>
+        </div>
+        <div
+            v-else-if="list.length === 0 && isValidating"
+            class="flex items-center justify-center flex-grow"
+        >
+            <AtlanLoader class="h-10" />
         </div>
 
         <div v-else class="flex flex-col flex-grow overflow-y-auto">
-            <div class="px-5 pt-3 pb-0">
+            <div class="px-5 pb-0">
                 <SearchAdvanced
                     v-model:value="queryText"
                     :autofocus="true"
@@ -47,7 +52,7 @@
             </div>
 
             <div
-                v-if="list.length === 0 && !isLoading && queryText !== ''"
+                v-if="list.length === 0 && !isValidating && queryText !== ''"
                 class="flex items-center justify-center flex-grow"
             >
                 <EmptyView
@@ -63,7 +68,7 @@
                 ref="assetlistRef"
                 :list="list"
                 :is-load-more="isLoadMore"
-                :is-loading="isLoading"
+                :is-loading="isValidating"
                 @loadMore="handleLoadMore"
                 class="mt-2"
             >
@@ -153,7 +158,7 @@
 
             const {
                 list,
-                isLoading,
+                isValidating,
                 isLoadMore,
                 fetch,
                 quickChange,
@@ -161,7 +166,7 @@
                 error,
                 updateList,
             } = useDiscoverList({
-                isCache: false,
+                isCache: true,
                 dependentKey,
                 queryText,
                 facets,
@@ -190,19 +195,8 @@
                 quickChange()
             }, 150)
 
-            watch(
-                () => selectedAsset.value.guid,
-                () => {
-                    updateFacet()
-                    quickChange()
-                },
-                {
-                    immediate: true,
-                }
-            )
-
             return {
-                isLoading,
+                isValidating,
                 queryText,
                 list,
                 facets,

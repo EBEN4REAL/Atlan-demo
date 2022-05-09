@@ -385,6 +385,9 @@
                 () => import('./activity/activityTab.vue')
             ),
             queries: defineAsyncComponent(() => import('./queries/index.vue')),
+            s3Objects: defineAsyncComponent(
+                () => import('./s3objects/index.vue')
+            ),
             relations: defineAsyncComponent(
                 () => import('./relations/index.vue')
             ),

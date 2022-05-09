@@ -417,6 +417,13 @@ export function useBody(
                 }
                 break
             }
+            case 's3BucketQualifiedName': {
+                if (filterObject) {
+                    base.filter('term', 's3BucketQualifiedName', filterObject)
+                }
+                break
+            }
+
             case 'glossary': {
                 if (filterObject) {
                     base.filter('term', '__glossary', filterObject)

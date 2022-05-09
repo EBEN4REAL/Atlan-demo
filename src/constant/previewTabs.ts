@@ -49,6 +49,16 @@ export const previewTabs = [
         analyticsKey: 'lineage',
     },
     {
+        name: 'Objects',
+        component: 's3Objects',
+        includes: ['S3Bucket'],
+        icon: 'S3Object',
+        tooltip: 'Objects',
+        scrubbed: false,
+        requiredInProfile: true,
+        analyticsKey: 's3objects',
+    },
+    {
         name: 'Relations',
         component: 'relations',
         excludes: [

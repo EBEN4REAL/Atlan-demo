@@ -15,7 +15,7 @@
                 v-if="queryCollections?.length > 0"
             >
                 <div
-                    class="flex items-center p-2 rounded hover:bg-new-gray-200"
+                    class="flex items-center p-2 rounded-lg hover:bg-new-gray-200"
                     :class="isCollectionPopoverVisible ? 'bg-new-gray-200' : ''"
                 >
                     <CollectionSelector

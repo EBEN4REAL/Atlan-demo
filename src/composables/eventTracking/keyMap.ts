@@ -295,6 +295,31 @@ const keyMap = {
             },
         },
     },
+<<<<<<< HEAD
+=======
+    lineage: {
+        search: {
+            changed: {
+                action: 'lineage_search_changed',
+                properties: (props) => ({
+                    result_count: props?.result_count,
+                    search_query: props?.search_query
+                }),
+            },
+        },
+        search_result: {
+            clicked: {
+                action: 'lineage_search_result_clicked',
+                properties: (props) => ({
+                    click_index: props?.click_index,
+                    result_count: props?.result_count,
+                    asset_type: props?.asset_type,
+                    connector: props?.connector,
+                }),
+            },
+        },
+    },
+>>>>>>> eed8f12df (FEAT: Lineage Search Result Clicked Event)
     gtc: {
         term: {
             created: {

@@ -567,11 +567,15 @@
 
             const handleEvent = (action) => {
                 let request_type
-                if (request.value?.destinationAttribute)
+                if (
+                    request.value?.destinationAttribute &&
+                    requestTypeEventMap[request.value?.destinationAttribute]
+                        ?.requestType
+                ) {
                     request_type =
                         requestTypeEventMap[request.value?.destinationAttribute]
                             .requestType
-                else
+                } else
                     request_type =
                         requestTypeEventMap[request.value?.requestType]
                             .requestType

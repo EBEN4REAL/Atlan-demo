@@ -164,17 +164,17 @@
                 </a-menu-item>
                 <!-- Bulk upload hidden for GA  : only available for secret url i.e. ?sandbox=true-->
                 <a-menu-item
-                    v-if="asset?.typeName === 'AtlasGlossary' && sandbox"
+                    v-if="asset?.typeName === 'AtlasGlossary'"
                     key="bulk upload"
                     class="px-4 py-2"
                     @click="closeMenu"
                 >
-                    <BulkUploadModal :entity="asset">
+                    <BulkUploadModal :guid="asset?.guid" :glossary-name="asset?.displayText">
                         <template #trigger>
                             <div class="flex items-center">
                                 <AtlanIcon
-                                    icon="Download"
-                                    class="m-0 mr-2 transform rotate-180 text-primary"
+                                    icon="Upload"
+                                    class="m-0 mr-2   text-primary"
                                 />
                                 <p class="p-0 m-0 text-gray-700 capitalize">
                                     Bulk upload terms

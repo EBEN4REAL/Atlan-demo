@@ -28,6 +28,10 @@
             const route = useRoute()
 
             if (!featureEnabledMap.value[WORKFLOW_CENTER_V2]) {
+                if (route.fullPath === '/workflows/marketplace') {
+                    router.replace('/workflowsv1/setup')
+                    return
+                }
                 const newRoute = route.fullPath.replace(
                     '/workflows',
                     '/workflowsv1'

@@ -216,7 +216,7 @@
                         <!--For Others: Table Item -->
                         <InsightsThreeDotMenu
                             v-else
-                            :options="dropdownTableOptions"
+                            :options="dropdownTableContextMenuOptions"
                             :item="item"
                             class=""
                             trigger="contextmenu"
@@ -264,7 +264,7 @@
                                         <div
                                             class="w-8 h-full opacity-70 bg-gradient-to-l from-new-gray-200"
                                         ></div>
-                                        <div
+                                        <!-- <div
                                             :data-test-id="'insert-in-editor'"
                                             v-if="!showVQB"
                                             class="bg-new-gray-200"
@@ -298,7 +298,7 @@
                                                     ></AtlanIcon>
                                                 </div>
                                             </a-tooltip>
-                                        </div>
+                                        </div> -->
 
                                         <div
                                             :class="
@@ -479,6 +479,27 @@
                                                 :item="item"
                                                 :treeData="treeData"
                                             />
+                                        </div>
+
+                                        <div class="pl-1">
+                                            <div
+                                                class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                            >
+                                                <InsightsThreeDotMenu
+                                                    :options="
+                                                        dropdownTableOptions
+                                                    "
+                                                    :item="item"
+                                                    class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                                >
+                                                    <template #menuTrigger>
+                                                        <AtlanIcon
+                                                            icon="KebabMenuHorizontal"
+                                                            class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                                        />
+                                                    </template>
+                                                </InsightsThreeDotMenu>
+                                            </div>
                                         </div>
 
                                         <!-- <div
@@ -938,7 +959,7 @@
             const actionClick = (
                 action: string,
                 t: assetInterface,
-                isPreview?: boolean
+                isPlay?: boolean
             ) => {
                 // for assetQuote Info of different sources
                 const assetQuoteType = getDialectInfo(
@@ -987,9 +1008,9 @@
                                 }
                             )
                         }
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'place_name_in_editor',
-                            trigger: 'quick_action',
+                            trigger: 'kebab_menu',
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: t.typeName,
                         })
@@ -998,20 +1019,30 @@
                     }
                     // This case is used for preview & Play
                     case 'play': {
-                        if (isPreview) {
-                            useAddEvent('insights', 'schemaTree', 'itemClick', {
-                                action: 'preview',
-                                trigger: 'quick_action',
-                                query_tab_id: activeInlineTab.value.key,
-                                asset_type: t.typeName,
-                            })
+                        if (!isPlay) {
+                            useAddEvent(
+                                'insights',
+                                'schema_tree',
+                                'item_click',
+                                {
+                                    action: 'preview_data',
+                                    trigger: 'quick_action',
+                                    query_tab_id: activeInlineTab.value.key,
+                                    asset_type: t.typeName,
+                                }
+                            )
                         } else {
-                            useAddEvent('insights', 'schemaTree', 'itemClick', {
-                                action: 'query_run',
-                                trigger: 'quick_action',
-                                query_tab_id: activeInlineTab.value.key,
-                                asset_type: t.typeName,
-                            })
+                            useAddEvent(
+                                'insights',
+                                'schema_tree',
+                                'item_click',
+                                {
+                                    action: 'query_run',
+                                    trigger: 'quick_action',
+                                    query_tab_id: activeInlineTab.value.key,
+                                    asset_type: t.typeName,
+                                }
+                            )
                         }
                         const activeInlineTabCopy: activeInlineTabInterface =
                             JSON.parse(
@@ -1048,7 +1079,7 @@
                         // new text
                         let context =
                             activeInlineTabCopy.explorer.schema.connectors
-                        if (isPreview) {
+                        if (isPlay) {
                             // select context from editor
                             context =
                                 activeInlineTabCopy.playground.editor.context
@@ -1075,7 +1106,7 @@
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
 
-                                    if (isPreview) {
+                                    if (isPlay) {
                                         const tabKey = handleAddNewTab(
                                             newQuery,
                                             {
@@ -1100,7 +1131,7 @@
 
                                     return
                                 } else {
-                                    if (isPreview) {
+                                    if (isPlay) {
                                         const tabIndex =
                                             inlineTabs.value.findIndex(
                                                 (tab) =>
@@ -1133,7 +1164,7 @@
 
                                     if (cqn !== queryConnectionQualifiedName) {
                                         newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                        if (isPreview) {
+                                        if (isPlay) {
                                             const tabKey = handleAddNewTab(
                                                 newQuery,
                                                 {
@@ -1162,7 +1193,7 @@
                                             dbqn !== queryDatabaseQualifiedName
                                         ) {
                                             newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                            if (isPreview) {
+                                            if (isPlay) {
                                                 const tabIndex =
                                                     inlineTabs.value.findIndex(
                                                         (tab) =>
@@ -1181,7 +1212,7 @@
                                 } else {
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                    if (isPreview) {
+                                    if (isPlay) {
                                         const tabIndex =
                                             inlineTabs.value.findIndex(
                                                 (tab) =>
@@ -1220,7 +1251,7 @@
                                         .join('/')
 
                                     if (cqn !== queryConnectionQualifiedName) {
-                                        if (isPreview) {
+                                        if (isPlay) {
                                             const tabKey = handleAddNewTab(
                                                 newQuery,
                                                 {
@@ -1250,7 +1281,7 @@
                                         ) {
                                             // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                             newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                            if (isPreview) {
+                                            if (isPlay) {
                                                 const tabIndex =
                                                     inlineTabs.value.findIndex(
                                                         (tab) =>
@@ -1269,7 +1300,7 @@
                                             ) {
                                                 // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                                 newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                                if (isPreview) {
+                                                if (isPlay) {
                                                     const tabIndex =
                                                         inlineTabs.value.findIndex(
                                                             (tab) =>
@@ -1297,7 +1328,7 @@
                                     console.log('match here')
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                    if (isPreview) {
+                                    if (isPlay) {
                                         const tabIndex =
                                             inlineTabs.value.findIndex(
                                                 (tab) =>
@@ -1317,7 +1348,7 @@
                         break
                     }
                     case 'info': {
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'open_sidebar',
                             trigger: 'quick_action',
                             query_tab_id: activeInlineTab.value.key,
@@ -1571,20 +1602,43 @@
                 return inlineTabData.key
             }
 
-            const setContextInEditor = (item) => {
+            const setContext = (item, explorerType: 'editor' | 'explorer') => {
                 const activeInlineTabCopy: activeInlineTabInterface =
                     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
 
-                let qualifiedName = item?.qualifiedName?.split('/')
-                if (qualifiedName?.length === 5) {
-                    activeInlineTabCopy.playground.editor.context = {
+                const qualifiedName = item?.qualifiedName?.split('/')
+
+                // Setting schemaQualifiedName - from Schemas (5) and from Tables (6)
+                // Setting context from table also sets explorer context till schemaQualifiedName only
+                if (
+                    qualifiedName?.length === 5 ||
+                    qualifiedName?.length === 6
+                ) {
+                    const newSchema = {
                         attributeName: 'schemaQualifiedName',
                         attributeValue: item?.qualifiedName,
                     }
-                } else if (qualifiedName?.length === 4) {
-                    activeInlineTabCopy.playground.editor.context = {
+                    if (explorerType === 'editor') {
+                        activeInlineTabCopy.playground.editor.context =
+                            newSchema
+                    } else if (explorerType === 'explorer') {
+                        activeInlineTabCopy.explorer.schema.connectors =
+                            newSchema
+                    }
+                }
+
+                // Setting databaseQualifiedName - from DB's
+                else if (qualifiedName?.length === 4) {
+                    const newDatabase = {
                         attributeName: 'databaseQualifiedName',
                         attributeValue: item?.qualifiedName,
+                    }
+                    if (explorerType === 'editor') {
+                        activeInlineTabCopy.playground.editor.context =
+                            newDatabase
+                    } else if (explorerType === 'explorer') {
+                        activeInlineTabCopy.explorer.schema.connectors =
+                            newDatabase
                     }
                 }
 
@@ -1634,14 +1688,20 @@
                     limitRows.value,
                     useSchemaExplorerContext
                 )
+                useAddEvent('insights', 'schema_tree', 'item_click', {
+                    action: 'preview_data',
+                    trigger: 'quick_action',
+                    query_tab_id: activeInlineTab.value.key,
+                    asset_type: item?.entity.typeName,
+                })
 
                 playQuery(selectedText, item?.entity)
             }
 
-            const dropdownOptions = [
+            const dropdownTableOptions = [
                 {
-                    title: 'Set in editor context',
-                    key: 'Set in editor context',
+                    title: 'Set explorer context',
+                    key: 'Set explorer context',
                     class: `
                                                 ${
                                                     readOnly?.value
@@ -1651,44 +1711,107 @@
 
                                             `,
                     disabled: false,
-                    icon: 'Add',
-                    iconClass: 'w-4 h-4 my-auto mr-1.5',
+                    // icon: 'Add',
+                    // iconClass: 'w-4 h-4 my-auto mr-1.5',
                     wrapperClass: 'flex items-center ',
                     component: MenuItem,
                     handleClick: ({ item }) => {
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
-                            action: 'set_editor_context',
+                        setContext(item, 'explorer')
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
+                            action: 'set_explorer_context',
                             trigger: 'kebab_menu',
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: item.typeName,
                         })
-                        setContextInEditor(item)
                     },
                 },
                 {
                     title: 'Place name in editor',
                     key: 'AddAssetName',
                     component: MenuItem,
-                    icon: 'AddAssetName',
-                    iconClass: 'w-4 h-4 my-auto mr-1.5 focus:outline-none',
+                    // icon: 'AddAssetName',
+                    // iconClass: 'w-4 h-4 my-auto mr-1.5 focus:outline-none',
                     wrapperClass: 'flex items-center ',
                     class: '',
                     hide: showVQB.value,
                     disabled: false,
                     handleClick: ({ item }) => {
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
-                            action: 'place_name_in_editor',
+                        actionClick('add', item)
+                    },
+                },
+            ]
+
+            const dropdownOptions = [
+                {
+                    title: 'Set editor context',
+                    key: 'Set editor context',
+                    class: `
+                                                ${
+                                                    readOnly?.value
+                                                        ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
+                                                        : 'cursor-pointer'
+                                                }
+
+                                            `,
+                    disabled: false,
+                    // icon: 'Add',
+                    // iconClass: 'w-4 h-4 my-auto mr-1.5',
+                    wrapperClass: 'flex items-center ',
+                    component: MenuItem,
+                    handleClick: ({ item }) => {
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
+                            action: 'set_editor_context',
                             trigger: 'kebab_menu',
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: item.typeName,
                         })
+                        setContext(item, 'editor')
+                    },
+                },
+                {
+                    title: 'Set explorer context',
+                    key: 'Set explorer context',
+                    class: `
+                                                ${
+                                                    readOnly?.value
+                                                        ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
+                                                        : 'cursor-pointer'
+                                                }
+
+                                            `,
+                    disabled: false,
+                    // icon: 'Add',
+                    // iconClass: 'w-4 h-4 my-auto mr-1.5',
+                    wrapperClass: 'flex items-center ',
+                    component: MenuItem,
+                    handleClick: ({ item }) => {
+                        setContext(item, 'explorer')
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
+                            action: 'set_explorer_context',
+                            trigger: 'kebab_menu',
+                            query_tab_id: activeInlineTab.value.key,
+                            asset_type: item.typeName,
+                        })
+                    },
+                },
+                {
+                    title: 'Place name in editor',
+                    key: 'AddAssetName',
+                    component: MenuItem,
+                    // icon: 'AddAssetName',
+                    // iconClass: 'w-4 h-4 my-auto mr-1.5 focus:outline-none',
+                    wrapperClass: 'flex items-center ',
+                    class: '',
+                    hide: showVQB.value,
+                    disabled: false,
+                    handleClick: ({ item }) => {
                         actionClick('add', item)
                     },
                 },
             ]
 
             // Different options depending on whether VQB is open or not
-            const dropdownTableOptions = showVQB.value
+            const dropdownTableContextMenuOptions = showVQB.value
                 ? [
                       {
                           title: `Open ${item?.value?.typeName?.toLowerCase()} sidebar`,
@@ -1811,6 +1934,7 @@
                 lastTooltipPresence,
                 dropdownOptions,
                 dropdownTableOptions,
+                dropdownTableContextMenuOptions,
                 dropdownColumnOptions,
                 // showContextModal,
                 // closeContextModal,
@@ -1835,7 +1959,7 @@
                 item,
                 childCount,
                 openSidebar,
-                setContextInEditor,
+                setContext,
                 readOnly,
                 previewData,
                 tooltipText,

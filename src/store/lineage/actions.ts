@@ -1,4 +1,7 @@
 export const actions = {
+    setPreference(key, value) {
+        this.preferences[key] = value
+    },
     setCyclicRelation(relStr) {
         if (this.cyclicRelations.includes(relStr)) return
         this.cyclicRelations.push(relStr)

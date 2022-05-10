@@ -116,12 +116,17 @@
         toRefs,
         onActivated,
     } from 'vue'
+    import { useRouter } from 'vue-router'
+    import { debouncedWatch, useDebounceFn } from '@vueuse/core'
 
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
 
-    import { useRouter } from 'vue-router'
-    import { debouncedWatch, useDebounceFn } from '@vueuse/core'
+    import {
+        featureEnabledMap,
+        WORKFLOW_CENTER_V2,
+    } from '~/composables/labs/labFeatureList'
+
     import WorkflowList from './list/index.vue'
     import WorkflowPreview from '~/workflows/components/workflows/preview/index.vue'
     import { useWorkflowDiscoverList } from '~/workflows/composables/package/useWorkflowDiscoverList'
@@ -145,7 +150,11 @@
             const router = useRouter()
 
             const handleNewWorkflow = () => {
-                router.push('/workflows/setup')
+                router.push(
+                    featureEnabledMap.value[WORKFLOW_CENTER_V2]
+                        ? '/workflows/setup'
+                        : '/workflowsv1/setup'
+                )
             }
 
             const activeKey = ref(['sourceCategory_0'])

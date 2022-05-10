@@ -1,6 +1,33 @@
 <template>
-    <div class="flex w-full h-full overflow-hidden" v-if="!status">
-        <div class="flex flex-col flex-grow h-full">
+    <div
+        class="flex flex-col flex-grow w-full h-full overflow-hidden bg-white border rounded-lg"
+        :class="{ 'items-center justify-center': status }"
+    >
+        <template v-if="!status">
+            <div v-if="!isEdit" class="flex items-center px-5 py-4">
+                <a-tooltip
+                    :mouseEnterDelay="1"
+                    placement="bottomLeft"
+                    title="Back to marketplace"
+                >
+                    <IconButton
+                        icon="ChevronLeft"
+                        class="mr-4"
+                        @click="handleExit"
+                    />
+                </a-tooltip>
+                <img
+                    v-if="icon(workflowTemplate)"
+                    :src="icon(workflowTemplate)"
+                    class="w-6 h-6 mb-0.5"
+                />
+                <div v-else class="w-6 mb-0.5 text-xl leading-6 text-center">
+                    {{ emoji(workflowTemplate) }}
+                </div>
+                <span class="ml-1 text-xl font-bold">{{
+                    packageName(workflowTemplate)
+                }}</span>
+            </div>
             <div class="p-6">
                 <a-steps v-if="steps.length > 0" :current="currentStep">
                     <template v-for="(step, index) in steps" :key="step.id">
@@ -11,7 +38,7 @@
                 </a-steps>
             </div>
             <div
-                class="flex-1 px-6 py-8 overflow-y-auto bg-white"
+                class="flex-1 px-6 py-8 overflow-y-auto"
                 v-if="workflowTemplate && currentStep < steps.length"
             >
                 <DynamicForm
@@ -27,7 +54,7 @@
             </div>
 
             <div
-                class="flex justify-between px-6 py-3 bg-gray-100 border-t"
+                class="flex justify-between px-6 py-3 border-t"
                 v-if="currentStep < steps.length"
             >
                 <AtlanButton2
@@ -111,99 +138,113 @@
                             label="Schedule & Run"
                         />
                     </a-popconfirm>
-                </div>
+                </div></div
+        ></template>
+
+        <!-- Finish Page -->
+        <template v-else>
+            <div
+                v-if="isLoading || (!run?.status && runLoading)"
+                class="flex flex-col justify-center"
+            >
+                <AtlanLoader class="h-10 mb-2" />
+                <div>Setting up your workflow</div>
             </div>
-        </div>
-    </div>
 
-    <!-- Finish Page -->
-    <div v-else class="flex flex-col items-center justify-center w-full h-full">
-        <div
-            v-if="isLoading || (!run?.status && runLoading)"
-            class="flex flex-col justify-center"
-        >
-            <AtlanLoader class="h-10 mb-2" />
-            <div>Setting up your workflow</div>
-        </div>
-
-        <!-- Update details, but don't run now -->
-        <template v-else-if="isEdit && !runOnUpdate">
-            <a-result :status="updateStatus.status" :title="updateStatus.title">
-                <template v-if="updateStatus.status === 'loading'" #icon>
-                    <AtlanLoader class="h-14" />
-                </template>
-                <template #extra>
-                    <div class="flex items-center justify-center">
-                        <router-link to="/workflows">
-                            <AtlanButton2
-                                v-if="updateStatus.status === 'success'"
-                                color="secondary"
+            <!-- Update details, but don't run now -->
+            <template v-else-if="isEdit && !runOnUpdate">
+                <a-result
+                    :status="updateStatus.status"
+                    :title="updateStatus.title"
+                >
+                    <template v-if="updateStatus.status === 'loading'" #icon>
+                        <AtlanLoader class="h-14" />
+                    </template>
+                    <template #extra>
+                        <div class="flex items-center justify-center">
+                            <router-link
+                                :to="
+                                    featureEnabledMap[WORKFLOW_CENTER_V2]
+                                        ? '/workflows'
+                                        : '/workflowsv1'
+                                "
                             >
-                                Back to Workflows
-                            </AtlanButton2>
-                        </router-link>
+                                <AtlanButton2
+                                    v-if="updateStatus.status === 'success'"
+                                    color="secondary"
+                                >
+                                    Back to Workflows
+                                </AtlanButton2>
+                            </router-link>
+                        </div>
+
+                        <div
+                            v-if="isUpdateError"
+                            class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
+                        >
+                            <span>{{ isUpdateError }}</span>
+
+                            <AtlanButton2
+                                v-if="updateStatus.status === 'error'"
+                                prefixIcon="ChevronLeft"
+                                color="secondary"
+                                @click="handleBackToSetup"
+                                label="Back to setup"
+                            />
+                        </div>
+                    </template>
+                </a-result>
+            </template>
+
+            <a-result
+                v-else-if="run"
+                :status="status"
+                :title="title"
+                :sub-title="subTitle"
+            >
+                <template #extra>
+                    <div>
+                        <Run
+                            v-if="run && !errorMesssage"
+                            :run="run"
+                            :is-loading="runLoading || !run?.status?.progress"
+                        ></Run>
+
+                        <div class="flex justify-center mt-6 gap-x-6">
+                            <router-link
+                                v-if="status === 'success'"
+                                to="/assets"
+                            >
+                                <AtlanButton2
+                                    color="secondary"
+                                    label="Back to Assets"
+                                />
+                            </router-link>
+
+                            <AtlanButton2
+                                v-if="run?.metadata"
+                                label="Monitor Run"
+                                @click="handleTrackLink"
+                            />
+                        </div>
                     </div>
 
                     <div
-                        v-if="isUpdateError"
+                        v-if="errorMesssage"
                         class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
                     >
-                        <span>{{ isUpdateError }}</span>
-
+                        <span class="text-error">{{ errorMesssage }}</span>
                         <AtlanButton2
-                            v-if="updateStatus.status === 'error'"
-                            prefixIcon="ChevronLeft"
-                            color="secondary"
-                            @click="handleBackToSetup"
+                            v-if="status === 'error'"
                             label="Back to setup"
+                            color="secondary"
+                            prefixIcon="ChevronLeft"
+                            @click="handleBackToSetup"
                         />
                     </div>
                 </template>
             </a-result>
         </template>
-
-        <a-result
-            v-else-if="run"
-            :status="status"
-            :title="title"
-            :sub-title="subTitle"
-        >
-            <template #extra>
-                <div>
-                    <Run
-                        v-if="run && !errorMesssage"
-                        :run="run"
-                        :is-loading="runLoading || !run?.status?.progress"
-                    ></Run>
-
-                    <div class="flex justify-center mt-6 gap-x-6">
-                        <router-link v-if="status === 'success'" to="/assets">
-                            <AtlanButton2 label="Back to Assets" />
-                        </router-link>
-
-                        <AtlanButton2
-                            v-if="run?.metadata"
-                            label="Monitor Run"
-                            @click="handleTrackLink"
-                        />
-                    </div>
-                </div>
-
-                <div
-                    v-if="errorMesssage"
-                    class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
-                >
-                    <span class="text-error">{{ errorMesssage }}</span>
-                    <AtlanButton2
-                        v-if="status === 'error'"
-                        label="Back to setup"
-                        color="secondary"
-                        prefixIcon="ChevronLeft"
-                        @click="handleBackToSetup"
-                    />
-                </div>
-            </template>
-        </a-result>
     </div>
 </template>
 
@@ -229,6 +270,11 @@
     } from '@vueuse/core'
     import { useRoute, useRouter } from 'vue-router'
 
+    import {
+        featureEnabledMap,
+        WORKFLOW_CENTER_V2,
+    } from '~/composables/labs/labFeatureList'
+
     // Components
     import DynamicForm from '~/workflows/components/dynamicForm2/index.vue'
     import Schedule from './schedule.vue'
@@ -236,13 +282,14 @@
 
     import { createWorkflow } from '~/workflows/composables/package/useWorkflow'
     import { useWorkflowHelper } from '~/workflows/composables/package/useWorkflowHelper'
-    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import useWorkflowSubmit from '~/workflows/composables/package/useWorkflowSubmit'
     import useWorkflowUpdate from '~/workflows/composables/package/useWorkflowUpdate'
 
     import { useRunDiscoverList } from '~/workflows/composables/package/useRunDiscoverList'
 
     import { getEnv } from '~/modules/__env'
+    import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
 
     // Composables
 
@@ -315,6 +362,7 @@
             const isWorkflowDirty = inject('isWorkflowDirty')
 
             const { name } = useWorkflowInfo()
+            const { name: packageName, icon, emoji } = usePackageInfo()
 
             const isSandbox = computed(() => route?.query?.sandbox || '')
 
@@ -446,12 +494,19 @@
             const handleTrackLink = () => {
                 if (run.value?.metadata?.name) {
                     router.push(
-                        `/workflows/${
-                            data.value?.metadata?.name ||
-                            run.value?.metadata?.labels[
-                                'workflows.argoproj.io/workflow-template'
-                            ]
-                        }/runs?name=${run.value?.metadata?.name}`
+                        featureEnabledMap.value[WORKFLOW_CENTER_V2]
+                            ? `/workflows/profile/${
+                                  data.value?.metadata?.name ||
+                                  run.value?.metadata?.labels[
+                                      'workflows.argoproj.io/workflow-template'
+                                  ]
+                              }/runs?name=${run.value?.metadata?.name}`
+                            : `/workflowsv1/${
+                                  data.value?.metadata?.name ||
+                                  run.value?.metadata?.labels[
+                                      'workflows.argoproj.io/workflow-template'
+                                  ]
+                              }/runs?name=${run.value?.metadata?.name}`
                     )
                 }
 
@@ -703,7 +758,11 @@
             }
 
             const handleExit = () => {
-                router.replace(`/workflows/setup`)
+                router.replace(
+                    featureEnabledMap.value[WORKFLOW_CENTER_V2]
+                        ? '/workflows/marketplace'
+                        : '/workflowsv1/setup'
+                )
             }
 
             const handleStepClick = (step) => {
@@ -756,6 +815,11 @@
                 path,
                 runOnUpdate,
                 router,
+                packageName,
+                icon,
+                emoji,
+                featureEnabledMap,
+                WORKFLOW_CENTER_V2,
             }
         },
     })

@@ -55,22 +55,26 @@ export const requestTypeEventMap = {
         requestType: 'ownerGroups',
         action: 'add',
     },
-    create_term:{
-        requestType:'create_term',
-        action:'create'
+    create_term: {
+        requestType: 'create_term',
+        action: 'create',
     },
-    create_glossary:{
-        requestType:'create_glossary',
-        action:'create'
+    create_glossary: {
+        requestType: 'create_glossary',
+        action: 'create',
     },
-    create_category:{
-        requestType:'create_category',
-        action:'create'
+    create_category: {
+        requestType: 'create_category',
+        action: 'create',
     },
-    name:{
-        requestType:'name',
-        action:'edit'
-    }
+    name: {
+        requestType: 'name',
+        action: 'edit',
+    },
+    bm_attribute: {
+        requestType: 'bm_attribute',
+        action: 'edit',
+    },
 }
 
 export const attributeCopyMapping: Record<string, string> = {

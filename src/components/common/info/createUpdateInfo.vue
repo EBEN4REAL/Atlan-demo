@@ -18,7 +18,7 @@
                     </template>
                     <span
                         v-else
-                        class="cursor-pointer hover:underline"
+                        class="cursor-pointer hover:underline text-gray"
                         @click="() => openUserSidebar(updatedBy)"
                     >
                         <img
@@ -27,6 +27,7 @@
                             class="flex-none inline-block h-4 rounded-full"
                             @error="showUpdaterImage = false"
                         />
+                        <AtlanIcon v-else icon="User" class="mb-0.5" />
                         {{ updatedBy }}
                     </span>
                 </template>
@@ -54,7 +55,7 @@
                     </template>
                     <span
                         v-else
-                        class="cursor-pointer hover:underline"
+                        class="cursor-pointer hover:underline text-gray"
                         @click="() => openUserSidebar(createdBy)"
                     >
                         <img
@@ -63,6 +64,7 @@
                             class="flex-none inline-block h-4 rounded-full"
                             @error="showCreatorImage = false"
                         />
+                        <AtlanIcon v-else icon="User" class="mb-0.5" />
                         {{ createdBy }}
                     </span>
                 </template>

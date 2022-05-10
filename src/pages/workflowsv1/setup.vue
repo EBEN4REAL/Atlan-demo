@@ -1,5 +1,5 @@
 <template>
-    <div class="flex w-full h-full overflow-x-hidden bg-white">
+    <div class="flex w-full h-full overflow-x-hidden bg-primary-light">
         <router-view v-if="isItem" @select="handleSelect"></router-view>
         <div class="flex flex-1 h-full">
             <keep-alive>
@@ -58,7 +58,7 @@
                 selectedPackage.value = item
                 const url = selectedPackage.value.metadata.name
                 router.push({
-                    path: `/workflows/setup/${url}`,
+                    path: `/workflowsv1/setup/${url}`,
                     query: {},
                 })
             }
@@ -71,7 +71,7 @@
                 selectedPackage.value = item
                 const url = selectedPackage.value.metadata.name
                 router.push({
-                    path: `/workflows/setup/${url}`,
+                    path: `/workflowsv1/setup/${url}`,
                     query: { sandbox: 'true' },
                 })
             }

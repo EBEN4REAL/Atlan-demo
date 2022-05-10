@@ -1,4 +1,11 @@
 /* eslint-disable no-nested-ternary */
+/** COMPOSABLES */
+import useAssetInfo from '~/composables/discovery/useAssetInfo'
+
+/** CONSTANTS */
+import { dataTypeCategoryList } from '~/constant/dataType'
+
+/** UTILS */
 import {
     getNodeSourceImage,
     getSource,
@@ -42,8 +49,6 @@ import {
     tableauDatasourceField,
     lookerField,
 } from './icons'
-import { dataTypeCategoryList } from '~/constant/dataType'
-import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
 interface EdgeStyle {
     stroke?: string
@@ -86,7 +91,7 @@ const portDataTypeIcons = {
 const biPortDataTypeIcons = {
     TableauCalculatedField: tableauCalculatedField,
     TableauDatasourceField: tableauDatasourceField,
-    LookerField: lookerField,
+    // LookerField: lookerField,
 }
 
 const columnKeyTypeIcons = {
@@ -99,17 +104,15 @@ const portsLabelMap = {
     View: 'columns',
     MaterialisedView: 'columns',
     TableauDatasource: 'fields',
-    LookerExplore: 'fields',
-    LookerView: 'fields',
+    // LookerExplore: 'fields',
+    // LookerView: 'fields',
 }
 
-const getPortsCTALabel = (typeName, portsCount, highlightPorts) => {
+const getPortsCTALabel = (typeName, portsCount) => {
     const label = portsLabelMap[typeName]
     return portsCount || portsCount === 0
         ? `${portsCount} ${label}`
-        : // : highlightPorts
-          // ? `${label}`
-          `view ${label}`
+        : `view ${label}`
 }
 
 export default function useGraph(graph) {
@@ -132,8 +135,8 @@ export default function useGraph(graph) {
             'View',
             'MaterialisedView',
             'TableauDatasource',
-            'LookerExplore',
-            'LookerView',
+            // 'LookerExplore',
+            // 'LookerView',
         ].includes(typeName)
 
         const computedData = {
@@ -149,14 +152,14 @@ export default function useGraph(graph) {
             isSelectedNode: false,
             isHighlightedNode: false,
             isGrayed: false,
-            highlightPorts: false,
+            highlightPorts: [],
             hiddenCount: 0,
-            ctaPortRightIcon: '',
-            ctaPortRightId: '',
-            ctaPortRightLoading: false,
-            ctaPortLeftIcon: '',
-            ctaPortLeftId: '',
-            ctaPortLeftLoading: false,
+            ctaRightIcon: '',
+            ctaRightId: '',
+            ctaRightLoading: false,
+            ctaLeftIcon: '',
+            ctaLeftId: '',
+            ctaLeftLoading: false,
             ...dataObj,
         }
 
@@ -205,10 +208,11 @@ export default function useGraph(graph) {
 
                                 const isSelectedPort =
                                     data?.selectedPortId === port.guid
-                                const isHighlightedPort = data?.highlightPorts
+                                const isHighlightedPort =
+                                    data?.highlightPorts.includes(port.guid)
 
                                 res += `
-                                <div id="${port.guid}" iscolitem="${
+                                <div id="${port.guid}" isportitem="${
                                     port.guid
                                 }" class="node-port flex justify-between items-center relative 
                                 ${isSelectedPort ? 'selected-port' : ''}
@@ -254,7 +258,7 @@ export default function useGraph(graph) {
                                 </div>`
                             } else
                                 res += `
-                                <div iscolshowmore="true" class="node-port flex justify-center text-new-blue-400 items-center pl-2">
+                                <div isportshowmore="true" class="node-port flex justify-center text-new-blue-400 items-center pl-2">
                                     <span> Show more ${
                                         portsLabelMap[typeName]
                                     } </span>
@@ -303,8 +307,16 @@ export default function useGraph(graph) {
                                 <div class="node-text group">
                                     <div class="flex items-center gap-x-1">
                                         <span title="${displayText}" class="truncate node-title">${displayText}</span>
-                                        <span class="flex-none ml-1">${status}</span>
-                                        <span class="flex-none ml-1 node-announcement">${flag}</span>
+                                        <span class=" ${
+                                            !status
+                                                ? 'w-0 hidden'
+                                                : 'flex-none ml-1'
+                                        }">${status}</span>
+                                        <span class=" node-announcement ${
+                                            !flag
+                                                ? 'w-0 hidden'
+                                                : 'flex-none ml-1'
+                                        }">${flag}</span>
 
                                     </div>
                                 </div>
@@ -328,8 +340,9 @@ export default function useGraph(graph) {
                             </div>
                             <div class="lineage-node__ports 
                                     ${isNodeWithPorts ? '' : 'hidden'}">
-                                <div iscollist="true" class="lineage-node__ports-cta ${
-                                    data?.highlightPorts || data?.selectedPortId
+                                <div isportlist="true" class="lineage-node__ports-cta ${
+                                    data?.highlightPorts.length ||
+                                    data?.selectedPortId
                                         ? 'opacity-30 cursor-not-allowed'
                                         : ''
                                 }">
@@ -337,8 +350,7 @@ export default function useGraph(graph) {
                                         <span class="mr-2">
                                             ${getPortsCTALabel(
                                                 typeName,
-                                                data?.portsCount,
-                                                data?.highlightPorts
+                                                data?.portsCount
                                             )}
                                         </span>
                                         <span>
@@ -363,14 +375,14 @@ export default function useGraph(graph) {
                                 </div>
                             </div>
                             ${
-                                data?.ctaPortLeftIcon
+                                data?.ctaLeftIcon
                                     ? `<div isctaleft="${
-                                          data?.ctaPortLeftId
-                                      }" class="ctaPortLeft">
+                                          data?.ctaLeftId
+                                      }" class="ctaLeft">
                                ${
-                                   data?.ctaPortLeftLoading
+                                   data?.ctaLeftLoading
                                        ? iconLoaderFixed
-                                       : data?.ctaPortLeftIcon === 'col'
+                                       : data?.ctaLeftIcon === 'col'
                                        ? iconCollapse
                                        : iconExpand
                                }
@@ -378,14 +390,14 @@ export default function useGraph(graph) {
                                     : ''
                             }
                             ${
-                                data?.ctaPortRightIcon
+                                data?.ctaRightIcon
                                     ? `<div isctaright="${
-                                          data?.ctaPortRightId
-                                      }" class="ctaPortRight">
+                                          data?.ctaRightId
+                                      }" class="ctaRight">
                                 ${
-                                    data?.ctaPortRightLoading
+                                    data?.ctaRightLoading
                                         ? iconLoaderFixed
-                                        : data?.ctaPortRightIcon === 'col'
+                                        : data?.ctaRightIcon === 'col'
                                         ? iconCollapse
                                         : iconExpand
                                 }
@@ -403,44 +415,6 @@ export default function useGraph(graph) {
             },
             ports: {
                 groups: {
-                    ctaPortLeft: {
-                        position: { name: 'left' },
-                        markup: [
-                            {
-                                tagName: 'circle',
-                                selector: 'portBody',
-                            },
-                        ],
-                        attrs: {
-                            portBody: {
-                                r: 14,
-                                strokeWidth: 0,
-                                stroke: '#000000',
-                                fill: '#000000',
-                                width: 1,
-                                height: 1,
-                            },
-                        },
-                    },
-                    ctaPortRight: {
-                        position: { name: 'right' },
-                        markup: [
-                            {
-                                tagName: 'circle',
-                                selector: 'portBody',
-                            },
-                        ],
-                        attrs: {
-                            portBody: {
-                                r: 14,
-                                strokeWidth: 0,
-                                stroke: '#000000',
-                                fill: '#000000',
-                                width: 1,
-                                height: 1,
-                            },
-                        },
-                    },
                     invisiblePort: {
                         markup: [
                             {
@@ -503,12 +477,9 @@ export default function useGraph(graph) {
     }
 
     const createEdgeData = (relation, data = {}, styles: EdgeStyle = {}) => {
-        const isDup = data?.isDup
-        const isCyclicEdge = data?.isCyclicEdge
         const stroke = styles?.stroke
 
         const edgeData = {
-            isDup,
             zIndex: 0,
             id: relation.id,
             source: {
@@ -522,7 +493,7 @@ export default function useGraph(graph) {
             router: {
                 name: 'metro',
             },
-            connector: { name: !isCyclicEdge ? 'beiz' : 'beizAlt' },
+            connector: { name: 'beiz' },
             attrs: {
                 line: {
                     stroke,
@@ -576,13 +547,7 @@ export default function useGraph(graph) {
                 {
                     attrs: {
                         label: {
-                            text:
-                                // eslint-disable-next-line no-nested-ternary
-                                relation?.type === 'related'
-                                    ? 'related'
-                                    : isDup
-                                    ? 'grouped-process'
-                                    : 'process',
+                            text: 'process',
                         },
                     },
                 },

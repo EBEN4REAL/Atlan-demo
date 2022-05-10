@@ -9,10 +9,15 @@ import useLineageStore from '~/store/lineage'
 
 /** COMPOSABLES */
 import useGraph from './useGraph'
+import useGetNodes from './useGetNodes'
+import useTransformGraph from './useTransformGraph'
 
 /** UTILS */
-import { isCyclicEdge, getFilteredRelations } from './util.js'
-import useGetNodes from './useGetNodes'
+import {
+    getFilteredRelations,
+    controlCyclicEdges,
+    controlGroupedEdges,
+} from './util.js'
 
 export default async function useComputeGraph({
     graph,
@@ -35,6 +40,7 @@ export default async function useComputeGraph({
     const mergedLineageData = ref({})
 
     const { createNodeData, createEdgeData } = useGraph(graph)
+    const { fit } = useTransformGraph(graph, () => {})
 
     mergedLineageData.value = { ...lineage.value }
     lineageStore.setMergedLineageData(mergedLineageData.value)
@@ -50,7 +56,7 @@ export default async function useComputeGraph({
             'Column',
             'TableauDatasourceField',
             'TableauCalculatedField',
-            'LookerField',
+            // 'LookerField',
         ]
         return typeNames.includes(typeName)
     }
@@ -81,7 +87,9 @@ export default async function useComputeGraph({
 
         const isNodeExist = (id) => nodes.value.find((x) => x.id === id)
 
-        relations.forEach((x) => {
+        const filteredRelations = getFilteredRelations(relations)
+
+        filteredRelations.forEach((x) => {
             const { fromEntityId: from, toEntityId: to } = x
 
             const { typeName: fromTypeName, guid: fromGuid } = getAsset(from)
@@ -236,9 +244,9 @@ export default async function useComputeGraph({
             })
         })
 
-        const newRels = getFilteredRelations(lineageData.relations)
+        const filteredRelations = getFilteredRelations(lineageData.relations)
 
-        newRels.forEach((rel) => {
+        filteredRelations.forEach((rel) => {
             const { fromEntityId: from, toEntityId: to, processId } = rel
 
             if (from === to) return
@@ -251,19 +259,9 @@ export default async function useComputeGraph({
             if (allSourcesHiddenIds.value.find((y) => [from, to].includes(y)))
                 return
 
-            let edgeExtraData = {}
             const styles = {
                 stroke: '#B2B8C7',
             }
-
-            if (isCyclicEdge(mergedLineageData, from, to)) {
-                styles.stroke = '#ff4848'
-                edgeExtraData = { ...edgeExtraData, isCyclicEdge: true }
-
-                lineageStore.setCyclicRelation(`${from}@${to}`)
-            }
-
-            edgeExtraData = { ...edgeExtraData, isDup: !!rel?.isDup }
 
             const relation = {
                 id: `${processId}/${from}@${to}`,
@@ -273,16 +271,17 @@ export default async function useComputeGraph({
                 targetPort: `${to}-invisiblePort`,
             }
 
-            const { edgeData } = createEdgeData(relation, edgeExtraData, styles)
+            const { edgeData } = createEdgeData(relation, {}, styles)
             edges.value.push(edgeData)
         })
     }
 
     createNodeEdges(lineage.value)
 
-    /* createColCTAPorts */
-    const createColCTAPorts = () => {
-        const { relations, baseEntityGuid } = mergedLineageData.value
+    /* createCTAs */
+    const createCTAs = () => {
+        const { relations, baseEntityGuid, childrenCounts } =
+            mergedLineageData.value
 
         const { predecessors, successors } = useGetNodes(graph, baseEntityGuid)
 
@@ -290,78 +289,93 @@ export default async function useComputeGraph({
             !!relations.find((x) => x.fromEntityId === id) &&
             !!relations.find((x) => x.toEntityId === id)
 
-        graph.value.freeze('createColCTAPorts')
-        graph.value.getNodes().forEach((node) => {
-            const isColNode = isCollapsible(node.id)
-
-            if (
-                (isColNode && successors.includes(node.id)) ||
-                (baseEntityGuid === node.id && successors.length)
-            ) {
-                const id = `${node.id}-ctaPortRight-coll`
-                node.updateData({
-                    ctaPortRightIcon: 'col',
-                    ctaPortRightId: id,
-                })
-            }
-
-            if (
-                (isColNode && predecessors.includes(node.id)) ||
-                (baseEntityGuid === node.id && predecessors.length)
-            ) {
-                const id = `${node.id}-ctaPortLeft-coll`
-                node.updateData({
-                    ctaPortLeftIcon: 'col',
-                    ctaPortLeftId: id,
-                })
-            }
-        })
-        graph.value.unfreeze('createColCTAPorts')
-    }
-
-    /* createHoPaCTAPorts */
-    const createHoPaCTAPorts = () => {
-        const { relations, childrenCounts } = mergedLineageData.value
-
-        const checkNode = (id, prop) => {
-            let res = true
-            relations.forEach((x) => {
-                if (x[prop] === id) res = false
-            })
-            return res
-        }
-
         const hasHoPa = (id) => {
             let res = false
-            const isRootNode = checkNode(id, 'toEntityId')
-            const isLeafNode = checkNode(id, 'fromEntityId')
+            const isRootNode = graph.value.isRootNode(id)
+            const isLeafNode = graph.value.isLeafNode(id)
             if (isRootNode) res = !!childrenCounts?.[id]?.INPUT
             if (isLeafNode) res = !!childrenCounts?.[id]?.OUTPUT
             return res
         }
 
-        graph.value.freeze('createHoPaCTAPorts')
+        graph.value.freeze('createCTAs')
         graph.value.getNodes().forEach((node) => {
+            const isCyclicGraph = !!lineageStore.getCyclicRelations().length
+            const isColNode = isCollapsible(node.id)
             const isHoPaNode = hasHoPa(node.id)
-            const isRootNode = checkNode(node.id, 'toEntityId')
-            const isLeafNode = checkNode(node.id, 'fromEntityId')
+            const isRootNode = graph.value.isRootNode(node.id)
+            const isLeafNode = graph.value.isLeafNode(node.id)
+
+            if (
+                !isCyclicGraph &&
+                ((isColNode && successors.includes(node.id)) ||
+                    (baseEntityGuid === node.id && successors.length))
+            ) {
+                if (isCyclicGraph) return
+                const id = `${node.id}-ctaRight-hoTo`
+                node.updateData({
+                    ctaRightIcon: 'col',
+                    ctaRightId: id,
+                })
+            }
+
+            if (
+                !isCyclicGraph &&
+                ((isColNode && predecessors.includes(node.id)) ||
+                    (baseEntityGuid === node.id && predecessors.length))
+            ) {
+                const id = `${node.id}-ctaLeft-hoTo`
+                node.updateData({
+                    ctaLeftIcon: 'col',
+                    ctaLeftId: id,
+                })
+            }
 
             if ((isRootNode || isLeafNode) && isHoPaNode) {
-                const pos = isLeafNode ? 'ctaPortRight' : 'ctaPortLeft'
+                const pos = isLeafNode ? 'ctaRight' : 'ctaLeft'
                 const id = `${node.id}-${pos}-hoPa`
-                if (pos === 'ctaPortRight')
+                if (pos === 'ctaRight')
                     node.updateData({
-                        ctaPortRightIcon: 'exp',
-                        ctaPortRightId: id,
+                        ctaRightIcon: 'exp',
+                        ctaRightId: id,
                     })
-                if (pos === 'ctaPortLeft')
+                if (pos === 'ctaLeft')
                     node.updateData({
-                        ctaPortLeftIcon: 'exp',
-                        ctaPortLeftId: id,
+                        ctaLeftIcon: 'exp',
+                        ctaLeftId: id,
                     })
             }
+
+            const { ctaRightIcon, ctaLeftIcon } = node.getData()
+            if (!ctaRightIcon && !ctaLeftIcon) return
+
+            let widthVal = 268
+            let xVal = 1
+
+            if (ctaRightIcon && ctaLeftIcon) {
+                widthVal = 298
+                xVal = -14
+            }
+            if (ctaRightIcon && !ctaLeftIcon) {
+                widthVal = 284
+            }
+            if (!ctaRightIcon && ctaLeftIcon) {
+                widthVal = 284
+                xVal = -14
+            }
+
+            node.setPortProp(
+                `${node.id}-invisiblePort`,
+                'attrs/portBody/width',
+                widthVal
+            )
+            node.setPortProp(
+                `${node.id}-invisiblePort`,
+                'attrs/portBody/x',
+                xVal
+            )
         })
-        graph.value.unfreeze('createHoPaCTAPorts')
+        graph.value.unfreeze('createCTAs')
     }
 
     /* Render */
@@ -390,8 +404,10 @@ export default async function useComputeGraph({
             },
         })
 
-        createColCTAPorts()
-        createHoPaCTAPorts()
+        const { relations } = mergedLineageData.value
+        controlCyclicEdges(graph, relations)
+        controlGroupedEdges(graph, relations)
+        createCTAs()
         controlPrefRetainer()
     }
     renderLayout()
@@ -463,9 +479,7 @@ export default async function useComputeGraph({
                 x !== newData.baseEntityGuid &&
                 graph.value.getNodes().find((y) => y.id === x)
         )
-        const cellToFit = graph.value.getCellById(assetGuidToFit)
-
-        graph.value.scrollToCell(cellToFit, { animation: { duration: 600 } })
+        fit(assetGuidToFit)
     }
 
     return {

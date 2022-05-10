@@ -15,7 +15,9 @@
                     :item="item"
                     placement="right"
                     :mouseEnterDelay="1"
-                    @previewAsset="() => actionClick('info', item)"
+                    @previewAsset="
+                        () => actionClick('info', item, 'quick_action')
+                    "
                 >
                     <div
                         class="relative flex items-center content-center w-full h-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
@@ -78,7 +80,12 @@
                                             class="pl-2 ml-20"
                                             v-if="!showVQB"
                                             @click="
-                                                () => actionClick('add', item)
+                                                () =>
+                                                    actionClick(
+                                                        'add',
+                                                        item,
+                                                        'quick_action'
+                                                    )
                                             "
                                         >
                                             <a-tooltip
@@ -113,7 +120,12 @@
                                             :data-test-id="'preview'"
                                             class="pl-2"
                                             @click="
-                                                () => actionClick('info', item)
+                                                () =>
+                                                    actionClick(
+                                                        'info',
+                                                        item,
+                                                        'quick_action'
+                                                    )
                                             "
                                         >
                                             <a-tooltip
@@ -309,7 +321,12 @@
                                             :data-test-id="'preview'"
                                             class="bg-new-gray-200"
                                             @click="
-                                                () => actionClick('info', item)
+                                                () =>
+                                                    actionClick(
+                                                        'info',
+                                                        item,
+                                                        'quick_action'
+                                                    )
                                             "
                                         >
                                             <a-tooltip
@@ -396,7 +413,13 @@
                                         <div
                                             :data-test-id="'run-table-query'"
                                             v-if="!showVQB"
-                                            @click="() => previewData(item)"
+                                            @click="
+                                                () =>
+                                                    previewData(
+                                                        item,
+                                                        'quick_action'
+                                                    )
+                                            "
                                         >
                                             <a-tooltip
                                                 color="#363636"
@@ -444,6 +467,7 @@
                                                     actionClick(
                                                         'play',
                                                         item,
+                                                        'quick_action',
                                                         (isPreview = true)
                                                     )
                                             "
@@ -942,14 +966,17 @@
                 return lastMatchedKeyword
             }
 
-            const previewData = (item) => {
+            const previewData = (
+                item,
+                triggerOrigin: 'right_click' | 'kebab_menu' | 'quick_action'
+            ) => {
                 if (
                     activeInlineTab.value.playground.resultsPane.result
                         .isQueryRunning === 'loading'
                 ) {
                     return
                 } else {
-                    actionClick('play', item)
+                    actionClick('play', item, triggerOrigin)
                 }
             }
 
@@ -967,6 +994,7 @@
             const actionClick = (
                 action: string,
                 t: assetInterface,
+                triggerOrigin: 'right_click' | 'kebab_menu' | 'quick_action',
                 isPlay?: boolean
             ) => {
                 // for assetQuote Info of different sources
@@ -1018,7 +1046,7 @@
                         }
                         useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'place_name_in_editor',
-                            trigger: 'kebab_menu',
+                            trigger: triggerOrigin,
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: t.typeName,
                         })
@@ -1034,7 +1062,7 @@
                                 'item_click',
                                 {
                                     action: 'preview_data',
-                                    trigger: 'quick_action',
+                                    trigger: triggerOrigin,
                                     query_tab_id: activeInlineTab.value.key,
                                     asset_type: t.typeName,
                                 }
@@ -1046,7 +1074,7 @@
                                 'item_click',
                                 {
                                     action: 'query_run',
-                                    trigger: 'quick_action',
+                                    trigger: triggerOrigin,
                                     query_tab_id: activeInlineTab.value.key,
                                     asset_type: t.typeName,
                                 }
@@ -1358,7 +1386,7 @@
                     case 'info': {
                         useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'open_sidebar',
-                            trigger: 'quick_action',
+                            trigger: triggerOrigin,
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: t.typeName,
                         })
@@ -1747,7 +1775,7 @@
                     hide: showVQB.value,
                     disabled: false,
                     handleClick: ({ item }) => {
-                        actionClick('add', item)
+                        actionClick('add', item, 'kebab_menu')
                     },
                 },
             ]
@@ -1774,10 +1802,7 @@
                     handleClick: ({ item }) => {
                         useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'set_editor_context',
-                            trigger:
-                                triggerOrigin === 'right_click'
-                                    ? 'right_click'
-                                    : 'kebab_menu',
+                            trigger: triggerOrigin,
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: item.typeName,
                         })
@@ -1804,10 +1829,7 @@
                         setContext(item, 'explorer')
                         useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'set_explorer_context',
-                            trigger:
-                                triggerOrigin === 'right_click'
-                                    ? 'right_click'
-                                    : 'kebab_menu',
+                            trigger: triggerOrigin,
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: item.typeName,
                         })
@@ -1824,7 +1846,7 @@
                     hide: showVQB.value,
                     disabled: false,
                     handleClick: ({ item }) => {
-                        actionClick('add', item)
+                        actionClick('add', item, triggerOrigin)
                     },
                 },
             ]
@@ -1868,7 +1890,7 @@
                           class: '',
                           disabled: false,
                           handleClick: ({ item }) => {
-                              actionClick('info', item)
+                              actionClick('info', item, 'right_click')
                           },
                       },
                       {
@@ -1901,7 +1923,7 @@
                           class: '',
                           disabled: false,
                           handleClick: ({ item }) => {
-                              actionClick('info', item)
+                              actionClick('info', item, 'right_click')
                           },
                       },
                       {
@@ -1911,7 +1933,7 @@
                           disabled: false,
                           component: MenuItem,
                           handleClick: ({ item }) => {
-                              previewData(item)
+                              previewData(item, 'right_click')
                           },
                       },
                       {
@@ -1924,7 +1946,7 @@
                           class: 'border-b border-gray-300',
                           disabled: false,
                           handleClick: ({ item }) => {
-                              actionClick('play', item, true)
+                              actionClick('play', item, 'right_click', true)
                           },
                       },
                       {
@@ -1963,7 +1985,7 @@
                           disabled: false,
                           component: MenuItem,
                           handleClick: ({ item }) => {
-                              actionClick('add', item)
+                              actionClick('add', item, 'right_click')
                           },
                       },
                   ]
@@ -1977,7 +1999,7 @@
                           class: '',
                           disabled: false,
                           handleClick: ({ item }) => {
-                              actionClick('info', item)
+                              actionClick('info', item, 'right_click')
                           },
                       },
                   ]
@@ -1989,7 +2011,7 @@
                           disabled: false,
                           component: MenuItem,
                           handleClick: ({ item }) => {
-                              actionClick('add', item)
+                              actionClick('add', item, 'right_click')
                           },
                       },
                       {
@@ -1999,7 +2021,7 @@
                           class: '',
                           disabled: false,
                           handleClick: ({ item }) => {
-                              actionClick('info', item)
+                              actionClick('info', item, 'right_click')
                           },
                       },
                   ]

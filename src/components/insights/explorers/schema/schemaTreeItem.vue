@@ -354,7 +354,13 @@
                                                     : '',
                                                 '')
                                             "
-                                            @click="() => previewVQBQuery(item)"
+                                            @click="
+                                                () =>
+                                                    previewVQBQuery(
+                                                        item,
+                                                        'quick_action'
+                                                    )
+                                            "
                                         >
                                             <a-tooltip
                                                 color="#363636"
@@ -538,7 +544,7 @@
 
             <!-- FOR DB AND SCHMA -->
             <InsightsThreeDotMenu
-                :options="dropdownOptions('right-click')"
+                :options="dropdownOptions('right_click')"
                 :item="item"
                 class=""
                 trigger="contextmenu"
@@ -597,7 +603,7 @@
                                     >
                                         <InsightsThreeDotMenu
                                             :options="
-                                                dropdownOptions('kebab-menu')
+                                                dropdownOptions('kebab_menu')
                                             "
                                             :item="item"
                                             class="w-4 h-4 my-auto -mr-1.5 outline-none"
@@ -1647,7 +1653,10 @@
                 setVQBInInlineTab(activeInlineTabCopy, inlineTabs)
             }
 
-            const previewVQBQuery = (item: any) => {
+            const previewVQBQuery = (
+                item: any,
+                triggerOrigin: 'right_click' | 'kebab_menu' | 'quick_action'
+            ) => {
                 const activeInlineTabCopy = JSON.parse(
                     JSON.stringify(toRaw(activeInlineTab.value))
                 )
@@ -1692,7 +1701,7 @@
                 )
                 useAddEvent('insights', 'schema_tree', 'item_click', {
                     action: 'preview_data',
-                    trigger: 'quick_action',
+                    trigger: triggerOrigin,
                     query_tab_id: activeInlineTab.value.key,
                     asset_type: item?.entity.typeName,
                 })
@@ -1744,7 +1753,7 @@
             ]
 
             const dropdownOptions = (
-                triggerOrigin: 'right-click' | 'kebab-menu'
+                triggerOrigin: 'right_click' | 'kebab_menu'
             ) => [
                 {
                     title: 'Set editor context',
@@ -1766,8 +1775,8 @@
                         useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'set_editor_context',
                             trigger:
-                                triggerOrigin === 'right-click'
-                                    ? 'right-click'
+                                triggerOrigin === 'right_click'
+                                    ? 'right_click'
                                     : 'kebab_menu',
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: item.typeName,
@@ -1796,8 +1805,8 @@
                         useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'set_explorer_context',
                             trigger:
-                                triggerOrigin === 'right-click'
-                                    ? 'right-click'
+                                triggerOrigin === 'right_click'
+                                    ? 'right_click'
                                     : 'kebab_menu',
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: item.typeName,
@@ -1869,7 +1878,7 @@
                           disabled: false,
                           component: MenuItem,
                           handleClick: ({ item }) => {
-                              previewVQBQuery(item)
+                              previewVQBQuery(item, 'right_click')
                           },
                       },
                       {

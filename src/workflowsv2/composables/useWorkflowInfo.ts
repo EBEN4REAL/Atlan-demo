@@ -29,12 +29,12 @@ export default function useWorkflowInfo() {
 
     const creatorUsername = (item) =>
         item?.metadata?.labels[
-            'workflows.argoproj.io/creator-preferred-username'
+        'workflows.argoproj.io/creator-preferred-username'
         ] || 'argo'
 
     const modifierUsername = (item) =>
         item?.metadata?.labels[
-            'workflows.argoproj.io/modifier-preferred-username'
+        'workflows.argoproj.io/modifier-preferred-username'
         ]
 
     // const modifiedTimestamp = (item: any, relative: any) => {
@@ -61,7 +61,7 @@ export default function useWorkflowInfo() {
     const allowSchedule = (item: any) => {
         if (
             item.metadata?.annotations[
-                'orchestration.atlan.com/allowSchedule'
+            'orchestration.atlan.com/allowSchedule'
             ] === 'false'
         ) {
             return false
@@ -342,6 +342,28 @@ export default function useWorkflowInfo() {
 
     const connectorStore = useConnectionStore()
 
+    const getWFParameterValue = (workflowTemplate, parameterKey) => {
+        const getGlobalArguments = getGlobalArguments(workflowTemplate)
+        // if()
+    }
+
+    const getGlobalArguments = (item) => {
+        const map = {}
+
+        if (item?.spec?.templates?.length > 0) {
+            if (item?.spec?.templates[0].dag?.tasks.length > 0) {
+                item?.spec?.templates[0].dag?.tasks[0].arguments?.parameters.forEach(
+                    (element) => {
+                        map[element.name] = element.value
+                    }
+                )
+            }
+        }
+
+        return map
+    }
+
+
     const displayName = (
         item: Record<string, any>,
         workflowName: string,
@@ -358,6 +380,20 @@ export default function useWorkflowInfo() {
             }
             return suffix
         }
+
+        if (packageType(item) === 'miner') {
+            const globalArguments = getGlobalArguments({ spec })
+            const connectionQualifiedName = globalArguments['connection-qualified-name']
+            suffix = suffix.replaceAll('-', '/')
+            const found = connectorStore.list.find(
+                (i) => i.attributes.qualifiedName === connectionQualifiedName
+            )
+            if (found) {
+                return found?.attributes.name
+            }
+            return suffix
+        }
+
         if (packageType(item) === 'schedule-query') {
             return (
                 spec?.templates[0]?.dag?.tasks?.[0]?.arguments?.parameters?.find(
@@ -385,25 +421,9 @@ export default function useWorkflowInfo() {
         return undefined
     }
 
-    const getGlobalArguments = (item) => {
-        const map = {}
-
-        if (item?.spec?.templates?.length > 0) {
-            if (item?.spec?.templates[0].dag?.tasks.length > 0) {
-                item?.spec?.templates[0].dag?.tasks[0].arguments?.parameters.forEach(
-                    (element) => {
-                        map[element.name] = element.value
-                    }
-                )
-            }
-        }
-
-        return map
-    }
-
     const workflowTemplateName = (item) =>
         item?.metadata?.labels?.[
-            'workflows.argoproj.io/workflow-template'
+        'workflows.argoproj.io/workflow-template'
         ] as string
 
     return {

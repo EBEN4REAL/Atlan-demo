@@ -44,14 +44,6 @@
                     <div class="ml-4">Highlighted node</div>
                 </div>
             </div>
-            <!-- <div class="flex items-center justify-between">
-                    <span class="text-gray-500">Show Arrows</span>
-                    <a-switch v-model:checked="preferences.showArrow" />
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-gray-500">Show Schema</span>
-                    <a-switch v-model:checked="preferences.showSchema" />
-                </div>  -->
         </div>
     </div>
     <div ref="footerRoot" class="lineage-control footer">
@@ -79,7 +71,6 @@
                 <div style="height: 40px; width: 1px" class="bg-gray-300" />
 
                 <!-- Preferences Popover -->
-
                 <a-popover
                     v-model:visible="isPreferencesVisible"
                     :trigger="['click']"
@@ -226,15 +217,15 @@
 
 <script lang="ts">
     /** VUE */
-    import { defineComponent, inject, ref, toRefs } from 'vue'
+    import { defineComponent, ref, toRefs } from 'vue'
     import { DataUri } from '@antv/x6'
 
     /** COMPOSABLES */
     import useTransformGraph from './useTransformGraph'
-
-    import { exportStyles } from './stylesTwo'
-
     import useLineageStore from '~/store/lineage'
+
+    /** CONSTANTS */
+    import { exportStyles } from './stylesTwo'
 
     export default defineComponent({
         name: 'LineageFooter',

@@ -1,5 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-nested-ternary */
+/** UTILS */
+import { setFront, setBack } from './util.js'
+
 export default function useUpdateGraph(graph) {
     const highlightNode = (nodeId, state: string) => {
         const graphNodeElement = document.querySelectorAll(
@@ -55,7 +58,7 @@ export default function useUpdateGraph(graph) {
 
             if (!selectedNodeId?.value && !nodesToHighlight.length) return
 
-            cell.setZIndex(20)
+            setFront(cell)
 
             cell.updateData({ isSelectedNode })
             cell.updateData({
@@ -80,11 +83,10 @@ export default function useUpdateGraph(graph) {
         graph.value.freeze('highlightEdges')
         graph.value.getEdges().forEach((edge) => {
             const isCyclicEdge = edge.store.data.data?.isCyclicEdge
-            const cell = graph.value.getCellById(edge.id)
 
             if (isCyclicEdge) {
-                if (!nodesToHighlight.length) cell.toFront()
-                else cell.setZIndex(0)
+                if (!nodesToHighlight.length) setFront(edge)
+                else setBack(edge)
                 return
             }
 
@@ -105,10 +107,10 @@ export default function useUpdateGraph(graph) {
                 itExists ? highlightStateColor : gray
             )
 
-            cell.setZIndex(0)
+            setBack(edge)
 
-            if (itExists) cell.toFront()
-            else cell.setZIndex(0)
+            if (itExists) setFront(edge)
+            else setBack(edge)
         })
         graph.value.unfreeze('highlightEdges')
 
@@ -119,12 +121,11 @@ export default function useUpdateGraph(graph) {
         graph.value.freeze('dimNodesEdges')
         graph.value.getEdges().forEach((edge) => {
             if (edge.id.includes('port')) return
-            const cell = graph.value.getCellById(edge.id)
             const isCyclicEdge = edge.store.data.data?.isCyclicEdge
 
             if (isCyclicEdge) {
-                if (dim) cell.setZIndex(0)
-                else cell.toFront()
+                if (dim) setBack(edge)
+                else setFront(edge)
                 return
             }
 
@@ -135,7 +136,7 @@ export default function useUpdateGraph(graph) {
                 'line/targetMarker/stroke',
                 dim ? '#dce0e5' : defaultStateColor
             )
-            cell.toBack()
+            setBack(edge)
         })
         graph.value.unfreeze('dimNodesEdges')
     }

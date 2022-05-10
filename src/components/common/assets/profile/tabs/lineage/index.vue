@@ -52,7 +52,7 @@
     import { useRoute } from 'vue-router'
     import { whenever } from '@vueuse/core'
 
-    /** LIBS */
+    /** PACKAGES */
     import { message } from 'ant-design-vue'
 
     /** COMPONENTS */

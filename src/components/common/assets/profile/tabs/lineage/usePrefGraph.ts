@@ -1,4 +1,7 @@
+/** VUE */
 import { watch } from 'vue'
+
+/** COMPOSABLES */
 import useLineageStore from '~/store/lineage'
 
 export default function useGraph({ graph }) {

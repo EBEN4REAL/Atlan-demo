@@ -9,6 +9,8 @@ import useLineageStore from '~/store/lineage'
 
 /** COMPOSABLES */
 import useGraph from './useGraph'
+import useGetNodes from './useGetNodes'
+import useTransformGraph from './useTransformGraph'
 
 /** UTILS */
 import {
@@ -16,7 +18,6 @@ import {
     controlCyclicEdges,
     controlGroupedEdges,
 } from './util.js'
-import useGetNodes from './useGetNodes'
 
 export default async function useComputeGraph({
     graph,
@@ -39,6 +40,7 @@ export default async function useComputeGraph({
     const mergedLineageData = ref({})
 
     const { createNodeData, createEdgeData } = useGraph(graph)
+    const { fit } = useTransformGraph(graph, () => {})
 
     mergedLineageData.value = { ...lineage.value }
     lineageStore.setMergedLineageData(mergedLineageData.value)
@@ -477,9 +479,7 @@ export default async function useComputeGraph({
                 x !== newData.baseEntityGuid &&
                 graph.value.getNodes().find((y) => y.id === x)
         )
-        const cellToFit = graph.value.getCellById(assetGuidToFit)
-
-        graph.value.scrollToCell(cellToFit, { animation: { duration: 600 } })
+        fit(assetGuidToFit)
     }
 
     return {

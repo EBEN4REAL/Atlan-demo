@@ -1,4 +1,11 @@
 /* eslint-disable no-nested-ternary */
+/** COMPOSABLES */
+import useAssetInfo from '~/composables/discovery/useAssetInfo'
+
+/** CONSTANTS */
+import { dataTypeCategoryList } from '~/constant/dataType'
+
+/** UTILS */
 import {
     getNodeSourceImage,
     getSource,
@@ -42,8 +49,6 @@ import {
     tableauDatasourceField,
     lookerField,
 } from './icons'
-import { dataTypeCategoryList } from '~/constant/dataType'
-import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
 interface EdgeStyle {
     stroke?: string

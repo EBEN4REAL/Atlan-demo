@@ -14,6 +14,7 @@ import useLineageService from '~/services/meta/lineage/lineage_service'
 import useUpdateGraph from './useUpdateGraph'
 import useGetNodes from './useGetNodes'
 import useGraph from './useGraph'
+import useTransformGraph from './useTransformGraph'
 import fetchPorts from './fetchPorts'
 
 /** CONSTANTS */
@@ -28,6 +29,8 @@ import {
     getCyclicRelations,
     controlCyclicEdges,
     controlGroupedEdges,
+    setFront,
+    setBack,
 } from './util.js'
 
 export default function useEventGraph({
@@ -51,6 +54,7 @@ export default function useEventGraph({
     const { highlightNode, highlightNodes, highlightEdges, dimNodesEdges } =
         useUpdateGraph(graph)
     const { addNode, addEdge, createEdgeData, createNodeData } = useGraph(graph)
+    const { fit } = useTransformGraph(graph, () => {})
 
     /** DATA */
     const selectedNodeId = ref('')
@@ -849,10 +853,7 @@ export default function useEventGraph({
 
         if (isPortEdgesPresent()) {
             const parentNode = getPortNode(portId)
-            const cellToFit = graph.value.getCellById(parentNode.id)
-            graph.value.scrollToCell(cellToFit, {
-                animation: { duration: 600 },
-            })
+            fit(parentNode.id)
         }
 
         controlPortsLoader(node, false, 'item')
@@ -1297,7 +1298,7 @@ export default function useEventGraph({
             if (!newState && !cell.isVisible()) newState = 'col'
             cell.toggleVisible()
 
-            if (newState === 'col') n.toBack()
+            if (newState === 'col') setBack(n)
         })
         graph.value.unfreeze('controlHoriToggleCTA')
 
@@ -1326,7 +1327,7 @@ export default function useEventGraph({
                         : edge.getTargetNode().id === node.id
                 )
                 .forEach((edge) => {
-                    edge.toBack()
+                    setBack(edge)
                 })
         }
 
@@ -1335,10 +1336,10 @@ export default function useEventGraph({
                 .getEdges()
                 .filter((edge) => edge.id.includes('port'))
                 .forEach((edge) => {
-                    edge.toFront()
+                    setFront(edge)
                 })
 
-        node.toFront()
+        setFront(node)
     }
 
     // controlEdgeAnimation
@@ -1380,8 +1381,8 @@ export default function useEventGraph({
                 'line/targetMarker/stroke',
                 animate ? highlightStateColor : edgeDefaultStroke
             )
-            if (animate) edge.toFront()
-            else edge.setZIndex(0)
+            if (animate) setFront(edge)
+            else setBack(edge)
         }
 
         edge.setLabels(

@@ -109,6 +109,11 @@ export const getSchema = (entity) => {
     return item[3]
 }
 
+/**
+ * It takes an array of relations and returns an array of relations with duplicates removed
+ * @param relations - The array of relations to filter.
+ * @returns An array of relations that have been filtered to remove duplicates.
+ */
 export const getFilteredRelations = (relations) => {
     const relsSet = new Set()
     const filteredRels = []
@@ -123,6 +128,11 @@ export const getFilteredRelations = (relations) => {
     return filteredRels
 }
 
+/**
+ * It takes an array of relations and returns an array of relations that are cyclic
+ * @param relations - an array of objects, each object has two properties: fromEntityId and toEntityId.
+ * @returns An array of strings.
+ */
 export const getCyclicRelations = (relations) => {
     const res = []
     const relationsId = relations.map(
@@ -138,6 +148,11 @@ export const getCyclicRelations = (relations) => {
     return res
 }
 
+/**
+ * It takes an array of relations and returns an object with the number of times each relation occurs
+ * @param relations - an array of objects, each object has a fromEntityId and toEntityId property
+ * @returns An object with the number of times a relation is repeated.
+ */
 export const getGroupedRelations = (relations) => {
     let res = {}
     relations.forEach((rel) => {
@@ -153,6 +168,12 @@ export const getGroupedRelations = (relations) => {
     return res
 }
 
+/**
+ * It takes a graph and a list of relations, and then it checks if any of the relations are cyclic. If
+ * they are, it updates the graph to reflect that
+ * @param graph - the graph object
+ * @param relations - an array of relations, each relation is an object with the following properties:
+ */
 export const controlCyclicEdges = (graph, relations) => {
     const cyclicRelations = getCyclicRelations(relations)
     const graphEdges = graph.value.getEdges()
@@ -179,6 +200,12 @@ export const controlCyclicEdges = (graph, relations) => {
     })
 }
 
+/**
+ * It takes a graph and a list of relations and then it checks if the relations are grouped and if they
+ * are, it updates the edge data and the label
+ * @param graph - the graph object
+ * @param relations - the relations object from the graph data
+ */
 export const controlGroupedEdges = (graph, relations) => {
     const groupedRelations = Object.keys(getGroupedRelations(relations))
     const graphEdges = graph.value.getEdges()
@@ -198,4 +225,22 @@ export const controlGroupedEdges = (graph, relations) => {
             })
         }
     })
+}
+
+/**
+ * It takes a cell and sets its z-index to 20 and then moves it to the front
+ * @param cell - The cell to be set to the front.
+ */
+export const setFront = (cell) => {
+    cell.setZIndex(20)
+    cell.toFront()
+}
+
+/**
+ * It takes a cell and sets its z-index to 0 and then sends it to the back
+ * @param cell - The cell to be moved to the back.
+ */
+export const setBack = (cell) => {
+    cell.setZIndex(0)
+    cell.toBack()
 }

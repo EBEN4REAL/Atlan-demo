@@ -1382,7 +1382,7 @@ export default function useEventGraph({
                 animate ? highlightStateColor : edgeDefaultStroke
             )
             if (animate) setFront(edge)
-            else setBack(edge)
+            else if (!isPortEdge) setBack(edge)
         }
 
         edge.setLabels(

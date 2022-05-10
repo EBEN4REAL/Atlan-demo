@@ -375,8 +375,7 @@ export default function useWorkflowInfo() {
             }
             return suffix
         }
-
-        if (['miner', 'utility'].includes(packageType(item))) {
+        if (['miner'].includes(packageType(item))) {
             const globalArguments = getGlobalArguments({ spec })
             const connectionQualifiedName = globalArguments['connection-qualified-name']
             suffix = suffix.replaceAll('-', '/')

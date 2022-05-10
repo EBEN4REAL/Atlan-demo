@@ -538,7 +538,7 @@
 
             <!-- FOR DB AND SCHMA -->
             <InsightsThreeDotMenu
-                :options="dropdownOptions"
+                :options="dropdownOptions('right-click')"
                 :item="item"
                 class=""
                 trigger="contextmenu"
@@ -596,7 +596,9 @@
                                         class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
                                     >
                                         <InsightsThreeDotMenu
-                                            :options="dropdownOptions"
+                                            :options="
+                                                dropdownOptions('kebab-menu')
+                                            "
                                             :item="item"
                                             class="w-4 h-4 my-auto -mr-1.5 outline-none"
                                         >
@@ -1741,7 +1743,9 @@
                 },
             ]
 
-            const dropdownOptions = [
+            const dropdownOptions = (
+                triggerOrigin: 'right-click' | 'kebab-menu'
+            ) => [
                 {
                     title: 'Set editor context',
                     key: 'Set editor context',
@@ -1761,7 +1765,10 @@
                     handleClick: ({ item }) => {
                         useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'set_editor_context',
-                            trigger: 'kebab_menu',
+                            trigger:
+                                triggerOrigin === 'right-click'
+                                    ? 'right-click'
+                                    : 'kebab_menu',
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: item.typeName,
                         })
@@ -1788,7 +1795,10 @@
                         setContext(item, 'explorer')
                         useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'set_explorer_context',
-                            trigger: 'kebab_menu',
+                            trigger:
+                                triggerOrigin === 'right-click'
+                                    ? 'right-click'
+                                    : 'kebab_menu',
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: item.typeName,
                         })

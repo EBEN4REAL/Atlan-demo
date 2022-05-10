@@ -129,6 +129,7 @@ export const AssetAttributes = [
     'formula',
     'isPublished',
     'process',
+    'bucket',
 ]
 
 export const SQLAttributes = [
@@ -265,6 +266,7 @@ export const MinimalAttributes = [
     'order',
     'isPublished',
     'process',
+    'bucket',
 ]
 
 export const BasicSearchAttributes = [

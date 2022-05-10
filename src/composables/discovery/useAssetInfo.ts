@@ -75,6 +75,8 @@ export default function useAssetInfo() {
 
     const parentObject = (asset: assetInterface) => attributes(asset)?.object
 
+    const parentBucket = (asset: assetInterface) => attributes(asset)?.bucket
+
     const reportCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.reportCount, true)
 
@@ -1404,6 +1406,7 @@ export default function useAssetInfo() {
         viewCount,
         parentOrganization,
         parentObject,
+        parentBucket,
         lastSyncRun,
         lastSyncRunAt,
         sourceId,

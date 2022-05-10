@@ -15,8 +15,8 @@
                 class="flex items-center justify-center flex-grow"
             >
                 <div class="flex flex-col justify-center gap-y-2">
-                    <AtlanIcon icon="NoSearchResultsQuery" class="h-48" />
-                    <div class="text-xl text-center text-gray-700">
+                    <AtlanIcon icon="NoSearchResultsQuery" class="h-36" />
+                    <div class="text-lg text-center text-gray-700">
                         Sorry, we couldn’t find <br />
                         the logs you were looking for
                     </div>

@@ -1,6 +1,6 @@
 <template>
     <div class="border border-gray-300 rounded-xl">
-        <div class="flex h-12">
+        <div class="flex h-9">
             <div
                 v-if="connection.length"
                 class="p-1 bg-gray-100 rounded-tl-xl rounded-br-xl"
@@ -9,10 +9,30 @@
                     <div
                         v-for="imgPath in connection"
                         :key="imgPath"
-                        class="p-1.5 rounded-full fit bg-white relative"
+                        class="rounded-full relativebg-white fit"
                     >
                         <img class="w-4 h-4" :src="imgPath" />
                     </div>
+                </div>
+            </div>
+            <div
+                v-if="item?.tags?.length"
+                class="p-1 bg-gray-100 rounded-tl-xl rounded-br-xl"
+            >
+                <div
+                    class="flex items-center p-1.5 bg-white rounded-tl-xl rounded-br-xl text-xs text-gray-700"
+                >
+                    <AtlanIcon
+                        icon="ClassificationShield"
+                        class="w-4 h-4 mr-1 stroke-current text-primary"
+                    />
+                    {{
+                        `${item?.tags?.length} ${
+                            item?.tags?.length > 1
+                                ? 'classifications'
+                                : 'classification'
+                        }`
+                    }}
                 </div>
             </div>
         </div>
@@ -69,10 +89,14 @@
                 type: Object,
                 required: true,
             },
+            type: {
+                type: String,
+                required: true,
+            },
         },
         setup(props) {
             const { getConnectorImageMap } = useAssetInfo()
-            const { item } = toRefs(props)
+            const { item, type } = toRefs(props)
             const getUniqueTypeIcons = () => {
                 const displayImages = {
                     connectors: [],
@@ -97,9 +121,10 @@
                     connectors: [...new Set(displayImages.connectors)],
                 }
             }
-            const users = computed(() => item.value.users.slice(0, 3))
+            const users = computed(() => item.value?.users?.slice(0, 3) || [])
             const connection = computed(() => {
                 // const glossary = item.value?.glossaryPolicies?.length || 0
+                if (type.value === 'purpose') return []
                 const lengthCoonection = 5
                 return getUniqueTypeIcons().connectors.slice(
                     0,

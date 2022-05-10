@@ -125,21 +125,22 @@
                             "
                             class="ilustration"
                         />
-                        <div class="mt-4 text-xs text-center">
+                        <div class="mt-5 text-xs text-center">
                             {{
                                 activeTab === 'persona'
                                     ? 'Some description about personas goes here'
                                     : 'Some description about purpose goes here'
                             }}
                         </div>
-                        <AtlanButton2
+                        <div class="h-9" />
+                        <!-- <AtlanButton2
                             suffix-icon="ArrowRight"
                             size="sm"
                             class="px-4 py-0 mt-5 text-xs h-7"
                             >Guided demo</AtlanButton2
-                        >
+                        > -->
                         <div
-                            class="flex items-center mt-2 text-xs text-gray-700 cursor-pointer"
+                            class="flex items-center mt-4 text-xs text-gray-700 cursor-pointer"
                         >
                             View documentation
                             <AtlanIcon icon="External" class="h-4 ml-1" />

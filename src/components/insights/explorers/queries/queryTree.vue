@@ -31,6 +31,7 @@
                             :isNodeLoading="isNodeLoading"
                             :nodeError="nodeError"
                             :errorNode="errorNode"
+                            @createFolderInput="createFolderInput"
                             class="this-is-a-treenode"
                         />
                         <!-- <div v-else-if="isNodeLoading === false && nodeError">
@@ -434,6 +435,16 @@
         // fix tree width Jan,7 ,2021
         :global(.ant-tree-indent-unit) {
             width: 20px !important;
+        }
+
+        // No hover or cursor-pointer states for CTA's
+        :global(.ant-tree-treenode.no-hover) {
+            @apply bg-transparent !important;
+        }
+        :global(.no-hover
+                .ant-tree-node-content-wrapper.ant-tree-node-content-wrapper-normal) {
+            @apply bg-transparent !important;
+            @apply cursor-default;
         }
     }
     .ant-tree-treenode {

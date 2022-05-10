@@ -16,9 +16,7 @@
                 >
                 <atlan-icon icon="CaretRight" class="mx-1" />
                 <atlan-icon icon="Glossary" class="mr-1" />
-                <span class="text-base text-gray-700">{{
-                    glossaryName
-                }}</span>
+                <span class="text-base text-gray-700">{{ glossaryName }}</span>
             </div>
         </template>
         <!-- Modal body -->
@@ -42,16 +40,10 @@
             <!--     <atlan-icon icon="External" class="ml-1 mb-0.5" -->
             <!-- /></span> -->
         </div>
-        <div
-            class="flex justify-center items-center px-4 mx-4 bg-gray-50 border border-dashed border-gray-300 rounded-xl my-4"
-        >
-            <atlan-icon icon="CSVLogo" class="h-40 mt-2" />
-            <div class="">
-                <FormGen :config="formConfig" @vchange="handleFormChange" />
-            </div>
+        <div class="mx-4">
+            <Uploader :config="formConfig" @change="handleFormChange" />
         </div>
-        <!-- Modal footer -->
-        <template #footer>
+       <template #footer>
             <div class="flex items-center py-3 border-t mb-2">
                 <span class="font-bold text-gray-700">
                     Common errors to avoid</span
@@ -89,6 +81,7 @@
     import { defineComponent, ref, computed, watch, inject } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
     import FormGen from '~/components/common/formGenerator/index.vue'
+    import Uploader from '~/components/glossary/common/uploader.vue'
     import useBulkUpload from '@/glossary/modal/useBulkUpload'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { isWorkflowRunning } from '@/glossary/modal/useBulkUpload'
@@ -100,7 +93,7 @@
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
 
     export default defineComponent({
-        components: { FormGen },
+        components: { FormGen, Uploader },
         props: {
             guid: {
                 type: String,
@@ -187,22 +180,25 @@
                         duration: 5,
                     })
                 }
-                if (
-                    !getGlossaryByGuid(props?.guid)?.isBulkUploadRunning
-                ) {
+                if (!getGlossaryByGuid(props?.guid)?.isBulkUploadRunning) {
                     const {
                         list: runs,
                         quickChange,
                         resetState,
                         isLoading,
                         data,
+                        error,
                     } = useRunDiscoverList({
                         facets,
                         limit: ref(1),
                         offset: ref(0),
                         preference,
                     })
+                    watch(error, () => {
+                        if (error.value) message.error('Something went wrong')
+                    })
                     watch(runs, () => {
+                        if (error.value) return
                         if (!runs.value.length) {
                             visible.value = true
                             return
@@ -211,9 +207,8 @@
                             phase(runs.value[0]) === 'Running'
                         if (isFirstWfRunning) {
                             showMessage()
-                            getGlossaryByGuid(
-                                props?.guid
-                            ).isBulkUploadRunning = true
+                            getGlossaryByGuid(props?.guid).isBulkUploadRunning =
+                                true
                         } else visible.value = true
                     })
                 } else showMessage()
@@ -253,14 +248,13 @@
                 ].join('\r\n')
 
                 console.log(csv)
-                const fileName = `${props?.displayText} - Atlan Bulk Terms Template`
+                const fileName = `${props?.glossaryName} - Atlan Bulk Terms Template`
 
                 downloadFile(csv, fileName)
             }
 
             const isWfRunningForGtc = computed(
-                () =>
-                    getGlossaryByGuid(props?.guid)?.isBulkUploadRunning
+                () => getGlossaryByGuid(props?.guid)?.isBulkUploadRunning
             )
 
             const changeActiveTab = inject('changeActiveTab')

@@ -102,9 +102,9 @@ export const profileTabs = [
         scrubbed: false,
     },
     {
-        id: 's3objects',
+        id: 'objects',
         label: 'Objects',
-        component: 's3objects',
+        component: 'objects',
         includes: ['S3Bucket'],
         icon: 'S3Object',
         tooltip: 'Objects',

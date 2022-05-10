@@ -365,7 +365,11 @@
         min-width: 140px;
     }
 
-    .ant-switch-checked {
+    .ant-switch {
+        background-color: #00000040 !important;
+    }
+
+    .ant-switch-checked.ant-switch {
         background-color: #5277d7 !important;
     }
 </style>

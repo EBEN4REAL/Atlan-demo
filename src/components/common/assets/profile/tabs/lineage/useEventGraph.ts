@@ -267,6 +267,7 @@ export default function useEventGraph({
     // getNodePorts
     const getNodePorts = (node) => {
         const { ports } = node.getData()
+
         return ports
     }
 
@@ -952,6 +953,7 @@ export default function useEventGraph({
             return
 
         removeX6Ports(node)
+
         node.updateData({
             ports: [],
             portsListExpanded: false,
@@ -959,6 +961,8 @@ export default function useEventGraph({
         })
         const index = expandedNodes.value.findIndex((x) => x === node.id)
         expandedNodes.value.splice(index, 1)
+
+        console.log('node_collapsed', node.data.portsCount)
     }
 
     // removeX6Ports
@@ -994,6 +998,8 @@ export default function useEventGraph({
             expandedNodes.value.push(node.id)
 
         addX6Ports(node, uniquePorts)
+
+        console.log('node_expanded', node.data.portsCount)
     }
 
     // addX6Ports

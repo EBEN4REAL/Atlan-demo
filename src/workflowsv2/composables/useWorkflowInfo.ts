@@ -342,11 +342,6 @@ export default function useWorkflowInfo() {
 
     const connectorStore = useConnectionStore()
 
-    const getWFParameterValue = (workflowTemplate, parameterKey) => {
-        const getGlobalArguments = getGlobalArguments(workflowTemplate)
-        // if()
-    }
-
     const getGlobalArguments = (item) => {
         const map = {}
 
@@ -381,7 +376,7 @@ export default function useWorkflowInfo() {
             return suffix
         }
 
-        if (packageType(item) === 'miner') {
+        if (['miner', 'utility'].includes(packageType(item))) {
             const globalArguments = getGlobalArguments({ spec })
             const connectionQualifiedName = globalArguments['connection-qualified-name']
             suffix = suffix.replaceAll('-', '/')
@@ -391,7 +386,7 @@ export default function useWorkflowInfo() {
             if (found) {
                 return found?.attributes.name
             }
-            return suffix
+            return suffix || workflowName
         }
 
         if (packageType(item) === 'schedule-query') {

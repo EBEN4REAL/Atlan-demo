@@ -166,13 +166,13 @@
                     </div>
 
                     <div>
-                        <p class="info-title">Reference</p>
+                        <p class="info-title">External</p>
                         <a
                             :href="link"
                             target="_blank"
-                            class="mb-2 font-medium text-primary"
+                            class="mb-2 font-medium text-primary hover:underline"
                         >
-                            {{ name(selectedRun) }}
+                            Open in Argo
                         </a>
                     </div>
                     <!-- <div

@@ -8,7 +8,7 @@
                         icon="Cross"
                         class="cursor-pointer"
                         style="width: 0.8rem !important"
-                        @click="preferences.showLegend = false"
+                        @click="setPreference('showLegend', false)"
                     ></AtlanIcon>
                 </div>
             </div>
@@ -234,6 +234,8 @@
 
     import { exportStyles } from './stylesTwo'
 
+    import useLineageStore from '~/store/lineage'
+
     export default defineComponent({
         name: 'LineageFooter',
         props: {
@@ -265,7 +267,8 @@
         emits: ['on-zoom-change', 'on-show-minimap'],
         setup(props, { emit }) {
             /** INJECTIONS */
-            const preferences = inject('preferences', ref({}))
+            const lineageStore = useLineageStore()
+            const preferences = lineageStore.getPreferences()
 
             /** DATA */
             const {
@@ -339,6 +342,11 @@
                 } else isExpanded.value = true
             }
 
+            // setPreference
+            const setPreference = (k, v) => {
+                lineageStore.setPreference(k, v)
+            }
+
             return {
                 showMinimap,
                 isFullscreen,
@@ -352,6 +360,7 @@
                 onFullscreen,
                 onSvgExport,
                 toggleControlVisibility,
+                setPreference,
             }
         },
     })

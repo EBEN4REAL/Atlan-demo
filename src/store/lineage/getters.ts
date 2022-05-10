@@ -1,4 +1,7 @@
 export const getters = {
+    getPreferences(state) {
+        return () => state.preferences
+    },
     getCyclicRelations(state) {
         return () => state.cyclicRelations
     },

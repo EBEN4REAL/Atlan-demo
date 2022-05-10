@@ -30,6 +30,7 @@
         >
             <EmptyView
                 empty-screen="NoAssetsFound"
+                image-class="h-44"
                 desc="No objects present in this bucket"
             ></EmptyView>
         </div>
@@ -155,6 +156,8 @@
                     selectedAsset.value
                 )
             }
+
+            updateFacet()
 
             const {
                 list,

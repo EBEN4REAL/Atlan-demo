@@ -19,9 +19,6 @@ export default function useCreateGraph({
     graphHeight,
 }) {
     /* Build Graph Canvas */
-    // const { Graph, Point, Path } = window.X6
-    // const { DagreLayout } = window.layout
-
     Graph.registerConnector(
         'beiz',
         (s: PointBasic, t: PointBasic, route: PointBasic[]) => {

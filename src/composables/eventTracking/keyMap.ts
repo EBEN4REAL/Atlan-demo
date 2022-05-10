@@ -316,6 +316,16 @@ const keyMap = {
                 }),
             },
         },
+        process: {
+            clicked: {
+                action: 'lineage_process_clicked',
+                properties: (props) => ({
+                    is_group: !!props?.is_group,
+                    is_cyclic: !!props?.is_cyclic,
+                    edge_id: props?.edge_id
+                }),
+            },
+        },
     },
     gtc: {
         term: {

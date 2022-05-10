@@ -3,7 +3,7 @@
 /* eslint-disable no-param-reassign */
 /** VUE */
 import { watch, ref, computed } from 'vue'
-import { watchOnce } from '@vueuse/core'
+import { useDebounceFn, watchOnce } from '@vueuse/core'
 
 /** PACKAGES */
 import { message } from 'ant-design-vue'
@@ -16,6 +16,7 @@ import useGetNodes from './useGetNodes'
 import useGraph from './useGraph'
 import useTransformGraph from './useTransformGraph'
 import fetchPorts from './fetchPorts'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 /** CONSTANTS */
 import {
@@ -86,6 +87,18 @@ export default function useEventGraph({
 
         message.error(msg)
     }
+
+    // handleAnalyticsEvents
+    const sendProcessClickedEvent = useDebounceFn(
+        (is_group, is_cyclic, edge_id) => {
+            useAddEvent('lineage', 'process', 'clicked', {
+                is_group,
+                is_cyclic,
+                edge_id,
+            })
+        },
+        400
+    )
 
     // getNodeQN
     const getNodeQN = (portQN) => {
@@ -279,9 +292,10 @@ export default function useEventGraph({
     }
 
     // selectNodeEdge
-    const selectNodeEdge = (edgeId) => {
+    const selectNodeEdge = (edgeId, edge) => {
         const cell = graph.value.getCellById(edgeId)
         const isCyclicEdge = cell.store.data.data?.isCyclicEdge
+
         if (isCyclicEdge) return
         const processId = edgeId.split('/')[0]
         onSelectAsset({ guid: processId })
@@ -297,6 +311,8 @@ export default function useEventGraph({
             if (source === t && target === s) return true
             return false
         })
+
+        sendProcessClickedEvent(!!edge.data?.isDup, !!isCyclicRelation, edgeId)
 
         if (isCyclicRelation) return
 
@@ -510,7 +526,7 @@ export default function useEventGraph({
                     if (k === 'selectNodeEdge') {
                         const edge = getX6Edge(v)
                         controlEdgeAnimation(edge)
-                        selectNodeEdge(v)
+                        selectNodeEdge(v, edge)
                         delete actions.value[k]
                     }
                     if (k === 'selectPort') {
@@ -598,7 +614,7 @@ export default function useEventGraph({
                     if (k === 'selectNodeEdge') {
                         const edge = getX6Edge(v)
                         controlEdgeAnimation(edge)
-                        selectNodeEdge(v)
+                        selectNodeEdge(v, edge)
                         delete actions.value[k]
                     }
                     if (k === 'selectPort') {
@@ -1022,11 +1038,17 @@ export default function useEventGraph({
     }
 
     // selectPortEdge
-    const selectPortEdge = (edgeId) => {
+    const selectPortEdge = (edgeId, edge) => {
         const processId = edgeId.split('/')[1]
         onSelectAsset({ guid: processId })
 
         if (edgeId) selectedPortEdgeId.value = edgeId
+
+        sendProcessClickedEvent(
+            !!edge.data?.isDup,
+            !!edge.data?.isCyclicEdge,
+            edgeId
+        )
     }
 
     // getAllNodesQN
@@ -1429,7 +1451,7 @@ export default function useEventGraph({
             resetState(true)
             const edge = getX6Edge(_selectedNodeEdgeId)
             controlEdgeAnimation(edge)
-            selectNodeEdge(_selectedNodeEdgeId)
+            selectNodeEdge(_selectedNodeEdgeId, edge)
         } else {
             const newAction = { selectNodeEdge: _selectedNodeEdgeId }
             actions.value = { ...actions.value, ...newAction }
@@ -1683,8 +1705,8 @@ export default function useEventGraph({
             return
         } else resetState()
 
-        if (edge.id.includes('port')) selectPortEdge(edge.id)
-        else selectNodeEdge(edge.id)
+        if (edge.id.includes('port')) selectPortEdge(edge.id, edge)
+        else selectNodeEdge(edge.id, edge)
     })
 
     // Edge - Mouseenter

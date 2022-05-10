@@ -274,7 +274,7 @@
                 if (phase(props.run) === 'Failed') return 'IssuesAnnouncement'
                 if (phase(props.run) === 'Running') return 'RunProgress'
                 if (phase(props.run) === 'Pending') return 'Upload'
-                if (phase(props.run) === 'Stppped') return 'Stopped'
+                if (phase(props.run) === 'Stopped') return 'Stopped'
                 return 'WarningAnnouncement'
             })
 

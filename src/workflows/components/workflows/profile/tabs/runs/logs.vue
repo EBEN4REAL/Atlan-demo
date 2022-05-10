@@ -11,6 +11,18 @@
                 <a-spin size="small" class="mr-1"></a-spin>Waiting for logs...
             </div>
             <div
+                v-if="status == 'TIMEDOUT' && !logArray?.length"
+                class="flex items-center justify-center flex-grow"
+            >
+                <div class="flex flex-col justify-center gap-y-2">
+                    <AtlanIcon icon="NoSearchResultsQuery" class="h-48" />
+                    <div class="text-xl text-center text-gray-700">
+                        Sorry, we couldn’t find <br />
+                        the logs you were looking for
+                    </div>
+                </div>
+            </div>
+            <div
                 class="flex flex-col flex-grow px-4 overflow-y-auto text-gray-500"
                 v-else
             >

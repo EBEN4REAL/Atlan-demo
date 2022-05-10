@@ -232,6 +232,20 @@
                 >{{ parentSchema(asset)?.attributes?.name }}</span
             >
         </div>
+        <div
+            v-if="
+                ['ColumnProcess', 'BIProcess'].includes(asset?.typeName) &&
+                parentProcess(asset)?.guid
+            "
+            class="flex flex-col text-sm"
+        >
+            <span class="mb-1 text-sm text-gray-500">Parent Process</span>
+            <span
+                class="font-bold cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentProcess(asset)?.guid)"
+                >{{ parentProcess(asset)?.attributes?.name }}</span
+            >
+        </div>
     </div>
     <AssetDrawer
         :show-drawer="drawerVisible"
@@ -274,6 +288,7 @@
                 parentSchema,
                 parentOrganization,
                 parentObject,
+                parentProcess,
             } = useAssetInfo()
 
             const drawerVisible = ref(false)
@@ -304,6 +319,7 @@
                 parentSchema,
                 parentOrganization,
                 parentObject,
+                parentProcess,
                 guidToFetch,
                 drawerVisible,
                 handleCloseDrawer,

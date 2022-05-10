@@ -79,12 +79,19 @@ export default function useUpdateGraph(graph) {
 
         graph.value.freeze('highlightEdges')
         graph.value.getEdges().forEach((edge) => {
-            const _isCyclicEdge = edge.store.data.data?.isCyclicEdge
-            const defaultStateColor = _isCyclicEdge ? '#ff4848' : '#B2B8C7'
-            const highlightStateColor = _isCyclicEdge ? '#ff4848' : '#3c71df'
+            const isCyclicEdge = edge.store.data.data?.isCyclicEdge
+            const cell = graph.value.getCellById(edge.id)
+
+            if (isCyclicEdge) {
+                if (!nodesToHighlight.length) cell.toFront()
+                else cell.setZIndex(0)
+                return
+            }
+
+            const defaultStateColor = '#B2B8C7'
+            const highlightStateColor = '#3c71df'
             const gray = nodesToHighlight.length ? '#dce0e5' : defaultStateColor
 
-            const cell = graph.value.getCellById(edge.id)
             const [source, target] = edge.id.split('/')[1].split('@')
 
             const itExists =
@@ -100,7 +107,7 @@ export default function useUpdateGraph(graph) {
 
             cell.setZIndex(0)
 
-            if (itExists) cell.setZIndex(10)
+            if (itExists) cell.toFront()
             else cell.setZIndex(0)
         })
         graph.value.unfreeze('highlightEdges')
@@ -112,11 +119,22 @@ export default function useUpdateGraph(graph) {
         graph.value.freeze('dimNodesEdges')
         graph.value.getEdges().forEach((edge) => {
             if (edge.id.includes('port')) return
-            const _isCyclicEdge = edge.store.data.data?.isCyclicEdge
-            const defaultStateColor = _isCyclicEdge ? '#ff4848' : '#B2B8C7'
-
             const cell = graph.value.getCellById(edge.id)
-            cell.attr('line/stroke', dim ? '#dce0e5' : defaultStateColor)
+            const isCyclicEdge = edge.store.data.data?.isCyclicEdge
+
+            if (isCyclicEdge) {
+                if (dim) cell.setZIndex(0)
+                else cell.toFront()
+                return
+            }
+
+            const defaultStateColor = '#B2B8C7'
+
+            edge.attr('line/stroke', dim ? '#dce0e5' : defaultStateColor)
+            edge.attr(
+                'line/targetMarker/stroke',
+                dim ? '#dce0e5' : defaultStateColor
+            )
             cell.toBack()
         })
         graph.value.unfreeze('dimNodesEdges')

@@ -302,8 +302,16 @@ export default function useGraph(graph) {
                                 <div class="node-text group">
                                     <div class="flex items-center gap-x-1">
                                         <span title="${displayText}" class="truncate node-title">${displayText}</span>
-                                        <span class="flex-none ml-1">${status}</span>
-                                        <span class="flex-none ml-1 node-announcement">${flag}</span>
+                                        <span class=" ${
+                                            !status
+                                                ? 'w-0 hidden'
+                                                : 'flex-none ml-1'
+                                        }">${status}</span>
+                                        <span class=" node-announcement ${
+                                            !flag
+                                                ? 'w-0 hidden'
+                                                : 'flex-none ml-1'
+                                        }">${flag}</span>
 
                                     </div>
                                 </div>
@@ -328,7 +336,8 @@ export default function useGraph(graph) {
                             <div class="lineage-node__ports 
                                     ${isNodeWithPorts ? '' : 'hidden'}">
                                 <div isportlist="true" class="lineage-node__ports-cta ${
-                                    data?.highlightPorts.length || data?.selectedPortId
+                                    data?.highlightPorts.length ||
+                                    data?.selectedPortId
                                         ? 'opacity-30 cursor-not-allowed'
                                         : ''
                                 }">
@@ -336,7 +345,7 @@ export default function useGraph(graph) {
                                         <span class="mr-2">
                                             ${getPortsCTALabel(
                                                 typeName,
-                                                data?.portsCount,
+                                                data?.portsCount
                                             )}
                                         </span>
                                         <span>
@@ -463,12 +472,9 @@ export default function useGraph(graph) {
     }
 
     const createEdgeData = (relation, data = {}, styles: EdgeStyle = {}) => {
-        const isDup = data?.isDup
-        const isCyclicEdge = data?.isCyclicEdge
         const stroke = styles?.stroke
 
         const edgeData = {
-            isDup,
             zIndex: 0,
             id: relation.id,
             source: {
@@ -482,7 +488,7 @@ export default function useGraph(graph) {
             router: {
                 name: 'metro',
             },
-            connector: { name: !isCyclicEdge ? 'beiz' : 'beizAlt' },
+            connector: { name: 'beiz' },
             attrs: {
                 line: {
                     stroke,
@@ -536,13 +542,7 @@ export default function useGraph(graph) {
                 {
                     attrs: {
                         label: {
-                            text:
-                                // eslint-disable-next-line no-nested-ternary
-                                relation?.type === 'related'
-                                    ? 'related'
-                                    : isDup
-                                    ? 'grouped-process'
-                                    : 'process',
+                            text: 'process',
                         },
                     },
                 },

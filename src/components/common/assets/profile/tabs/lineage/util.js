@@ -13,6 +13,11 @@ import {
     glue,
 } from './icons'
 
+/** STORE */
+import useLineageStore from '~/store/lineage'
+
+const lineageStore = useLineageStore()
+
 /* This is a mapping of the asset types. */
 export const getNodeTypeText = {
     // SQL
@@ -104,53 +109,93 @@ export const getSchema = (entity) => {
     return item[3]
 }
 
-export const isCyclicEdge = (mergedLineageData, source, target) => {
-    const filtered = mergedLineageData.value.relations.filter((rel) => {
-        const { fromEntityId, toEntityId } = rel
-        if (
-            (fromEntityId === source || fromEntityId === target) &&
-            (toEntityId === source || toEntityId === target)
-        )
-            return true
-
-        return false
-    })
-
-    const conditionSet = new Set()
-    filtered.forEach((rel) => {
-        const { fromEntityId, toEntityId } = rel
-        conditionSet.add(`${fromEntityId}@${toEntityId}`)
-    })
-    const conditionArr = Array.from(conditionSet)
-
-    if (conditionArr.length === 2) return true
-    return false
-}
-
 export const getFilteredRelations = (relations) => {
     const relsSet = new Set()
-    const newRels = []
+    const filteredRels = []
     relations.forEach((rel) => {
-        const { processId, fromEntityId, toEntityId } = rel
+        const { fromEntityId, toEntityId } = rel
         const entry = `${fromEntityId}@${toEntityId}`
-
         if (!relsSet.has(entry)) {
-            const arr = relations.filter((x) => {
-                const { fromEntityId: from, toEntityId: to } = x
-                if (entry === `${from}@${to}`) return true
-                return false
-            })
-
             relsSet.add(entry)
+            filteredRels.push(rel)
+        }
+    })
+    return filteredRels
+}
 
-            newRels.push({
-                processId,
-                fromEntityId,
-                toEntityId,
-                isDup: !!(arr.length > 1),
+export const getCyclicRelations = (relations) => {
+    const res = []
+    const relationsId = relations.map(
+        (x) => `${x.fromEntityId}@${x.toEntityId}`
+    )
+    relations.forEach((id) => {
+        const { fromEntityId, toEntityId } = id
+        const entryCW = `${fromEntityId}@${toEntityId}`
+        const entryACW = `${toEntityId}@${fromEntityId}`
+        const isCyclic = relationsId.includes(entryACW)
+        if (isCyclic) res.push(entryCW)
+    })
+    return res
+}
+
+export const getGroupedRelations = (relations) => {
+    let res = {}
+    relations.forEach((rel) => {
+        const { fromEntityId, toEntityId } = rel
+        const entry = `${fromEntityId}@${toEntityId}`
+        if (res[entry]) res[entry] += 1
+        else res = { ...res, [entry]: 1 }
+    })
+
+    Object.entries(res).forEach(([k, v]) => {
+        if (v < 2) delete res[k]
+    })
+    return res
+}
+
+export const controlCyclicEdges = (graph, relations) => {
+    const cyclicRelations = getCyclicRelations(relations)
+    const graphEdges = graph.value.getEdges()
+    graphEdges.forEach((edge) => {
+        const sourceNode = edge.getSourceNode()
+        const targetNode = edge.getTargetNode()
+        const entry = `${sourceNode.id}@${targetNode.id}`
+        const isCyclic = cyclicRelations.includes(entry)
+        if (isCyclic) {
+            edge.updateData({ isCyclicEdge: true })
+            edge.attr('line/stroke', '#F4B444')
+            edge.attr('line/strokeWidth', 0.9)
+            edge.attr('line/targetMarker/stroke', '#F4B444')
+            edge.setLabels({
+                attrs: {
+                    label: {
+                        text: 'cyclic-processes',
+                    },
+                },
+            })
+            edge.toFront()
+            lineageStore.setCyclicRelation(entry)
+        }
+    })
+}
+
+export const controlGroupedEdges = (graph, relations) => {
+    const groupedRelations = Object.keys(getGroupedRelations(relations))
+    const graphEdges = graph.value.getEdges()
+    graphEdges.forEach((edge) => {
+        const sourceNode = edge.getSourceNode()
+        const targetNode = edge.getTargetNode()
+        const entry = `${sourceNode.id}@${targetNode.id}`
+        const isGrouped = groupedRelations.includes(entry)
+        if (isGrouped) {
+            edge.updateData({ isGroupEdge: true })
+            edge.setLabels({
+                attrs: {
+                    label: {
+                        text: 'grouped-processes',
+                    },
+                },
             })
         }
     })
-
-    return newRels
 }

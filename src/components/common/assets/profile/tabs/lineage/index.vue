@@ -52,7 +52,7 @@
     import { useRoute } from 'vue-router'
     import { whenever } from '@vueuse/core'
 
-    /** LIBS */
+    /** PACKAGES */
     import { message } from 'ant-design-vue'
 
     /** COMPONENTS */
@@ -87,12 +87,6 @@
             const initialLoad = ref(true)
             const baseEntityDataFromStore = ref(assetStore.getSelectedAsset)
             const selectedAsset = ref(null)
-            const preferences = ref({
-                showArrow: false,
-                showSchema: true,
-                showAnnouncement: true,
-                showLegend: false,
-            })
             const config = computed(() => ({
                 depth: depth.value,
                 guid: guid.value,
@@ -136,7 +130,6 @@
             /** PROVIDERS */
             provide('lineage', lineage)
             provide('selectedAsset', selectedAsset)
-            provide('preferences', preferences)
             provide('control', control)
 
             /** WATCHERS */

@@ -84,6 +84,10 @@ export function useBody(
             base.orQuery('match', 'userDescription', {
                 query: tempQuery,
             })
+            base.orQuery('match', 'sql', {
+                query: tempQuery,
+                boost: 40,
+            })
             base.orQuery('match', '__meaningsText', {
                 query: tempQuery,
                 boost: 20,
@@ -534,17 +538,7 @@ export function useBody(
                             if (element.operator === 'isNotNull') {
                                 base.filter('exists', element.operand)
                             }
-                            if (
-                                element.operator === 'boolean' &&
-                                element.operand === '__hasLineage'
-                            ) {
-                                element.value
-                                    ? base.filter('exists', element.operand)
-                                    : base.notFilter('exists', element.operand)
-                            } else if (
-                                element.value != null &&
-                                element.value !== ''
-                            ) {
+                            if (element.value != null && element.value !== '') {
                                 if (element.operator === 'equals') {
                                     base.filter(
                                         'term',
@@ -782,7 +776,8 @@ export function useBody(
         !facets?.typeNames?.includes('AtlasGlossaryTerm') &&
         !facets?.typeNames?.includes('AtlasGlossaryCategory') &&
         !facets?.typeNames?.includes('Link') &&
-        !facets?.guid
+        !facets?.guid &&
+        !facets?.guidList
     ) {
         // Global TypeName Filters
         base.orFilter('terms', '__superTypeNames.keyword', [
@@ -796,6 +791,7 @@ export function useBody(
             'AtlasGlossaryCategory',
             'AtlasGlossaryTerm',
             'Connection',
+            'Process',
         ])
     }
 

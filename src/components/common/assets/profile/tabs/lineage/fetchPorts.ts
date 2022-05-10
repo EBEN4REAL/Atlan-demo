@@ -1,8 +1,15 @@
+/** VUE */
 import { computed, ref } from 'vue'
+
+/** PACKAGES */
 import bodybuilder from 'bodybuilder'
+
+/** CONSTANTS */
 import { assetInterface } from '~/types/assets/asset.interface'
-import useIndexSearch from '~/composables/discovery/useIndexSearch'
 import { LineageAttributesPortLevel } from '~/constant/projection'
+
+/** COMPOSABLES */
+import useIndexSearch from '~/composables/discovery/useIndexSearch'
 
 export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
     const portTypeNameMap = {

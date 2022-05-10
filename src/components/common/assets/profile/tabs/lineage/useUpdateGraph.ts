@@ -1,5 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-nested-ternary */
+/** UTILS */
+import { setFront, setBack } from './util.js'
+
 export default function useUpdateGraph(graph) {
     const highlightNode = (nodeId, state: string) => {
         const graphNodeElement = document.querySelectorAll(
@@ -55,7 +58,7 @@ export default function useUpdateGraph(graph) {
 
             if (!selectedNodeId?.value && !nodesToHighlight.length) return
 
-            cell.setZIndex(20)
+            setFront(cell)
 
             cell.updateData({ isSelectedNode })
             cell.updateData({
@@ -79,12 +82,18 @@ export default function useUpdateGraph(graph) {
 
         graph.value.freeze('highlightEdges')
         graph.value.getEdges().forEach((edge) => {
-            const _isCyclicEdge = edge.store.data.data?.isCyclicEdge
-            const defaultStateColor = _isCyclicEdge ? '#ff4848' : '#B2B8C7'
-            const highlightStateColor = _isCyclicEdge ? '#ff4848' : '#3c71df'
+            const isCyclicEdge = edge.store.data.data?.isCyclicEdge
+
+            if (isCyclicEdge) {
+                if (!nodesToHighlight.length) setFront(edge)
+                else setBack(edge)
+                return
+            }
+
+            const defaultStateColor = '#B2B8C7'
+            const highlightStateColor = '#3c71df'
             const gray = nodesToHighlight.length ? '#dce0e5' : defaultStateColor
 
-            const cell = graph.value.getCellById(edge.id)
             const [source, target] = edge.id.split('/')[1].split('@')
 
             const itExists =
@@ -98,10 +107,10 @@ export default function useUpdateGraph(graph) {
                 itExists ? highlightStateColor : gray
             )
 
-            cell.setZIndex(0)
+            setBack(edge)
 
-            if (itExists) cell.setZIndex(10)
-            else cell.setZIndex(0)
+            if (itExists) setFront(edge)
+            else setBack(edge)
         })
         graph.value.unfreeze('highlightEdges')
 
@@ -112,12 +121,22 @@ export default function useUpdateGraph(graph) {
         graph.value.freeze('dimNodesEdges')
         graph.value.getEdges().forEach((edge) => {
             if (edge.id.includes('port')) return
-            const _isCyclicEdge = edge.store.data.data?.isCyclicEdge
-            const defaultStateColor = _isCyclicEdge ? '#ff4848' : '#B2B8C7'
+            const isCyclicEdge = edge.store.data.data?.isCyclicEdge
 
-            const cell = graph.value.getCellById(edge.id)
-            cell.attr('line/stroke', dim ? '#dce0e5' : defaultStateColor)
-            cell.toBack()
+            if (isCyclicEdge) {
+                if (dim) setBack(edge)
+                else setFront(edge)
+                return
+            }
+
+            const defaultStateColor = '#B2B8C7'
+
+            edge.attr('line/stroke', dim ? '#dce0e5' : defaultStateColor)
+            edge.attr(
+                'line/targetMarker/stroke',
+                dim ? '#dce0e5' : defaultStateColor
+            )
+            setBack(edge)
         })
         graph.value.unfreeze('dimNodesEdges')
     }

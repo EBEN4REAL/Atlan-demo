@@ -5,8 +5,6 @@
         :class="`w-full group ${item.qualifiedName}`"
         :data-test-id="item?.guid"
     >
-        <!-- {{ errorNode }} -->
-
         <div class="flex justify-between w-full overflow-hidden">
             <div class="flex w-full">
                 <div
@@ -805,6 +803,7 @@
                 const parentNode = document.getElementsByClassName(
                     `${item.value.qualifiedName}`
                 )[0]
+                debugger
 
                 const childNode = parentNode?.firstChild as HTMLElement
                 childNode?.classList?.add('hidden')

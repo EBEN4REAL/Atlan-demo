@@ -364,4 +364,8 @@
         @apply text-sm border rounded cursor-pointer;
         min-width: 140px;
     }
+
+    .ant-switch-checked {
+        background-color: #5277d7 !important;
+    }
 </style>

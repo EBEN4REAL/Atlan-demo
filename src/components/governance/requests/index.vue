@@ -555,12 +555,7 @@
                 const el = document.getElementsByClassName(
                     'refresh-icon-request'
                 )
-                if (el) {
-                    el[0]?.children.forEach((p) => {
-                        p.setAttribute('fill', '#3e4359')
-                    })
-                }
-            })
+           })
             return {
                 isFilterApplied,
                 mutate,

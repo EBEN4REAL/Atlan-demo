@@ -5,6 +5,7 @@ import {
     runWorkflowByName,
     createWorkflow,
 } from '~/workflows/composables/workflow/useWorkflowList'
+import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 import { Workflows } from '~/services/service/workflows'
 
 export const isWorkflowRunning = ref(false)
@@ -14,6 +15,7 @@ const useBulkUpload = ({
     fileS3Key = '',
     glossaryName = '',
 } = {}) => {
+    const { getGlossaryByGuid } = useGlossaryData()
     const body = computed(() => ({
         metadata: {
             name: `atlan-gtc-bulk-upload-${guid.slice(-8)}`, // will be static for this usecase
@@ -75,7 +77,14 @@ const useBulkUpload = ({
             entrypoint: 'main',
         },
     }))
-
+    const handleStartedUpload = () => {
+        message.success({
+            content: `Starting bulk upload!`,
+            duration: 2,
+        })
+        getGlossaryByGuid(guid).isBulkUploadRunning = true
+        isWorkflowRunning.value = true
+    }
     // run workflow after updating
     // can be removed if update workflow endpoint gets ( submit = true attribute)
     const run = (name) => {
@@ -93,11 +102,7 @@ const useBulkUpload = ({
         const { data } = runWorkflowByName(runBody, true)
 
         watch(data, () => {
-            isWorkflowRunning.value = true
-            message.success({
-                content: `Starting bulk upload!`,
-                duration: 2,
-            })
+            handleStartedUpload()
         })
     }
 
@@ -107,12 +112,7 @@ const useBulkUpload = ({
         execute(true)
         watch([data, error], (v) => {
             if (data.value && !error.value) {
-                message.success({
-                    content: `Starting bulk upload!`,
-                    key: `bulkUpload`,
-                    duration: 2,
-                })
-                isWorkflowRunning.value = true
+                handleStartedUpload()
             } else {
                 const errMsg = error.value?.response?.data?.message
                 message.error({

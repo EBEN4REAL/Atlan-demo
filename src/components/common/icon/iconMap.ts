@@ -66,6 +66,7 @@ import ViewDraft from '~/assets/images/icons/view_draft.svg'
 import ViewVerified from '~/assets/images/icons/view_verified.svg'
 import ViewGray from '~/assets/images/icons/view-gray.svg'
 import Connection from '~/assets/images/icons/connection.svg'
+import Process from '~/assets/images/icons/process.svg'
 import ChevronRight from '~/assets/images/icons/chevron-right.svg'
 import Union from '~/assets/images/icons/union.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
@@ -302,7 +303,7 @@ import EmptyLogs from '~/assets/images/workflows/empty-logs-state.svg'
 import WarningIcon from '~/assets/images/icons/warning.svg'
 
 import Download from '~/assets/images/icons/download.svg'
-import Upload from '~/assets/images/icons/upload.svg'
+import Upload from '~/assets/images/icons/upload2.svg'
 import Enum from '~/assets/images/icons/label.svg'
 import Boolean from '~/assets/images/dataType/boolean.svg'
 import String from '~/assets/images/dataType/string.svg'
@@ -474,6 +475,13 @@ import QueryOutputFail from '~/assets/images/icons/query_output_fail.svg'
 import QueryOutputNeutral from '~/assets/images/icons/query_output_neutral.svg'
 import PreviewQuery from '~/assets/images/icons/preview.svg'
 import Trident from '~/assets/images/icons/trident.svg'
+import EmptyUploads from '~/assets/images/icons/empty-uploads.svg'
+import CommonError1 from '~/assets/images/icons/common-error-1.svg'
+import CommonError2 from '~/assets/images/icons/common-error-2.svg'
+import CommonError3 from '~/assets/images/icons/common-error-3.svg'
+import CommonError4 from '~/assets/images/icons/common-error-4.svg'
+import CSVLogo from '~/assets/images/icons/csv-logo.svg'
+import PaperClip from '~/assets/images/icons/paper-clip.svg'
 
 export default {
     SlackTabEmpty,
@@ -633,6 +641,7 @@ export default {
     NotificationDot,
     ArrowDown,
     Connection,
+    Process,
     ChevronRight,
     NoRelevantAsset,
     NoAssetOrganization,
@@ -931,4 +940,11 @@ export default {
     Package,
     Display,
     Trident,
+    EmptyUploads,
+    CommonError1,
+    CommonError2,
+    CommonError3,
+    CommonError4,
+    CSVLogo,
+    PaperClip,
 }

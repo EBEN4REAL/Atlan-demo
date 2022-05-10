@@ -70,6 +70,15 @@ export const profileTabs = [
         scrubbed: false,
     },
     {
+        id: 'uploadHistory',
+        label: 'Upload History',
+        component: 'uploadHistory',
+        includes: ['AtlasGlossary'],
+        icon: 'LinkedAssets',
+        tooltip: 'Upload history',
+        scrubbed: false,
+    },
+    {
         id: 'related',
         label: 'Related Assets',
         component: 'relatedAssets',

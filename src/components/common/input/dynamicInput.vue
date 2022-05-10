@@ -124,6 +124,10 @@
 
     <!-- async tree select end -->
     <div class="flex flex-col items-center">
+        <span v-if="fileList.length < 1" class="font-bold text-gray-700"
+            >Select a CSV file to upload</span
+        >
+
         <div
             v-if="dataType === 'upload'"
             class="flex items-center mt-2 space-x-3"
@@ -136,9 +140,7 @@
                 :before-upload="beforeUpload"
                 :showUploadList="false"
             >
-                <a-button :disabled="fileList.length > 0">
-                    Select File
-                </a-button>
+                <a-button v-if="fileList.length < 1"> Select File </a-button>
             </a-upload>
             <a-button
                 v-if="fileList?.length"
@@ -150,24 +152,19 @@
                 {{ uploading ? 'Uploading' : 'Start Upload' }}
             </a-button>
         </div>
-        <span
-            v-if="accept?.length && !fileList?.length"
-            class="self-center mt-2 text-gray-500"
-            >Format allowed: {{ accept?.toUpperCase() }}</span
-        >
         <div v-if="fileList?.length" class="flex items-center mt-3 space-x-1">
-            <atlan-icon icon="Link" />
+            <atlan-icon icon="PaperClip" />
             <span class="text-gray-500">{{ fileList[0]?.name }}</span>
             <span class="text-gray-500">|</span>
-            <atlan-icon
-                icon="Delete"
-                class="text-red-500"
-                @click="fileList = []"
-            />
+            <a-tooltip>
+                <template #title>Remove file</template>
+                <atlan-icon
+                    icon="Delete"
+                    class="text-red-500 cursor-pointer"
+                    @click="fileList = []"
+                />
+            </a-tooltip>
         </div>
-        <span v-if="fileList?.length" class="mt-3"
-            >Hit the “Start Upload” button to start upload.</span
-        >
     </div>
 
     <a-input-number
@@ -214,9 +211,9 @@
     <div v-if="errorM || treeErrorM || fileError" class="text-red-600">
         {{ errorM || treeErrorM || 'Some error occured.' }}
     </div>
-    <div v-else-if="fileSuccess" class="text-green-600">
-        {{ 'Successfully uploaded.' }}
-    </div>
+    <!-- <div v-else-if="fileSuccess" class="text-green-600"> -->
+    <!--     {{ 'Successfully uploaded.' }} -->
+    <!-- </div> -->
 </template>
 
 <script lang="ts">

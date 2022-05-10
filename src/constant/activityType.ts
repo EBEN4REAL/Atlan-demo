@@ -225,7 +225,7 @@ export const activityTypeMap = [
         value: 'query',
         label: 'Query',
         action: 'ENTITY_UPDATE',
-        includes: ['Query', 'Process', 'ColumnProcess'],
+        includes: ['Query', 'Process', 'ColumnProcess', 'BIProcess'],
         exists: ['detail.attributes.rawQuery', 'detail.attributes.sql'],
     },
 ]

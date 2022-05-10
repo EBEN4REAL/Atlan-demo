@@ -262,7 +262,7 @@
             }
 
             whenever(isGuidArrayReady, () => {
-                dependentKey.value = 'RELATED_ASSET_LIST'
+                dependentKey.value = `RELATED_ASSET_LIST_${selectedAsset.value?.typeName}`
 
                 updateFacet()
 

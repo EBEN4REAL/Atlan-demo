@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col p-3 rounded gap-y-3">
+    <div class="flex flex-col p-3 rounded gap-y-5">
         <div class="flex items-center justify-between">
             <span class="text-gray-500">Depth</span>
             <a-dropdown :trigger="['click']">
@@ -27,14 +27,22 @@
                 </template>
             </a-dropdown>
         </div>
+        <div class="flex items-center justify-between">
+            <p class="text-sm text-gray-500">Show Process Nodes</p>
+
+            <a-switch
+                v-model:checked="localProcessValue"
+                @change="handleChange"
+            />
+        </div>
         <div>
             <p class="mb-2 text-sm text-gray-500">Show/Hide</p>
             <div class="flex flex-wrap">
                 <CustomRadioButton
-                    :model-value="display"
+                    v-model="localValue"
                     :list="displayProperties"
                     is-multiple
-                    @update:model-value="$emit('update:display', $event)"
+                    @change="handleChange"
                 ></CustomRadioButton>
             </div>
         </div>
@@ -43,7 +51,8 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, inject, ref, computed, PropType } from 'vue'
+    import { defineComponent, inject, ref, computed } from 'vue'
+    import { useVModels } from '@vueuse/core'
 
     import CustomRadioButton from '@common/radio/customRadioButton.vue'
     import { displayProperties } from '~/constant/displayProperties'
@@ -51,13 +60,30 @@
     export default defineComponent({
         components: { CustomRadioButton },
         props: {
-            display: {
-                type: Array as PropType<string[]>,
-                default: () => [],
+            modelValue: {
+                type: Object,
+                required: false,
+                default() {
+                    return {}
+                },
+            },
+            displayProcess: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
-        emits: ['update:display'],
+        emits: ['updateDisplay', 'update:modelValue', 'update:displayProcess'],
         setup(props, { emit }) {
+            const { modelValue, displayProcess } = useVModels(props, emit)
+            const localValue = ref(modelValue.value)
+            const localProcessValue = ref(displayProcess.value)
+            const handleChange = (id) => {
+                modelValue.value = localValue.value
+                displayProcess.value = localProcessValue.value
+                emit('updateDisplay', id)
+            }
+
             /** INJECTIONS */
             const assetTypesLengthMapInjection = inject('assetTypesLengthMap')
             const depthInjection = inject('updateDepth')
@@ -88,6 +114,9 @@
                 currentDepth,
                 currDepthLabel,
                 updateDepth,
+                handleChange,
+                localValue,
+                localProcessValue,
             }
         },
     })

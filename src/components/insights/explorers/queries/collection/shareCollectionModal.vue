@@ -94,7 +94,6 @@
     } from 'vue'
     import AtlanBtn from '~/components/UI/button.vue'
     import UserSelectWidget from '~/components/common/input/owner/index.vue'
-    import 'emoji-mart-vue-fast/css/emoji-mart.css'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
     import { assetInterface } from '~/types/assets/asset.interface'

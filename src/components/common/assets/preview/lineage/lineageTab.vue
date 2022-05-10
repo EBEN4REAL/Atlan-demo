@@ -19,20 +19,28 @@
                 <span class="ml-1 font-semibold text-gray-500">Lineage</span>
             </span>
 
-            <div
-                class="flex items-center cursor-pointer text-primary"
-                v-if="isWithGraph"
-                @click="showImpactedAssets = true"
-                :disabled="!allEntities?.downstream?.length"
+            <template
+                v-if="
+                    !['Process', 'ColumnProcess', 'BIProcess'].includes(
+                        selectedAsset.typeName
+                    )
+                "
             >
-                <AtlanIcon icon="External" class="mr-1" /> Download Impact
-            </div>
-
-            <router-link v-else :to="getLineagePath(selectedAsset)">
-                <div class="flex items-center cursor-pointer text-primary">
-                    <AtlanIcon icon="External" class="mr-1" /> View Graph
+                <div
+                    class="flex items-center cursor-pointer text-primary"
+                    v-if="isWithGraph"
+                    @click="showImpactedAssets = true"
+                    :disabled="!allEntities?.downstream?.length"
+                >
+                    <AtlanIcon icon="External" class="mr-1" /> Download Impact
                 </div>
-            </router-link>
+
+                <router-link v-else :to="getLineagePath(selectedAsset)">
+                    <div class="flex items-center cursor-pointer text-primary">
+                        <AtlanIcon icon="External" class="mr-1" /> View Graph
+                    </div>
+                </router-link>
+            </template>
         </div>
 
         <RaisedTab
@@ -72,17 +80,6 @@
     } from 'vue'
     import { useRoute } from 'vue-router'
 
-    // Components
-    // import SearchAndFilter from '@/common/input/searchAndFilter.vue'
-    // import AssetList from './LineagePreviewTabAssetList.vue'
-    // import Preferences from './preferences.vue'
-
-    // import SearchAdvanced from '@/common/input/searchAdvanced.vue'
-    // import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
-
-    // import AssetFilters from '@/common/assets/filters/index.vue'
-    // import AssetList from '@/common/assets/list/index.vue'
-    // import AssetItem from '@/common/assets/list/assetItem.vue'
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
     import RaisedTab from '@/UI/raisedTab.vue'
@@ -98,6 +95,7 @@
     // Services
     import useLineageService from '~/services/meta/lineage/lineage_service'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         name: 'LineagePreviewTab',
@@ -146,10 +144,23 @@
                     selectedAsset.value.attributes.name
             )
 
+            const discoveryStore = useAssetStore()
+
+            const processPreference = computed(() => {
+                if (discoveryStore?.preferences?.displayProcess) {
+                    return discoveryStore?.preferences?.displayProcess
+                }
+                return false
+            })
+
             const defaultLineageConfig = computed(() => ({
                 depth: depth.value,
                 guid: guid.value,
-                hideProcess: true,
+                hideProcess: ['Process', 'ColumnProcess', 'BIProcess'].includes(
+                    selectedAsset.value.typeName
+                )
+                    ? false
+                    : !processPreference.value,
                 allowDeletedProcess: false,
                 entityFilters: {
                     attributeName: '__state',
@@ -202,12 +213,20 @@
                 },
                 {
                     key: 'UPSTREAM',
-                    label: 'Upstream',
+                    label: ['Process', 'ColumnProcess', 'BIProcess'].includes(
+                        selectedAsset.value.typeName
+                    )
+                        ? 'Inputs'
+                        : 'Upstream',
                     count: allEntities.value.upstream.length,
                 },
                 {
                     key: 'DOWNSTREAM',
-                    label: 'Downstream',
+                    label: ['Process', 'ColumnProcess', 'BIProcess'].includes(
+                        selectedAsset.value.typeName
+                    )
+                        ? 'Output'
+                        : 'Downstream',
                     count: allEntities.value.downstream.length,
                 },
             ])
@@ -245,7 +264,7 @@
             provide('assetTypesLengthMap', assetTypesLengthMap)
 
             /** WATCHERS */
-            watch([depth, guid], () => {
+            watch([depth, guid, processPreference], () => {
                 mutateUpstream()
                 mutateDownstream()
             })

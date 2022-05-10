@@ -25,9 +25,8 @@ const useAddEvent = (category, obj, action, props = {}) => {
     }
 
     // API call for adding event to segment
-    const properties = eventProperties ? eventProperties() : {}
+    const properties = eventProperties() ? eventProperties() : {}
     properties.domain = window.location.host
-    console.log('analytics track', eventName, properties)
     if (eventProperties) {
         ;(window as any).analytics.track(eventName, properties)
     } else {
@@ -118,7 +117,9 @@ export const identifyGroup = async () => {
             purpose_count: purposeCount,
             persona_count: personaCount,
             tenant_created_at: createdAtIso,
-            configured_sso: configuredSso || '',
+            createdAt: createdAtIso,
+            id: domain,
+            configured_sso: configuredSso || undefined,
             configured_integrations: getTenantLevelIntegrationNames.value || [],
             connection_count: (connectionStore?.list || []).length,
             glossary_count: (glossaryStore?.list || []).length,

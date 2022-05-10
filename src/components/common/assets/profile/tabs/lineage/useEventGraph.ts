@@ -100,6 +100,16 @@ export default function useEventGraph({
         400
     )
 
+    const sendNodeExpandedEvent = useDebounceFn((child_count, node_id, type) => {
+        useAddEvent(
+            'lineage', 
+            'node', 
+            type === 'expanded' ? 'expanded' : 'collapsed', {
+            child_count,
+            node_id
+        })
+    }, 400)
+
     // getNodeQN
     const getNodeQN = (portQN) => {
         if (!portQN) return null
@@ -962,7 +972,7 @@ export default function useEventGraph({
         const index = expandedNodes.value.findIndex((x) => x === node.id)
         expandedNodes.value.splice(index, 1)
 
-        console.log('node_collapsed', node.data.portsCount)
+        sendNodeExpandedEvent(node.data?.portsCount, node.id, 'collapsed')
     }
 
     // removeX6Ports
@@ -999,7 +1009,7 @@ export default function useEventGraph({
 
         addX6Ports(node, uniquePorts)
 
-        console.log('node_expanded', node.data.portsCount)
+        sendNodeExpandedEvent(node.data?.portsCount, node.id, 'expanded')
     }
 
     // addX6Ports

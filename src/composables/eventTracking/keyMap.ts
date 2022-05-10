@@ -326,6 +326,22 @@ const keyMap = {
                 }),
             },
         },
+        node: {
+            expanded: {
+                action: 'lineage_node_expanded',
+                properties: (props) => ({
+                    child_count: props?.child_count,
+                    node_id: props?.node_id,
+                }),
+            },
+            collapsed: {
+                action: 'lineage_node_collapsed',
+                properties: (props) => ({
+                    child_count: props?.child_count,
+                    node_id: props?.node_id,
+                }),
+            },
+        },
     },
     gtc: {
         term: {

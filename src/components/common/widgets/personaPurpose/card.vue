@@ -1,7 +1,7 @@
 <template>
     <div class="pr-3">
         <div class="border border-gray-300 rounded-xl">
-            <div class="flex h-9">
+            <div v-if="type === 'persona'" class="flex h-9">
                 <div
                     v-if="connection.length"
                     class="p-1 bg-gray-100 rounded-tl-xl rounded-br-xl"
@@ -47,6 +47,36 @@
                     {{ item.description || 'No description' }}
                 </div>
             </div>
+            <div
+                v-if="type === 'purpose'"
+                class="flex mx-4 border-b border-gray-300 border-dashed h-9"
+            >
+                <div
+                    v-for="(classification, i) in listClassifications.slice(
+                        0,
+                        2
+                    )"
+                    :key="classification.guid"
+                    class="flex items-end"
+                >
+                    <ClassificationPill
+                        :name="classification.name"
+                        :display-name="classification?.displayName"
+                        :is-propagated="false"
+                        :allow-delete="false"
+                        :color="classification.options?.color"
+                        :created-by="classification?.createdBy"
+                        class="border-none pill-class-widget"
+                        :no-hover="true"
+                    />
+                    <div
+                        v-if="i === 0 && listClassifications.length > 1"
+                        class="mb-1.5 text-xs text-gray-600"
+                    >
+                        ,
+                    </div>
+                </div>
+            </div>
             <div class="flex items-center h-6 px-4">
                 <Avatar
                     v-for="(user, index) in users"
@@ -70,10 +100,10 @@
                 </div>
             </div>
             <div
-                class="flex items-center px-4 py-3 mt-4 border-t border-gray-300"
+                class="flex items-center justify-center px-4 py-3 mt-4 border-t border-gray-300"
             >
-                <div class="text-xs cursor-pointer text-primary">
-                    View from 1.2k assets
+                <div class="text-xs text-center cursor-pointer text-primary">
+                    View assets
                 </div>
                 <AtlanIcon icon="ArrowRight" class="ml-2 text-primary" />
             </div>
@@ -85,10 +115,13 @@
     import { defineComponent, computed, toRefs } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import Avatar from '~/components/common/avatar/index.vue'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import { mergeArray } from '~/utils/array'
+    import ClassificationPill from '@/common/pills/classification.vue'
 
     export default defineComponent({
         name: 'WidgetPersonaPurposeCard',
-        components: { Avatar },
+        components: { Avatar, ClassificationPill },
 
         props: {
             item: {
@@ -101,6 +134,7 @@
             },
         },
         setup(props) {
+            const { classificationList } = useTypedefData()
             const { getConnectorImageMap } = useAssetInfo()
             const { item, type } = toRefs(props)
             const getUniqueTypeIcons = () => {
@@ -127,6 +161,24 @@
                     connectors: [...new Set(displayImages.connectors)],
                 }
             }
+            const classifications = computed(() => {
+                const arr: any[] = []
+                classificationList.value.forEach((cl) => {
+                    item.value?.tags?.forEach((name) => {
+                        if (name === cl.name) {
+                            arr.push({
+                                typeName: cl.name,
+                                entityGuid: cl.guid,
+                                entityStatus: 'ACTIVE',
+                                propagate: false,
+                                validityPeriods: [],
+                                removePropagationsOnEntityDelete: false,
+                            })
+                        }
+                    })
+                })
+                return arr
+            })
             const users = computed(() => item.value?.users?.slice(0, 3) || [])
             const connection = computed(() => {
                 // const glossary = item.value?.glossaryPolicies?.length || 0
@@ -137,12 +189,28 @@
                     lengthCoonection
                 )
             })
+            const listClassifications = computed(() => {
+                const { matchingIdsResult } = mergeArray(
+                    classificationList.value,
+                    classifications.value,
+                    'name',
+                    'typeName'
+                )
+
+                return matchingIdsResult
+            })
             return {
                 connection,
                 users,
+                classifications,
+                listClassifications,
             }
         },
     })
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less">
+    .pill-class-widget {
+        max-width: 80px !important;
+    }
+</style>

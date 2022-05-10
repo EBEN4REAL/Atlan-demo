@@ -105,6 +105,43 @@
                         <AtlanIcon icon="ChevronRight" class="w-4 h-4" />
                     </div>
                 </template>
+                <div v-if="showDemo[activeTab]" class="pr-3">
+                    <div
+                        class="relative flex flex-col items-center p-4 bg-gray-100 rounded-lg"
+                    >
+                        <div
+                            class="absolute flex items-center justify-center w-5 h-5 bg-white border border-gray-200 rounded-full cursor-pointer -top-2 -right-2"
+                            @click="showDemo[activeTab] = false"
+                        >
+                            <div class="icon-cross">
+                                <AtlanIcon icon="Cross" class="w-4 h-4" />
+                            </div>
+                        </div>
+                        <img
+                            :src="
+                                activeTab === 'persona'
+                                    ? illustrationPersonaDemo
+                                    : illustrationPurposeDemo
+                            "
+                            class="ilustration"
+                        />
+                        <div class="mt-4 text-xs text-center">
+                            Some description about purpose goes here
+                        </div>
+                        <AtlanButton2
+                            suffix-icon="ArrowRight"
+                            size="sm"
+                            class="px-4 py-0 mt-5 text-xs h-7"
+                            >Guided demo</AtlanButton2
+                        >
+                        <div
+                            class="flex items-center mt-2 text-xs text-gray-700 cursor-pointer"
+                        >
+                            View documentation
+                            <AtlanIcon icon="External" class="h-4 ml-1" />
+                        </div>
+                    </div>
+                </div>
                 <Card
                     v-for="item in items"
                     :key="item.id"
@@ -134,8 +171,12 @@
         components: { Card, Carousel, AtlanLoader },
         props: {},
         setup() {
-            const activeTab = ref('persona')
+            const activeTab = ref('purpose')
             const loadingChange = ref(false)
+            const showDemo = ref({
+                persona: true,
+                purpose: true,
+            })
             const personaStore = usePersonaStore()
             const purposeStore = usePurposeStore()
             const personas = computed(() => personaStore.list || [])
@@ -157,12 +198,16 @@
                 loadingChange,
                 illustrationPersonaDemo,
                 illustrationPurposeDemo,
+                showDemo,
             }
         },
     })
 </script>
 
 <style lang="less" scoped>
+    .icon-cross {
+        transform: scale(0.5);
+    }
     .ilustration {
         height: 75px;
         width: 92px;

@@ -126,7 +126,11 @@
                             class="ilustration"
                         />
                         <div class="mt-4 text-xs text-center">
-                            Some description about purpose goes here
+                            {{
+                                activeTab === 'persona'
+                                    ? 'Some description about personas goes here'
+                                    : 'Some description about purpose goes here'
+                            }}
                         </div>
                         <AtlanButton2
                             suffix-icon="ArrowRight"
@@ -165,13 +169,15 @@
     import { usePurposeStore } from '~/store/purpose'
     import illustrationPersonaDemo from '~/assets/images/illustrations/illustration-persona-demo.png'
     import illustrationPurposeDemo from '~/assets/images/illustrations/illustration-purpose-demo.png'
+    import useUserData from '~/composables/user/useUserData'
 
     export default defineComponent({
         name: 'WidgetPersonaPurpose',
         components: { Card, Carousel, AtlanLoader },
         props: {},
         setup() {
-            const activeTab = ref('purpose')
+            const { id, name, username } = useUserData()
+            const activeTab = ref('persona')
             const loadingChange = ref(false)
             const showDemo = ref({
                 persona: true,
@@ -179,8 +185,53 @@
             })
             const personaStore = usePersonaStore()
             const purposeStore = usePurposeStore()
-            const personas = computed(() => personaStore.list || [])
-            const purposes = computed(() => purposeStore.list || [])
+            const personas = computed(
+                () =>
+                    personaStore.list.filter((persona) => {
+                        const users = persona?.users || []
+                        // const groups = persona?.groups || []
+                        let found = false
+                        if (id) {
+                            found =
+                                found ||
+                                users.some((user) => [id].includes(user))
+                        }
+                        // if (ownerGroups && ownerGroups.length) {
+                        //     found =
+                        //         found || groups.some((group) => ownerGroups.includes(group))
+                        // }
+                        return found
+                    }) || []
+            )
+            const purposes = computed(
+                () =>
+                    purposeStore.list.filter((purpose) => {
+                        const metadataPolicies = purpose?.metadataPolicies || []
+                        const dataPolicies = purpose?.dataPolicies || []
+                        const policies = [...metadataPolicies, ...dataPolicies]
+                        const users = []
+                        const groups = []
+                        policies.forEach((policy) => {
+                            if (policy.users.length) {
+                                users.push(...policy.users)
+                            }
+                            if (policy.groups.length) {
+                                groups.push(...policy.groups)
+                            }
+                        })
+                        let found = false
+                        if (username) {
+                            found =
+                                found ||
+                                users.some((user) => [username].includes(user))
+                        }
+                        // if (ownerGroups && ownerGroups.length) {
+                        //     found =
+                        //         found || groups.some((group) => ownerGroups.includes(group))
+                        // }
+                        return found
+                    }) || []
+            )
             watch(activeTab, () => {
                 loadingChange.value = true
                 setTimeout(() => {

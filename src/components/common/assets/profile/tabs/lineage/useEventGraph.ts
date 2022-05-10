@@ -296,7 +296,11 @@ export default function useEventGraph({
         const cell = graph.value.getCellById(edgeId)
         const isCyclicEdge = cell.store.data.data?.isCyclicEdge
 
-        if (isCyclicEdge) return
+        if (isCyclicEdge) {
+            sendProcessClickedEvent(!!edge.data?.isGroupEdge, !!isCyclicEdge, edgeId)
+            return
+        }
+
         const processId = edgeId.split('/')[0]
         onSelectAsset({ guid: processId })
 
@@ -312,7 +316,7 @@ export default function useEventGraph({
             return false
         })
 
-        sendProcessClickedEvent(!!edge.data?.isDup, !!isCyclicRelation, edgeId)
+        sendProcessClickedEvent(!!edge.data?.isGroupEdge, !!isCyclicRelation, edgeId)
 
         if (isCyclicRelation) return
 
@@ -1044,11 +1048,15 @@ export default function useEventGraph({
 
         if (edgeId) selectedPortEdgeId.value = edgeId
 
+<<<<<<< HEAD
         sendProcessClickedEvent(
             !!edge.data?.isDup,
             !!edge.data?.isCyclicEdge,
             edgeId
         )
+=======
+        sendProcessClickedEvent(!!edge.data?.isGroupEdge, !!edge.data?.isCyclicEdge, edgeId)
+>>>>>>> 43eca9c9c (FEAT: Lineage process clicked event | isGroup fix)
     }
 
     // getAllNodesQN

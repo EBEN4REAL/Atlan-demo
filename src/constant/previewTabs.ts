@@ -72,6 +72,7 @@ export const previewTabs = [
             'Column',
             'Procedure',
             'Collection',
+            'S3Bucket',
             'S3Object',
         ],
         icon: 'Relation',

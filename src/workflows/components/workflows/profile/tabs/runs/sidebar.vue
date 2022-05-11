@@ -166,7 +166,7 @@
                     </div>
 
                     <div>
-                        <p class="info-title">External</p>
+                        <p class="info-title">Reference</p>
                         <a
                             :href="link"
                             target="_blank"

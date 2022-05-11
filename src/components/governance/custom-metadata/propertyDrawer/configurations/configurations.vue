@@ -3,7 +3,7 @@
         <a-form-item v-if="isMultiValuedSupport" class="mb-2">
             <div class="flex justify-between">
                 <label :for="`${form.name}-isFacet`">
-                    <span class="flex items-center">
+                    <span class="flex items-center gap-x-2">
                         Allow multiple values
                         <a-popover>
                             <template #content>
@@ -17,11 +17,20 @@
                                     </b>
                                 </div>
                             </template>
-                            <AtlanIcon
-                                icon="Info"
-                                class="h-4 ml-1 text-gray-500"
-                            />
+                            <AtlanIcon icon="Info" class="h-4 text-gray-500" />
                         </a-popover>
+                        <a-tooltip
+                            title="This configuration cannot be modified
+once property is created"
+                            placement="top"
+                            overlayClassName="text-xs"
+                        >
+                            <div
+                                class="px-2 py-1 text-xs rounded text-new-yellow-700 bg-new-yellow-100"
+                            >
+                                Editing restricted
+                            </div>
+                        </a-tooltip>
                     </span>
                 </label>
                 <a-switch
@@ -56,7 +65,7 @@
                             </template>
                             <AtlanIcon
                                 icon="Info"
-                                class="h-4 ml-1 text-gray-500"
+                                class="h-4 ml-2 text-gray-500"
                             />
                         </a-popover>
                     </span>
@@ -95,7 +104,7 @@
                             </template>
                             <AtlanIcon
                                 icon="Info"
-                                class="h-4 ml-1 text-gray-500"
+                                class="h-4 ml-2 text-gray-500"
                             />
                         </a-popover>
                     </span>

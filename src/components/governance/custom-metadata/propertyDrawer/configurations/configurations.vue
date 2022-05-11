@@ -12,7 +12,7 @@
                                     while filling
                                     <b>
                                         {{
-                                            form.displayName ?? 'this property.'
+                                            form.displayName || 'this property.'
                                         }}
                                     </b>
                                 </div>
@@ -60,7 +60,7 @@ once property is created"
                                             form.displayName || 'This property '
                                         }}
                                     </b>
-                                    will be available in asset filtering
+                                    will be available in asset filtering.
                                 </div>
                             </template>
                             <AtlanIcon
@@ -99,7 +99,7 @@ once property is created"
                                             form.displayName || 'this property '
                                         }}
                                     </b>
-                                    in the overview tab in the asset sidebar
+                                    in the overview tab in the asset sidebar.
                                 </div>
                             </template>
                             <AtlanIcon

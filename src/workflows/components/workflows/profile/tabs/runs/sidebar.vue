@@ -260,7 +260,7 @@
                         "
                         class="flex flex-col"
                     >
-                        <p class="info-title">Error</p>
+                        <p class="info-title">Message</p>
                         <div class="mb-2 text-gray-700">
                             {{ selectedPod.message }}
                         </div>

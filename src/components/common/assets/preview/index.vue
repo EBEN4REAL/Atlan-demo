@@ -93,6 +93,15 @@
                         "
                         class="self-center mr-1 text-gray-500 mb-0.5"
                     ></AtlanIcon>
+                    <AtlanIcon
+                        v-if="
+                            ['s3object', 's3bucket'].includes(
+                                selectedAsset.typeName?.toLowerCase()
+                            )
+                        "
+                        :icon="selectedAsset?.typeName"
+                        class="self-center mr-1 text-gray-500 mb-0.5"
+                    ></AtlanIcon>
                     <a-tooltip
                         class="flex items-center"
                         v-if="

@@ -170,6 +170,16 @@
                             <!-- Info bar -->
                             <div class="flex flex-wrap items-center mt-1.5">
                                 <div class="flex items-center mr-2">
+                                    <AtlanIcon
+                                        v-if="
+                                            ['s3object', 's3bucket'].includes(
+                                                item.typeName?.toLowerCase()
+                                            )
+                                        "
+                                        :icon="item?.typeName"
+                                        class="self-center mr-1 text-gray-500 mb-0.5"
+                                    ></AtlanIcon>
+
                                     <a-tooltip
                                         class="flex items-center"
                                         v-if="

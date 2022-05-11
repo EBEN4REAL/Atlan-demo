@@ -291,13 +291,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType } from 'vue'
+    import { defineComponent, PropType, ref, watch, toRefs } from 'vue'
     import ConnectionInfo from '@common/widgets/summary/types/connection.vue'
     import { message } from 'ant-design-vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import map from '~/constant/accessControl/map'
 
-    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { useAssetAttributes } from '~/composables/discovery/useCurrentUpdate'
     import UserPill from '@/common/pills/user.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -332,7 +332,7 @@
                 required: false,
             },
         },
-        setup() {
+        setup(props) {
             const {
                 connectorName,
                 connectionName,
@@ -358,20 +358,52 @@
                 lastSyncRun,
                 lastSyncRunAt,
                 sourceId,
+                awsArn,
+                awsPartition,
+                awsService,
+                awsRegion,
+                awsAccountId,
+                awsResourceId,
+                awsOwnerName,
+                awsOwnerId,
+                awsTags,
             } = useAssetInfo()
-
-            const { role } = whoami()
-            const { showUserPreview, setUserUniqueAttribute } = useUserPreview()
-
-            const handleClickUser = (username: string) => {
-                setUserUniqueAttribute(username, 'username')
-                showUserPreview({ allowed: ['about', 'assets', 'groups'] })
-            }
 
             const handleCopyValue = async (value, type) => {
                 await copyToClipboard(value)
                 message.success(`${type} copied!`)
             }
+
+            const { selectedAsset } = toRefs(props)
+
+            const guid = ref()
+            const s3Attributes = ref([
+                'awsArn',
+                'awsPartition',
+                'awsService',
+                'awsRegion',
+                'awsAccountId',
+                'awsResourceId',
+                'awsOwnerName',
+                'awsOwnerId',
+                'awsTags',
+            ])
+
+            const { asset, mutate, isReady, isLoading } = useAssetAttributes({
+                id: guid,
+                attributes: s3Attributes,
+            })
+
+            watch(
+                () => selectedAsset.value.guid,
+                () => {
+                    guid.value = selectedAsset.value?.guid
+                    mutate()
+                },
+                {
+                    immediate: true,
+                }
+            )
 
             return {
                 connectorName,
@@ -387,7 +419,6 @@
                 getAnchorName,
                 getConnectorImage,
                 createdBy,
-                handleClickUser,
                 connectionQualifiedName,
                 ownerUsers,
                 capitalizeFirstLetter,
@@ -402,7 +433,18 @@
                 lastSyncRun,
                 sourceId,
                 map,
-                role,
+                awsArn,
+                awsPartition,
+                awsService,
+                awsRegion,
+                awsAccountId,
+                awsResourceId,
+                awsOwnerName,
+                awsOwnerId,
+                awsTags,
+                isReady,
+                isLoading,
+                asset,
             }
         },
     })

@@ -1262,6 +1262,31 @@ export default function useAssetInfo() {
 
     const formula = (asset: assetInterface) => attributes(asset)?.formula
 
+    const awsArn = (asset: assetInterface) => attributes(asset)?.awsArn || '-'
+
+    const awsPartition = (asset: assetInterface) =>
+        attributes(asset)?.awsPartition || '-'
+
+    const awsService = (asset: assetInterface) =>
+        attributes(asset)?.awsService || '-'
+
+    const awsRegion = (asset: assetInterface) =>
+        attributes(asset)?.awsRegion || '-'
+
+    const awsAccountId = (asset: assetInterface) =>
+        attributes(asset)?.awsAccountId || '-'
+
+    const awsResourceId = (asset: assetInterface) =>
+        attributes(asset)?.awsResourceId || '-'
+
+    const awsOwnerName = (asset: assetInterface) =>
+        attributes(asset)?.awsOwnerName || '-'
+
+    const awsOwnerId = (asset: assetInterface) =>
+        attributes(asset)?.awsOwnerId || '-'
+
+    const awsTags = (asset: assetInterface) => attributes(asset)?.awsTags || '-'
+
     return {
         attributes,
         title,
@@ -1420,5 +1445,14 @@ export default function useAssetInfo() {
         isPublished,
         databaseQualifiedName,
         schemaQualifiedName,
+        awsArn,
+        awsPartition,
+        awsService,
+        awsRegion,
+        awsAccountId,
+        awsResourceId,
+        awsOwnerName,
+        awsOwnerId,
+        awsTags,
     }
 }

@@ -130,6 +130,8 @@ export const AssetAttributes = [
     'isPublished',
     'process',
     'bucket',
+    's3ObjectCount',
+    's3BucketVersioningEnabled',
 ]
 
 export const SQLAttributes = [
@@ -267,6 +269,7 @@ export const MinimalAttributes = [
     'isPublished',
     'process',
     'bucket',
+    's3ObjectCount',
 ]
 
 export const BasicSearchAttributes = [

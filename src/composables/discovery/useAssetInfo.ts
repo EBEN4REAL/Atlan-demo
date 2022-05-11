@@ -1287,6 +1287,12 @@ export default function useAssetInfo() {
 
     const awsTags = (asset: assetInterface) => attributes(asset)?.awsTags || []
 
+    const s3ObjectCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.s3ObjectCount, true)
+
+    const s3BucketVersioningEnabled = (asset: assetInterface) =>
+        !!attributes(asset)?.s3BucketVersioningEnabled
+
     return {
         attributes,
         title,
@@ -1454,5 +1460,7 @@ export default function useAssetInfo() {
         awsOwnerName,
         awsOwnerId,
         awsTags,
+        s3ObjectCount,
+        s3BucketVersioningEnabled,
     }
 }

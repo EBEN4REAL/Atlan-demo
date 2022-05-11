@@ -22,7 +22,7 @@
                     <div
                         class="flex items-center justify-center w-5 h-5 ml-1 text-xs rounded-full bg-primary-light"
                     >
-                        {{ personas.length }}
+                        {{ personas.length || '' }}
                     </div>
                 </div>
                 <div
@@ -38,7 +38,7 @@
                     <div
                         class="flex items-center justify-center w-5 h-5 ml-1 text-xs rounded-full bg-primary-light"
                     >
-                        {{ purposes.length }}
+                        {{ purposes.length || '' }}
                     </div>
                 </div>
             </div>

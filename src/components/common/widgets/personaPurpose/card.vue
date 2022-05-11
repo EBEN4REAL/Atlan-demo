@@ -80,6 +80,9 @@
                         ,
                     </div>
                 </div>
+                <div v-if="listClassifications.length > 2" class="mt-3">
+                    +{{ listClassifications.length - 2 }}
+                </div>
             </div>
             <div class="flex items-center h-6 px-4">
                 <Avatar
@@ -220,6 +223,6 @@
 
 <style lang="less">
     .pill-class-widget {
-        max-width: 80px !important;
+        max-width: 60px !important;
     }
 </style>

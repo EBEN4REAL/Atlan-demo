@@ -49,6 +49,7 @@
                         search-bar-class="px-5 my-1"
                         asset-item-class="px-2"
                         :item="item"
+                        :persona="item"
                     />
                 </a-tab-pane>
             </a-tabs>
@@ -61,10 +62,16 @@
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import AssetList from '@/common/assetList/assetList.vue'
     import OverviewPersonaWidget from './overview/overViewPersona.vue'
+    import UsersGroupsPersona from './overview/usersGroupsPersona.vue'
 
     export default defineComponent({
         name: 'DrawerWidgetPersonaPurpose',
-        components: { PreviewTabsIcon, AssetList, OverviewPersonaWidget },
+        components: {
+            PreviewTabsIcon,
+            AssetList,
+            OverviewPersonaWidget,
+            UsersGroupsPersona,
+        },
         props: {
             visible: {
                 type: Boolean,
@@ -103,7 +110,7 @@
                                 tooltip: 'Users and groups',
                                 icon: 'GroupLight',
                                 activeIcon: 'GroupActive',
-                                component: 'AssetList',
+                                component: 'UsersGroupsPersona',
                             },
                             {
                                 tooltip: 'Assets',

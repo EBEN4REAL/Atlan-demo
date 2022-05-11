@@ -1285,7 +1285,7 @@ export default function useAssetInfo() {
     const awsOwnerId = (asset: assetInterface) =>
         attributes(asset)?.awsOwnerId || '-'
 
-    const awsTags = (asset: assetInterface) => attributes(asset)?.awsTags || '-'
+    const awsTags = (asset: assetInterface) => attributes(asset)?.awsTags || []
 
     return {
         attributes,

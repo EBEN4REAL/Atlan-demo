@@ -176,45 +176,7 @@
             <div v-else class="text-right text-primary">-</div>
         </template>
         <template #persona="{ text: user }">
-            <a-popover
-                v-if="user?.personas?.length"
-                placement="bottom"
-                :destroy-tooltip-on-hide="true"
-            >
-                <template #content>
-                    <div class="p-3 pb-4 content-popover-group-persona">
-                        <div class="flex justify-between">
-                            Personas
-                            <!-- <div>
-                                <span class="ml-auto text-primary">
-                                    Manage
-                                </span>
-                                <AtlanIcon
-                                    icon="ArrowRight"
-                                    class="ml-1 text-primary"
-                                />
-                            </div> -->
-                        </div>
-                        <div class="flex flex-wrap gap-2 mt-3">
-                            <div
-                                v-for="persona in user?.personas"
-                                :key="persona.id"
-                                class="px-2 border rounded-xl"
-                            >
-                                {{ persona.name }}
-                            </div>
-                        </div>
-                    </div>
-                </template>
-                <div class="text-left cursor-pointer text-primary">
-                    {{
-                        user?.personas?.length > 1
-                            ? user?.personas?.length + ' personas'
-                            : user?.personas?.length + ' persona' || '-'
-                    }}
-                </div>
-            </a-popover>
-            <div v-else class="text-left">-</div>
+            <PopoverPersonaUser :personas="user?.personas" />
         </template>
         <template #actions="{ text: user }">
             <div class="flex justify-end">
@@ -510,7 +472,7 @@
     import Groups from './groups.vue'
     import AddGroups from './addGroups.vue'
     import AddPersonas from './addPersona.vue'
-
+    import PopoverPersonaUser from '~/components/admin/common/popoverPersona.vue'
     import useUserStore from '~/store/users'
 
     export default defineComponent({
@@ -521,6 +483,7 @@
             Groups,
             AddGroups,
             AddPersonas,
+            PopoverPersonaUser,
         },
         props: {
             userList: { type: Array, required: true },

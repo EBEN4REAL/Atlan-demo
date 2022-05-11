@@ -400,7 +400,9 @@
                             'LookerQuery',
                             'SalesforceOrganization',
                         ].includes(selectedAsset?.typeName)) ||
-                    ['Schema'].includes(selectedAsset?.typeName)
+                    ['Schema', 'ColumnProcess', 'BIProcess'].includes(
+                        selectedAsset?.typeName
+                    )
                 "
                 class="flex px-5"
             >

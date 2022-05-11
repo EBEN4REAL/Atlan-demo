@@ -8,7 +8,7 @@
                         icon="Cross"
                         class="cursor-pointer"
                         style="width: 0.8rem !important"
-                        @click="preferences.showLegend = false"
+                        @click="setPreference('showLegend', false)"
                     ></AtlanIcon>
                 </div>
             </div>
@@ -44,14 +44,6 @@
                     <div class="ml-4">Highlighted node</div>
                 </div>
             </div>
-            <!-- <div class="flex items-center justify-between">
-                    <span class="text-gray-500">Show Arrows</span>
-                    <a-switch v-model:checked="preferences.showArrow" />
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-gray-500">Show Schema</span>
-                    <a-switch v-model:checked="preferences.showSchema" />
-                </div>  -->
         </div>
     </div>
     <div ref="footerRoot" class="lineage-control footer">
@@ -79,7 +71,6 @@
                 <div style="height: 40px; width: 1px" class="bg-gray-300" />
 
                 <!-- Preferences Popover -->
-
                 <a-popover
                     v-model:visible="isPreferencesVisible"
                     :trigger="['click']"
@@ -226,12 +217,14 @@
 
 <script lang="ts">
     /** VUE */
-    import { defineComponent, inject, ref, toRefs } from 'vue'
+    import { defineComponent, ref, toRefs } from 'vue'
     import { DataUri } from '@antv/x6'
 
     /** COMPOSABLES */
     import useTransformGraph from './useTransformGraph'
+    import useLineageStore from '~/store/lineage'
 
+    /** CONSTANTS */
     import { exportStyles } from './stylesTwo'
 
     export default defineComponent({
@@ -265,7 +258,8 @@
         emits: ['on-zoom-change', 'on-show-minimap'],
         setup(props, { emit }) {
             /** INJECTIONS */
-            const preferences = inject('preferences', ref({}))
+            const lineageStore = useLineageStore()
+            const preferences = lineageStore.getPreferences()
 
             /** DATA */
             const {
@@ -339,6 +333,11 @@
                 } else isExpanded.value = true
             }
 
+            // setPreference
+            const setPreference = (k, v) => {
+                lineageStore.setPreference(k, v)
+            }
+
             return {
                 showMinimap,
                 isFullscreen,
@@ -352,6 +351,7 @@
                 onFullscreen,
                 onSvgExport,
                 toggleControlVisibility,
+                setPreference,
             }
         },
     })
@@ -363,5 +363,13 @@
         @apply h-8 px-3;
         @apply text-sm border rounded cursor-pointer;
         min-width: 140px;
+    }
+
+    .ant-switch {
+        background-color: #00000040 !important;
+    }
+
+    .ant-switch-checked.ant-switch {
+        background-color: #5277d7 !important;
     }
 </style>

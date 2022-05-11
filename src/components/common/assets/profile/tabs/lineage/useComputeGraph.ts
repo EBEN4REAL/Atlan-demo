@@ -9,10 +9,15 @@ import useLineageStore from '~/store/lineage'
 
 /** COMPOSABLES */
 import useGraph from './useGraph'
+import useGetNodes from './useGetNodes'
+import useTransformGraph from './useTransformGraph'
 
 /** UTILS */
-import { isCyclicEdge, getFilteredRelations } from './util.js'
-import useGetNodes from './useGetNodes'
+import {
+    getFilteredRelations,
+    controlCyclicEdges,
+    controlGroupedEdges,
+} from './util.js'
 
 export default async function useComputeGraph({
     graph,
@@ -35,6 +40,7 @@ export default async function useComputeGraph({
     const mergedLineageData = ref({})
 
     const { createNodeData, createEdgeData } = useGraph(graph)
+    const { fit } = useTransformGraph(graph, () => {})
 
     mergedLineageData.value = { ...lineage.value }
     lineageStore.setMergedLineageData(mergedLineageData.value)
@@ -81,7 +87,9 @@ export default async function useComputeGraph({
 
         const isNodeExist = (id) => nodes.value.find((x) => x.id === id)
 
-        relations.forEach((x) => {
+        const filteredRelations = getFilteredRelations(relations)
+
+        filteredRelations.forEach((x) => {
             const { fromEntityId: from, toEntityId: to } = x
 
             const { typeName: fromTypeName, guid: fromGuid } = getAsset(from)
@@ -236,9 +244,9 @@ export default async function useComputeGraph({
             })
         })
 
-        const newRels = getFilteredRelations(lineageData.relations)
+        const filteredRelations = getFilteredRelations(lineageData.relations)
 
-        newRels.forEach((rel) => {
+        filteredRelations.forEach((rel) => {
             const { fromEntityId: from, toEntityId: to, processId } = rel
 
             if (from === to) return
@@ -251,19 +259,9 @@ export default async function useComputeGraph({
             if (allSourcesHiddenIds.value.find((y) => [from, to].includes(y)))
                 return
 
-            let edgeExtraData = {}
             const styles = {
                 stroke: '#B2B8C7',
             }
-
-            if (isCyclicEdge(mergedLineageData, from, to)) {
-                styles.stroke = '#ff4848'
-                edgeExtraData = { ...edgeExtraData, isCyclicEdge: true }
-
-                lineageStore.setCyclicRelation(`${from}@${to}`)
-            }
-
-            edgeExtraData = { ...edgeExtraData, isDup: !!rel?.isDup }
 
             const relation = {
                 id: `${processId}/${from}@${to}`,
@@ -273,7 +271,7 @@ export default async function useComputeGraph({
                 targetPort: `${to}-invisiblePort`,
             }
 
-            const { edgeData } = createEdgeData(relation, edgeExtraData, styles)
+            const { edgeData } = createEdgeData(relation, {}, styles)
             edges.value.push(edgeData)
         })
     }
@@ -302,15 +300,18 @@ export default async function useComputeGraph({
 
         graph.value.freeze('createCTAs')
         graph.value.getNodes().forEach((node) => {
+            const isCyclicGraph = !!lineageStore.getCyclicRelations().length
             const isColNode = isCollapsible(node.id)
             const isHoPaNode = hasHoPa(node.id)
             const isRootNode = graph.value.isRootNode(node.id)
             const isLeafNode = graph.value.isLeafNode(node.id)
 
             if (
-                (isColNode && successors.includes(node.id)) ||
-                (baseEntityGuid === node.id && successors.length)
+                !isCyclicGraph &&
+                ((isColNode && successors.includes(node.id)) ||
+                    (baseEntityGuid === node.id && successors.length))
             ) {
+                if (isCyclicGraph) return
                 const id = `${node.id}-ctaRight-hoTo`
                 node.updateData({
                     ctaRightIcon: 'col',
@@ -319,8 +320,9 @@ export default async function useComputeGraph({
             }
 
             if (
-                (isColNode && predecessors.includes(node.id)) ||
-                (baseEntityGuid === node.id && predecessors.length)
+                !isCyclicGraph &&
+                ((isColNode && predecessors.includes(node.id)) ||
+                    (baseEntityGuid === node.id && predecessors.length))
             ) {
                 const id = `${node.id}-ctaLeft-hoTo`
                 node.updateData({
@@ -402,6 +404,9 @@ export default async function useComputeGraph({
             },
         })
 
+        const { relations } = mergedLineageData.value
+        controlCyclicEdges(graph, relations)
+        controlGroupedEdges(graph, relations)
         createCTAs()
         controlPrefRetainer()
     }
@@ -474,9 +479,7 @@ export default async function useComputeGraph({
                 x !== newData.baseEntityGuid &&
                 graph.value.getNodes().find((y) => y.id === x)
         )
-        const cellToFit = graph.value.getCellById(assetGuidToFit)
-
-        graph.value.scrollToCell(cellToFit, { animation: { duration: 600 } })
+        fit(assetGuidToFit)
     }
 
     return {

@@ -133,7 +133,9 @@
                     click_index: index,
                     result_count: filteredItems.value.length,
                     asset_type: item.typeName?.toLowerCase(),
-                    connector: item.attributes?.connectorName,
+                    connector:
+                        item.attributes?.connectorName ||
+                        item.attributes?.qualifiedName?.split('/')[1],
                 })
             }, 600)
 

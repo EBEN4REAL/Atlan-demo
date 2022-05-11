@@ -322,7 +322,7 @@ const keyMap = {
                 properties: (props) => ({
                     is_group: !!props?.is_group,
                     is_cyclic: !!props?.is_cyclic,
-                    edge_id: props?.edge_id
+                    edge_id: props?.edge_id,
                 }),
             },
         },

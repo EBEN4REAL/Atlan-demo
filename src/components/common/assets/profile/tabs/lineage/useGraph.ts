@@ -153,7 +153,10 @@ export default function useGraph(graph) {
             isHighlightedNode: false,
             isGrayed: false,
             highlightPorts: [],
-            hiddenCount: 0,
+            mode: '',
+            modeId: '',
+            count: 0,
+            hiddenEntities: [],
             ctaRightIcon: '',
             ctaRightId: '',
             ctaRightLoading: false,
@@ -177,9 +180,7 @@ export default function useGraph(graph) {
             html: {
                 render(node) {
                     const data = node.getData() as any
-                    const totalHidden = isVpNode
-                        ? data?.hiddenCount || entity.attributes.hiddenCount
-                        : 0
+                    const totalHidden = isVpNode ? data?.count : 0
 
                     const portsList = () => {
                         let res = ''
@@ -477,7 +478,7 @@ export default function useGraph(graph) {
     }
 
     const createEdgeData = (relation, data = {}, styles: EdgeStyle = {}) => {
-        const stroke = styles?.stroke
+        const stroke = styles?.stroke || '#B2B8C7'
 
         const edgeData = {
             zIndex: 0,

@@ -48,6 +48,7 @@
                         aggregation-tab-class="px-5 my-1"
                         search-bar-class="px-5 my-1"
                         asset-item-class="px-2"
+                        :item="item"
                     />
                 </a-tab-pane>
             </a-tabs>
@@ -56,13 +57,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, toRefs } from 'vue'
+    import { defineComponent, ref, computed, toRefs, watch } from 'vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import AssetList from '@/common/assetList/assetList.vue'
+    import OverviewPersonaWidget from './overview/overViewPersona.vue'
 
     export default defineComponent({
         name: 'DrawerWidgetPersonaPurpose',
-        components: { PreviewTabsIcon, AssetList },
+        components: { PreviewTabsIcon, AssetList, OverviewPersonaWidget },
         props: {
             visible: {
                 type: Boolean,
@@ -78,7 +80,7 @@
             },
         },
         setup(props) {
-            const { item, activeTab }: { item: any } = toRefs(props)
+            const { item, activeTab, visible }: { item: any } = toRefs(props)
             const tabList = ref([
                 {
                     tooltip: 'assets',
@@ -87,6 +89,47 @@
                     component: 'AssetList',
                 },
             ])
+            watch(visible, () => {
+                if (visible) {
+                    if (activeTab.value === 'persona') {
+                        tabList.value = [
+                            {
+                                tooltip: 'Overview',
+                                icon: 'Overview',
+                                activeIcon: 'Overview',
+                                component: 'OverviewPersonaWidget',
+                            },
+                            {
+                                tooltip: 'Users and groups',
+                                icon: 'GroupLight',
+                                activeIcon: 'GroupActive',
+                                component: 'AssetList',
+                            },
+                            {
+                                tooltip: 'Assets',
+                                icon: 'AssetsInactiveLight',
+                                activeIcon: 'AssetsActiveLight',
+                                component: 'AssetList',
+                            },
+                            {
+                                tooltip: 'Resources',
+                                icon: 'Link',
+                                activeIcon: 'Link',
+                                component: 'AssetList',
+                            },
+                        ]
+                    } else {
+                        tabList.value = [
+                            {
+                                tooltip: 'assets',
+                                icon: 'AssetsInactiveLight',
+                                activeIcon: 'AssetsActiveLight',
+                                component: 'AssetList',
+                            },
+                        ]
+                    }
+                }
+            })
             const getConnectorName = (qualifiedName: string) => {
                 let attributeValues: string[]
                 let connectorName: string = ''

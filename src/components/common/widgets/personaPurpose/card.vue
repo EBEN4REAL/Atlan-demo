@@ -1,18 +1,22 @@
 <template>
     <div class="pr-3">
-        <div class="border border-gray-300 rounded-xl">
+        <div
+            class="border cursor-pointer rounded-xl"
+            :class="active ? 'border-primary ' : 'border-gray-300'"
+            @click="$emit('overView', item)"
+        >
             <div v-if="type === 'persona'" class="flex h-9">
                 <div
                     v-if="connection.length"
                     class="p-1 bg-gray-100 rounded-tl-xl rounded-br-xl"
                 >
                     <div
-                        class="flex p-1.5 bg-white rounded-tl-xl rounded-br-xl"
+                        class="flex p-1.5 bg-white rounded-tl-xl rounded-br-xl gap-2"
                     >
                         <div
                             v-for="imgPath in connection"
                             :key="imgPath"
-                            class="rounded-full relativebg-white fit"
+                            class="relative bg-white rounded-full fit"
                         >
                             <img class="w-4 h-4" :src="imgPath" />
                         </div>
@@ -101,7 +105,7 @@
             </div>
             <div
                 class="flex items-center justify-center px-4 py-3 mt-4 border-t border-gray-300"
-                @click="$emit('viewAssets', item)"
+                @click.stop="$emit('viewAssets', item)"
             >
                 <div class="text-xs text-center cursor-pointer text-primary">
                     View assets
@@ -132,8 +136,12 @@
                 type: String,
                 required: true,
             },
+            active: {
+                type: Boolean,
+                required: true,
+            },
         },
-        emits: ['viewAssets'],
+        emits: ['viewAssets', 'overView'],
         setup(props) {
             const { classificationList } = useTypedefData()
             const { getConnectorImageMap } = useAssetInfo()

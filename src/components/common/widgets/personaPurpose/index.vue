@@ -152,7 +152,9 @@
                     :key="item.id"
                     :item="item"
                     :type="activeTab"
+                    :active="item.id === selectedItem.id"
                     @viewAssets="handleViewAssets"
+                    @overView="handleOverView"
                 />
             </Carousel>
         </div>
@@ -163,7 +165,7 @@
             :active-tab="activeTab"
             :item="selectedItem"
             :visible="visible"
-            @close="visible = false"
+            @close="handleCloseDrawer"
         />
     </div>
 </template>
@@ -256,6 +258,14 @@
                 selectedItem.value = item
                 visible.value = true
             }
+            const handleOverView = (item) => {
+                selectedItem.value = item
+                visible.value = true
+            }
+            const handleCloseDrawer = () => {
+                visible.value = false
+                selectedItem.value = {}
+            }
             return {
                 personas,
                 activeTab,
@@ -268,6 +278,8 @@
                 selectedItem,
                 visible,
                 handleViewAssets,
+                handleOverView,
+                handleCloseDrawer,
             }
         },
     })

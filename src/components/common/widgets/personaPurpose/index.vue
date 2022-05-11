@@ -158,6 +158,7 @@
         <div v-else class="flex items-center justify-center h-64">
             <AtlanLoader icon="CircleLoader" class="h-8 animate-spin" />
         </div>
+        <DrawerWidgetPersonaPurpose :visible="true" />
     </div>
 </template>
 
@@ -171,10 +172,11 @@
     import illustrationPersonaDemo from '~/assets/images/illustrations/illustration-persona-demo.png'
     import illustrationPurposeDemo from '~/assets/images/illustrations/illustration-purpose-demo.png'
     import useUserData from '~/composables/user/useUserData'
+    import DrawerWidgetPersonaPurpose from './drawer.vue'
 
     export default defineComponent({
         name: 'WidgetPersonaPurpose',
-        components: { Card, Carousel, AtlanLoader },
+        components: { Card, Carousel, AtlanLoader, DrawerWidgetPersonaPurpose },
         props: {},
         setup() {
             const { id, name, username } = useUserData()

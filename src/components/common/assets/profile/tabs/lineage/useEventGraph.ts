@@ -1311,8 +1311,9 @@ export default function useEventGraph({
 
         const isCyclicEdge = edge.store.data.data?.isCyclicEdge
         const isPortEdge = !!edge.id.includes('port')
-        const isHighlightedEdge = (edgeId) =>
-            nodesEdgesHighlighted.value.find((x) => x === edgeId)
+        const isHighlightedEdge = nodesEdgesHighlighted.value.find(
+            (e) => e === edge.id
+        )
 
         const defaultStateColor = isCyclicEdge ? '#F4B444' : '#B2B8C7'
         const highlightStateColor = isCyclicEdge ? '#F4B444' : '#3c71df'
@@ -1320,7 +1321,7 @@ export default function useEventGraph({
         const nodeEdgeDefaultStroke =
             // eslint-disable-next-line no-nested-ternary
             selectedNodeId.value || selectedNodeEdgeId.value
-                ? isHighlightedEdge(edge.id)
+                ? isHighlightedEdge
                     ? highlightStateColor
                     : '#dce0e5'
                 : defaultStateColor
@@ -1345,7 +1346,7 @@ export default function useEventGraph({
                 animate ? highlightStateColor : edgeDefaultStroke
             )
             if (animate) setFront(edge)
-            else if (!isPortEdge) setBack(edge)
+            else if (!isPortEdge && !isHighlightedEdge) setBack(edge)
         }
 
         edge.setLabels(
@@ -1662,10 +1663,7 @@ export default function useEventGraph({
     // Blank - Click
     graph.value.on('blank:click', () => {
         if (isGraphLoading.value) return
-
-        if (selectedNodeId.value) resetSelectedNode()
-        if (selectedNodeEdgeId.value) resetSelectedNodeEdge()
-        if (selectedPortId.value) resetSelectedPort()
+        resetState()
     })
 
     // Blank - Mousewheel

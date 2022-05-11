@@ -1183,6 +1183,33 @@
                                         objects</span
                                     >
                                 </div>
+
+                                <div
+                                    v-if="
+                                        ['s3object'].includes(
+                                            item.typeName?.toLowerCase()
+                                        )
+                                    "
+                                    class="flex mr-2 text-sm text-gray-500 gap-x-2"
+                                >
+                                    <a-tooltip placement="bottomLeft">
+                                        <div
+                                            v-if="s3BucketName(item)"
+                                            class="flex items-center text-gray-500"
+                                        >
+                                            <span class="tracking-tight">
+                                                in
+                                                {{ s3BucketName(item) }}
+                                            </span>
+                                        </div>
+                                        <template #title>
+                                            <span
+                                                >Parent Bucket -
+                                                {{ s3BucketName(item) }}</span
+                                            >
+                                        </template>
+                                    </a-tooltip>
+                                </div>
                             </div>
 
                             <div class="flex flex-wrap items-center gap-x-1">
@@ -1608,6 +1635,7 @@
                 connectionQualifiedName,
                 parentTable,
                 parentView,
+                s3BucketName,
             } = useAssetInfo()
 
             const icon = computed(() => {
@@ -1823,6 +1851,7 @@
                 getEntityStatusIcon,
                 parentTable,
                 parentView,
+                s3BucketName,
             }
         },
     })

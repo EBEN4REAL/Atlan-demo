@@ -1293,6 +1293,37 @@ export default function useAssetInfo() {
     const s3BucketVersioningEnabled = (asset: assetInterface) =>
         !!attributes(asset)?.s3BucketVersioningEnabled
 
+    const s3BucketName = (asset: assetInterface) =>
+        attributes(asset)?.s3BucketName || '-'
+
+    const s3ObjectSize = (asset: assetInterface) =>
+        attributes(asset)?.s3ObjectSize || '-'
+
+    const s3ObjectStorageClass = (asset: assetInterface) =>
+        attributes(asset)?.s3ObjectStorageClass || '-'
+
+    const s3ObjectKey = (asset: assetInterface) =>
+        attributes(asset)?.s3ObjectKey || '-'
+
+    const s3ObjectLastModifiedTime = (asset: assetInterface) => {
+        if (attributes(asset)?.s3ObjectLastModifiedTime) {
+            return raw
+                ? formatDateTime(attributes(asset)?.s3ObjectLastModifiedTime) ||
+                      'N/A'
+                : useTimeAgo(attributes(asset)?.s3ObjectLastModifiedTime).value
+        }
+        return '-'
+    }
+
+    const s3ObjectContentType = (asset: assetInterface) =>
+        attributes(asset)?.s3ObjectContentType || '-'
+
+    const s3ObjectContentDisposition = (asset: assetInterface) =>
+        attributes(asset)?.s3ObjectContentDisposition || '-'
+
+    const s3ObjectVersionId = (asset: assetInterface) =>
+        attributes(asset)?.s3ObjectVersionId || '-'
+
     return {
         attributes,
         title,
@@ -1462,5 +1493,13 @@ export default function useAssetInfo() {
         awsTags,
         s3ObjectCount,
         s3BucketVersioningEnabled,
+        s3ObjectLastModifiedTime,
+        s3BucketName,
+        s3ObjectSize,
+        s3ObjectStorageClass,
+        s3ObjectKey,
+        s3ObjectContentType,
+        s3ObjectContentDisposition,
+        s3ObjectVersionId,
     }
 }

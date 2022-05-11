@@ -549,6 +549,10 @@
                 </div>
             </div>
 
+            <div v-if="['S3Object'].includes(selectedAsset.typeName)">
+                <S3ObjectInfo :asset="selectedAsset" />
+            </div>
+
             <div
                 v-if="
                     isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
@@ -1055,6 +1059,7 @@
     import RelatedTerms from '@/common/input/relatedTerms/relatedTerms.vue'
     import Connection from './connection.vue'
     import Suggestion from './suggestion.vue'
+    import S3ObjectInfo from './s3ObjectInfo.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
@@ -1108,6 +1113,7 @@
             PreviewTabsIcon,
             UserPill,
             PopOverUser,
+            S3ObjectInfo,
             Suggestion,
             SampleDataTable: defineAsyncComponent(
                 () =>

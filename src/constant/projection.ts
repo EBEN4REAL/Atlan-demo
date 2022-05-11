@@ -132,6 +132,14 @@ export const AssetAttributes = [
     'bucket',
     's3ObjectCount',
     's3BucketVersioningEnabled',
+    's3ObjectLastModifiedTime',
+    's3BucketName',
+    's3ObjectSize',
+    's3ObjectStorageClass',
+    's3ObjectKey',
+    's3ObjectContentType',
+    's3ObjectContentDisposition',
+    's3ObjectVersionId',
 ]
 
 export const SQLAttributes = [
@@ -270,6 +278,7 @@ export const MinimalAttributes = [
     'process',
     'bucket',
     's3ObjectCount',
+    's3BucketName',
 ]
 
 export const BasicSearchAttributes = [

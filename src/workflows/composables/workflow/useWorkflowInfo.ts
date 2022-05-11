@@ -62,6 +62,14 @@ export default function useWorkflowInfo() {
 
     const phaseMessage = (item: any) => item.status?.message
 
+    const message = (run, node?: string) => {
+        if (node) {
+            const status = run?.status?.nodes[node]
+            return status?.message
+        }
+        return run.status?.message
+    }
+
     const startedAt = (item: any, relative: any) => {
         if (relative) {
             return dayjs().from(item.status?.startedAt, true)
@@ -310,6 +318,7 @@ export default function useWorkflowInfo() {
     }
 
     return {
+        message,
         name,
         creationTimestamp,
         labels,

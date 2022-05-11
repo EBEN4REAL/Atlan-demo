@@ -534,6 +534,22 @@
             </div>
 
             <div
+                v-if="['S3Bucket'].includes(selectedAsset.typeName)"
+                class="flex flex-col px-5 text-sm gap-y-4"
+            >
+                <S3ObjectCount :asset="selectedAsset" />
+
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-sm text-gray-500"
+                        >Bucket Versioning Enabled</span
+                    >
+                    <span class="text-gray-700 capitalize">{{
+                        s3BucketVersioningEnabled(selectedAsset)
+                    }}</span>
+                </div>
+            </div>
+
+            <div
                 v-if="
                     isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
                     externalLocation(selectedAsset)
@@ -1046,6 +1062,7 @@
     import SourceViewCount from '@/common/widgets/summary/types/sourceViewCount.vue'
     import FieldCount from '@/common/widgets/summary/types/fieldCount.vue'
     import SubFolderCount from '@/common/widgets/summary/types/subFolderCount.vue'
+    import S3ObjectCount from '@/common/widgets/summary/types/s3ObjectCount.vue'
     import ParentContext from '@/common/widgets/summary/types/parentContext.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { copyToClipboard } from '~/utils/clipboard'
@@ -1086,6 +1103,7 @@
             SubFolderCount,
             ParentContext,
             FieldCount,
+            S3ObjectCount,
             DetailsContainer,
             PreviewTabsIcon,
             UserPill,
@@ -1180,6 +1198,7 @@
                 parentTable,
                 parentView,
                 title,
+                s3BucketVersioningEnabled,
             } = useAssetInfo()
 
             const {
@@ -1376,6 +1395,7 @@
                 getEntityStatusIcon,
                 parentTable,
                 parentView,
+                s3BucketVersioningEnabled,
                 quickChange,
                 limit,
                 title,

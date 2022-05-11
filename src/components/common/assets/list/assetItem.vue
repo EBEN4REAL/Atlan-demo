@@ -1167,6 +1167,22 @@
                                         reports</span
                                     >
                                 </div>
+                                <div
+                                    v-if="
+                                        ['s3bucket'].includes(
+                                            item.typeName?.toLowerCase()
+                                        ) && s3ObjectCount(item) !== '0'
+                                    "
+                                    class="flex text-sm text-gray-500"
+                                >
+                                    <span class="text-gray-500">
+                                        <span
+                                            class="tracking-tight text-gray-500"
+                                            >{{ s3ObjectCount(item) }}</span
+                                        >
+                                        objects</span
+                                    >
+                                </div>
                             </div>
 
                             <div class="flex flex-wrap items-center gap-x-1">
@@ -1582,6 +1598,7 @@
                 sourceViewCount,
                 sourceChildCount,
                 fieldCount,
+                s3ObjectCount,
                 isCustom,
                 announcementType,
                 assetTypeImage,
@@ -1785,6 +1802,7 @@
                 sourceChildCount,
                 terms,
                 fieldCount,
+                s3ObjectCount,
                 isCustom,
                 getGlossaryStatusIcon,
                 meanings,

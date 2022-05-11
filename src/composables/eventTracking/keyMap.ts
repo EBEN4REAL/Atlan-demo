@@ -341,6 +341,25 @@ const keyMap = {
                     node_id: props?.node_id,
                 }),
             },
+            clicked: {
+                action: 'lineage_node_clicked',
+                properties: (props) => ({
+                    asset_type: props?.asset_type,
+                    connector: props?.connector,
+                    node_id: props?.node_id,
+                }),
+            },
+        },
+        sub_node: {
+            clicked: {
+                action: 'lineage_sub_node_clicked',
+                properties: (props) => ({
+                    asset_type: props?.asset_type,
+                    connector: props?.connector,
+                    click_index: props?.click_index,
+                    node_id: props?.node_id,
+                }),
+            },
         },
     },
     gtc: {

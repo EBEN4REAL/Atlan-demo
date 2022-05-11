@@ -89,6 +89,29 @@ export default function useEventGraph({
     }
 
     // handleAnalyticsEvents
+    const sendNodeClickedEvent = useDebounceFn(
+        (asset_type, connector, node_id) => {
+            useAddEvent('lineage', 'node', 'clicked', {
+                asset_type,
+                connector,
+                node_id,
+            })
+        },
+        400
+    )
+
+    const sendSubNodeClickedEvent = useDebounceFn(
+        (asset_type, connector, click_index, node_id) => {
+            useAddEvent('lineage', 'sub_node', 'clicked', {
+                asset_type,
+                connector,
+                click_index,
+                node_id,
+            })
+        },
+        400
+    )
+
     const sendProcessClickedEvent = useDebounceFn(
         (is_group, is_cyclic, edge_id) => {
             useAddEvent('lineage', 'process', 'clicked', {
@@ -100,15 +123,20 @@ export default function useEventGraph({
         400
     )
 
-    const sendNodeExpandedEvent = useDebounceFn((child_count, node_id, type) => {
-        useAddEvent(
-            'lineage', 
-            'node', 
-            type === 'expanded' ? 'expanded' : 'collapsed', {
-            child_count,
-            node_id
-        })
-    }, 400)
+    const sendNodeExpandedEvent = useDebounceFn(
+        (child_count, node_id, type) => {
+            useAddEvent(
+                'lineage',
+                'node',
+                type === 'expanded' ? 'expanded' : 'collapsed',
+                {
+                    child_count,
+                    node_id,
+                }
+            )
+        },
+        400
+    )
 
     // getNodeQN
     const getNodeQN = (portQN) => {
@@ -1052,6 +1080,7 @@ export default function useEventGraph({
     const selectPort = (node, portId, fetchLineage = true) => {
         const { ports } = node.getData()
         const portEntity = ports.find((x) => x.guid === portId)
+        const portIndex = ports.indexOf(portEntity)
 
         node.updateData({ selectedPortId: portId })
 
@@ -1063,6 +1092,14 @@ export default function useEventGraph({
                 fetchPortLineage(node, portId)
             }
         }
+
+        sendSubNodeClickedEvent(
+            portEntity.typeName?.toLowerCase(),
+            portEntity.attributes?.connectorName ||
+                portEntity.attributes?.qualifiedName?.split('/')[1],
+            portIndex,
+            node.id
+        )
     }
 
     // selectPortEdge
@@ -1713,6 +1750,7 @@ export default function useEventGraph({
         resetState()
 
         selectNode(node.id)
+        // sendNodeClickedEvent(,node.id)
     })
 
     // Edge - Click
@@ -1796,6 +1834,7 @@ export default function useEventGraph({
                 )
                 portsToAdd.push(...p)
             }
+
             addPorts(parentNode, portsToAdd)
             controlShowMorePort(parentNode)
 

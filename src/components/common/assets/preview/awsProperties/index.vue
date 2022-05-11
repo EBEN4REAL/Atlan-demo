@@ -14,7 +14,13 @@
                 >
             </span>
         </div>
-        <div class="flex flex-col px-5 pt-0 overflow-auto gap-y-5">
+        <div
+            v-if="isLoading"
+            class="flex items-center justify-center flex-grow"
+        >
+            <AtlanLoader class="h-10" />
+        </div>
+        <div v-else class="flex flex-col px-5 pt-0 overflow-auto gap-y-5">
             <div class="flex flex-col text-sm">
                 <div class="flex items-center mb-1 text-gray-500">
                     <span>ARN</span>
@@ -103,6 +109,29 @@
 
                 <DetailsContainer :array="awsTags(asset)" class="rounded-lg" />
             </div>
+            <div
+                v-if="selectedAsset.typeName === 'S3Object'"
+                class="flex flex-col text-sm"
+            >
+                <span class="mb-1 text-gray-500">Object Version Id</span>
+
+                <span class="text-gray-700">{{
+                    s3ObjectVersionId(asset)
+                }}</span>
+            </div>
+
+            <div
+                v-if="selectedAsset.typeName === 'S3Object'"
+                class="flex flex-col text-sm"
+            >
+                <span class="mb-1 text-gray-500"
+                    >Object Content Disposition</span
+                >
+
+                <span class="text-gray-700">{{
+                    s3ObjectContentDisposition(asset)
+                }}</span>
+            </div>
         </div>
     </div>
 </template>
@@ -145,6 +174,8 @@
                 awsOwnerName,
                 awsOwnerId,
                 awsTags,
+                s3ObjectVersionId,
+                s3ObjectContentDisposition,
             } = useAssetInfo()
 
             const handleCopyValue = async (value, type) => {
@@ -165,6 +196,8 @@
                 'awsOwnerName',
                 'awsOwnerId',
                 'awsTags',
+                's3ObjectContentDisposition',
+                's3ObjectVersionId',
             ])
 
             const { asset, mutate, isReady, isLoading } = useAssetAttributes({
@@ -197,6 +230,8 @@
                 isReady,
                 isLoading,
                 asset,
+                s3ObjectVersionId,
+                s3ObjectContentDisposition,
             }
         },
     })

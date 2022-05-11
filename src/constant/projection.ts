@@ -138,8 +138,6 @@ export const AssetAttributes = [
     's3ObjectStorageClass',
     's3ObjectKey',
     's3ObjectContentType',
-    's3ObjectContentDisposition',
-    's3ObjectVersionId',
 ]
 
 export const SQLAttributes = [

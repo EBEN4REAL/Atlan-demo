@@ -31,24 +31,10 @@
                 }}</span>
             </div>
             <div class="flex flex-col text-sm">
-                <span class="mb-1 text-gray-500">Version Id</span>
-
-                <span class="text-gray-700">{{
-                    s3ObjectVersionId(asset)
-                }}</span>
-            </div>
-            <div class="flex flex-col text-sm">
                 <span class="mb-1 text-gray-500">Content Type</span>
 
                 <span class="text-gray-700">{{
                     s3ObjectContentType(asset)
-                }}</span>
-            </div>
-            <div class="flex flex-col text-sm">
-                <span class="mb-1 text-gray-500">Content Disposition</span>
-
-                <span class="text-gray-700">{{
-                    s3ObjectContentDisposition(asset)
                 }}</span>
             </div>
 

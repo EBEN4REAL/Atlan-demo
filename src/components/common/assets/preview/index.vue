@@ -431,6 +431,9 @@
             linkedAssets: defineAsyncComponent(
                 () => import('./linkedAssets/linkedAssetsWrapper.vue')
             ),
+            awsProperties: defineAsyncComponent(
+                () => import('./awsProperties/index.vue')
+            ),
             Jira: defineAsyncComponent(
                 () =>
                     import('@/common/assets/preview/integrations/jira/jira.vue')

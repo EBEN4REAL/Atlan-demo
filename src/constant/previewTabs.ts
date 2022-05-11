@@ -30,6 +30,16 @@ export const previewTabs = [
         analyticsKey: 's3objects',
     },
     {
+        name: 'AWS Properties',
+        component: 'awsProperties',
+        includes: ['S3Bucket', 'S3Object'],
+        icon: 'S3',
+        tooltip: 'AWS Properties',
+        scrubbed: true,
+        requiredInProfile: true,
+        analyticsKey: 'awsProperties',
+    },
+    {
         name: 'Lineage',
         component: 'lineage',
         excludes: [

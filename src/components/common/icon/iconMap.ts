@@ -389,6 +389,7 @@ import NoSelectedAsset from '~/assets/images/icons/noSelectedAsset.svg'
 import QueryGrey from '~/assets/images/icons/query-grey.svg'
 import QueryDiscovery from '~/assets/images/icons/query_discovery.svg'
 import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
+import NoSearchResultsQuery from '~/assets/images/illustrations/Illustration_no_search_results_query.svg'
 import SetContext from '~/assets/images/icons/setContext.svg'
 import CollectionHeader from '~/assets/images/insights/collection/header.svg'
 import CollectionBody from '~/assets/images/insights/collection/body.svg'
@@ -482,6 +483,7 @@ import CSVLogo from '~/assets/images/icons/csv-logo.svg'
 import PaperClip from '~/assets/images/icons/paper-clip.svg'
 
 export default {
+    NoSearchResultsQuery,
     SlackTabEmpty,
     PreviewQuery,
     QueryOutputFail,

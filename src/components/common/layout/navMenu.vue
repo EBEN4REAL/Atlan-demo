@@ -134,12 +134,14 @@
                 >
                 <AtlanButton2
                     color="secondary"
-                    class="px-0 text-gray-700 bg-transparent border-none"
+                    class="min-w-0 px-0 text-gray-700 bg-transparent border-none"
                 >
                     <AtlanIcon icon="QuestionRound" class="h-6" />
                 </AtlanButton2>
             </a-dropdown>
-            <div class="announcekit-widget">What's new</div>
+            <div class="announcekit-widget">
+                <AtlanIcon icon="Gift" class="h-6" />
+            </div>
             <!-- <atlan-icon icon="Search" class="h-5 mr-3" />
 
             <atlan-icon icon="Add" class="h-5 mr-3 font-bold text-primary" /> -->
@@ -385,4 +387,14 @@
             @apply text-primary !important;
         }
     }
+</style>
+<style lang="less">
+    .announcekit-widget {
+        .announcekit-widget-badge {
+            @apply absolute -right-2 top-4 !important;
+        }
+    }
+    // :globa(.announcekit-widget-badge) {
+    //     @apply absolute -right-2 top-5;
+    // }
 </style>

@@ -54,6 +54,7 @@
                                 :item="collection"
                                 :handle-change="handleChange"
                                 :selected-collection="selectedCollection"
+                                :openInSidebar="openInSidebar"
                             />
                         </div>
                         <div
@@ -113,14 +114,25 @@
                                 <Tooltip
                                     :tooltip-text="`${selectedCollection?.attributes?.name}`"
                                     classes="cursor-pointer text-base font-bold mr-1
-                                text-gray-700 w-full"
+                                text-gray-700 hover:underline"
+                                    @click.stop="
+                                        () =>
+                                            openInSidebar(
+                                                selectedCollection,
+                                                true
+                                            )
+                                    "
                                 >
                                 </Tooltip>
                                 <div class="flex-shrink-0 w-5">
-                                    <AtlanIcon
-                                        icon="ChevronDown"
-                                        class="w-4 h-4 text-gray-500"
-                                    ></AtlanIcon>
+                                    <div
+                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                    >
+                                        <AtlanIcon
+                                            icon="ChevronDown"
+                                            class="w-4 h-4 text-gray-500"
+                                        ></AtlanIcon>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -149,6 +161,8 @@
         inject,
         onMounted,
         watch,
+        Ref,
+        toRefs,
     } from 'vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { QueryCollection } from '~/types/insights/savedQuery.interface'
@@ -160,11 +174,26 @@
     import map from '~/constant/accessControl/map'
     import Tooltip from '@/common/ellipsis/index.vue'
 
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import { useSchema } from '~/components/insights/explorers/schema/composables/useSchema'
+    import { assetInterface } from '~/types/assets/asset.interface'
+
     export default defineComponent({
         name: 'CollectionSelector',
         components: { AtlanIcon, SearchAndFilter, CollectionItem, Tooltip },
-        emits: ['update:data', 'toggleCollectionModal'],
+        props: {
+            isCollectionPopoverVisible: {
+                type: Boolean,
+                default: () => false,
+            },
+        },
+        emits: [
+            'update:data',
+            'update:isCollectionPopoverVisible',
+            'toggleCollectionModal',
+        ],
         setup(props, { emit }) {
+            const { isCollectionPopoverVisible } = toRefs(props)
             // store
             const authStore = useAuthStore()
             const inputRef = ref()
@@ -184,6 +213,16 @@
             ) as ComputedRef<activeInlineTabInterface>
             const selectedValue = ref(
                 activeInlineTab.value.explorer.queries.collection.guid
+            )
+
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
+
+            const { isSameNodeOpenedInSidebar } = useSchema()
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                inlineTabs,
+                activeInlineTab
             )
 
             watch(
@@ -308,6 +347,29 @@
                 emit('toggleCollectionModal')
             }
 
+            const openInSidebar = (
+                t: assetInterface,
+                closeCollectionSelector: Boolean
+            ) => {
+                // Close dropdown when collection sidebar is opened by clicking on the collection name
+                if (closeCollectionSelector) isVisible.value = false
+
+                // i button clicked on the same node -> close the sidebar
+                if (isSameNodeOpenedInSidebar(t, activeInlineTab)) {
+                    /* Close it if it is already opened */
+                    closeAssetSidebar(activeInlineTab.value)
+                } else {
+                    const activeInlineTabCopy: activeInlineTabInterface = {
+                        ...activeInlineTab.value,
+                    }
+
+                    // console.log('query entity1: ', t)
+                    activeInlineTabCopy.assetSidebar.assetInfo = t
+                    activeInlineTabCopy.assetSidebar.isVisible = true
+                    openAssetSidebar(activeInlineTabCopy, 'not_editor')
+                }
+            }
+
             watch(queryCollectionsLoading, (newLoading) => {
                 if (!newLoading) {
                     selectDefaultValue()
@@ -317,6 +379,7 @@
                 setTimeout(() => {
                     if (!isVisible.value) queryText.value = ''
                 }, 0)
+                emit('update:isCollectionPopoverVisible', isVisible.value)
             })
 
             onMounted(async () => {
@@ -342,7 +405,9 @@
                 hasCollectionWritePermission,
                 hasCollectionReadPermission,
                 isCollectionCreatedByCurrentUser,
+                isCollectionPopoverVisible,
                 ellipsis: ref(true),
+                openInSidebar,
             }
         },
     })

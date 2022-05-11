@@ -342,6 +342,23 @@ export default function useWorkflowInfo() {
 
     const connectorStore = useConnectionStore()
 
+    const getGlobalArguments = (item) => {
+        const map = {}
+
+        if (item?.spec?.templates?.length > 0) {
+            if (item?.spec?.templates[0].dag?.tasks.length > 0) {
+                item?.spec?.templates[0].dag?.tasks[0].arguments?.parameters.forEach(
+                    (element) => {
+                        map[element.name] = element.value
+                    }
+                )
+            }
+        }
+
+        return map
+    }
+
+
     const displayName = (
         item: Record<string, any>,
         workflowName: string,
@@ -358,6 +375,19 @@ export default function useWorkflowInfo() {
             }
             return suffix
         }
+        if (['miner'].includes(packageType(item))) {
+            const globalArguments = getGlobalArguments({ spec })
+            const connectionQualifiedName = globalArguments['connection-qualified-name']
+            suffix = suffix.replaceAll('-', '/')
+            const found = connectorStore.list.find(
+                (i) => i.attributes.qualifiedName === connectionQualifiedName
+            )
+            if (found) {
+                return found?.attributes.name
+            }
+            return suffix || workflowName
+        }
+
         if (packageType(item) === 'schedule-query') {
             return (
                 spec?.templates[0]?.dag?.tasks?.[0]?.arguments?.parameters?.find(
@@ -383,22 +413,6 @@ export default function useWorkflowInfo() {
             if (found) return found?.guid
         }
         return undefined
-    }
-
-    const getGlobalArguments = (item) => {
-        const map = {}
-
-        if (item?.spec?.templates?.length > 0) {
-            if (item?.spec?.templates[0].dag?.tasks.length > 0) {
-                item?.spec?.templates[0].dag?.tasks[0].arguments?.parameters.forEach(
-                    (element) => {
-                        map[element.name] = element.value
-                    }
-                )
-            }
-        }
-
-        return map
     }
 
     const workflowTemplateName = (item) =>

@@ -339,8 +339,8 @@
             const dropdownOptions = [
                 {
                     title: 'Delete',
-                    icon: 'Trash',
-                    class: 'text-red-700',
+                    icon: 'Delete',
+                    class: 'text-red-500',
                     handleClick: () =>
                         archiveWorkflow(workflowObject.value?.metadata?.name),
                 },

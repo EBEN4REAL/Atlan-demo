@@ -11,13 +11,19 @@
             class="w-full"
         >
             <div
-                class="w-full p-4 pb-0 rounded"
+                class="w-full p-2 pb-0 rounded"
                 v-if="queryCollections?.length > 0"
             >
-                <div class="flex items-center">
+                <div
+                    class="flex items-center p-2 rounded-lg hover:bg-new-gray-200"
+                    :class="isCollectionPopoverVisible ? 'bg-new-gray-200' : ''"
+                >
                     <CollectionSelector
                         @update:data="updateCollection"
                         @toggleCollectionModal="toggleCollectionModal"
+                        v-model:isCollectionPopoverVisible="
+                            isCollectionPopoverVisible
+                        "
                     ></CollectionSelector>
                     <!-- TODO:@rohan: disable items when its in search mode !searchQuery?.length && !totalFilteredCount -->
                     <InsightsThreeDotMenu
@@ -25,6 +31,7 @@
                         class="ml-auto shadow-none h-7"
                         placement="bottomLeft"
                         :item="item"
+                        minWidth="150"
                     >
                         <template #menuTrigger>
                             <div
@@ -58,7 +65,7 @@
                     </InsightsThreeDotMenu>
                 </div>
                 <div
-                    class="flex flex-row mt-4 space-x-2"
+                    class="flex flex-row mx-2 mt-2 space-x-2"
                     v-if="treeData?.length"
                 >
                     <a-input
@@ -441,6 +448,9 @@
                 'assetSidebarUpdatedData'
             ) as Ref<Object>
 
+            // For maintaining hover state and status of collection selector dropdown
+            const isCollectionPopoverVisible = ref(false)
+
             // console.log('collection permission: ', {
             //     isCollectionCreatedByCurrentUser,
             //     hasCollectionReadPermission,
@@ -513,10 +523,18 @@
             }
 
             let selectedFolder = ref({})
+            let isVisualQuery = ref(false)
 
-            const toggleCreateQueryModal = (item) => {
+            const toggleCreateQueryModal = (item, isVQB) => {
                 console.log('create query modal: ', item)
                 // console.log('selected Parent: ', item)
+
+                // Checking if query is visual query or not before saving it
+                if (isVQB) {
+                    isVisualQuery.value = true
+                } else {
+                    isVisualQuery.value = false
+                }
 
                 if (item?.typeName === 'QueryFolderNamespace') {
                     selectedFolder.value = item
@@ -549,6 +567,7 @@
             let showEmptyState = ref(true)
 
             const createFolderInput = () => {
+                // debugger
                 // const inputClassName = `${per_immediateParentGuid.value}_folder_input`
                 const inputClassName = `${immediateParentGuid.value}_folder_input`
                 console.log('append input')
@@ -584,6 +603,7 @@
 
                 // appends the input element into the DOM with all the event listeners attached
                 const appendInput = () => {
+                    // debugger
                     // check if there are existing inputs to avoid duplication
                     if (!existingInputs.length && newFolderCreateable.value) {
                         let parentFolder
@@ -692,9 +712,26 @@
                             })
                         }
 
+                        // Hiding the CTA when a new folder is being created
+                        let ctaCalledFor = null
+                        if (
+                            document.getElementsByClassName(
+                                `${parentQualifiedName.value}`
+                            )
+                        ) {
+                            ctaCalledFor = document.getElementsByClassName(
+                                `${parentQualifiedName.value}`
+                            )
+                            ctaCalledFor = ctaCalledFor[1]
+                            if (ctaCalledFor) {
+                                ctaCalledFor.style.display = 'none'
+                            }
+                            console.log(ctaCalledFor)
+                        }
+
                         input.setAttribute(
                             'class',
-                            `outline-none py-0 rounded my-1 w-full ${inputClassName}`
+                            `outline-none py-0 rounded my-1 w-full bg-new-gray-100 ${inputClassName}`
                         )
                         input.setAttribute('placeholder', 'Name your folder')
                         input.addEventListener('input', (e) => {
@@ -707,6 +744,9 @@
                                 ul.removeChild(div)
                                 // removeInputBox()
                                 showEmptyState.value = true
+                                ctaCalledFor
+                                    ? (ctaCalledFor.style.display = 'unset')
+                                    : null
                             }
                             if (e.key === 'Enter') {
                                 // create folder request
@@ -718,6 +758,9 @@
                                     newFolderName.value = ''
                                     ul.removeChild(div)
                                     showEmptyState.value = true
+                                    ctaCalledFor
+                                        ? (ctaCalledFor.style.display = 'unset')
+                                        : null
                                     // removeInputBox()
                                 }
                             }
@@ -736,6 +779,9 @@
                                     newFolderCreateable.value = true
                                     showEmptyState.value = true
                                 }, 300)
+                                ctaCalledFor
+                                    ? (ctaCalledFor.style.display = 'unset')
+                                    : null
                             }
                         })
 
@@ -780,6 +826,283 @@
                     appendInput()
                 }
                 // if the folder is not loaded, don't do anything
+            }
+
+            const createFolderInputFromCta = (item) => {
+                debugger
+                // const inputClassName = `${per_immediateParentGuid.value}_folder_input`
+                const inputClassName = `${item?.value.guid}_folder_input`
+                console.log('append input')
+
+                const existingInputs =
+                    document.getElementsByClassName(inputClassName)
+                const guid = item?.value.guid
+                // console.log('tree data: ', getRelevantTreeData())
+
+                // console.log('folder data: ', {
+                //     pqn: getRelevantTreeData().parentQualifiedName.value,
+                //     pguid: getRelevantTreeData().parentGuid.value,
+                //     selectedCollection: selectedCollection.value,
+                //     immediateParentGuid: immediateParentGuid.value,
+                // })
+
+                let parentGuid = ref(guid)
+                let parentQualifiedName = ref(item?.value.qualifiedName)
+
+                // For any folder we have both guid and qualifiedName
+                // This is PROBABLY for collection selection (root)
+                if (!parentGuid.value || !parentQualifiedName.value) {
+                    parentGuid.value = selectedCollection?.value?.guid
+                    parentQualifiedName.value =
+                        selectedCollection?.value?.attributes.qualifiedName
+                }
+
+                // console.log('folder data: ', {
+                //     pqn: parentQualifiedName.value,
+                //     pguid: parentGuid.value,
+                //     selectedCollection: selectedCollection.value,
+                //     immediateParentGuid: immediateParentGuid.value,
+                // })
+
+                // appends the input element into the DOM with all the event listeners attached
+                const appendInput = () => {
+                    // check if there are existing inputs to avoid duplication
+                    debugger
+                    if (!existingInputs.length && newFolderCreateable.value) {
+                        let parentFolder
+                        if (
+                            parentGuid.value === selectedCollection?.value?.guid
+                        ) {
+                            parentFolder =
+                                document.querySelector(
+                                    '.query-explorer  .ant-tree'
+                                )?.parentNode ??
+                                document.querySelector(
+                                    '.query-explorer  .query-tree-root-div'
+                                )
+                        } else {
+                            // Using className as querySelector doesn't support classes starting with digits
+                            parentFolder = document.getElementsByClassName(
+                                `${parentGuid.value}`
+                                // '.ant-tree-list-holder'
+                            )
+                            parentFolder = parentFolder[0]
+                        }
+                        let ul = document.createElement('div')
+                        const div = document.createElement('div')
+
+                        showEmptyState.value = false
+
+                        div.classList.add(
+                            'flex',
+                            'items-center',
+                            'active-input',
+                            'h-8'
+                        )
+                        let childCount = 0
+                        if (
+                            parentGuid.value !== selectedCollection?.value?.guid
+                        ) {
+                            console.log(
+                                'parentChild: ',
+                                parentFolder.children[0].children.length
+                            )
+                            childCount =
+                                parentFolder.children[0].children.length + 1
+
+                            console.log('count: ', childCount)
+                        }
+
+                        let spaceEl = null
+                        if (childCount) {
+                            let space = `<span style="padding-left:${
+                                24 * childCount
+                            }px;" class="h-2"></span>`
+                            spaceEl = new DOMParser().parseFromString(
+                                space,
+                                'text/html'
+                            ).body.firstElementChild
+                        }
+
+                        let caret =
+                            '<span class="mt-2 -ml-1 ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
+
+                        if (
+                            parentGuid.value !== selectedCollection?.value?.guid
+                        ) {
+                            caret =
+                                '<span class="ant-tree-switcher ant-tree-switcher_close"><svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-auto ant-tree-switcher-icon" data-v-b3169684="" style="height: 1rem;"><path d="m6 4 3.646 3.646a.5.5 0 0 1 0 .708L6 12" stroke="#6F7590" stroke-linecap="round"></path></svg></span>'
+                        }
+
+                        const caretEl = new DOMParser().parseFromString(
+                            caret,
+                            'text/html'
+                        ).body.firstElementChild
+
+                        const folderSvg =
+                            '<span><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 my-auto ml-1 mr-1" data-v-a0c5611e="" style="height: 1rem;"><path d="M5.5 2h-2a1 1 0 0 0-1 1v8.5a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-4a1 1 0 0 1-1-1 1 1 0 0 0-1-1Z" fill="#fff" stroke="#5277D7"></path><path d="M13.327 6H2.612a1 1 0 0 0-.995 1.106l.587 5.5a1 1 0 0 0 .994.894h9.249a1 1 0 0 0 .987-.842l.88-5.5A1 1 0 0 0 13.327 6Z" fill="#fff" stroke="#5277D7"></path></svg></span>'
+                        const folderSvgEl = new DOMParser().parseFromString(
+                            folderSvg,
+                            'text/html'
+                        ).body.firstElementChild
+
+                        if (spaceEl) {
+                            div.appendChild(spaceEl)
+                        }
+                        div.appendChild(caretEl)
+                        div.appendChild(folderSvgEl)
+
+                        const input = document.createElement('input')
+
+                        // helper function to make the api call and remove the input on completion
+                        const makeCreateFolderRequest = () => {
+                            const { data } = createFolder(
+                                newFolderName.value,
+                                saveQueryLoading,
+                                savedQueryType.value?.name,
+                                parentQualifiedName,
+                                parentGuid,
+                                selectedCollection
+                            )
+                            watch(data, async (newData) => {
+                                if (newData) {
+                                    newFolderName.value = ''
+                                    setTimeout(async () => {
+                                        await refetchNode(
+                                            parentGuid.value,
+                                            'Folder'
+                                        )
+                                        // await refetchNode(
+                                        //     parentGuid.value,
+                                        //     'query'
+                                        // )
+                                        ul.removeChild(div)
+                                    }, 1000)
+                                }
+                            })
+                        }
+
+                        // Hiding the CTA when a new folder is being created
+                        let ctaCalledFor = null
+                        if (
+                            item.value.isCta === 'cta' ||
+                            (item.value.children?.length === 1 &&
+                                item.value.children[0]?.isCta === 'cta')
+                        ) {
+                            ctaCalledFor = document.getElementsByClassName(
+                                `${parentQualifiedName.value}`
+                            )
+                            ctaCalledFor = ctaCalledFor[1]
+                            if (ctaCalledFor) {
+                                ctaCalledFor.style.display = 'none'
+                            }
+                            console.log(ctaCalledFor)
+                        }
+
+                        input.setAttribute(
+                            'class',
+                            `outline-none py-0 rounded my-1 w-full bg-new-gray-100 ${inputClassName}`
+                        )
+                        input.setAttribute('placeholder', 'Name your folder')
+                        input.addEventListener('input', (e) => {
+                            newFolderName.value = e.target?.value
+                        })
+
+                        input.addEventListener('keydown', (e) => {
+                            if (e.key === 'Escape') {
+                                newFolderName.value = ''
+                                ul.removeChild(div)
+                                // removeInputBox()
+                                showEmptyState.value = true
+                                ctaCalledFor
+                                    ? (ctaCalledFor.style.display = 'unset')
+                                    : null
+                            }
+                            if (e.key === 'Enter') {
+                                // create folder request
+                                if (newFolderName.value.length) {
+                                    makeCreateFolderRequest()
+                                    newFolderName.value = ''
+                                    showEmptyState.value = false
+                                } else {
+                                    newFolderName.value = ''
+                                    ul.removeChild(div)
+                                    showEmptyState.value = true
+                                    ctaCalledFor
+                                        ? (ctaCalledFor.style.display = 'unset')
+                                        : null
+                                    // removeInputBox()
+                                }
+                            }
+                        })
+                        input.addEventListener('blur', (e) => {
+                            if (newFolderName.value.length) {
+                                makeCreateFolderRequest()
+                                showEmptyState.value = false
+                            } else {
+                                div.removeChild(input)
+                                div.setAttribute('class', 'hidden')
+                                // removeInputBox()
+                                newFolderName.value = ''
+                                newFolderCreateable.value = false
+
+                                setTimeout(() => {
+                                    newFolderCreateable.value = true
+                                    showEmptyState.value = true
+                                }, 300)
+                                ctaCalledFor
+                                    ? (ctaCalledFor.style.display = 'unset')
+                                    : null
+                            }
+                        })
+
+                        div.appendChild(input)
+                        ul.appendChild(div)
+                        // console.log('child: ul: ', ul)
+
+                        if (
+                            parentGuid.value === selectedCollection?.value?.guid
+                        ) {
+                            parentFolder.prepend(ul)
+                            // console.log('input parent append')
+                        } else {
+                            parentFolder.parentNode.insertBefore(
+                                ul,
+                                parentFolder.nextSibling
+                            )
+                        }
+
+                        input.focus()
+                    }
+                }
+
+                const loaded = getRelevantTreeData().loadedKeys.value.find(
+                    (key) => key === parentGuid.value
+                )
+                let expanded = getRelevantTreeData().expandedKeys.value.find(
+                    (key) => key === parentGuid.value
+                )
+
+                if (loaded && !expanded) {
+                    // if the folder is loaded but not expanded, expand it then add input
+                    getRelevantTreeData().expandedKeys.value.push(
+                        parentGuid.value
+                    )
+                    setTimeout(appendInput, 1000)
+                }
+                if (
+                    (loaded && expanded) ||
+                    parentGuid.value === selectedCollection?.value?.guid
+                ) {
+                    appendInput()
+                }
+
+                // if the folder is not loaded
+                if (!loaded) {
+                    expandNodeManually(item.value)
+                    // refetchNode(parentGuid.value, 'Folder')
+                    setTimeout(appendInput, 1000)
+                }
             }
 
             const pushGuidToURL = (item) => {
@@ -833,8 +1156,10 @@
                 immediateParentFolderQF: immediateParentFolderQF,
                 onLoadData: onLoadData,
                 expandNode: expandNode,
+                expandNodeManually: expandNodeManually,
                 selectNode: selectNode,
                 refetchNode: refetchNode,
+                refetchNodeLocally: refetchNodeLocally,
                 immediateParentGuid: immediateParentGuid,
                 nodeToParentKeyMap: nodeToParentKeyMap,
                 updateNode: updateNode,
@@ -893,6 +1218,8 @@
                 assetClassification: any
             ) => {
                 // console.log('saving query: ', savedQueryType.value)
+                const isVQB = isVisualQuery.value
+
                 const { data } = saveQueryToDatabaseAndOpenInNewTab(
                     {
                         ...saveQueryData,
@@ -910,7 +1237,8 @@
                         getRelevantTreeData().parentQualifiedName.value,
                     saveQueryData.parentGuid ??
                         getRelevantTreeData().parentGuid.value,
-                    limitRows
+                    limitRows,
+                    isVQB
                 )
                 focusEditor(toRaw(editorInstance.value))
 
@@ -971,6 +1299,11 @@
             // provide('savedQueryType', savedQueryType)
             provide('refetchParentNode', refetchParentNode)
             provide('refetchNode', refetchNode)
+            provide('refetchNodeLocally', refetchNodeLocally)
+
+            provide('createFolderInput', createFolderInput)
+            provide('createFolderInputFromCta', createFolderInputFromCta)
+
             // refecthing node on updating the query
             watch(refetchQueryNode, (newRefetchQueryNode) => {
                 updateNode({
@@ -1089,7 +1422,18 @@
                         component: MenuItem,
                         hide: computed(() => !hasWritePermission.value),
                         handleClick: () => {
-                            toggleCreateQueryModal(currentSelectedNode)
+                            toggleCreateQueryModal(currentSelectedNode, false)
+                        },
+                    },
+                    {
+                        title: 'New visual query',
+                        key: 'newVisualQuery',
+                        class: 'border-b border-gray-300',
+                        disabled: false,
+                        component: MenuItem,
+                        hide: computed(() => !hasWritePermission.value),
+                        handleClick: () => {
+                            toggleCreateQueryModal(currentSelectedNode, true)
                         },
                     },
                     {
@@ -1133,6 +1477,7 @@
                 saveQuery,
                 toggleCreateQueryModal,
                 createFolderInput,
+                createFolderInputFromCta,
                 isSavedQueryOpened,
                 openSavedQueryInNewTab,
                 connector,
@@ -1145,6 +1490,7 @@
                 expandedKeys,
                 onLoadData,
                 expandNode,
+                expandNodeManually,
                 selectNode,
                 searchQuery,
                 facets,
@@ -1175,6 +1521,8 @@
                 errorNode,
                 refetchNode,
                 dropdownOptions,
+                isCollectionPopoverVisible,
+                refetchNodeLocally,
             }
         },
     })

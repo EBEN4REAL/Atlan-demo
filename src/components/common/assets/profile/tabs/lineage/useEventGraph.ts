@@ -314,39 +314,16 @@ export default function useEventGraph({
     }
 
     // selectVpNode
-    const selectVpNode = (node, nodeIdsToAdd: string[] = []) => {
-        const nodeIdArr = node.id.split('-')
-        nodeIdArr.splice(0, 1)
-        const id = nodeIdArr.join('-')
-        const identifier = node.id.split('-').splice(0, 1)[0]
-        const mode = identifier.includes('vpNodeSS')
-            ? 'sameSource'
-            : 'sameTarget'
+    const selectVpNode = (node, entityIdsToAdd: string[] = []) => {
+        const { mode, modeId, hiddenEntities } = node.getData()
 
-        const hidden =
-            mode === 'sameSource'
-                ? sameSourceCount.value?.[id]?.targetsHidden
-                : sameTargetCount.value?.[id]?.sourcesHidden
-
-        let entitiesHidden = [...hidden]
-
-        const handleNodeIdsToAdd = (nita) => {
-            const nh = entitiesHidden.filter((x) => !nita.includes(x.guid))
-            const nta = entitiesHidden.filter((x) => nita.includes(x.guid))
-            entitiesHidden = nh
-            return nta
-        }
-        const entitiesToAdd = !nodeIdsToAdd.length
-            ? entitiesHidden.splice(0, 4)
-            : handleNodeIdsToAdd(nodeIdsToAdd)
-
-        if (mode === 'sameSource')
-            sameSourceCount.value[id].targetsHidden = entitiesHidden
-        if (mode === 'sameTarget')
-            sameTargetCount.value[id].sourcesHidden = entitiesHidden
-
-        const { relations } = mergedLineageData.value
-        const filteredRelations = getFilteredRelations(relations)
+        const entitiesToAdd = !entityIdsToAdd.length
+            ? hiddenEntities.slice(0, 4)
+            : hiddenEntities.filter((hn) => entityIdsToAdd.includes(hn.guid))
+        const filteredEntityIdsToAdd = entitiesToAdd.map((ent) => ent.guid)
+        const filteredHiddenEntities = hiddenEntities.filter(
+            (ent) => !filteredEntityIdsToAdd.includes(ent.guid)
+        )
 
         graph.value.freeze('selectVpNode-entitiesToAdd')
         entitiesToAdd.forEach((ent) => {
@@ -356,16 +333,16 @@ export default function useEventGraph({
         })
         graph.value.unfreeze('selectVpNode-entitiesToAdd')
 
-        const entitiesToAddIds = entitiesToAdd.map((ent) => ent.guid)
+        const { relations } = mergedLineageData.value
+        const filteredRelations = getFilteredRelations(relations)
+        const relationsToAdd = filteredRelations.filter((rel) =>
+            mode === 'vpNodeSS'
+                ? filteredEntityIdsToAdd.includes(rel.toEntityId)
+                : filteredEntityIdsToAdd.includes(rel.fromEntityId)
+        )
 
-        const relsToAdd = filteredRelations.filter((rel) => {
-            if (mode === 'sameSource')
-                return entitiesToAddIds.includes(rel.toEntityId)
-            return entitiesToAddIds.includes(rel.fromEntityId)
-        })
-
-        graph.value.freeze('selectVpNode-relsToAdd')
-        relsToAdd.forEach((rel) => {
+        graph.value.freeze('selectVpNode-relationsToAdd')
+        relationsToAdd.forEach((rel) => {
             const { fromEntityId: from, toEntityId: to, processId } = rel
 
             if (from === to) return
@@ -378,20 +355,14 @@ export default function useEventGraph({
                 targetPort: `${to}-invisiblePort`,
             }
 
-            const exists = edges.value.find((edge) => edge.id === relation.id)
+            const itExist = edges.value.find((edge) => edge.id === relation.id)
+            if (itExist) return
 
-            if (exists) return
-
-            const styles = {
-                stroke: '#B2B8C7',
-            }
-
-            const { edgeData } = createEdgeData(relation, {}, styles)
+            const { edgeData } = createEdgeData(relation, {})
             edges.value.push(edgeData)
             addEdge(relation)
 
             const entry = `${from}@${to}`
-            // const { relations: mergedRelations } = mergedLineageData.value
             const cyclicRelations = getCyclicRelations(filteredRelations)
 
             if (cyclicRelations.includes(entry)) {
@@ -405,62 +376,47 @@ export default function useEventGraph({
                     targetCell: from,
                     targetPort: `${from}-invisiblePort`,
                 }
-                const { edgeData: edgeDataACW } = createEdgeData(
-                    relationACW,
-                    {},
-                    styles
-                )
-                edges.value.push(edgeDataACW)
+                const { edgeData: edACW } = createEdgeData(relationACW, {})
+                edges.value.push(edACW)
                 addEdge(relationACW)
             }
         })
-        graph.value.unfreeze('selectVpNode-relsToAdd')
+        graph.value.unfreeze('selectVpNode-relationsToAdd')
 
-        nodes.value = nodes.value.filter((x) => x.id !== node.id)
-        edges.value = edges.value.filter((x) => {
-            if (mode === 'sameSource')
-                return x.id !== `vpNodeProcessId/${id}@${node.id}`
-            return x.id !== `vpNodeProcessId/${node.id}@${id}`
-        })
+        nodes.value = nodes.value.filter((n) => n.id !== node.id)
+        edges.value = edges.value.filter((e) =>
+            mode === 'vpNodeSS'
+                ? e.id !== `vpNodeProcessId/${modeId}@${node.id}`
+                : e.id !== `vpNodeProcessId/${node.id}@${modeId}`
+        )
 
-        renderLayout()
+        if (filteredHiddenEntities.length !== 0) {
+            // add back vp node
+            const entity = node?.store?.data?.entity || node.entity
+            const { nodeData } = createNodeData(entity, null)
+            nodeData.data.mode = mode
+            nodeData.data.modeId = modeId
+            nodeData.data.count = filteredHiddenEntities.length
+            nodeData.data.hiddenEntities = filteredHiddenEntities
+            nodes.value.push(nodeData)
+            addNode(nodeData.entity)
 
-        if (entitiesHidden.length === 0) return
-
-        // add back vp node
-        const entity = node?.store?.data?.entity || node.entity
-        const { nodeData } = createNodeData(entity, null)
-        nodeData.data.hiddenCount = entitiesHidden.length
-        nodes.value.push(nodeData)
-        graph.value.freeze('selectVpNode-addVpNode')
-        addNode(nodeData.entity)
-        graph.value.unfreeze('selectVpNode-addVpNode')
-
-        // add back vp edge
-        const from = mode === 'sameSource' ? id : node.id
-        const processId = 'vpNodeProcessId'
-        const to = mode === 'sameSource' ? node.id : id
-
-        const relation = {
-            id: `${processId}/${from}@${to}`,
-            sourceCell: from,
-            sourcePort: `${from}-invisiblePort`,
-            targetCell: to,
-            targetPort: `${to}-invisiblePort`,
+            // add back vp edge
+            const from = mode === 'vpNodeSS' ? modeId : node.id
+            const processId = 'vpNodeProcessId'
+            const to = mode === 'vpNodeSS' ? node.id : modeId
+            const relation = {
+                id: `${processId}/${from}@${to}`,
+                sourceCell: from,
+                sourcePort: `${from}-invisiblePort`,
+                targetCell: to,
+                targetPort: `${to}-invisiblePort`,
+            }
+            const { edgeData } = createEdgeData(relation, {})
+            edges.value.push(edgeData)
+            addEdge(relation)
         }
 
-        const styles = { stroke: '#B2B8C7' }
-        const { edgeData } = createEdgeData(relation, {}, styles)
-        edges.value.push(edgeData)
-        graph.value.freeze('selectVpNode-addVpEdge')
-        addEdge(relation)
-        graph.value.unfreeze('selectVpNode-addVpEdge')
-
-        const cell = graph.value.getCellById(node.id)
-        const updatedData = {
-            hiddenCount: entitiesHidden.length,
-        }
-        cell.updateData({ ...updatedData })
         renderLayout()
     }
 
@@ -562,7 +518,7 @@ export default function useEventGraph({
 
         watchOnce(data, () => {
             const { guidEntityMap: gem1 } = mergedLineageData.value
-            const { guidEntityMap: gem2 } = data.value
+            const { guidEntityMap: gem2, relations: rel2 } = data.value
             const keys1 = Object.keys(gem1)
             const keys2 = Object.keys(gem2)
 
@@ -588,7 +544,14 @@ export default function useEventGraph({
                 addSubGraph(data.value)
                 depthCounter.value += 1
             } else {
-                message.info('No lineage to show')
+                const isCircularLineage = rel2.length === 1
+                message.info(
+                    `${
+                        isCircularLineage
+                            ? 'Circular lineage'
+                            : 'No lineage to show'
+                    }`
+                )
                 if (path === 'right')
                     n.updateData({
                         ctaRightIcon: '',
@@ -1382,7 +1345,7 @@ export default function useEventGraph({
                 animate ? highlightStateColor : edgeDefaultStroke
             )
             if (animate) setFront(edge)
-            else setBack(edge)
+            else if (!isPortEdge) setBack(edge)
         }
 
         edge.setLabels(

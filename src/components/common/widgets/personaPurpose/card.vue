@@ -101,6 +101,7 @@
             </div>
             <div
                 class="flex items-center justify-center px-4 py-3 mt-4 border-t border-gray-300"
+                @click="$emit('viewAssets', item)"
             >
                 <div class="text-xs text-center cursor-pointer text-primary">
                     View assets
@@ -122,7 +123,6 @@
     export default defineComponent({
         name: 'WidgetPersonaPurposeCard',
         components: { Avatar, ClassificationPill },
-
         props: {
             item: {
                 type: Object,
@@ -133,6 +133,7 @@
                 required: true,
             },
         },
+        emits: ['viewAssets'],
         setup(props) {
             const { classificationList } = useTypedefData()
             const { getConnectorImageMap } = useAssetInfo()

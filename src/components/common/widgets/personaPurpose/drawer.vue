@@ -1,15 +1,21 @@
 <template>
-    <a-drawer :visible="visible" :closable="false" :width="450">
+    <a-drawer
+        :destroy-on-close="true"
+        :visible="visible"
+        :closable="false"
+        :width="450"
+    >
         <div
             v-if="visible"
             class="left-auto bg-white close-btn-sidebar close-btn-drawer"
+            @click="$emit('close')"
         >
             <AtlanIcon icon="Add" class="text-gray-700" />
         </div>
         <div class="px-4 py-5 border-b border-gray-200">
-            <div class="text-lg font-bold">Data Analyst</div>
-            <div class="text-gray-700 mt-3.5 flex items-center">
-                <AtlanIcon icon="Term" class="mb-1 mr-1" />PERSONA
+            <div class="text-lg font-bold">{{ item.name }}</div>
+            <div class="text-gray-700 mt-3.5 flex items-center uppercase">
+                <AtlanIcon icon="Term" class="mb-1 mr-1" />{{ activeTab }}
             </div>
         </div>
         <div class="content">
@@ -35,8 +41,14 @@
                             :is-active="activeKey === index"
                         />
                     </template>
-
-                    <component :is="tab.component" :tab="tab" />
+                    <component
+                        :is="tab.component"
+                        :filters="filterConfig"
+                        :tab="tab"
+                        aggregation-tab-class="px-5 my-1"
+                        search-bar-class="px-5 my-1"
+                        asset-item-class="px-2"
+                    />
                 </a-tab-pane>
             </a-tabs>
         </div>
@@ -44,35 +56,73 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, computed, toRefs } from 'vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import AssetList from '@/common/assetList/assetList.vue'
 
     export default defineComponent({
         name: 'DrawerWidgetPersonaPurpose',
-        components: { PreviewTabsIcon },
+        components: { PreviewTabsIcon, AssetList },
         props: {
             visible: {
                 type: Boolean,
                 required: true,
             },
+            item: {
+                type: Boolean,
+                required: true,
+            },
+            activeTab: {
+                type: String,
+                required: true,
+            },
         },
-        setup() {
+        setup(props) {
+            const { item, activeTab }: { item: any } = toRefs(props)
             const tabList = ref([
                 {
                     tooltip: 'assets',
                     icon: 'AssetsInactiveLight',
                     activeIcon: 'AssetsActiveLight',
+                    component: 'AssetList',
                 },
             ])
+            const getConnectorName = (qualifiedName: string) => {
+                let attributeValues: string[]
+                let connectorName: string = ''
+                if (qualifiedName) {
+                    attributeValues = qualifiedName?.split('/')
+                    if (attributeValues.length > 0) {
+                        connectorName = attributeValues[1]
+                    }
+                }
+
+                return connectorName
+            }
+            const filterConfig = computed(() => {
+                if (activeTab.value === 'persona') {
+                    return {
+                        hierarchy: {
+                            // connectorName: getConnectorName(connectionQfName.value),
+                            // connectionQualifiedName: connectionQfName.value,
+                        },
+                    }
+                }
+                return {
+                    __traitNames: {
+                        classifications: item.value.tags,
+                    },
+                }
+            })
             const activeKey = ref(0)
-            return { tabList, activeKey }
+            return { tabList, activeKey, filterConfig }
         },
     })
 </script>
 
 <style lang="less" scoped>
     .content {
-        height: 100vh;
+        height: calc(100vh - 30px);
     }
     .close-btn-drawer {
         right: 466px;
@@ -88,7 +138,7 @@
             }
             :global(.ant-tabs-tab) {
                 padding: 3px 8px !important;
-                margin: 16px 0px 0px !important;
+
                 @apply justify-center;
             }
 

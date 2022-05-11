@@ -152,13 +152,19 @@
                     :key="item.id"
                     :item="item"
                     :type="activeTab"
+                    @viewAssets="handleViewAssets"
                 />
             </Carousel>
         </div>
         <div v-else class="flex items-center justify-center h-64">
             <AtlanLoader icon="CircleLoader" class="h-8 animate-spin" />
         </div>
-        <DrawerWidgetPersonaPurpose :visible="true" />
+        <DrawerWidgetPersonaPurpose
+            :active-tab="activeTab"
+            :item="selectedItem"
+            :visible="visible"
+            @close="visible = false"
+        />
     </div>
 </template>
 
@@ -179,9 +185,11 @@
         components: { Card, Carousel, AtlanLoader, DrawerWidgetPersonaPurpose },
         props: {},
         setup() {
-            const { id, name, username } = useUserData()
+            const { id, username } = useUserData()
             const activeTab = ref('persona')
             const loadingChange = ref(false)
+            const visible = ref(false)
+            const selectedItem = ref({})
             const showDemo = ref({
                 persona: true,
                 purpose: true,
@@ -244,6 +252,10 @@
             const items = computed(() =>
                 activeTab.value === 'persona' ? personas.value : purposes.value
             )
+            const handleViewAssets = (item) => {
+                selectedItem.value = item
+                visible.value = true
+            }
             return {
                 personas,
                 activeTab,
@@ -253,6 +265,9 @@
                 illustrationPersonaDemo,
                 illustrationPurposeDemo,
                 showDemo,
+                selectedItem,
+                visible,
+                handleViewAssets,
             }
         },
     })

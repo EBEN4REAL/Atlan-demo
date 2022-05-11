@@ -167,6 +167,7 @@
     import { helpCenterList } from '~/constant/navigation/helpCentre'
     import { usePersonaStore } from '~/store/persona'
     import { usePurposeStore } from '~/store/purpose'
+
     export default defineComponent({
         name: 'Navigation Menu',
         components: {
@@ -238,7 +239,7 @@
                     purposeStore.list,
                 ],
                 ([newValue, persona, purpose]) => {
-                    let payload = newValue
+                    const payload = newValue
                     if (payload[0] === 'persona') {
                         const finded = persona.find(
                             (el) => el.id === payload[1]

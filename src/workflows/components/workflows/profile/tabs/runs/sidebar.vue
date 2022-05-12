@@ -2,7 +2,7 @@
     <div
         v-if="isLoading"
         style="height: 150px; width: 100%"
-        class="flex items-center justify-center p-3 mt-3 bg-white border gap-x-2"
+        class="flex items-center justify-center p-3 mt-3 bg-white gap-x-2"
     >
         <AtlanLoader class="h-6" />
         <span>Loading Run</span>
@@ -195,7 +195,7 @@
             tab="Failed Tasks"
         >
             <div
-                class="flex flex-col px-3 pt-4 pb-2 overflow-y-auto bg-white border-b border-l border-r shadow"
+                class="flex flex-col px-3 pt-4 pb-2 overflow-y-auto bg-white shadow"
             >
                 <div class="flex flex-col gap-y-2">
                     <div class="flex w-full mb-2 gap-x-2">

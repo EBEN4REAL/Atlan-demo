@@ -317,6 +317,14 @@ export default function useEventGraph({
         const entity = getX6Node(guid)?.store?.data?.entity
         onSelectAsset(entity)
 
+        if (entity) {
+            sendNodeClickedEvent(
+                entity.typeName,
+                entity.attributes?.qualifiedName?.split('/')[1],
+                guid
+            )
+        }
+
         if (guid) selectedNodeId.value = guid
 
         if (isCyclicRelation) {
@@ -1000,7 +1008,9 @@ export default function useEventGraph({
         const index = expandedNodes.value.findIndex((x) => x === node.id)
         expandedNodes.value.splice(index, 1)
 
-        sendNodeExpandedEvent(node.data?.portsCount, node.id, 'collapsed')
+        if (node.data?.portsCount) {
+            sendNodeExpandedEvent(node.data?.portsCount, node.id, 'collapsed')
+        }
     }
 
     // removeX6Ports
@@ -1037,7 +1047,9 @@ export default function useEventGraph({
 
         addX6Ports(node, uniquePorts)
 
-        sendNodeExpandedEvent(node.data?.portsCount, node.id, 'expanded')
+        if (node.data?.portsCount) {
+            sendNodeExpandedEvent(node.data?.portsCount, node.id, 'expanded')
+        }
     }
 
     // addX6Ports
@@ -1094,9 +1106,9 @@ export default function useEventGraph({
         }
 
         sendSubNodeClickedEvent(
-            portEntity.typeName?.toLowerCase(),
-            portEntity.attributes?.connectorName ||
-                portEntity.attributes?.qualifiedName?.split('/')[1],
+            portEntity?.typeName?.toLowerCase(),
+            portEntity?.attributes?.connectorName ||
+                portEntity?.attributes?.qualifiedName?.split('/')[1],
             portIndex,
             node.id
         )
@@ -1110,8 +1122,8 @@ export default function useEventGraph({
         if (edgeId) selectedPortEdgeId.value = edgeId
 
         sendProcessClickedEvent(
-            !!edge.data?.isGroupEdge,
-            !!edge.data?.isCyclicEdge,
+            !!edge?.data?.isGroupEdge,
+            !!edge?.data?.isCyclicEdge,
             edgeId
         )
     }
@@ -1750,7 +1762,6 @@ export default function useEventGraph({
         resetState()
 
         selectNode(node.id)
-        // sendNodeClickedEvent(,node.id)
     })
 
     // Edge - Click

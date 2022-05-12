@@ -143,7 +143,7 @@
             const setQuery = (e) => {
                 query.value = e.target.value
 
-                sendSearchEvent()
+                if (e.target.value) sendSearchEvent()
             }
 
             // setSearchItem

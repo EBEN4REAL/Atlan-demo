@@ -78,7 +78,7 @@ export const discoveryFilters = [
                 isMandatory: true,
             },
             {
-                name: 'description',
+                name: 'description.keyword',
                 displayName: 'Description',
                 typeName: 'string',
                 description:
@@ -86,7 +86,7 @@ export const discoveryFilters = [
                 isMandatory: false,
             },
             {
-                name: 'userDescription',
+                name: 'userDescription.keyword',
                 displayName: 'User Description',
                 typeName: 'string',
                 description: 'Description of the asset updated on Atlan.',

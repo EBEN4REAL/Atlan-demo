@@ -28,12 +28,13 @@
             >Getting started with bulk upload?</span
         >
         <div class="flex items-center my-1 text-primary px-4">
-            <span
-                class="cursor-pointer flex items-center px-2 py-1 rounded-lg bg-white border border-gray-200 text-gray-700 hover:text-primary font-bold"
-                @click="handleDownload"
-                ><atlan-icon icon="Download" class="mr-1 mb-0.5" />Download
-                sample template here</span
-            >
+            <a :href="excelFileLink" download>
+                <span
+                    class="cursor-pointer flex items-center px-2 py-1 rounded-lg bg-white border border-gray-200 text-gray-700 hover:text-primary font-bold"
+                    ><atlan-icon icon="Download" class="mr-1 mb-0.5" />Download
+                    sample template here</span
+                >
+            </a>
             <!-- <span class="mx-2">|</span> -->
             <!-- <span class="cursor-pointer flex items-center" -->
             <!--     >View upload guidelines here -->
@@ -43,7 +44,7 @@
         <div class="mx-4">
             <Uploader :config="formConfig" @change="handleFormChange" />
         </div>
-       <template #footer>
+        <template #footer>
             <div class="flex items-center py-3 border-t mb-2">
                 <span class="font-bold text-gray-700">
                     Common errors to avoid</span
@@ -267,6 +268,7 @@
                 }
             })
 
+            const excelFileLink = '/gtc_bulk_upload_template.xlsx'
             return {
                 handleCancel,
                 showModal,
@@ -275,6 +277,7 @@
                 handleFormChange,
                 handleDownload,
                 illutrationMap,
+                excelFileLink,
             }
         },
     })

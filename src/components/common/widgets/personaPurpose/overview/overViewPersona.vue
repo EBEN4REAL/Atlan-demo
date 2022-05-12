@@ -12,7 +12,10 @@
             </div>
             <div class="flex-1">
                 <div class="text-gray-600">Assets</div>
-                <div class="mt-2 text-sm font-bold text-primary">10k</div>
+                <div v-if="isLoading"><AtlanLoader class="w-4 h-4" /></div>
+                <div v-else class="mt-2 text-sm font-bold text-primary">
+                    {{ getCountString(totalAsset) }}
+                </div>
             </div>
         </div>
         <div class="mt-7">
@@ -45,12 +48,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, toRefs } from 'vue'
+    import { defineComponent, computed, toRefs, ref, watch } from 'vue'
+    import Loader from '@common/loaders/page.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import { getCountString } from '~/utils/number'
 
     export default defineComponent({
         name: 'OverviewPersonaWidget',
-        components: {},
+        components: { Loader },
         props: {
             item: {
                 type: Object,
@@ -60,6 +66,27 @@
         emits: [],
         setup(props) {
             const { item } = toRefs(props)
+            const aggregations = ref(['typeName'])
+            const limit = ref(1)
+            const offset = ref(0)
+            const globalState = ref(['persona', item.value.id])
+            const { list, fetch, isLoading, assetTypeAggregationList } =
+                useDiscoverList({
+                    isCache: false,
+                    limit,
+                    offset,
+                    aggregations,
+                    globalState,
+                })
+            fetch()
+
+            const totalAsset = computed(() =>
+                assetTypeAggregationList.value.reduce(
+                    (accumulator, currentValue) =>
+                        accumulator + currentValue.count,
+                    0
+                )
+            )
             const { getConnectorImageMap } = useAssetInfo()
             const userGroup = computed(() => {
                 const users = item.value.users?.length
@@ -99,6 +126,9 @@
             return {
                 userGroup,
                 connection,
+                totalAsset,
+                getCountString,
+                isLoading,
             }
         },
     })

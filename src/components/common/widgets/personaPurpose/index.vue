@@ -195,6 +195,7 @@
     import { defineComponent, computed, ref, watch } from 'vue'
     import { Carousel } from 'ant-design-vue'
     import AtlanLoader from '@common/loaders/atlanLoader.vue'
+    import { useRouter } from 'vue-router'
     import Card from './card.vue'
     import { usePersonaStore } from '~/store/persona'
     import { usePurposeStore } from '~/store/purpose'
@@ -203,12 +204,14 @@
     import useUserData from '~/composables/user/useUserData'
     import DrawerWidgetPersonaPurpose from './drawer.vue'
     import { useUsers } from '~/composables/user/useUsers'
+    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         name: 'WidgetPersonaPurpose',
         components: { Card, Carousel, AtlanLoader, DrawerWidgetPersonaPurpose },
         props: {},
         setup() {
+            const router = useRouter()
             const { id, username } = useUserData()
             const activeTab = ref('persona')
             const loadingChange = ref(false)
@@ -290,9 +293,12 @@
             const items = computed(() =>
                 activeTab.value === 'persona' ? personas.value : purposes.value
             )
+            const assetStore = useAssetStore()
             const handleViewAssets = (item) => {
-                selectedItem.value = item
-                visible.value = true
+                assetStore.setGlobalState([activeTab.value, item.id])
+                router.push('/assets')
+                // selectedItem.value = item
+                // visible.value = true
             }
             const handleOverView = (item) => {
                 selectedItem.value = item

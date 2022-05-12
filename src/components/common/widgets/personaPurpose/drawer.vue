@@ -50,6 +50,7 @@
                         asset-item-class="px-2"
                         :item="item"
                         :persona="item"
+                        :global-state="globalState"
                     />
                 </a-tab-pane>
             </a-tabs>
@@ -88,6 +89,7 @@
         },
         setup(props) {
             const { item, activeTab, visible }: { item: any } = toRefs(props)
+            const globalState = ref([])
             const tabList = ref([
                 {
                     tooltip: 'assets',
@@ -96,9 +98,12 @@
                     component: 'AssetList',
                 },
             ])
+            const activeKey = ref(0)
             watch(visible, () => {
                 if (visible) {
+                    activeKey.value = 0
                     if (activeTab.value === 'persona') {
+                        globalState.value = ['persona', item.value.id]
                         tabList.value = [
                             {
                                 tooltip: 'Overview',
@@ -126,6 +131,7 @@
                             },
                         ]
                     } else {
+                        globalState.value = []
                         tabList.value = [
                             {
                                 tooltip: 'assets',
@@ -137,18 +143,7 @@
                     }
                 }
             })
-            const getConnectorName = (qualifiedName: string) => {
-                let attributeValues: string[]
-                let connectorName: string = ''
-                if (qualifiedName) {
-                    attributeValues = qualifiedName?.split('/')
-                    if (attributeValues.length > 0) {
-                        connectorName = attributeValues[1]
-                    }
-                }
 
-                return connectorName
-            }
             const filterConfig = computed(() => {
                 if (activeTab.value === 'persona') {
                     return {
@@ -164,8 +159,8 @@
                     },
                 }
             })
-            const activeKey = ref(0)
-            return { tabList, activeKey, filterConfig }
+
+            return { tabList, activeKey, filterConfig, globalState }
         },
     })
 </script>

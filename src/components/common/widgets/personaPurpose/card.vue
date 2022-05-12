@@ -39,37 +39,43 @@
                     {{ item.description || 'No description available' }}
                 </div>
             </div>
-            <div
-                v-if="type === 'purpose'"
-                class="flex mx-4 border-b border-gray-300 border-dashed h-9"
-            >
+            <div class="flex">
                 <div
-                    v-for="(classification, i) in listClassifications.slice(
-                        0,
-                        2
-                    )"
-                    :key="classification.guid"
-                    class="flex items-end"
+                    v-if="type === 'purpose'"
+                    class="flex items-end mx-4 border-b border-gray-300 border-dashed h-9"
                 >
-                    <ClassificationPill
-                        :name="classification.name"
-                        :display-name="classification?.displayName"
-                        :is-propagated="false"
-                        :allow-delete="false"
-                        :color="classification.options?.color"
-                        :created-by="classification?.createdBy"
-                        class="border-none pill-class-widget"
-                        :no-hover="true"
-                    />
                     <div
-                        v-if="i === 0 && listClassifications.length > 1"
-                        class="mb-1.5 text-xs text-gray-600"
+                        v-if="!listClassifications.length"
+                        class="mb-1 text-xs text-gray-600"
                     >
-                        ,
+                        No classification attached
                     </div>
-                </div>
-                <div v-if="listClassifications.length > 2" class="mt-3">
-                    +{{ listClassifications.length - 2 }}
+                    <div
+                        v-for="(classification, i) in listClassifications.slice(
+                            0,
+                            1
+                        )"
+                        v-else
+                        :key="classification.guid"
+                        class="flex items-end"
+                    >
+                        <ClassificationPill
+                            :name="classification.name"
+                            :display-name="classification?.displayName"
+                            :is-propagated="false"
+                            :allow-delete="false"
+                            :color="classification.options?.color"
+                            :created-by="classification?.createdBy"
+                            class="border-none"
+                            :no-hover="true"
+                        />
+                    </div>
+                    <div
+                        v-if="listClassifications.length > 1"
+                        class="mb-1.5 ml-1 text-xs text-gray-600"
+                    >
+                        +{{ listClassifications.length - 1 }}
+                    </div>
                 </div>
             </div>
             <div class="flex items-center h-6 px-4">
@@ -82,7 +88,7 @@
                     :avatar-size="24"
                     :avatar-shape="'circle'"
                     :style="{
-                        'z-index': `${users.length - 1 - index}`,
+                        'z-index': `${index + 1}`,
                         transform: `translateX(-${index * 8}px)`,
                     }"
                 />

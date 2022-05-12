@@ -114,15 +114,15 @@
                             :show-check-box="selectable"
                             :is-checked="checkIfSelected(item.guid)"
                             :class="assetItemClass"
+                            :disable-checkbox-for-scrubbed="
+                                disableCheckboxForScrubbed
+                            "
+                            class="hover:bg-primary-menu"
                             @updateDrawer="updateList"
                             @preview="$emit('handleAssetCardClick', item)"
                             @listItem:check="
                                 (e, item) => $emit('listItem:check', item)
                             "
-                            :disableCheckboxForScrubbed="
-                                disableCheckboxForScrubbed
-                            "
-                            class="hover:bg-primary-menu"
                         >
                             <template #cta>
                                 <slot :item="item" name="assetItemCta"> </slot>
@@ -273,6 +273,11 @@
                 default: false,
                 required: false,
             },
+            globalState: {
+                type: Array,
+                default: [],
+                required: false,
+            },
         },
         emits: ['handleAssetCardClick', 'listItem:check'],
         setup(props) {
@@ -318,6 +323,7 @@
                 selectable,
                 selectedItems,
                 suppressLogs,
+                globalState,
             } = toRefs(props)
 
             const {
@@ -343,6 +349,7 @@
                     : defaultAttributes,
                 relationAttributes,
                 suppressLogs: suppressLogs?.value,
+                globalState,
             })
 
             const fetchList = (skip = 0) => {

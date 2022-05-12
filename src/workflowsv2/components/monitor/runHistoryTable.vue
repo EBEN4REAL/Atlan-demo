@@ -145,6 +145,11 @@
                 excludePrefix: [
                     'atlan-gtc-bulk-upload-',
                     'atlan-schedule-query-',
+                    // ? if filtering by BQ package, then exclude miner as both has same prefix
+                    ...(workflowStore.packageMeta?.[filters.value?.packageId]
+                        ?.metadata?.name === 'atlan-bigquery'
+                        ? ['atlan-bigquery-miner']
+                        : []),
                 ],
                 filterOut: [
                     'atlan-typedef-seeder',

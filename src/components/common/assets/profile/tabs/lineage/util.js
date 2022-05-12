@@ -174,29 +174,32 @@ export const getGroupedRelations = (relations) => {
  * @param graph - the graph object
  * @param relations - an array of relations, each relation is an object with the following properties:
  */
-export const controlCyclicEdges = (graph, relations) => {
+export const controlCyclicEdges = (graph, relations, mode = 'node') => {
     const cyclicRelations = getCyclicRelations(relations)
-    const graphEdges = graph.value.getEdges()
-    graphEdges.forEach((edge) => {
-        const sourceNode = edge.getSourceNode()
-        const targetNode = edge.getTargetNode()
-        const entry = `${sourceNode.id}@${targetNode.id}`
-        const isCyclic = cyclicRelations.includes(entry)
-        if (isCyclic) {
-            edge.updateData({ isCyclicEdge: true })
-            edge.attr('line/stroke', '#F4B444')
-            edge.attr('line/strokeWidth', 0.9)
-            edge.attr('line/targetMarker/stroke', '#F4B444')
-            edge.setLabels({
-                attrs: {
-                    label: {
-                        text: 'cyclic-processes',
-                    },
+    cyclicRelations.forEach((rel) => {
+        const [sourceId, targetId] = rel.split('@')
+
+        const edge = graph.value.getEdges().find((e) => {
+            const from =
+                mode === 'node' ? e.getSource().cell : e.getSource().port
+            const to = mode === 'node' ? e.getTarget().cell : e.getTarget().port
+            return sourceId === from && targetId === to
+        })
+        if (!edge) return
+        edge.updateData({ isCyclicEdge: true })
+        edge.attr('line/stroke', '#F4B444')
+        edge.attr('line/strokeWidth', 0.9)
+        edge.attr('line/targetMarker/stroke', '#F4B444')
+        edge.setLabels({
+            attrs: {
+                label: {
+                    text: 'cyclic-processes',
                 },
-            })
-            edge.toFront()
-            lineageStore.setCyclicRelation(entry)
-        }
+            },
+        })
+        edge.toFront()
+        const entry = `${sourceId}@${targetId}`
+        lineageStore.setCyclicRelation(entry)
     })
 }
 
@@ -206,24 +209,26 @@ export const controlCyclicEdges = (graph, relations) => {
  * @param graph - the graph object
  * @param relations - the relations object from the graph data
  */
-export const controlGroupedEdges = (graph, relations) => {
+export const controlGroupedEdges = (graph, relations, mode = 'node') => {
     const groupedRelations = Object.keys(getGroupedRelations(relations))
-    const graphEdges = graph.value.getEdges()
-    graphEdges.forEach((edge) => {
-        const sourceNode = edge.getSourceNode()
-        const targetNode = edge.getTargetNode()
-        const entry = `${sourceNode.id}@${targetNode.id}`
-        const isGrouped = groupedRelations.includes(entry)
-        if (isGrouped) {
-            edge.updateData({ isGroupEdge: true })
-            edge.setLabels({
-                attrs: {
-                    label: {
-                        text: 'grouped-processes',
-                    },
+    groupedRelations.forEach((rel) => {
+        const [sourceId, targetId] = rel.split('@')
+
+        const edge = graph.value.getEdges().find((e) => {
+            const from =
+                mode === 'node' ? e.getSource().cell : e.getSource().port
+            const to = mode === 'node' ? e.getTarget().cell : e.getTarget().port
+            return sourceId === from && targetId === to
+        })
+        if (!edge) return
+        edge.updateData({ isGroupEdge: true })
+        edge.setLabels({
+            attrs: {
+                label: {
+                    text: 'grouped-processes',
                 },
-            })
-        }
+            },
+        })
     })
 }
 

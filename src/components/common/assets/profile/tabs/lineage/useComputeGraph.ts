@@ -278,53 +278,55 @@ export default async function useComputeGraph({
 
         graph.value.freeze('createCTAs')
         graph.value.getNodes().forEach((node) => {
+            const { disableCta } = node.getData()
             const isCyclicGraph = !!lineageStore.getCyclicRelations().length
             const isColNode = isCollapsible(node.id)
             const isHoPaNode = hasHoPa(node.id)
             const isRootNode = graph.value.isRootNode(node.id)
             const isLeafNode = graph.value.isLeafNode(node.id)
 
-            // create CTAs for "right" horizontal pagination
-            if (
-                !isCyclicGraph &&
-                ((isColNode && successors.includes(node.id)) ||
-                    (baseEntityGuid === node.id && successors.length))
-            ) {
-                if (isCyclicGraph) return
-                const id = `${node.id}-ctaRight-hoTo`
-                node.updateData({
-                    ctaRightIcon: 'col',
-                    ctaRightId: id,
-                })
-            }
-
-            // create CTAs for "left" horizontal pagination
-            if (
-                !isCyclicGraph &&
-                ((isColNode && predecessors.includes(node.id)) ||
-                    (baseEntityGuid === node.id && predecessors.length))
-            ) {
-                const id = `${node.id}-ctaLeft-hoTo`
-                node.updateData({
-                    ctaLeftIcon: 'col',
-                    ctaLeftId: id,
-                })
-            }
-
-            // create CTAs for horizontal expand/collpase
-            if ((isRootNode || isLeafNode) && isHoPaNode) {
-                const pos = isLeafNode ? 'ctaRight' : 'ctaLeft'
-                const id = `${node.id}-${pos}-hoPa`
-                if (pos === 'ctaRight')
+            if (!disableCta && !isCyclicGraph) {
+                // create CTAs for "right" horizontal expand/collpase
+                if (
+                    (isColNode && successors.includes(node.id)) ||
+                    (baseEntityGuid === node.id && successors.length)
+                ) {
+                    const id = `${node.id}-ctaRight-hoTo`
                     node.updateData({
-                        ctaRightIcon: 'exp',
+                        ctaRightIcon: 'col',
                         ctaRightId: id,
                     })
-                if (pos === 'ctaLeft')
+                }
+
+                // create CTAs for "left" horizontal expand/collpase
+                if (
+                    (isColNode && predecessors.includes(node.id)) ||
+                    (baseEntityGuid === node.id && predecessors.length)
+                ) {
+                    const id = `${node.id}-ctaLeft-hoTo`
                     node.updateData({
-                        ctaLeftIcon: 'exp',
+                        ctaLeftIcon: 'col',
                         ctaLeftId: id,
                     })
+                }
+            }
+
+            // create CTAs for horizontal pagination
+            if (!disableCta) {
+                if ((isRootNode || isLeafNode) && isHoPaNode) {
+                    const pos = isLeafNode ? 'ctaRight' : 'ctaLeft'
+                    const id = `${node.id}-${pos}-hoPa`
+                    if (pos === 'ctaRight')
+                        node.updateData({
+                            ctaRightIcon: 'exp',
+                            ctaRightId: id,
+                        })
+                    if (pos === 'ctaLeft')
+                        node.updateData({
+                            ctaLeftIcon: 'exp',
+                            ctaLeftId: id,
+                        })
+                }
             }
 
             // increase width of node's invisible port to fit the CTAs

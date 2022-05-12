@@ -28,7 +28,7 @@
             >Getting started with bulk upload?</span
         >
         <div class="flex items-center my-1 text-primary px-4">
-            <a :href="excelFileLink" download>
+            <a :href="excelFileLink" :download="`${glossaryName || 'Glossary'} - Atlan Bulk Terms Template`">
                 <span
                     class="cursor-pointer flex items-center px-2 py-1 rounded-lg bg-white border border-gray-200 text-gray-700 hover:text-primary font-bold"
                     ><atlan-icon icon="Download" class="mr-1 mb-0.5" />Download

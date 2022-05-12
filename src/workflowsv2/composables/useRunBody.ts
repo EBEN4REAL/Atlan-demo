@@ -159,6 +159,7 @@ export function useRunBody(
                 }
                 case 'excludePrefix': {
                     if (filterObject?.length) {
+                        // TODO  can be done w/o for loop
                         filterObject.forEach(pre => {
                             base.notFilter('nested', {
                                 path: 'spec',

@@ -20,6 +20,7 @@
                 >
                     Persona
                     <div
+                        v-if="personas.length"
                         class="flex items-center justify-center w-5 h-5 ml-1 text-xs rounded-full bg-primary-light"
                     >
                         {{ personas.length || '' }}
@@ -36,6 +37,7 @@
                 >
                     Purpose
                     <div
+                        v-if="purposes.length"
                         class="flex items-center justify-center w-5 h-5 ml-1 text-xs rounded-full bg-primary-light"
                     >
                         {{ purposes.length || '' }}
@@ -75,12 +77,21 @@
                         : 'Some description about purpose goes here'
                 }}
             </div>
-            <div
-                class="flex items-center mt-5 text-sm cursor-pointer text-primary"
+            <a
+                :href="
+                    activeTab === 'persona'
+                        ? 'https://ask.atlan.com/hc/en-us/articles/4413870860049-What-are-personas-'
+                        : 'https://ask.atlan.com/hc/en-us/articles/4418690792849-What-are-Purposes-in-Atlan-'
+                "
+                target="_blank"
             >
-                View documentation
-                <AtlanIcon icon="External" class="h-4 ml-1" />
-            </div>
+                <div
+                    class="flex items-center mt-5 text-sm cursor-pointer text-primary"
+                >
+                    View documentation
+                    <AtlanIcon icon="External" class="h-4 ml-1" />
+                </div>
+            </a>
         </div>
         <div v-else-if="!loadingChange" class="p-6">
             <Carousel
@@ -139,12 +150,21 @@
                             class="px-4 py-0 mt-5 text-xs h-7"
                             >Guided demo</AtlanButton2
                         > -->
-                        <div
-                            class="flex items-center mt-4 text-xs text-gray-700 cursor-pointer"
+                        <a
+                            :href="
+                                activeTab === 'persona'
+                                    ? 'https://ask.atlan.com/hc/en-us/articles/4413870860049-What-are-personas-'
+                                    : 'https://ask.atlan.com/hc/en-us/articles/4418690792849-What-are-Purposes-in-Atlan-'
+                            "
+                            target="_blank"
                         >
-                            View documentation
-                            <AtlanIcon icon="External" class="h-4 ml-1" />
-                        </div>
+                            <div
+                                class="flex items-center mt-4 text-xs text-gray-700 cursor-pointer"
+                            >
+                                View documentation
+                                <AtlanIcon icon="External" class="h-4 ml-1" />
+                            </div>
+                        </a>
                     </div>
                 </div>
                 <Card
@@ -153,6 +173,7 @@
                     :item="item"
                     :type="activeTab"
                     :active="item.id === selectedItem.id"
+                    :user-list="userList"
                     @viewAssets="handleViewAssets"
                     @overView="handleOverView"
                 />
@@ -181,6 +202,7 @@
     import illustrationPurposeDemo from '~/assets/images/illustrations/illustration-purpose-demo.png'
     import useUserData from '~/composables/user/useUserData'
     import DrawerWidgetPersonaPurpose from './drawer.vue'
+    import { useUsers } from '~/composables/user/useUsers'
 
     export default defineComponent({
         name: 'WidgetPersonaPurpose',
@@ -196,6 +218,8 @@
                 persona: true,
                 purpose: true,
             })
+            const params = ref({ filter: { $or: [] } })
+            const { userList, mutate } = useUsers(params, false)
             const personaStore = usePersonaStore()
             const purposeStore = usePurposeStore()
             const personas = computed(
@@ -216,6 +240,18 @@
                         return found
                     }) || []
             )
+            watch(personas, () => {
+                if (personas.value.length && !userList?.value?.length) {
+                    let userIds = []
+                    personas.value.forEach((el) => {
+                        userIds = [...userIds, ...el.users]
+                    })
+                    userIds = [...new Set(userIds)]
+                    const filter = userIds.map((el) => ({ id: el }))
+                    params.value = { filter: { $or: filter } }
+                    mutate()
+                }
+            })
             const purposes = computed(
                 () =>
                     purposeStore.list.filter((purpose) => {
@@ -280,6 +316,7 @@
                 handleViewAssets,
                 handleOverView,
                 handleCloseDrawer,
+                userList,
             }
         },
     })

@@ -1,45 +1,29 @@
 <template>
     <div class="pr-3">
         <div
-            class="border cursor-pointer rounded-xl"
+            class="border cursor-pointer rounded-xl hover:border-blue-200"
             :class="active ? 'border-primary ' : 'border-gray-300'"
             @click="$emit('overView', item)"
         >
             <div v-if="type === 'persona'" class="flex h-9">
-                <div
-                    v-if="connection.length"
-                    class="p-1 bg-gray-100 rounded-tl-xl rounded-br-xl"
-                >
-                    <div
-                        class="flex p-1.5 bg-white rounded-tl-xl rounded-br-xl gap-2"
-                    >
-                        <div
-                            v-for="imgPath in connection"
-                            :key="imgPath"
-                            class="relative bg-white rounded-full fit"
-                        >
-                            <img class="w-4 h-4" :src="imgPath" />
+                <div class="p-1 bg-gray-100 rounded-tl-xl rounded-br-xl">
+                    <div class="p-1.5 bg-white rounded-tl-xl rounded-br-xl">
+                        <div v-if="connection.length" class="flex gap-2">
+                            <div
+                                v-for="imgPath in connection.slice(0, 3)"
+                                :key="imgPath"
+                                class="relative bg-white rounded-full fit"
+                            >
+                                <img class="w-4 h-4" :src="imgPath" />
+                            </div>
+                            <div
+                                v-if="connection.length > 3"
+                                class="text-xs text-gray-600"
+                            >
+                                +{{ connection.length - 3 }}
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div
-                    v-if="item?.tags?.length"
-                    class="p-1 bg-gray-100 rounded-tl-xl rounded-br-xl"
-                >
-                    <div
-                        class="flex items-center p-1.5 bg-white rounded-tl-xl rounded-br-xl text-xs text-gray-700"
-                    >
-                        <AtlanIcon
-                            icon="ClassificationShield"
-                            class="w-4 h-4 mr-1 stroke-current text-primary"
-                        />
-                        {{
-                            `${item?.tags?.length} ${
-                                item?.tags?.length > 1
-                                    ? 'classifications'
-                                    : 'classification'
-                            }`
-                        }}
+                        <div v-else class="text-xs text-gray-600">-</div>
                     </div>
                 </div>
             </div>
@@ -47,8 +31,12 @@
                 <div class="w-40 text-base font-bold truncate text-primary">
                     {{ item.name }}
                 </div>
-                <div class="w-40 h-16 mt-2 text-xs text-gray-600 line-clamp-2">
-                    {{ item.description || 'No description' }}
+                <div
+                    :class="`w-40 h-16 mt-2 ${
+                        item.description ? 'text-gray-600' : 'text-gray-400'
+                    } text-xs  line-clamp-2`"
+                >
+                    {{ item.description || 'No description available' }}
                 </div>
             </div>
             <div
@@ -87,7 +75,10 @@
             <div class="flex items-center h-6 px-4">
                 <Avatar
                     v-for="(user, index) in users"
-                    :key="user"
+                    :key="user.id"
+                    :avatar-bg-class="'bg-primary-light border-white border border-2'"
+                    :initial-name="user.username[0]"
+                    :image-url="imageUrl(user.username)"
                     :avatar-size="24"
                     :avatar-shape="'circle'"
                     :style="{
@@ -143,12 +134,16 @@
                 type: Boolean,
                 required: true,
             },
+            userList: {
+                type: Array,
+                required: true,
+            },
         },
         emits: ['viewAssets', 'overView'],
         setup(props) {
             const { classificationList } = useTypedefData()
             const { getConnectorImageMap } = useAssetInfo()
-            const { item, type } = toRefs(props)
+            const { item, type, userList } = toRefs(props)
             const getUniqueTypeIcons = () => {
                 const displayImages = {
                     connectors: [],
@@ -191,7 +186,16 @@
                 })
                 return arr
             })
-            const users = computed(() => item.value?.users?.slice(0, 3) || [])
+            const users = computed(() => {
+                if (!userList?.value.length) return []
+                const usersItem = item.value?.users?.slice(0, 3) || []
+                const personaUsers = usersItem.map(
+                    (el) =>
+                        userList?.value?.find((elc: any) => elc?.id === el) ||
+                        el
+                )
+                return personaUsers
+            })
             const connection = computed(() => {
                 // const glossary = item.value?.glossaryPolicies?.length || 0
                 if (type.value === 'purpose') return []
@@ -211,11 +215,14 @@
 
                 return matchingIdsResult
             })
+            const imageUrl = (username: any) =>
+                `${window.location.origin}/api/service/avatars/${username}`
             return {
                 connection,
                 users,
                 classifications,
                 listClassifications,
+                imageUrl,
             }
         },
     })

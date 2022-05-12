@@ -45,11 +45,13 @@
                 :class="avatarBgClass"
                 :src="isAtlan ? atlanLogo : updatedImageUrl"
             >
-                <template #icon>
+                <template v-if="!initialName" #icon>
                     <AtlanIcon v-if="isGroup" icon="Group"></AtlanIcon>
                     <AtlanIcon v-else icon="User"></AtlanIcon>
                 </template>
-
+                <span v-if="initialName" class="text-xs">
+                    {{ initialName }}
+                </span>
                 <!-- {{ getNameInitials(getNameInTitleCase(avatarName)) }} -->
             </a-avatar>
         </div>
@@ -96,6 +98,10 @@
             isAtlan: {
                 type: Boolean,
                 default: false,
+            },
+            initialName: {
+                type: String,
+                default: '',
             },
         },
         setup(props, context) {

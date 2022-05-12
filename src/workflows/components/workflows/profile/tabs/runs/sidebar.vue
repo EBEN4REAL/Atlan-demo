@@ -211,6 +211,9 @@
                                     :key="pod.name"
                                     >{{ pod.displayName }}</a-select-option
                                 >
+                                <template #suffixIcon>
+                                    <AtlanIcon icon="CaretDown" class="" />
+                                </template>
                             </a-select>
                             <AtlanButton2
                                 label="Logs"

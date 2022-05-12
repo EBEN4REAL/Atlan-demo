@@ -13,7 +13,7 @@
         >
             <span class="mb-1 text-sm text-gray-500">Workspace</span>
             <span
-                class="font-bold cursor-pointer text-primary hover:underline"
+                class="font-bold break-all cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentWorkspace(asset)?.guid)"
                 >{{ parentWorkspace(asset)?.attributes?.name }}</span
             >
@@ -27,7 +27,7 @@
         >
             <span class="mb-1 text-sm text-gray-500">Dataset</span>
             <span
-                class="font-bold cursor-pointer text-primary hover:underline"
+                class="font-bold break-all cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentDataset(asset)?.guid)"
                 >{{ parentDataset(asset)?.attributes?.name }}</span
             >
@@ -41,7 +41,7 @@
         >
             <span class="mb-1 text-sm text-gray-500">Report</span>
             <span
-                class="font-bold cursor-pointer text-primary hover:underline"
+                class="font-bold break-all cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentReport(asset)?.guid)"
                 >{{ parentReport(asset)?.attributes?.name }}</span
             >
@@ -56,7 +56,7 @@
         >
             <span class="mb-1 text-sm text-gray-500">Dashboard</span>
             <span
-                class="font-bold cursor-pointer text-primary hover:underline"
+                class="font-bold break-all cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentDashboard(asset)?.guid)"
                 >{{ parentDashboard(asset)?.attributes?.name }}</span
             >
@@ -70,7 +70,7 @@
         >
             <span class="mb-1 text-sm text-gray-500">Site</span>
             <span
-                class="font-bold cursor-pointer text-primary hover:underline"
+                class="font-bold break-all cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentSite(asset)?.guid)"
                 >{{ parentSite(asset)?.attributes?.name }}</span
             >
@@ -91,7 +91,7 @@
         >
             <span class="mb-1 text-sm text-gray-500">Project</span>
             <span
-                class="font-bold cursor-pointer text-primary hover:underline"
+                class="font-bold break-all cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentProject(asset)?.guid)"
                 >{{ parentProject(asset)?.attributes?.name }}</span
             >
@@ -108,7 +108,7 @@
         >
             <span class="mb-1 text-sm text-gray-500">Workbook</span>
             <span
-                class="font-bold cursor-pointer text-primary hover:underline"
+                class="font-bold break-all cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentWorkbook(asset)?.guid)"
                 >{{ parentWorkbook(asset)?.attributes?.name }}</span
             >
@@ -123,7 +123,7 @@
         >
             <span class="mb-1 text-sm text-gray-500">Datasource</span>
             <span
-                class="font-bold cursor-pointer text-primary hover:underline"
+                class="font-bold break-all cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentDatasource(asset)?.guid)"
                 >{{ parentDatasource(asset)?.attributes?.name }}</span
             >
@@ -137,7 +137,7 @@
         >
             <span class="mb-1 text-sm text-gray-500">Folder</span>
             <span
-                class="font-bold cursor-pointer text-primary hover:underline"
+                class="font-bold break-all cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentFolder(asset)?.guid)"
                 >{{ parentFolder(asset)?.attributes?.name }}</span
             >
@@ -152,7 +152,7 @@
         >
             <span class="mb-1 text-sm text-gray-500">Model</span>
             <span
-                class="font-bold cursor-pointer text-primary hover:underline"
+                class="font-bold break-all cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentModel(asset)?.guid)"
                 >{{ parentModel(asset)?.attributes?.name }}</span
             >
@@ -169,7 +169,7 @@
         >
             <span class="mb-1 text-sm text-gray-500">Organization</span>
             <span
-                class="font-bold cursor-pointer text-primary hover:underline"
+                class="font-bold break-all cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentOrganization(asset)?.guid)"
                 >{{ parentOrganization(asset)?.attributes?.name }}</span
             >
@@ -183,7 +183,7 @@
         >
             <span class="mb-1 text-sm text-gray-500">Parent Object</span>
             <span
-                class="font-bold cursor-pointer text-primary hover:underline"
+                class="font-bold break-all cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentObject(asset)?.guid)"
                 >{{ parentObject(asset)?.attributes?.name }}</span
             >
@@ -209,7 +209,7 @@
         >
             <span class="mb-1 text-sm text-gray-500">Database</span>
             <span
-                class="font-bold cursor-pointer text-primary hover:underline"
+                class="font-bold break-all cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentDatabase(asset)?.guid)"
                 >{{ parentDatabase(asset)?.attributes?.name }}</span
             >
@@ -227,7 +227,7 @@
         >
             <span class="mb-1 text-sm text-gray-500">Schema</span>
             <span
-                class="font-bold cursor-pointer text-primary hover:underline"
+                class="font-bold break-all cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentSchema(asset)?.guid)"
                 >{{ parentSchema(asset)?.attributes?.name }}</span
             >
@@ -241,23 +241,9 @@
         >
             <span class="mb-1 text-sm text-gray-500">Parent Process</span>
             <span
-                class="font-bold cursor-pointer text-primary hover:underline"
+                class="font-bold break-all cursor-pointer text-primary hover:underline"
                 @click="handleOpenDrawer(parentProcess(asset)?.guid)"
                 >{{ parentProcess(asset)?.attributes?.name }}</span
-            >
-        </div>
-        <div
-            v-if="
-                ['S3Object'].includes(asset?.typeName) &&
-                parentBucket(asset)?.guid
-            "
-            class="flex flex-col text-sm"
-        >
-            <span class="mb-1 text-sm text-gray-500">Bucket</span>
-            <span
-                class="font-bold cursor-pointer text-primary hover:underline"
-                @click="handleOpenDrawer(parentBucket(asset)?.guid)"
-                >{{ parentBucket(asset)?.attributes?.name }}</span
             >
         </div>
     </div>
@@ -303,7 +289,6 @@
                 parentOrganization,
                 parentObject,
                 parentProcess,
-                parentBucket,
             } = useAssetInfo()
 
             const drawerVisible = ref(false)
@@ -335,7 +320,6 @@
                 parentOrganization,
                 parentObject,
                 parentProcess,
-                parentBucket,
                 guidToFetch,
                 drawerVisible,
                 handleCloseDrawer,

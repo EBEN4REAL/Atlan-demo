@@ -246,6 +246,20 @@
                 >{{ parentProcess(asset)?.attributes?.name }}</span
             >
         </div>
+        <div
+            v-if="
+                ['S3Object'].includes(asset?.typeName) &&
+                parentBucket(asset)?.guid
+            "
+            class="flex flex-col text-sm"
+        >
+            <span class="mb-1 text-sm text-gray-500">Bucket</span>
+            <span
+                class="font-bold truncate cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentBucket(asset)?.guid)"
+                >{{ parentBucket(asset)?.attributes?.name }}</span
+            >
+        </div>
     </div>
     <AssetDrawer
         :show-drawer="drawerVisible"
@@ -289,6 +303,7 @@
                 parentOrganization,
                 parentObject,
                 parentProcess,
+                parentBucket,
             } = useAssetInfo()
 
             const drawerVisible = ref(false)
@@ -320,6 +335,7 @@
                 parentOrganization,
                 parentObject,
                 parentProcess,
+                parentBucket,
                 guidToFetch,
                 drawerVisible,
                 handleCloseDrawer,

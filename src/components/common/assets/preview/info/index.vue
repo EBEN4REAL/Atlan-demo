@@ -534,23 +534,46 @@
             </div>
 
             <div
-                v-if="['S3Bucket'].includes(selectedAsset.typeName)"
-                class="flex flex-col px-5 text-sm gap-y-4"
+                v-if="['S3Object', 'S3Bucket'].includes(selectedAsset.typeName)"
+                class="flex flex-col px-5 text-sm"
             >
-                <S3ObjectCount :asset="selectedAsset" />
-
-                <div class="flex flex-col text-sm">
-                    <span class="mb-1 text-sm text-gray-500"
-                        >Bucket Versioning Enabled</span
-                    >
-                    <span class="text-gray-700 capitalize">{{
-                        s3BucketVersioningEnabled(selectedAsset)
-                    }}</span>
+                <div class="flex items-center mb-1 text-gray-500">
+                    <span>ARN</span>
+                    <a-tooltip title="Copy">
+                        <div
+                            @click="
+                                handleCopyValue(awsArn(selectedAsset), 'ARN')
+                            "
+                        >
+                            <AtlanIcon
+                                icon="CopyOutlined"
+                                class="w-auto ml-1 cursor-pointer mb-0.5"
+                            /></div
+                    ></a-tooltip>
                 </div>
+                <span class="text-gray-700">{{ awsArn(selectedAsset) }}</span>
             </div>
 
-            <div v-if="['S3Object'].includes(selectedAsset.typeName)">
-                <S3ObjectInfo :asset="selectedAsset" />
+            <div
+                v-if="['S3Bucket'].includes(selectedAsset.typeName)"
+                @click="switchTab(selectedAsset, 'Objects')"
+                class="flex flex-col px-5 text-sm cursor-pointer"
+            >
+                <span class="mb-1 text-sm text-gray-500">Objects</span>
+                <span class="font-semibold text-primary">{{
+                    s3ObjectCount(selectedAsset)
+                }}</span>
+            </div>
+
+            <div
+                v-if="['S3Object'].includes(selectedAsset.typeName)"
+                class="flex flex-col px-5 text-sm"
+            >
+                <span class="mb-1 text-gray-500">Size</span>
+
+                <span class="text-gray-700"
+                    >{{ s3ObjectSize(selectedAsset) }}B</span
+                >
             </div>
 
             <div
@@ -1059,7 +1082,6 @@
     import RelatedTerms from '@/common/input/relatedTerms/relatedTerms.vue'
     import Connection from './connection.vue'
     import Suggestion from './suggestion.vue'
-    import S3ObjectInfo from './s3ObjectInfo.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
@@ -1067,7 +1089,6 @@
     import SourceViewCount from '@/common/widgets/summary/types/sourceViewCount.vue'
     import FieldCount from '@/common/widgets/summary/types/fieldCount.vue'
     import SubFolderCount from '@/common/widgets/summary/types/subFolderCount.vue'
-    import S3ObjectCount from '@/common/widgets/summary/types/s3ObjectCount.vue'
     import ParentContext from '@/common/widgets/summary/types/parentContext.vue'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import { copyToClipboard } from '~/utils/clipboard'
@@ -1108,12 +1129,10 @@
             SubFolderCount,
             ParentContext,
             FieldCount,
-            S3ObjectCount,
             DetailsContainer,
             PreviewTabsIcon,
             UserPill,
             PopOverUser,
-            S3ObjectInfo,
             Suggestion,
             SampleDataTable: defineAsyncComponent(
                 () =>
@@ -1204,7 +1223,9 @@
                 parentTable,
                 parentView,
                 title,
-                s3BucketVersioningEnabled,
+                awsArn,
+                s3ObjectSize,
+                s3ObjectCount,
             } = useAssetInfo()
 
             const {
@@ -1401,7 +1422,9 @@
                 getEntityStatusIcon,
                 parentTable,
                 parentView,
-                s3BucketVersioningEnabled,
+                awsArn,
+                s3ObjectSize,
+                s3ObjectCount,
                 quickChange,
                 limit,
                 title,

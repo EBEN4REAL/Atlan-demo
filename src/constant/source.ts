@@ -563,7 +563,16 @@ export const SourceList = [
         label: 'S3',
         image: S3,
         connectionCount: 0,
-        hierarchy: [],
+        hierarchy: [
+            {
+                typeName: 'S3Bucket',
+                name: 'Bucket',
+                parent: '',
+                attribute: 's3BucketQualifiedName',
+                level: 1,
+                image: 'S3Bucket',
+            },
+        ],
         types: ['S3Bucket', 'S3Object'],
     },
 ]

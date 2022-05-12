@@ -683,6 +683,7 @@ export const assetTypeList: {
         parents: [],
         relationships: ['objects'],
         groupOrder: 7,
+        priorityOrder: 2,
     },
     {
         id: 'S3Object',
@@ -695,5 +696,6 @@ export const assetTypeList: {
         parents: ['S3Bucket'],
         relationships: [],
         groupOrder: 7,
+        priorityOrder: 1,
     },
 ]

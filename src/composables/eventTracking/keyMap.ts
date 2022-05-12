@@ -295,15 +295,13 @@ const keyMap = {
             },
         },
     },
-<<<<<<< HEAD
-=======
     lineage: {
         search: {
             changed: {
                 action: 'lineage_search_changed',
                 properties: (props) => ({
                     result_count: props?.result_count,
-                    search_query: props?.search_query
+                    search_query: props?.search_query,
                 }),
             },
         },
@@ -319,7 +317,6 @@ const keyMap = {
             },
         },
     },
->>>>>>> eed8f12df (FEAT: Lineage Search Result Clicked Event)
     gtc: {
         term: {
             created: {
@@ -331,9 +328,9 @@ const keyMap = {
             deleted: {
                 action: 'gtc_term_deleted',
             },
-            bulk_upload_initiated:{
+            bulk_upload_initiated: {
                 action: 'gtc_term_bulk_upload_initiated',
-            }
+            },
         },
         category: {
             created: {

@@ -360,6 +360,14 @@ const keyMap = {
                     node_id: props?.node_id,
                 }),
             },
+            show_more: {
+                action: 'lineage_sub_node_show_more',
+                properties: (props) => ({
+                    current_list_count: props?.current_list_count,
+                    load_more_size: props?.load_more_size,
+                    node_id: props?.node_id,
+                }),
+            },
         },
     },
     gtc: {

@@ -112,6 +112,17 @@ export default function useEventGraph({
         400
     )
 
+    const sendSubNodeShowMoreEvent = useDebounceFn(
+        (current_list_count, load_more_size, node_id) => {
+            useAddEvent('lineage', 'sub_node', 'show_more', {
+                current_list_count,
+                load_more_size,
+                node_id,
+            })
+        },
+        400
+    )
+
     const sendProcessClickedEvent = useDebounceFn(
         (is_group, is_cyclic, edge_id) => {
             useAddEvent('lineage', 'process', 'clicked', {
@@ -986,10 +997,20 @@ export default function useEventGraph({
                 node.updateData({
                     portItemLoading: show,
                 })
-            if (type === 'showMore')
+            if (type === 'showMore') {
+                const nodePorts = node.data?.ports
+                sendSubNodeShowMoreEvent(
+                    nodePorts[nodePorts.length - 1].typeName === 'showMorePort'
+                        ? nodePorts.length - 1
+                        : nodePorts?.length,
+                    5,
+                    node.id
+                )
+
                 node.updateData({
                     portShowMoreLoading: show,
                 })
+            }
         }
     }
 
@@ -1103,15 +1124,15 @@ export default function useEventGraph({
                 controlPortsLoader(node, true, 'item')
                 fetchPortLineage(node, portId)
             }
-        }
 
-        sendSubNodeClickedEvent(
-            portEntity?.typeName?.toLowerCase(),
-            portEntity?.attributes?.connectorName ||
-                portEntity?.attributes?.qualifiedName?.split('/')[1],
-            portIndex,
-            node.id
-        )
+            sendSubNodeClickedEvent(
+                portEntity.typeName?.toLowerCase(),
+                portEntity.attributes?.connectorName ||
+                    portEntity.attributes?.qualifiedName?.split('/')[1],
+                portIndex,
+                node.id
+            )
+        }
     }
 
     // selectPortEdge

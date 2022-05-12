@@ -244,7 +244,7 @@
                     </div>
                     <div class="flex flex-col">
                         <p class="info-title">Name</p>
-                        <div class="mb-2 text-gray-700">
+                        <div class="mb-2 text-gray-700 break-all">
                             {{ selectedPod?.name }}
                         </div>
                     </div>
@@ -273,7 +273,7 @@
                     </div>
                     <div class="flex flex-col">
                         <p class="info-title">Reference</p>
-                        <div class="mb-2 text-gray-700">
+                        <div class="mb-2 text-gray-700 break-all">
                             {{ selectedPod?.id }}
                         </div>
                     </div>

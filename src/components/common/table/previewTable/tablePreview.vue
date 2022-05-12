@@ -376,7 +376,7 @@
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: hidden;
-            font-family: Avenir !important;
+            font-family: IBMPlexSans !important;
             padding-top: 5px !important;
             position: relative;
             color: #3e4359 !important;
@@ -423,8 +423,10 @@
 <style lang="less" scoped>
     // regular-table
     @font-face {
-        font-family: Avenir;
-        src: url('~/assets/fonts/avenir/Avenir-Roman.woff2');
+        // font-family: Avenir;
+        // src: url('~/assets/fonts/avenir/Avenir-Roman.woff2');
+        font-family: IBMPlexSans;
+        src: url('~/assets/fonts/ibmPlexSans/IBMPlexSans-Regular.woff2');
     }
     .table_height {
         height: 100% !important;

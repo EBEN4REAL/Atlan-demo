@@ -201,6 +201,7 @@
                     <div class="flex w-full mb-2 gap-x-2">
                         <div class="flex flex-grow gap-x-2">
                             <a-select
+                                class="flex-grow"
                                 ref="select"
                                 v-model:value="selectedPodName"
                                 :dropdown-match-select-width="false"

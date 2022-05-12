@@ -142,12 +142,23 @@
                 dateRange: filters.value?.dateRange,
                 status: filters.value?.status,
                 creators: filters.value?.creators,
+                excludePrefix: [
+                    'atlan-gtc-bulk-upload-',
+                    'atlan-schedule-query-',
+                ],
                 filterOut: [
                     'atlan-typedef-seeder',
                     'atlan', // atlan-upadate
                     'cloud-es-log-policy',
                     'cloud-backups',
-                    'fantastic-octopus'
+                    'fantastic-octopus',
+                    'atlan-metastore-migrations-haslineage',
+                    'atlan-gtc-bulk-upload',
+                    'atlan-schedule-query',
+                    'atlan-init',
+                    'atlan-atlas',
+                    'atlan-atlas-reset',
+                    'cloud-atlan-bootstrap',
                 ],
             }))
 
@@ -247,6 +258,8 @@
             })
 
             return {
+                filters,
+                facets,
                 runs,
                 status,
                 creators,

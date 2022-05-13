@@ -1,117 +1,135 @@
 <template>
-    <div
-        class="w-full px-4 pt-2 cursor-pointer item-border hover:bg-gray-light"
-        style="height: 70px !important"
-        @click="openQuery"
+    <InsightsThreeDotMenu
+        :options="dropdownQueryOptions"
+        trigger="contextmenu"
+        minWidth=""
+        :item="item"
     >
-        <div
-            class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
-        >
+        <template #menuTrigger>
             <div
-                class="py-2 parent-ellipsis-container"
-                :class="isHover === queryInfo?._id ? 'w-10/12' : 'w-full'"
+                class="w-full px-4 pt-2 cursor-pointer item-border hover:bg-gray-light"
+                style="height: 70px !important"
+                @click="openQuery"
             >
-                <AtlanIcon
-                    icon="Query"
-                    class="w-4 h-4 my-auto mr-1 parent-ellipsis-container-extension"
-                    style="margin-bottom: 3px !important"
-                    color="#5277D7"
-                ></AtlanIcon>
-                <span
-                    class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                    >{{ queryTitle }}
-                </span>
-
-                <a-spin
-                    class="mt-1 ml-2"
-                    size="small"
-                    v-if="isSavedQueryInfoLoaded"
-                />
-            </div>
-
-            <div
-                class="absolute right-0 flex items-center h-full text-gray-500 margin-align-top"
-                v-if="isHover === queryInfo?._id"
-            >
-                <div class="ml-24">
-                    <a-tooltip color="#363636" placement="top">
-                        <template #title>Download</template>
-                        <AtlanIcon
-                            icon="Download"
-                            class="w-4 h-4 my-auto outline-none cursor-pointer"
-                        ></AtlanIcon>
-                    </a-tooltip>
-                </div>
-                <div class="pl-3">
-                    <a-tooltip color="#363636" placement="top">
-                        <template #title>Run Query</template>
-
-                        <AtlanIcon
-                            icon="Play"
-                            class="w-4 h-4 my-auto outline-none cursor-pointer"
-                            @click.stop="openQuery(true)"
-                        ></AtlanIcon>
-                    </a-tooltip>
-                </div>
-            </div>
-        </div>
-
-        <div
-            class="relative flex justify-between w-full text-xs text-gray-500 item-center"
-            style="height: 18px !important"
-        >
-            <div class="flex item-center">
-                <span
-                    class="mb-0 ml-5 mr-1"
-                    v-if="queryInfo._source && queryInfo._source['@timestamp']"
-                    >{{
-                        dayjs(queryInfo._source['@timestamp']).format('h:mm A')
-                    }}</span
-                >
                 <div
-                    v-if="
-                        queryInfo._source &&
-                        queryInfo._source.log.message.numberOfRows
-                    "
-                    class="w-1 h-1 mr-1 bg-gray-500 rounded-full"
-                    style="margin-top: 5px !important"
-                ></div>
-                <span
-                    class="mr-1"
-                    v-if="
-                        queryInfo._source &&
-                        queryInfo._source.log.message.numberOfRows
-                    "
+                    class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
-                    {{ `${queryInfo._source.log.message.numberOfRows} rows` }}
-                </span>
-                <div
-                    v-if="
-                        queryInfo._source &&
-                        queryInfo._source.log.message.numberOfColumns
-                    "
-                    class="w-1 h-1 mr-1 bg-gray-500 rounded-full"
-                    style="margin-top: 5px !important"
-                ></div>
+                    <div
+                        class="py-2 parent-ellipsis-container"
+                        :class="
+                            isHover === queryInfo?._id ? 'w-10/12' : 'w-full'
+                        "
+                    >
+                        <AtlanIcon
+                            icon="Query"
+                            class="w-4 h-4 my-auto mr-1 parent-ellipsis-container-extension"
+                            style="margin-bottom: 3px !important"
+                            color="#5277D7"
+                        ></AtlanIcon>
+                        <span
+                            class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                            >{{ queryTitle }}
+                        </span>
 
-                <span
-                    class="mr-1"
-                    v-if="
-                        queryInfo._source &&
-                        queryInfo._source.log.message.numberOfColumns
-                    "
+                        <a-spin
+                            class="mt-1 ml-2"
+                            size="small"
+                            v-if="isSavedQueryInfoLoaded"
+                        />
+                    </div>
+
+                    <div
+                        class="absolute right-0 flex items-center h-full text-gray-500 margin-align-top"
+                        v-if="isHover === queryInfo?._id"
+                    >
+                        <div class="ml-24">
+                            <a-tooltip color="#363636" placement="top">
+                                <template #title>Download</template>
+                                <AtlanIcon
+                                    icon="Download"
+                                    class="w-4 h-4 my-auto outline-none cursor-pointer"
+                                ></AtlanIcon>
+                            </a-tooltip>
+                        </div>
+                        <div class="pl-3">
+                            <a-tooltip color="#363636" placement="top">
+                                <template #title>Run Query</template>
+
+                                <AtlanIcon
+                                    icon="Play"
+                                    class="w-4 h-4 my-auto outline-none cursor-pointer"
+                                    @click.stop="openQuery(true)"
+                                ></AtlanIcon>
+                            </a-tooltip>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="relative flex justify-between w-full text-xs text-gray-500 item-center"
+                    style="height: 18px !important"
                 >
-                    {{
-                        queryInfo._source.log.message.numberOfColumns
-                    }}&nbsp;cols
-                </span>
+                    <div class="flex item-center">
+                        <span
+                            class="mb-0 ml-5 mr-1"
+                            v-if="
+                                queryInfo._source &&
+                                queryInfo._source['@timestamp']
+                            "
+                            >{{
+                                dayjs(queryInfo._source['@timestamp']).format(
+                                    'h:mm A'
+                                )
+                            }}</span
+                        >
+                        <div
+                            v-if="
+                                queryInfo._source &&
+                                queryInfo._source.log.message.numberOfRows
+                            "
+                            class="w-1 h-1 mr-1 bg-gray-500 rounded-full"
+                            style="margin-top: 5px !important"
+                        ></div>
+                        <span
+                            class="mr-1"
+                            v-if="
+                                queryInfo._source &&
+                                queryInfo._source.log.message.numberOfRows
+                            "
+                        >
+                            {{
+                                `${queryInfo._source.log.message.numberOfRows} rows`
+                            }}
+                        </span>
+                        <div
+                            v-if="
+                                queryInfo._source &&
+                                queryInfo._source.log.message.numberOfColumns
+                            "
+                            class="w-1 h-1 mr-1 bg-gray-500 rounded-full"
+                            style="margin-top: 5px !important"
+                        ></div>
+
+                        <span
+                            class="mr-1"
+                            v-if="
+                                queryInfo._source &&
+                                queryInfo._source.log.message.numberOfColumns
+                            "
+                        >
+                            {{
+                                queryInfo._source.log.message.numberOfColumns
+                            }}&nbsp;cols
+                        </span>
+                    </div>
+                    <QueryStatus
+                        v-if="queryInfo._source"
+                        :status="queryInfo._source.log.message.queryStatus"
+                    />
+                </div>
             </div>
-            <QueryStatus
-                v-if="queryInfo._source"
-                :status="queryInfo._source.log.message.queryStatus"
-            />
-        </div>
-    </div>
+        </template>
+    </InsightsThreeDotMenu>
 </template>
 
 <script lang="ts">
@@ -130,6 +148,7 @@
     import QueryStatus from './queryStatus.vue'
     import dayjs from 'dayjs'
     import { useRouter } from 'vue-router'
+    import { MenuItem } from 'ant-design-vue'
 
     import { useDiscoverList as useAssetData } from '~/composables/discovery/useDiscoverList'
     import {
@@ -142,8 +161,10 @@
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     import useOpenQuery from '~/components/insights/common/composables/useOpenQuery'
+    import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
 
     export default defineComponent({
+        components: { AtlanIcon, QueryStatus, InsightsThreeDotMenu },
         props: {
             queryInfo: {
                 type: Object,
@@ -158,7 +179,6 @@
                 required: true,
             },
         },
-        components: { AtlanIcon, QueryStatus },
         setup(props) {
             const { queryInfo, savedQueryMetaMap } = toRefs(props)
 
@@ -304,6 +324,29 @@
                 }
             }
 
+            const dropdownQueryOptions = [
+                {
+                    title: 'Run Query',
+                    key: 'run',
+                    class: '',
+                    disabled: false,
+                    component: MenuItem,
+                    handleClick: () => {
+                        openQuery(true)
+                    },
+                },
+                {
+                    title: 'Open in a new tab',
+                    key: 'openInNewTab',
+                    component: MenuItem,
+                    class: '',
+                    disabled: false,
+                    handleClick: () => {
+                        // TODO: Code for opening in new tab goes here
+                    },
+                },
+            ]
+
             return {
                 isSavedQuery,
                 isSqlPresent,
@@ -311,6 +354,7 @@
                 dayjs,
                 openQuery,
                 isSavedQueryInfoLoaded,
+                dropdownQueryOptions,
             }
         },
     })

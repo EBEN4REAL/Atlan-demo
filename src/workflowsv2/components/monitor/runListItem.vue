@@ -1,24 +1,36 @@
 <template>
     <div
-        class="border-b border-gray-300 run-list-item hover:bg-primary-menu text-new-gray-800 group"
+        class="border-b border-gray-300 run-list-item text-new-gray-800 group"
+        :class="
+            connectionDeleted
+                ? 'cursor-not-allowed hover:bg-gray-100'
+                : 'hover:bg-primary-menu'
+        "
         @click="
-            $router.push(
-                `/workflows/profile/${workflowTemplateName(
-                    run
-                )}/runs?name=${name(run)}`
-            )
+            !connectionDeleted &&
+                $router.push(
+                    `/workflows/profile/${workflowTemplateName(
+                        run
+                    )}/runs?name=${name(run)}`
+                )
         "
     >
         <div class="flex items-center col-span-4 text-new-gray-600 gap-x-3">
             <PackageIcon :package="pkg" />
             <div class="overflow-x-hidden">
                 <router-link
+                    v-if="!connectionDeleted"
                     :to="`/workflows/profile/${workflowTemplateName(
                         run
                     )}/runs?name=${name(run)}`"
                 >
                     <p
-                        class="text-sm font-bold truncate text-new-gray-700 group-hover:underline"
+                        class="text-sm font-bold truncate text-new-gray-700"
+                        :class="
+                            connectionDeleted
+                                ? 'cursor-not-allowed'
+                                : 'group-hover:underline'
+                        "
                     >
                         {{ pkgName(pkg) || name(run) }}
                         <AtlanIcon
@@ -29,6 +41,19 @@
                         {{ dName }}
                     </p>
                 </router-link>
+                <template v-else>
+                    <p
+                        class="text-sm font-bold truncate cursor-not-allowed text-new-gray-500"
+                    >
+                        {{ pkgName(pkg) || name(run) }}
+                        <AtlanIcon
+                            v-if="dName"
+                            icon="CaretRight"
+                            class="-ml-1 -mr-0.5 mb-0.5"
+                        />
+                        {{ dName }}
+                    </p>
+                </template>
                 <div
                     class="flex items-center mt-1 overflow-hidden flex-nowrap gap-x-1"
                 >
@@ -54,6 +79,14 @@
 
         <div class="flex items-center justify-center col-span-1">
             <span
+                v-if="connectionDeleted"
+                class="text-gray-500 bg-gray-200 status-badge whitespace-nowrap"
+                style="padding: 7px 12px 5px"
+            >
+                Connection Deleted
+            </span>
+            <span
+                v-else
                 class="status-badge"
                 style="padding: 7px 12px 5px"
                 :class="[getRunTextClass(run), getRunClassBgLight(run)]"
@@ -94,7 +127,7 @@
         <div class="flex items-center justify-end col-span-1 gap-x-4">
             <span>{{ duration(run) }}</span>
         </div>
-        <div class="flex justify-center col-span-1">
+        <div v-if="!connectionDeleted" class="flex justify-center col-span-1">
             <IconButton
                 icon="ArrowRight"
                 class="-mr-12 opacity-0 group-hover:opacity-100 text-primary"
@@ -136,6 +169,10 @@
             const { workflow } = toRefs(props)
             const workflowStore = useWorkflowStore()
 
+            const connectionDeleted = computed(
+                () => !workflow.value?.metadata?.name
+            )
+
             const {
                 displayName,
                 getRunTextClass,
@@ -167,6 +204,7 @@
             )
 
             return {
+                connectionDeleted,
                 getRunTextClass,
                 getRunClassBgLight,
                 getRunClassBg,

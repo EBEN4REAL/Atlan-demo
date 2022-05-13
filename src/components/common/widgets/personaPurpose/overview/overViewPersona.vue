@@ -42,21 +42,25 @@
         </div>
         <div class="mt-7">
             <div class="text-gray-600">Readme</div>
-            <div class="p-4 bg-gray-100 rounded-lg"></div>
+            <div class="p-4 bg-gray-100 rounded-lg">
+                <div v-if="!item.readme" class="text-sm text-gray-600">
+                    No readme
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponent, computed, toRefs, ref, watch } from 'vue'
-    import Loader from '@common/loaders/page.vue'
+
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { getCountString } from '~/utils/number'
 
     export default defineComponent({
         name: 'OverviewPersonaWidget',
-        components: { Loader },
+        components: {},
         props: {
             item: {
                 type: Object,
@@ -66,11 +70,12 @@
         emits: [],
         setup(props) {
             const { item } = toRefs(props)
+            console.log(item.value, 'shdgjhsgdjhsgd')
             const aggregations = ref(['typeName'])
             const limit = ref(1)
             const offset = ref(0)
             const globalState = ref(['persona', item.value.id])
-            const { list, fetch, isLoading, assetTypeAggregationList } =
+            const { fetch, isLoading, assetTypeAggregationList } =
                 useDiscoverList({
                     isCache: false,
                     limit,

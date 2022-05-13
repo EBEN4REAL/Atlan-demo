@@ -150,6 +150,16 @@
                         ?.metadata?.name === 'atlan-bigquery'
                         ? ['atlan-bigquery-miner']
                         : []),
+                    // ? if filtering by Snowflake package, then exclude miner as both has same prefix
+                    ...(workflowStore.packageMeta?.[filters.value?.packageId]
+                        ?.metadata?.name === 'atlan-snowflake'
+                        ? ['atlan-snowflake-miner']
+                        : []),
+                    // ? if filtering by Redshift package, then exclude miner as both has same prefix
+                    ...(workflowStore.packageMeta?.[filters.value?.packageId]
+                        ?.metadata?.name === 'atlan-redshift'
+                        ? ['atlan-redshift-miner']
+                        : []),
                 ],
                 filterOut: [
                     'atlan-typedef-seeder',

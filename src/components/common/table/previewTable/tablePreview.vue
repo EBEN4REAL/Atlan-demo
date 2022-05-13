@@ -416,6 +416,11 @@
         // & ::-webkit-scrollbar {
         //     display: none;
         // }
+        thead tr th:first-child::before {
+            content: '#';
+            font-weight: 700 !important;
+            @apply text-new-gray-800;
+        }
     }
 </style>
 

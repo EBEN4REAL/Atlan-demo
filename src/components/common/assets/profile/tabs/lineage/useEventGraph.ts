@@ -60,6 +60,7 @@ export default function useEventGraph({
     const selectedNodeId = ref('')
     const selectedNodeEdgeId = ref('')
     const selectedPortId = ref('')
+    const selectedPortIdNext = ref('')
     const selectedPortEdgeId = ref('')
     const nodesEdgesHighlighted = ref([])
     const nodesTranslated = ref({})
@@ -680,6 +681,17 @@ export default function useEventGraph({
                     else removeShowMorePort(node)
 
                     translateSubsequentNodes(node)
+
+                    if (Object.keys(actions.value).length) {
+                        Object.entries(actions.value).forEach(([k, v]) => {
+                            if (k === 'selectPort') {
+                                const portId = v
+                                if (!portId) return
+                                selectPort(node, portId, true)
+                                delete actions.value[k]
+                            }
+                        })
+                    }
                 } else
                     message.info(
                         `No ${getNodePortLabel(
@@ -908,6 +920,9 @@ export default function useEventGraph({
 
     // removePorts
     const removePorts = (node, options = {}) => {
+        if (selectedPortIdNext.value && node.hasPort(selectedPortIdNext.value))
+            return
+
         removeX6Ports(node)
         node.updateData({
             ports: [],
@@ -1598,10 +1613,23 @@ export default function useEventGraph({
             const ele = controlPortClickEvent(e, 'isportitem')
             const portId = ele.getAttribute('isportitem')
 
-            if (portId === selectedPortId.value) resetState()
-            else {
+            if (portId === selectedPortId.value) {
                 resetState()
-                selectPort(node, portId)
+            } else {
+                const { portsCount } = node.getData()
+                if (!portsCount) selectedPortIdNext.value = portId
+
+                resetState()
+
+                if (!portsCount) {
+                    const newAction = { selectPort: portId }
+                    actions.value = { ...actions.value, ...newAction }
+                    node.updateData({ highlightPorts: [] })
+                    fetchNodePorts(node)
+                    return
+                }
+
+                selectPort(node, portId, true)
             }
             return
         }

@@ -274,7 +274,7 @@
             })
 
             // atlan assets link
-            const excelFileLink ='http://assets.atlan.com/assets/Glossary%20Atlan%20Bulk%20Terms%20Template.xlsx'
+            const excelFileLink ='https://assets.atlan.com/assets/Glossary%20Atlan%20Bulk%20Terms%20Template.xlsx'
             return {
                 handleCancel,
                 showModal,

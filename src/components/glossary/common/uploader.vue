@@ -3,14 +3,13 @@
         class="flex justify-center items-center bg-gray-100 rounded-xl my-4"
         v-model:fileList="fileList"
         :open-file-dialog-on-click="fileList?.length ? false : true"
-        :accept="accept"
         :multiple="false"
-        :remove="handleRemove"
+        @remove="handleRemove"
         :before-upload="beforeUpload"
         :show-upload-list="false"
         :custom-request="() => {}"
-        @change="handleChange"
         @drop="handleDrop"
+        @change="handleChange"
     >
         <div class="flex justify-center items-center">
             <atlan-icon icon="CSVLogo" class="h-40 mt-2" />
@@ -97,18 +96,12 @@
             const { config, accept } = toRefs(props)
             const reqConfig = computed(() => config.value[0]?.requestConfig)
             const handleChange = (info: UploadChangeParam) => {
-                const status = info.file.status
-                if (status !== 'uploading') {
-                    console.log(info.file, info.fileList)
+                console.log(info)
+                if (info?.file?.type !== 'text/csv') {
+                    fileList.value = []
+                    message.error('Unsupported file type. Upload a CSV file')
                 }
-                if (status === 'done') {
-                    message.success(
-                        `${info.file.name} file uploaded successfully.`
-                    )
-                } else if (status === 'error') {
-                    message.error(`${info.file.name} file upload failed.`)
-                }
-            }
+           }
             const {
                 handleUpload,
                 beforeUpload,
@@ -118,6 +111,9 @@
                 error: fileError,
                 success: fileSuccess,
             } = useFileUploader(reqConfig, emit)
+            const handleDrop = (event) => {
+                console.log(event)
+            }
             return {
                 handleUpload,
                 beforeUpload,
@@ -126,6 +122,8 @@
                 uploading,
                 fileError,
                 fileSuccess,
+                handleDrop,
+                handleChange,
             }
         },
     })

@@ -82,7 +82,7 @@
                 <Avatar
                     v-for="(user, index) in users"
                     :key="user.id"
-                    :avatar-bg-class="'bg-primary-light border-white border border-2'"
+                    :avatar-bg-class="'bg-primary-light border-white border border-2 uppercase'"
                     :initial-name="user.username[0]"
                     :image-url="imageUrl(user.username)"
                     :avatar-size="24"
@@ -93,7 +93,7 @@
                     }"
                 />
                 <div
-                    v-if="item.users?.length > 3"
+                    v-if="item.users?.length > 3 && users.length"
                     class="flex items-center justify-center w-6 h-6 mt-1 text-xs text-gray-600 bg-gray-100 rounded-full"
                     :style="{
                         'z-index': `4`,

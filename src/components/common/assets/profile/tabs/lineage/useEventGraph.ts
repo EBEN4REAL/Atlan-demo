@@ -315,6 +315,7 @@ export default function useEventGraph({
 
     // selectVpNode
     const selectVpNode = (node, entityIdsToAdd: string[] = []) => {
+        if (!node?.getData()) return
         const { mode, modeId, hiddenEntities } = node.getData()
 
         const entitiesToAdd = !entityIdsToAdd.length
@@ -435,6 +436,20 @@ export default function useEventGraph({
         return allXPos
     }
 
+    // updateNodeRawData
+    const updateNodeRawData = (nodeId, rawData) => {
+        const x6Node = getX6Node(nodeId)
+        const currData = x6Node.getData()
+        const newData = {
+            ...currData,
+            ...rawData,
+        }
+        nodes.value = nodes.value.map((n) => {
+            if (n.id !== nodeId) return n
+            return { ...n, data: newData }
+        })
+    }
+
     // getNodeToTranslatePos
     const getNodeToTranslatePos = (nodeToTranslate) => {
         const { x: nttXPos } = nodeToTranslate.position()
@@ -544,7 +559,7 @@ export default function useEventGraph({
                 addSubGraph(data.value)
                 depthCounter.value += 1
             } else {
-                const isCircularLineage = rel2.length === 1
+                const isCircularLineage = keys2.length === 1 && rel2.length
                 message.info(
                     `${
                         isCircularLineage
@@ -552,18 +567,25 @@ export default function useEventGraph({
                             : 'No lineage to show'
                     }`
                 )
-                if (path === 'right')
+
+                updateNodeRawData(n.id, { disableCta: true })
+
+                if (path === 'right') {
                     n.updateData({
+                        disableCta: true,
                         ctaRightIcon: '',
                         ctaRightId: '',
                         ctaRightLoading: false,
                     })
-                if (path === 'left')
+                }
+                if (path === 'left') {
                     n.updateData({
+                        disableCta: true,
                         ctaLeftIcon: '',
                         ctaLeftId: '',
                         ctaLeftLoading: false,
                     })
+                }
             }
 
             if (Object.keys(actions.value).length) {
@@ -996,7 +1018,7 @@ export default function useEventGraph({
     const getAllNodesQN = () => {
         const res = graph.value
             .getNodes()
-            .map((x) => x.store.data.entity.attributes.qualifiedName)
+            .map((x) => x?.store?.data?.entity?.attributes?.qualifiedName)
         return res
     }
 
@@ -1081,8 +1103,8 @@ export default function useEventGraph({
             )
             resetSelectedPort()
         } else {
-            controlCyclicEdges(graph, relations)
-            controlGroupedEdges(graph, relations)
+            // controlCyclicEdges(graph, relations, 'port')
+            controlGroupedEdges(graph, relations, 'port')
         }
     }
 

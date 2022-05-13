@@ -47,7 +47,7 @@ import {
     percent,
     tableauCalculatedField,
     tableauDatasourceField,
-    lookerField,
+    // lookerField,
 } from './icons'
 
 interface EdgeStyle {
@@ -163,6 +163,7 @@ export default function useGraph(graph) {
             ctaLeftIcon: '',
             ctaLeftId: '',
             ctaLeftLoading: false,
+            disableCta: false,
             ...dataObj,
         }
 
@@ -376,7 +377,7 @@ export default function useGraph(graph) {
                                 </div>
                             </div>
                             ${
-                                data?.ctaLeftIcon
+                                data?.ctaLeftIcon && !data?.disableCta
                                     ? `<div isctaleft="${
                                           data?.ctaLeftId
                                       }" class="ctaLeft">
@@ -391,7 +392,7 @@ export default function useGraph(graph) {
                                     : ''
                             }
                             ${
-                                data?.ctaRightIcon
+                                data?.ctaRightIcon && !data?.disableCta
                                     ? `<div isctaright="${
                                           data?.ctaRightId
                                       }" class="ctaRight">

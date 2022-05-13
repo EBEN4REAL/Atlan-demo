@@ -69,8 +69,22 @@
                         >Retry</a-button
                     > -->
                 </div>
+                <div
+                    v-if="
+                        ['Failed', 'Error'].includes(selectedPod?.phase) &&
+                        selectedPod?.message
+                    "
+                    class="flex flex-col w-full mt-2"
+                >
+                    <p class="mb-1 info-title">Message</p>
+
+                    <span class="">
+                        {{ selectedPod.message }}
+                    </span>
+                </div>
             </div>
         </div>
+
         <div
             v-if="selectedPod?.finishedAt && selectedPod?.startedAt"
             class="flex flex-col gap-y-2"
@@ -149,6 +163,7 @@
             const {
                 formatDate,
                 difference,
+                message: statusMessage,
                 phase,
                 phaseMessage,
                 getRunClassByPhase,
@@ -161,6 +176,7 @@
             }
 
             return {
+                statusMessage,
                 formatDate,
                 difference,
                 phase,

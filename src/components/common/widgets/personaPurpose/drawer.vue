@@ -65,6 +65,7 @@
     import OverviewPersonaWidget from './overview/overViewPersona.vue'
     import UsersGroupsPersona from './overview/usersGroupsPersona.vue'
     import Resources from './overview/resouces.vue'
+    import Property from './overview/propertyPersona.vue'
 
     export default defineComponent({
         name: 'DrawerWidgetPersonaPurpose',
@@ -74,6 +75,7 @@
             OverviewPersonaWidget,
             UsersGroupsPersona,
             Resources,
+            Property,
         },
         props: {
             visible: {
@@ -130,6 +132,12 @@
                                 icon: 'Link',
                                 activeIcon: 'Link',
                                 component: 'Resources',
+                            },
+                            {
+                                tooltip: 'Property',
+                                icon: 'Property',
+                                activeIcon: 'Property',
+                                component: 'Property',
                             },
                         ]
                     } else {

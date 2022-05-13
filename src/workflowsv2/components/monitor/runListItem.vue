@@ -56,7 +56,7 @@
                     </p>
                     <span
                         v-if="connectionDeleted"
-                        class="p-1 text-xs font-semibold tracking-wider text-gray-400 uppercase border border-gray-300 rounded whitespace-nowrap"
+                        class="p-1 pb-0.5 text-xs font-semibold tracking-wider text-gray-400 uppercase border border-gray-300 rounded whitespace-nowrap"
                     >
                         Connection Deleted
                     </span>

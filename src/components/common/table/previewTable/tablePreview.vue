@@ -370,14 +370,13 @@
             max-width: 200px;
             min-width: 200px;
             height: 28px !important;
-            padding: 0px 16px !important;
+            padding: 4px 12px !important;
             font-size: 14px !important;
             @apply border border-gray-light  bg-white;
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: hidden;
             font-family: IBMPlexSans !important;
-            padding-top: 5px !important;
             position: relative;
             color: #3e4359 !important;
             // text-align: right !important;
@@ -392,7 +391,7 @@
 
         th {
             border-top: 0;
-            height: 36px !important;
+            height: 28px !important;
             font-size: 14px !important;
             @apply border-r border-gray-light bg-white;
             font-weight: 700 !important;
@@ -404,7 +403,7 @@
             width: 42px;
             border-left: 0;
             height: 28px !important;
-            color: #a0a4b6 !important;
+            @apply text-new-gray-600 !important;
             font-weight: 400 !important;
             @apply bg-white border;
             padding: 0 !important;

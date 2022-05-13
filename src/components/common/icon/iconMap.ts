@@ -431,6 +431,7 @@ import Atlan from '~/assets/images/icons/atlan.svg'
 import Gear from '~/assets/images/icons/gear.svg'
 import SafariLock from '~/assets/images/icons/safari-lock.svg'
 import SlackToken from '~/assets/images/admin/integrations/slackToken.svg'
+import SlackAddApp from '~/assets/images/admin/integrations/SlackAddApp.svg'
 import Integrations from '~/assets/images/icons/integrations.svg'
 import IntegrationsActive from '~/assets/images/icons/integrations-active.svg'
 import QueryTime from '~/assets/images/icons/query_time.svg'
@@ -497,6 +498,7 @@ export default {
     Integrations,
     Jira,
     SlackToken,
+    SlackAddApp,
     SafariLock,
     Gear,
     Atlan,

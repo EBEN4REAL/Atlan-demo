@@ -60,6 +60,11 @@
                     :invalid="workflowChannel.invalid"
                     @change="handleWorkflowChannelChange"
                 />
+                <AddQueryOutputChannel
+                    v-model:workflowChannel="workflowChannel.name"
+                    :invalid="workflowChannel.invalid"
+                    @change="handleWorkflowChannelChange"
+                />
             </section>
         </template>
         <template v-if="activeTabKey === 'overview'">
@@ -98,6 +103,7 @@
     import SlackOverview from '@/admin/integrations/slack/overview.vue'
     import Footer from '@/admin/integrations/slack/integrationCardFooter.vue'
     import AddWorkflowChannel from '@/admin/integrations/slack/misc/addWorkflowChannel.vue'
+    import AddQueryOutputChannel from '@/admin/integrations/slack/misc/addQueryOutputChannel.vue'
     import Chip from '@/UI/chip.vue'
 
     export default defineComponent({
@@ -108,6 +114,7 @@
             Footer,
             SlackOverview,
             AddWorkflowChannel,
+            AddQueryOutputChannel,
         },
         setup() {
             const unsavedChanges = ref(false)

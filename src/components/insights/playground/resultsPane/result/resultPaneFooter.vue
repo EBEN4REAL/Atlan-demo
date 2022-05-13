@@ -85,6 +85,67 @@
                     </div>
                 </AtlanBtn>
             </a-tooltip>
+            <SlackShareModal
+                :dataList="activeInlineTab.playground.editor.dataList"
+                :columns="activeInlineTab.playground.editor.columnList"
+                v-model:visible="slackSharePopoverVisible"
+                v-if="
+                    tenantSlackStatus?.configured &&
+                    tenantSlackStatus?.channels?.length
+                "
+            >
+                <a-tooltip
+                    color="#363636"
+                    :mouseEnterDelay="
+                        lastTooltipPresence !== undefined
+                            ? ADJACENT_TOOLTIP_DELAY
+                            : MOUSE_ENTER_DELAY
+                    "
+                    v-if="
+                        columnsCount &&
+                        previewTabsWidth > 0 &&
+                        !slackSharePopoverVisible
+                    "
+                    placement="topRight"
+                >
+                    <template #title> Share Results</template>
+                    <AtlanBtn
+                        size="sm"
+                        color="secondary"
+                        :disabled="
+                            insights_Store.activePreviewGuid !== undefined
+                        "
+                        @mouseout="recordTooltipPresence"
+                        @click="toggleShareSlackModal"
+                        class="py-0.5 px-2 mr-2 text-sm border-none text-xs rounded shadow cursor-pointer"
+                        style="height: 24px"
+                    >
+                        <AtlanIcon
+                            icon="Slack"
+                            class="w-4 h-4 text-xs text-new-gray-800"
+                        />
+                    </AtlanBtn>
+                </a-tooltip>
+                <AtlanBtn
+                    v-else-if="
+                        columnsCount &&
+                        previewTabsWidth > 0 &&
+                        slackSharePopoverVisible
+                    "
+                    size="sm"
+                    color="secondary"
+                    :disabled="insights_Store.activePreviewGuid !== undefined"
+                    @mouseout="recordTooltipPresence"
+                    class="py-0.5 px-2 mr-2 text-sm border-none rounded shadow cursor-pointer"
+                    style="height: 24px"
+                    @click="toggleShareSlackModal"
+                >
+                    <AtlanIcon
+                        icon="Slack"
+                        class="w-4 h-4 text-xs text-new-gray-800"
+                    />
+                </AtlanBtn>
+            </SlackShareModal>
             <a-tooltip
                 color="#363636"
                 :mouseEnterDelay="
@@ -100,7 +161,7 @@
                     size="sm"
                     color="secondary"
                     @mouseout="recordTooltipPresence"
-                    class="py-0.5 px-2 mr-2 text-sm border-none text-xs rounded shadow cursor-pointer"
+                    class="py-0.5 px-2 mr-2 text-sm border-none rounded shadow cursor-pointer"
                     style="height: 24px"
                 >
                     <AtlanIcon
@@ -109,39 +170,6 @@
                     />
                 </AtlanBtn>
             </a-tooltip>
-            <SlackShareModal
-                :dataList="dataList"
-                :columns="columnsList"
-                v-if="
-                    tenantSlackStatus?.configured &&
-                    tenantSlackStatus?.channels?.length
-                "
-            >
-                <a-tooltip
-                    color="#363636"
-                    :mouseEnterDelay="
-                        lastTooltipPresence !== undefined
-                            ? ADJACENT_TOOLTIP_DELAY
-                            : MOUSE_ENTER_DELAY
-                    "
-                    v-if="columnsCount && previewTabsWidth > 0"
-                    placement="topRight"
-                >
-                    <template #title>Share Results</template>
-                    <AtlanBtn
-                        size="sm"
-                        color="secondary"
-                        @mouseout="recordTooltipPresence"
-                        class="py-0.5 px-2 mr-2 text-sm border-none text-xs rounded shadow cursor-pointer"
-                        style="height: 24px"
-                    >
-                        <AtlanIcon
-                            icon="Slack"
-                            class="w-4 h-4 text-xs text-new-gray-800"
-                        />
-                    </AtlanBtn>
-                </a-tooltip>
-            </SlackShareModal>
             <a-dropdown
                 :trigger="['click']"
                 @click.stop="() => {}"
@@ -181,6 +209,9 @@
                             >Full screen</a-menu-item
                         >
                         <a-menu-item
+                            :disabled="
+                                insights_Store.activePreviewGuid !== undefined
+                            "
                             key="slack"
                             class="px-4 py-2 text-sm"
                             v-if="
@@ -189,8 +220,12 @@
                             "
                         >
                             <SlackShareModal
-                                :dataList="dataList"
-                                :columns="columnsList"
+                                :dataList="
+                                    activeInlineTab.playground.editor.dataList
+                                "
+                                :columns="
+                                    activeInlineTab.playground.editor.columnList
+                                "
                             >
                                 <div class="flex items-center">
                                     <AtlanIcon
@@ -446,7 +481,9 @@
         props: {},
         setup() {
             const store = intStore()
-
+            const slackSharePopoverVisible = inject(
+                'slackSharePopoverVisible'
+            ) as Ref<Boolean>
             const { tenantSlackStatus } = toRefs(store)
             const fullScreenMode = ref(false)
             const insights_Store = insightsStore()
@@ -747,6 +784,10 @@
                 const index = key.split('.')[0]
                 fullScreenTabActive.value = Number(index)
             }
+
+            const toggleShareSlackModal = () => {
+                debugger
+            }
             watch(
                 () => insights_Store.activePreviewGuid,
                 (newVal) => {
@@ -756,6 +797,8 @@
             )
 
             return {
+                toggleShareSlackModal,
+                slackSharePopoverVisible,
                 tenantSlackStatus,
                 onModalVisibleChange,
                 handleTabChange,

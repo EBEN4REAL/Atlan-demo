@@ -25,7 +25,6 @@ export const InternalAttributes = [
     '__state',
     '__guid',
     '__historicalGuids',
-    '__classificationsText',
     '__classificationNames',
     '__propagatedClassificationNames',
     '__customAttributes',
@@ -129,6 +128,7 @@ export const AssetAttributes = [
     'picklistValues',
     'formula',
     'isPublished',
+    'process',
 ]
 
 export const SQLAttributes = [
@@ -264,6 +264,7 @@ export const MinimalAttributes = [
     'isDist',
     'order',
     'isPublished',
+    'process',
 ]
 
 export const BasicSearchAttributes = [
@@ -274,7 +275,6 @@ export const BasicSearchAttributes = [
     '__state',
     '__guid',
     '__historicalGuids',
-    '__classificationsText',
     '__classificationNames',
     '__propagatedClassificationNames',
     '__customAttributes',

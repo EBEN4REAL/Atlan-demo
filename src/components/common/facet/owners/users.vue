@@ -47,11 +47,29 @@
                                     :avatar-size="20"
                                     class="mr-2"
                                 />
-                                <div
-                                    class="text-sm leading-none capitalize text-gray"
-                                >
-                                    {{ fullName(item) }}
-                                </div>
+                                <a-tooltip>
+                                    <template #title>
+                                        {{ `${fullName(item)} ` }}
+                                    </template>
+                                    <div class="flex items-center">
+                                        <div
+                                            class="text-sm leading-none capitalize truncate text-gray"
+                                            :class="
+                                                item.emailVerified === false
+                                                    ? 'user-name-facet-owner'
+                                                    : 'user-name-facet-owner-verified'
+                                            "
+                                        >
+                                            {{ `${fullName(item)} ` }}
+                                        </div>
+                                        <div
+                                            v-if="item.emailVerified === false"
+                                            class="border border-alert mb-0.5 ml-3 px-1.5 rounded-2xl text-alert text-xs"
+                                        >
+                                            Invited
+                                        </div>
+                                    </div>
+                                </a-tooltip>
                             </div>
                         </a-checkbox>
                     </template>
@@ -75,8 +93,8 @@
                         />
                     </div>
                     <div
-                        class="flex items-center ml-auto text-xs cursor-pointer text-primary"
                         v-else
+                        class="flex items-center ml-auto text-xs cursor-pointer text-primary"
                     >
                         <div
                             v-if="
@@ -104,7 +122,7 @@
                 Loading users
             </div>
         </div>
-        <div class="pl-4" v-if="totalActiveUsers">
+        <div v-if="totalActiveUsers" class="pl-4">
             <p class="text-xs text-gray-500">
                 {{ userList.length }} of
                 {{ excludeMe ? totalActiveUsers - 1 : totalActiveUsers }} users
@@ -122,11 +140,11 @@
         toRefs,
         onMounted,
     } from 'vue'
-    import { useVModels, onKeyStroke } from '@vueuse/core'
+    import { useVModels, onKeyStroke, watchOnce } from '@vueuse/core'
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import Avatar from '~/components/common/avatar/avatar.vue'
     import whoami from '~/composables/user/whoami'
-    import { watchOnce } from '@vueuse/core'
+
     export default defineComponent({
         name: 'UsersFilter',
         components: {
@@ -194,8 +212,12 @@
                 default: false,
                 required: false,
             },
+            showInvitedUsers: {
+                type: Boolean,
+                required: false,
+            },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'update:selectedRecords'],
         setup(props, { emit }) {
             const { modelValue, disabledKeys, selectedRecords } = useVModels(
                 props,
@@ -207,6 +229,7 @@
                 groupId,
                 excludeMe,
                 showLoggedInUser,
+                showInvitedUsers,
             } = toRefs(props)
             const localValue = ref(modelValue.value)
             const allUsers = ref({}) // map of all users (userId: userRecord)
@@ -230,6 +253,7 @@
             } = useFacetUsers({
                 groupId,
                 excludeMe: excludeMe.value,
+                showInvitedUsers: showInvitedUsers.value,
             })
 
             watch(
@@ -337,7 +361,7 @@
             const totalActiveUsers = ref(0)
 
             onMounted(() => {
-                /**filterTotal is the fiterRecord value from response (we need to add filter to get only active users), it'll change everytime someone searches - so saving it in totalActiveUsers for the first time we fetch the users assuming no searchText would be present at that point and we'll get active users count. */
+                /** filterTotal is the fiterRecord value from response (we need to add filter to get only active users), it'll change everytime someone searches - so saving it in totalActiveUsers for the first time we fetch the users assuming no searchText would be present at that point and we'll get active users count. */
                 watchOnce(filterTotal, (v) => {
                     if (filterTotal.value) {
                         totalActiveUsers.value = filterTotal.value
@@ -366,3 +390,11 @@
         },
     })
 </script>
+<style lang="less" scoped>
+    .user-name-facet-owner {
+        max-width: 125px;
+    }
+    .user-name-facet-owner-verified {
+        max-width: 180px;
+    }
+</style>

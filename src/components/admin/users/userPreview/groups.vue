@@ -34,7 +34,7 @@
                     <AtlanButton2
                         color="secondary"
                         label="Add to groups"
-                        prefixIcon="Add"
+                        prefix-icon="Add"
                     />
                 </a-popover>
             </div>
@@ -204,6 +204,7 @@
     import map from '~/constant/accessControl/map'
     import OwnerFacets from '@/common/facet/owners/index.vue'
     import AtlanButton from '@/UI/button.vue'
+    import { useUserPreview } from '~/composables/user/showUserPreview'
 
     export default defineComponent({
         name: 'UserPreviewGroups',
@@ -222,6 +223,7 @@
             },
         },
         setup(props) {
+            const { userUpdated } = useUserPreview()
             const { selectedUser } = toRefs(props)
             const showUserGroups = ref(true)
             const showGroupsPopover = ref(false)
@@ -307,6 +309,7 @@
                                 !addError.value &&
                                 !addLoading.value
                             ) {
+                                userUpdated.value = true
                                 offset.value = 0
                                 getUserGroupList()
                                 message.success('User added to groups')
@@ -384,6 +387,7 @@
                                     !error.value &&
                                     !isLoading.value
                                 ) {
+                                    userUpdated.value = true
                                     offset.value = 0
                                     getUserGroupList()
                                     message.success({

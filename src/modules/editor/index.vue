@@ -125,7 +125,7 @@
                 editable: isEditMode.value,
                 editorProps: {
                     attributes: {
-                        class: 'prose prose-sm w-full h-full break-all',
+                        class: 'prose prose-sm w-full h-full',
                         'data-asset-type': assetType.value,
                     },
                 },

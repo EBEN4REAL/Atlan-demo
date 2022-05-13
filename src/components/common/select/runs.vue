@@ -1,26 +1,27 @@
 <template>
     <a-select
-        placeholder="Select a run"
         v-model:value="selectedValue"
-        :allowClear="false"
-        :showSearch="true"
-        :filterOption="false"
+        :allow-clear="false"
+        :show-search="true"
+        :filter-option="false"
+        :get-popup-container="(target) => target.parentNode"
+        not-found-content="No runs found"
+        :class="$style.runSelector"
+        placeholder="Select a run"
         @search="handleSearch"
         @change="handleChange"
-        :get-popup-container="(target) => target.parentNode"
-        notFoundContent="No runs found"
     >
         <template #suffixIcon>
-            <AtlanIcon icon="CaretDown" class="mb-1" />
+            <AtlanIcon icon="CaretDown" class="" />
         </template>
         <template v-for="item in list" :key="item.metadata?.name">
             <a-select-option :value="item.metadata?.name">
-                <div class="flex flex-col">
-                    <div class="flex items-center mb-0">
-                        <div
-                            class="w-4 h-4 p-1 mr-1 bg-gray-200 rounded shadow"
-                            :class="getRunClass(item)"
-                        ></div>
+                <div class="flex flex-col overflow-x-hidden">
+                    <div class="flex items-center mb-0 truncate gap-x-1">
+                        <AtlanIcon
+                            :icon="getRunIconByPhase(item)"
+                            class="mb-0.5"
+                        />
 
                         {{ startedAt(item, false) }}
                     </div>
@@ -41,7 +42,7 @@
     import { until, useVModels } from '@vueuse/core'
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import { useRunDiscoverList } from '~/workflows/composables/package/useRunDiscoverList'
-    import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
+    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import Ellipsis from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
@@ -145,7 +146,7 @@
             const {
                 creationTimestamp,
                 isCronRun,
-                getRunClass,
+                getRunIconByPhase,
                 getRunTooltip,
                 phase,
                 finishedAt,
@@ -167,7 +168,7 @@
                 name,
                 creationTimestamp,
                 isCronRun,
-                getRunClass,
+                getRunIconByPhase,
                 getRunTooltip,
                 phase,
                 finishedAt,
@@ -181,4 +182,13 @@
     })
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" module>
+    .runSelector {
+        @apply rounded-lg;
+        box-shadow: none;
+        :global(.ant-select-selector) {
+            @apply rounded-lg border-new-gray-300 !important;
+            box-shadow: 0px 1px 0px 0px #0000000d;
+        }
+    }
+</style>

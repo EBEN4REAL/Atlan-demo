@@ -400,7 +400,9 @@
                             'LookerQuery',
                             'SalesforceOrganization',
                         ].includes(selectedAsset?.typeName)) ||
-                    ['Schema'].includes(selectedAsset?.typeName)
+                    ['Schema', 'ColumnProcess', 'BIProcess'].includes(
+                        selectedAsset?.typeName
+                    )
                 "
                 class="flex px-5"
             >
@@ -681,9 +683,10 @@
                     name="fade"
                 >
                     <Suggestion
-                        class="mt-2"
+                        class="mx-4 mt-2"
                         @apply="handleApplySuggestion"
                         :button-between="false"
+                        :asset="selectedAsset"
                         :edit-permission="editPermission"
                         :list="similarList('description')"
                     ></Suggestion>
@@ -976,7 +979,6 @@
                     )
                 "
                 :selected-asset="selectedAsset"
-                class="px-5"
                 :edit-permission="editPermission"
                 :allow-delete="editPermission"
                 :is-drawer="isDrawer"
@@ -1207,7 +1209,7 @@
                 handleSQLQueryUpdate,
             } = updateAssetAttributes(selectedAsset, isDrawer.value)
 
-            const limit = ref(20)
+            const limit = ref(0)
             const offset = ref(0)
             const facets = ref({
                 typeNames: [selectedAsset.value.typeName],

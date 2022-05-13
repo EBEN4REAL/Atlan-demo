@@ -63,7 +63,7 @@
                                 <AtlanIcon
                                     v-else
                                     class="w-4 h-4 ml-0.5"
-                                    :icon="'NoAvatar'"
+                                    icon="NoAvatar"
                                 ></AtlanIcon>
                             </div>
                             <a-popover
@@ -76,14 +76,11 @@
                                 class="w-full mt-3 -ml-6 border-gray-300 rounded-lg box-shadow focus:border-primary-focus focus:border-2 focus:outline-none"
                             >
                                 <template #content>
-                                    <Picker
-                                        :data="emojiIndex"
-                                        set="apple"
-                                        auto-focus
-                                        :show-preview="false"
-                                        :emoji-tooltip="false"
-                                        :infinite-scroll="true"
+                                    <IconPicker
+                                        :emoji="selectedEmoji"
+                                        picker-element-id="create-collection-emoji-picker"
                                         @select="handleEmojiSelect"
+                                        @remove="handleEmojiRemove"
                                     />
                                 </template>
                             </a-popover>
@@ -264,7 +261,6 @@
 </template>
 
 <script lang="ts">
-    import emojiData from 'emoji-mart-vue-fast/data/apple.json'
     import {
         inject,
         defineComponent,
@@ -278,11 +274,9 @@
         computed,
         toRaw,
     } from 'vue'
-    import { Picker, EmojiIndex } from 'emoji-mart-vue-fast/src'
     import Tooltip from '@common/ellipsis/index.vue'
     import AtlanBtn from '~/components/UI/button.vue'
     import UserSelectWidget from '~/components/common/input/owner/index.vue'
-    import 'emoji-mart-vue-fast/css/emoji-mart.css'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import useQueryCollection from '~/components/insights/explorers/queries/composables/useQueryCollection'
     import { EditorState } from 'prosemirror-state'
@@ -291,18 +285,16 @@
     import UserList from './userList.vue'
     import PermissionType from './permissionType.vue'
     import UserItem from './userItem.vue'
-    import Owners from './owner.vue'
+    import Owners from '~/components/common/collection/owner.vue'
     import whoami from '~/composables/user/whoami'
     import Avatar from '~/components/common/avatar/index.vue'
-
-    const emojiIndex = new EmojiIndex(emojiData)
+    import IconPicker from '~/components/common/IconPicker/IconPicker.vue'
 
     export default defineComponent({
         name: 'CreateCollectionModal',
         components: {
             AtlanBtn,
             UserSelectWidget,
-            Picker,
             AtlanIcon,
             Popover,
             UserList,
@@ -311,6 +303,7 @@
             Owners,
             Avatar,
             Tooltip,
+            IconPicker,
         },
         props: {
             showCollectionModal: {
@@ -434,14 +427,18 @@
 
             const { createCollection, updateCollection } = useQueryCollection()
 
-            const handleEmojiSelect = (emoji) => {
-                selectedEmoji.value = emoji.native
-                toggleEmojiPicker()
-                console.log('emoji data', emoji)
-            }
-
             const toggleEmojiPicker = () => {
                 popOverVisible.value = !popOverVisible.value
+            }
+
+            const handleEmojiSelect = ({ native }) => {
+                selectedEmoji.value = native
+                toggleEmojiPicker()
+            }
+
+            const handleEmojiRemove = () => {
+                selectedEmoji.value = null
+                toggleEmojiPicker()
             }
 
             onMounted(async () => {
@@ -663,8 +660,8 @@
                 isShareable,
                 // editors,
                 // viewers,
-                emojiIndex,
                 handleEmojiSelect,
+                handleEmojiRemove,
                 popOverVisible,
                 toggleEmojiPicker,
                 selectedEmoji,

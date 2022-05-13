@@ -1,6 +1,12 @@
 import { useStorage } from '@vueuse/core'
 
 export const state = {
+    preferences: useStorage('lin_preferences', {
+        showArrow: true,
+        showSchema: true,
+        showAnnouncement: true,
+        showLegend: false,
+    }),
     cyclicRelations: useStorage('lin_cyclic_relations', []),
     portToSelect: useStorage('lin_port_qn_to_select', {}),
     mergedLineageData: useStorage('lin_merged_lineage_data', {}),

@@ -87,6 +87,28 @@
                                     </div>
 
                                     <Tooltip
+                                        v-if="
+                                            [
+                                                'process',
+                                                'columnprocess',
+                                                'biprocess',
+                                            ].includes(
+                                                item.typeName?.toLowerCase()
+                                            )
+                                        "
+                                        :clamp-percentage="
+                                            assetNameTruncatePercentage
+                                        "
+                                        :tooltip-text="`${title(item)}`"
+                                        :classes="
+                                            isScrubbed(item)
+                                                ? 'mb-0 font-semibold text-gray-500 opacity-80 tracking-wide'
+                                                : 'font-bold mb-0 text-gray-500 tracking-wide'
+                                        "
+                                    />
+
+                                    <Tooltip
+                                        v-else
                                         :clamp-percentage="
                                             assetNameTruncatePercentage
                                         "
@@ -549,7 +571,10 @@
 
                                                     {{ databaseName(item) }}
                                                 </div>
-                                                <div class="pl-3 font-bold">
+                                                <div
+                                                    v-if="page === 'assets'"
+                                                    class="pl-3 font-bold"
+                                                >
                                                     <a-button
                                                         shape="circle"
                                                         type="dashed"
@@ -592,7 +617,10 @@
 
                                                     {{ schemaName(item) }}
                                                 </div>
-                                                <div class="pl-3 font-bold">
+                                                <div
+                                                    v-if="page === 'assets'"
+                                                    class="pl-3 font-bold"
+                                                >
                                                     <a-button
                                                         shape="circle"
                                                         type="dashed"
@@ -1144,7 +1172,7 @@
                             <div class="flex flex-wrap items-center gap-x-1">
                                 <div
                                     v-if="
-                                        clsfList.length > 0 &&
+                                        clsfList?.length > 0 &&
                                         preference?.display?.includes(
                                             'classifications'
                                         )

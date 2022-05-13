@@ -1,102 +1,207 @@
 <template>
-    <div class="run-list-item">
-        <div class="flex flex-col items-start col-span-5 text-gray-500 gap-y-1">
-            <span class="text-xs">{{ run.metadata.name }}</span>
-            <div class="flex items-center gap-x-2">
-                <span class="font-medium text-primary">{{
-                    startedAt(run, false)
-                }}</span>
-                <template v-if="isCronRun(run)">
-                    <AtlanIcon icon="Schedule" class="ml-1 text-success" />
-                    <span>Scheduled Run</span>
-                </template>
-                <template v-else>
-                    <span>Manual Run by</span>
-                    <span
-                        class="cursor-pointer hover:underline"
-                        @click="() => openUserSidebar(creatorUsername(run))"
+    <div
+        class="border-b border-gray-300 run-list-item hover:bg-primary-menu text-new-gray-800 group"
+        @click="
+            $router.push(
+                `/workflows/profile/${workflowTemplateName(
+                    run
+                )}/runs?name=${name(run)}`
+            )
+        "
+    >
+        <div class="flex items-center col-span-4 text-new-gray-600 gap-x-3">
+            <PackageIcon :package="pkg" />
+            <div class="overflow-x-hidden">
+                <router-link
+                    :to="`/workflows/profile/${workflowTemplateName(
+                        run
+                    )}/runs?name=${name(run)}`"
+                >
+                    <p
+                        class="text-sm font-bold truncate text-new-gray-700 group-hover:underline"
                     >
-                        <img
-                            v-if="showCreatorImage"
-                            :src="avatarUrl(creatorUsername(run))"
-                            class="flex-none inline-block h-4 rounded-full"
-                            @error="showCreatorImage = false"
+                        {{ pkgName(pkg) || name(run) }}
+                        <AtlanIcon
+                            v-if="dName"
+                            icon="CaretRight"
+                            class="-ml-1 -mr-0.5 mb-0.5"
                         />
-                        {{ creatorUsername(run) }}
-                    </span>
-                </template>
+                        {{ dName }}
+                    </p>
+                </router-link>
+                <div
+                    class="flex items-center mt-1 overflow-hidden flex-nowrap gap-x-1"
+                >
+                    <template v-if="isCronRun(run)">
+                        <span class="lg:whitespace-nowrap">Scheduled Run</span>
+                        <AtlanIcon icon="Schedule" class="mx-1 text-success" />
+                        <span
+                            class="text-sm truncate text-new-gray-800 lg:whitespace-nowrap"
+                            :title="cronString(workflow) || 'No info'"
+                            >{{ cronString(workflow) || 'No info' }}</span
+                        >
+                    </template>
+                    <template v-else>
+                        <span class="lg:whitespace-nowrap">Manual Run by</span>
+                        <UserWrapper
+                            :username="creatorUsername(run)"
+                            @click.stop=""
+                        />
+                    </template>
+                </div>
             </div>
         </div>
+
         <div class="flex items-center justify-center col-span-1">
             <span
-                class="text-xs font-bold tracking-wider uppercase rounded"
-                style="padding: 3px 8px 1px"
-                :class="[getRunTextClass(run), getRunClass(run)]"
-                >{{ run.status.phase }}
+                class="status-badge"
+                style="padding: 7px 12px 5px"
+                :class="[getRunTextClass(run), getRunClassBgLight(run)]"
+            >
+                <div class="dot" :class="getRunClassBg(run)" />
+                {{ runStatusMap[run.status.phase]?.label || run.status.phase }}
             </span>
         </div>
+
+        <!-- <div class="col-span-1 truncate text-new-gray-600">
+                <template v-if="isCronRun(run)">
+                    <p class="lg:whitespace-nowrap">Scheduled Run</p>
+                    <div class="flex items-center overflow-hidden flex-nowrap">
+                        <AtlanIcon icon="Schedule" class="mr-1 text-success" />
+                        <span
+                            class="text-sm truncate text-new-gray-800 lg:whitespace-nowrap"
+                            :title="cronString(workflow) || 'No info'"
+                            >{{ cronString(workflow) || 'No info' }}</span
+                        >
+                    </div>
+                </template>
+                <template v-else>
+                    <p class="lg:whitespace-nowrap">Manual Run by</p>
+                    <UserWrapper
+                        class="flex items-center flex-nowrap gap-x-1"
+                        :username="creatorUsername(run)"
+                        @click.stop
+                    />
+                </template>
+            </div> -->
+
         <a-tooltip :title="startedAt(run, false)">
-            <div class="col-span-1">{{ startedAt(run, true) }}</div>
+            <div class="flex items-center justify-end col-span-1">
+                <span>{{ startedAt(run, true) }}</span>
+            </div>
         </a-tooltip>
 
-        <div class="col-span-1">{{ duration(run) }}</div>
-        <!-- <div class="col-span-2">Output</div> -->
+        <div class="flex items-center justify-end col-span-1 gap-x-4">
+            <span>{{ duration(run) }}</span>
+        </div>
+        <div class="flex justify-center col-span-1">
+            <IconButton
+                icon="ArrowRight"
+                class="-mr-12 opacity-0 group-hover:opacity-100 text-primary"
+            />
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref } from 'vue'
+    import { computed, defineComponent, PropType, toRefs } from 'vue'
     import { LiveRun } from '~/types/workflow/runs.interface'
-    import { useUserPreview } from '~/composables/user/showUserPreview'
+    import { runStatusMap } from '~/workflowsv2/constants/maps'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
-    import { avatarUrl } from '~/composables/user/useUsers'
+
+    import { useWorkflowStore } from '~/workflowsv2/store'
+    import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
+    import UserWrapper from '~/workflowsv2/components/common/user.vue'
+    import PackageIcon from '~/workflowsv2/components/common/packageIcon.vue'
 
     export default defineComponent({
         name: 'RunListItem',
-        components: {},
+        components: { UserWrapper, PackageIcon },
         props: {
             run: {
                 type: Object as PropType<LiveRun>,
                 required: true,
             },
+            workflow: {
+                type: Object,
+                default: () => ({}),
+            },
+            wfLoading: {
+                type: Boolean,
+                default: () => false,
+            },
         },
         emits: [],
-        setup() {
+        setup(props) {
+            const { workflow } = toRefs(props)
+            const workflowStore = useWorkflowStore()
+
             const {
+                displayName,
                 getRunTextClass,
-                getRunClass,
+                getRunClassBgLight,
+                getRunClassBg,
                 duration,
                 startedAt,
                 creatorUsername,
                 cronString,
                 isCronRun,
+                workflowTemplateName,
+                packageName,
+                name,
             } = useWorkflowInfo()
 
-            const { openUserSidebar } = useUserPreview()
+            const { name: pkgName } = usePackageInfo()
 
-            const showCreatorImage = ref(true)
+            const pkg = computed(() => {
+                const pkgId = packageName(workflow.value)
+                return pkgId ? workflowStore.packageMeta?.[pkgId] : {}
+            })
+
+            const dName = computed(() =>
+                displayName(
+                    pkg.value,
+                    name(workflow.value),
+                    workflow.value?.spec
+                )
+            )
 
             return {
                 getRunTextClass,
-                getRunClass,
+                getRunClassBgLight,
+                getRunClassBg,
                 duration,
                 startedAt,
                 creatorUsername,
                 cronString,
                 isCronRun,
-                useUserPreview,
-                avatarUrl,
-                openUserSidebar,
-                showCreatorImage,
+                workflowTemplateName,
+                runStatusMap,
+                pkg,
+                name,
+                dName,
+                pkgName,
             }
         },
     })
 </script>
 <style lang="less" scoped>
     .run-list-item {
-        height: 70px;
-        @apply px-3;
-        @apply grid grid-cols-8 items-center;
+        padding: 14px 16px 14px 16px;
+        @apply cursor-pointer;
+        @apply grid grid-cols-8 items-center gap-x-4;
         @apply text-sm;
+    }
+    .status-badge {
+        @apply flex items-center;
+        @apply text-xs font-bold tracking-wider uppercase;
+        @apply rounded-full;
+    }
+    .dot {
+        height: 8px;
+        width: 8px;
+        border-radius: 50%;
+        margin-bottom: 2px;
+        margin-right: 6px;
     }
 </style>

@@ -1,8 +1,15 @@
+/** VUE */
 import { computed, ref } from 'vue'
+
+/** PACKAGES */
 import bodybuilder from 'bodybuilder'
+
+/** CONSTANTS */
 import { assetInterface } from '~/types/assets/asset.interface'
-import useIndexSearch from '~/composables/discovery/useIndexSearch'
 import { LineageAttributesPortLevel } from '~/constant/projection'
+
+/** COMPOSABLES */
+import useIndexSearch from '~/composables/discovery/useIndexSearch'
 
 export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
     const portTypeNameMap = {
@@ -10,12 +17,16 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
         View: 'Column',
         MaterialisedView: 'Column',
         TableauDatasource: ['TableauDatasourceField', 'TableauCalculatedField'],
+        // LookerExplore: 'LookerField',
+        // LookerView: 'LookerField',
     }
     const nodeTypeNameMap = {
-        Table: 'Table',
-        View: 'View',
-        MaterialisedView: 'View',
-        TableauDatasource: 'Datasource',
+        Table: 'table',
+        View: 'view',
+        MaterialisedView: 'view',
+        TableauDatasource: 'datasource',
+        // LookerExplore: 'lookerExplore',
+        // LookerView: 'lookerView',
     }
     const base = bodybuilder()
     const attributes = LineageAttributesPortLevel
@@ -43,13 +54,12 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
         },
         {
             id: 'parent',
-            key: `${nodeTypeNameMap[typeName].toLowerCase()}QualifiedName`,
+            key: `${nodeTypeNameMap[typeName]}QualifiedName`,
             value: qualifiedName,
             type: 'must',
-            prop:
-                typeName === 'TableauDatasource'
-                    ? 'match_phrase_prefix'
-                    : 'term',
+            prop: ['Table', 'View', 'MaterialisedView'].includes(typeName)
+                ? 'term'
+                : 'match_phrase_prefix',
         },
     ]
 

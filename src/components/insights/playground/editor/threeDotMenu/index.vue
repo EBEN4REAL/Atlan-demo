@@ -31,11 +31,11 @@
                 <a-menu
                     style="
                         min-width: 264px;
-                        margin-right: 10px !important;
+                        margin-right: 4px !important;
                         margin-top: 2px !important;
                     "
                     :class="$style.menu_class"
-                    class="py-2"
+                    class="py-1"
                 >
                     <a-sub-menu key="themes" v-if="!showVQB">
                         <template #title>

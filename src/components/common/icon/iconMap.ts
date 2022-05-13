@@ -66,6 +66,7 @@ import ViewDraft from '~/assets/images/icons/view_draft.svg'
 import ViewVerified from '~/assets/images/icons/view_verified.svg'
 import ViewGray from '~/assets/images/icons/view-gray.svg'
 import Connection from '~/assets/images/icons/connection.svg'
+import Process from '~/assets/images/icons/process.svg'
 import ChevronRight from '~/assets/images/icons/chevron-right.svg'
 import Union from '~/assets/images/icons/union.svg'
 import AddUser from '~/assets/images/icons/add-user.svg'
@@ -197,6 +198,7 @@ import ExplorerTriggerFilled from '~/assets/images/icons/explorer-trigger-filled
 import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
 import EmptyResult from '~/assets/images/icons/empty_result.svg'
 import Schedule from '~/assets/images/icons/schedule.svg'
+import Unscheduled from '~/assets/images/icons/unscheduled.svg'
 import Minimap from '~/assets/images/icons/minimap.svg'
 import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
 import Minus from '~/assets/images/icons/minus.svg'
@@ -300,7 +302,7 @@ import EmptyLogs from '~/assets/images/workflows/empty-logs-state.svg'
 import WarningIcon from '~/assets/images/icons/warning.svg'
 
 import Download from '~/assets/images/icons/download.svg'
-import Upload from '~/assets/images/icons/upload.svg'
+import Upload from '~/assets/images/icons/upload2.svg'
 import Enum from '~/assets/images/icons/label.svg'
 import Boolean from '~/assets/images/dataType/boolean.svg'
 import String from '~/assets/images/dataType/string.svg'
@@ -387,6 +389,7 @@ import NoSelectedAsset from '~/assets/images/icons/noSelectedAsset.svg'
 import QueryGrey from '~/assets/images/icons/query-grey.svg'
 import QueryDiscovery from '~/assets/images/icons/query_discovery.svg'
 import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
+import NoSearchResultsQuery from '~/assets/images/illustrations/Illustration_no_search_results_query.svg'
 import SetContext from '~/assets/images/icons/setContext.svg'
 import CollectionHeader from '~/assets/images/insights/collection/header.svg'
 import CollectionBody from '~/assets/images/insights/collection/body.svg'
@@ -412,6 +415,8 @@ import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
 import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
 import VqbDraft from '~/assets/images/icons/VqbDraft.svg'
 import Clock from '~/assets/images/icons/clock.svg'
+import ClockStart from '~/assets/images/icons/clock-start.svg'
+import ClockStop from '~/assets/images/icons/clock-stop.svg'
 import Mail from '~/assets/images/icons/mail.svg'
 import Collapsed from '~/assets/images/icons/Collapsed.svg'
 
@@ -442,6 +447,7 @@ import Comment from '~/assets/images/icons/Comment.svg'
 import Resources2 from '~/assets/images/illustrations/resources/resources.svg'
 import RunningQuery from '~/assets/images/icons/tabs/Running.svg'
 import FailedQuery from '~/assets/images/icons/tabs/Error.svg'
+import SlackTabEmpty from '~/assets/images/illustrations/empty_slack_tab.svg'
 import SuccessQuery from '~/assets/images/icons/tabs/success-check.svg'
 import QuestionRound from '~/assets/images/icons/question-round.svg'
 import QuestionRoundSmall from '~/assets/images/icons/question-round-small.svg'
@@ -468,8 +474,17 @@ import QueryOutputFail from '~/assets/images/icons/query_output_fail.svg'
 import QueryOutputNeutral from '~/assets/images/icons/query_output_neutral.svg'
 import PreviewQuery from '~/assets/images/icons/preview.svg'
 import Trident from '~/assets/images/icons/trident.svg'
+import EmptyUploads from '~/assets/images/icons/empty-uploads.svg'
+import CommonError1 from '~/assets/images/icons/common-error-1.svg'
+import CommonError2 from '~/assets/images/icons/common-error-2.svg'
+import CommonError3 from '~/assets/images/icons/common-error-3.svg'
+import CommonError4 from '~/assets/images/icons/common-error-4.svg'
+import CSVLogo from '~/assets/images/icons/csv-logo.svg'
+import PaperClip from '~/assets/images/icons/paper-clip.svg'
 
 export default {
+    NoSearchResultsQuery,
+    SlackTabEmpty,
     PreviewQuery,
     QueryOutputFail,
     QueryOutputNeutral,
@@ -625,6 +640,7 @@ export default {
     NotificationDot,
     ArrowDown,
     Connection,
+    Process,
     ChevronRight,
     NoRelevantAsset,
     NoAssetOrganization,
@@ -712,6 +728,7 @@ export default {
     EmptyResult,
     Flash,
     Schedule,
+    Unscheduled,
     Minimap,
     FullScreenBoth,
     Minus,
@@ -870,6 +887,8 @@ export default {
     VqbDeprecated,
     VqbDraft,
     Clock,
+    ClockStart,
+    ClockStop,
     ClassificationShield,
     ClassificationAtlan,
     ClassificationPropagated,
@@ -919,4 +938,11 @@ export default {
     Package,
     Display,
     Trident,
+    EmptyUploads,
+    CommonError1,
+    CommonError2,
+    CommonError3,
+    CommonError4,
+    CSVLogo,
+    PaperClip,
 }

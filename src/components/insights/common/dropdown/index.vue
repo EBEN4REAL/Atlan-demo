@@ -4,8 +4,8 @@
 
         <template #overlay>
             <a-menu
-                class="py-2 text-gray-700"
-                style="min-width: 180px"
+                class="py-1 text-gray-700"
+                :style="`min-width: ${minWidth}px`"
                 @visibleChange="addBackground"
             >
                 <!-- <a-menu-item
@@ -133,10 +133,15 @@
                 default: () => 'click',
                 required: false,
             },
+            minWidth: {
+                type: String,
+                required: false,
+                default: () => '180',
+            },
         },
         emits: ['addBackground', 'visibleChange'],
         setup(props, { emit }) {
-            const { options, item, placement, trigger } = props
+            const { options, item, placement, trigger, minWidth } = props
 
             const handleMenuItemClick = (option: any) => {
                 option.handleClick(option)
@@ -156,6 +161,7 @@
                 addBackground,
                 handleMenuItemClick,
                 placement,
+                minWidth,
             }
         },
     })

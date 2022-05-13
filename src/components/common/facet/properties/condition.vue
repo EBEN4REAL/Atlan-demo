@@ -42,6 +42,7 @@
                 :multiple="
                     attribute?.options?.multiValueSelect === 'true' && false
                 "
+                :max="200"
                 :operator="localCondition.operator"
                 @change="handleValueChange"
             />

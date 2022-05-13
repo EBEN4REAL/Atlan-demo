@@ -21,6 +21,7 @@ import {
     identifyGroup,
     identifyUser,
 } from './composables/eventTracking/useAddEvent'
+import useTenant from '~/composables/tenant/useTenant'
 
 const app = createApp(App)
 app.use(createPinia())
@@ -115,6 +116,8 @@ keycloak
             }, 6000)
             inputFocusDirective(app)
             authDirective(app)
+            const { mutate } = useTenant(false)
+            await mutate()
             app.use(router).mount('#app')
             const redirectUrl = localStorage.getItem('redirectURL')
             if (redirectUrl) {

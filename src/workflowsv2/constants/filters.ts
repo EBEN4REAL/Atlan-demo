@@ -87,7 +87,7 @@ export const dateRanges = [
             `Runs created since/${dayjs().subtract(1, 'day').format('D MMM YYYY HH:mm [(GMT] Z[)]')}`,
     },
     {
-        label: 'Last 2 Days',
+        label: 'Last 2D',
         value: {
             gt: dayjs().subtract(2, 'day').valueOf(),
         },

@@ -14,7 +14,7 @@
                 style="background-color: #f9fafc"
             >
                 <div class="flex px-5 py-3 mb-2 bg-white gap-x-3">
-                    <div class="flex flex-col w-full">
+                    <div class="flex flex-col w-full gap-y-4">
                         <div class="flex items-center justify-between w-full">
                             <div>
                                 <p class="mb-1 info-title">Status</p>
@@ -53,11 +53,23 @@
                                 @click="handleRetry"
                             />
                         </div>
+                        <div
+                            v-if="
+                                ['Failed', 'Error'].includes(
+                                    phase(selectedRun)
+                                ) && statusMessage(selectedRun)
+                            "
+                        >
+                            <p class="mb-1 info-title">Message</p>
+                            <span class="">
+                                {{ statusMessage(selectedRun) }}
+                            </span>
+                        </div>
                         <button
                             v-if="
                                 ['Failed', 'Error'].includes(phase(selectedRun))
                             "
-                            class="flex items-center justify-center py-2 mt-4 font-bold transition-colors rounded gap-x-1 text-new-red-400 bg-new-red-200 bg-opacity-20 hover:bg-opacity-30"
+                            class="flex items-center justify-center py-2 font-bold transition-colors rounded gap-x-1 text-new-red-400 bg-new-red-200 bg-opacity-20 hover:bg-opacity-30"
                             @click="activeKey = 'failed'"
                         >
                             View Failed tasks
@@ -248,6 +260,18 @@
                             {{ selectedPod?.name }}
                         </div>
                     </div>
+                    <div
+                        v-if="
+                            ['Failed', 'Error'].includes(selectedPod?.phase) &&
+                            selectedPod?.message
+                        "
+                        class="flex flex-col"
+                    >
+                        <p class="info-title">Message</p>
+                        <div class="mb-2 text-gray-700">
+                            {{ selectedPod.message }}
+                        </div>
+                    </div>
                     <div class="flex flex-col">
                         <p class="info-title">Started At</p>
                         <p class="mb-2 text-gray-700">
@@ -334,6 +358,7 @@
 
             const {
                 phase,
+                message: statusMessage,
                 startedAt,
                 finishedAt,
                 duration,
@@ -472,6 +497,7 @@
                 startedAt,
                 finishedAt,
                 duration,
+                statusMessage,
                 selectedRun,
                 activeKey,
                 name,

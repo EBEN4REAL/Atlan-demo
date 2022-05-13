@@ -58,6 +58,14 @@ export default function useWorkflowInfo() {
         return item.status?.phase
     }
 
+    const message = (run, node?: string) => {
+        if (node) {
+            const status = run?.status?.nodes[node]
+            return status?.message
+        }
+        return run.status?.message
+    }
+
     const allowSchedule = (item: any) => {
         if (
             item?.metadata?.annotations && item?.metadata?.annotations[
@@ -425,6 +433,7 @@ export default function useWorkflowInfo() {
         creationTimestamp,
         labels,
         phase,
+        message,
         startedAt,
         finishedAt,
         podFinishedAt,

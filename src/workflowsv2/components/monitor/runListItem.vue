@@ -41,19 +41,26 @@
                         {{ dName }}
                     </p>
                 </router-link>
-                <template v-else>
+                <div v-else class="flex items-center gap-x-2">
                     <p
-                        class="text-sm font-bold truncate cursor-not-allowed text-new-gray-500"
+                        class="text-sm font-bold truncate cursor-not-allowed text-new-gray-400"
                     >
                         {{ pkgName(pkg) || name(run) }}
+
                         <AtlanIcon
                             v-if="dName"
                             icon="CaretRight"
                             class="-ml-1 -mr-0.5 mb-0.5"
                         />
-                        {{ dName }}
+                        {{ dName }} {{ dName }}
                     </p>
-                </template>
+                    <span
+                        v-if="connectionDeleted"
+                        class="p-1 text-xs font-semibold tracking-wider text-gray-400 uppercase border border-gray-300 rounded whitespace-nowrap"
+                    >
+                        Connection Deleted
+                    </span>
+                </div>
                 <div
                     class="flex items-center mt-1 overflow-hidden flex-nowrap gap-x-1"
                 >
@@ -79,14 +86,6 @@
 
         <div class="flex items-center justify-center col-span-1">
             <span
-                v-if="connectionDeleted"
-                class="text-gray-500 bg-gray-200 status-badge whitespace-nowrap"
-                style="padding: 7px 12px 5px"
-            >
-                Connection Deleted
-            </span>
-            <span
-                v-else
                 class="status-badge"
                 style="padding: 7px 12px 5px"
                 :class="[getRunTextClass(run), getRunClassBgLight(run)]"

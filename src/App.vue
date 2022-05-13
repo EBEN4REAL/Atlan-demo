@@ -6,8 +6,6 @@
     import { defineComponent, ref, watch, inject, computed } from 'vue'
     import { useI18n } from 'vue-i18n'
     import useTypedefs from '~/composables/typedefs/useTypedefs'
-
-    import useTenant from '~/composables/tenant/useTenant'
     import { useConnection } from '~/composables/connection/useConnection'
     import useIntegration from '~/composables/integrations/useIntegrations'
     import usePermissions from '~/composables/auth/usePermissions'
@@ -33,7 +31,8 @@
                 usePermissions()
 
                 // tenant
-                useTenant()
+                // ? this habe be been moved to load before app mount
+                // useTenant()
 
                 // typedefs
                 useTypedefs()

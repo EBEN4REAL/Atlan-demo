@@ -170,7 +170,7 @@
     }
 
     const handleCtaClick = () => {
-        if (!activeInlineTab.value.isSaved) {
+        if (!activeInlineTab.value.queryId) {
             showSaveQueryModal.value = true
             return
         }

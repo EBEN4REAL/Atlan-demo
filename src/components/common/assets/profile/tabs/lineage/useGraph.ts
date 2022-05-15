@@ -47,7 +47,7 @@ import {
     percent,
     tableauCalculatedField,
     tableauDatasourceField,
-    lookerField,
+    // lookerField,
 } from './icons'
 
 interface EdgeStyle {
@@ -153,13 +153,17 @@ export default function useGraph(graph) {
             isHighlightedNode: false,
             isGrayed: false,
             highlightPorts: [],
-            hiddenCount: 0,
+            mode: '',
+            modeId: '',
+            count: 0,
+            hiddenEntities: [],
             ctaRightIcon: '',
             ctaRightId: '',
             ctaRightLoading: false,
             ctaLeftIcon: '',
             ctaLeftId: '',
             ctaLeftLoading: false,
+            disableCta: false,
             ...dataObj,
         }
 
@@ -177,9 +181,7 @@ export default function useGraph(graph) {
             html: {
                 render(node) {
                     const data = node.getData() as any
-                    const totalHidden = isVpNode
-                        ? data?.hiddenCount || entity.attributes.hiddenCount
-                        : 0
+                    const totalHidden = isVpNode ? data?.count : 0
 
                     const portsList = () => {
                         let res = ''
@@ -375,7 +377,7 @@ export default function useGraph(graph) {
                                 </div>
                             </div>
                             ${
-                                data?.ctaLeftIcon
+                                data?.ctaLeftIcon && !data?.disableCta
                                     ? `<div isctaleft="${
                                           data?.ctaLeftId
                                       }" class="ctaLeft">
@@ -390,7 +392,7 @@ export default function useGraph(graph) {
                                     : ''
                             }
                             ${
-                                data?.ctaRightIcon
+                                data?.ctaRightIcon && !data?.disableCta
                                     ? `<div isctaright="${
                                           data?.ctaRightId
                                       }" class="ctaRight">
@@ -477,7 +479,7 @@ export default function useGraph(graph) {
     }
 
     const createEdgeData = (relation, data = {}, styles: EdgeStyle = {}) => {
-        const stroke = styles?.stroke
+        const stroke = styles?.stroke || '#B2B8C7'
 
         const edgeData = {
             zIndex: 0,

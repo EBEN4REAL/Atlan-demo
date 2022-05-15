@@ -89,6 +89,10 @@ export const operators = {
             label: 'Ends With',
         },
         {
+            id: 'contains',
+            label: 'Contains',
+        },
+        {
             id: 'pattern',
             label: 'Pattern',
         },
@@ -117,6 +121,10 @@ export const operators = {
         {
             id: 'endsWith',
             label: 'Ends With',
+        },
+        {
+            id: 'contains',
+            label: 'Contains',
         },
         {
             id: 'pattern',
@@ -259,6 +267,10 @@ export const operators = {
         {
             id: 'endsWith',
             label: 'Ends With',
+        },
+        {
+            id: 'contains',
+            label: 'Contains',
         },
         {
             id: 'pattern',

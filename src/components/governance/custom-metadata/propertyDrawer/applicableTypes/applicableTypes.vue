@@ -2,7 +2,7 @@
     <CardWrapper
         title="Applicable asset types"
         icon="AssetsInactive"
-        help-text="This property will only be available for selected asset types"
+        help-text="This property will only be available for selected asset types."
     >
         <a-form-item
             :name="['options', 'customApplicableEntityTypes']"

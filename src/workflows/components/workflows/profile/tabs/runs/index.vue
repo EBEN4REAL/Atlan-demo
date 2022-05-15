@@ -2,7 +2,7 @@
     <div class="flex flex-col flex-grow h-full overflow-hidden">
         <div class="relative flex-grow overflow-hidden">
             <div
-                class="absolute z-10 flex flex-col h-full py-5 bg-white border-r border-gray-300 rounded gap-y-2"
+                class="absolute z-10 flex flex-col h-full pt-5 bg-white border-r border-gray-300 rounded gap-y-2"
             >
                 <span class="mx-5 font-bold text-new-gray-600">Select Run</span>
                 <RunsSelect

@@ -29,12 +29,12 @@ export default function useWorkflowInfo() {
 
     const creatorUsername = (item) =>
         item?.metadata?.labels[
-            'workflows.argoproj.io/creator-preferred-username'
+        'workflows.argoproj.io/creator-preferred-username'
         ] || 'argo'
 
     const modifierUsername = (item) =>
         item?.metadata?.labels[
-            'workflows.argoproj.io/modifier-preferred-username'
+        'workflows.argoproj.io/modifier-preferred-username'
         ]
 
     // const modifiedTimestamp = (item: any, relative: any) => {
@@ -58,10 +58,18 @@ export default function useWorkflowInfo() {
         return item.status?.phase
     }
 
+    const message = (run, node?: string) => {
+        if (node) {
+            const status = run?.status?.nodes[node]
+            return status?.message
+        }
+        return run.status?.message
+    }
+
     const allowSchedule = (item: any) => {
         if (
-            item.metadata?.annotations[
-                'orchestration.atlan.com/allowSchedule'
+            item?.metadata?.annotations && item?.metadata?.annotations[
+            'orchestration.atlan.com/allowSchedule'
             ] === 'false'
         ) {
             return false
@@ -137,11 +145,11 @@ export default function useWorkflowInfo() {
     }
 
     const cron = (item) => {
-        return item?.metadata?.annotations['orchestration.atlan.com/schedule']
+        return item?.metadata?.annotations && item?.metadata?.annotations['orchestration.atlan.com/schedule']
     }
 
     const cronTimezone = (item) => {
-        return item?.metadata?.annotations['orchestration.atlan.com/timezone']
+        return item?.metadata?.annotations && item?.metadata?.annotations['orchestration.atlan.com/timezone']
     }
 
     const nextRuns = (item) => {
@@ -326,11 +334,11 @@ export default function useWorkflowInfo() {
         item?.metadata?.labels['orchestration.atlan.com/type']
 
     const packageName = (item) =>
-        item?.metadata?.annotations?.['package.argoproj.io/name']
+        item?.metadata?.annotations && item?.metadata?.annotations?.['package.argoproj.io/name']
 
     const useCases = (item) => {
         let temp =
-            item?.metadata?.annotations[
+            item?.metadata?.annotations && item?.metadata?.annotations[
                 'orchestration.atlan.com/usecases'
             ]?.split(',')
 
@@ -338,9 +346,26 @@ export default function useWorkflowInfo() {
     }
 
     const supportLink = (item) =>
-        item?.metadata?.annotations['orchestration.atlan.com/supportLink']
+        item?.metadata?.annotations && item?.metadata?.annotations['orchestration.atlan.com/supportLink']
 
     const connectorStore = useConnectionStore()
+
+    const getGlobalArguments = (item) => {
+        const map = {}
+
+        if (item?.spec?.templates?.length > 0) {
+            if (item?.spec?.templates[0].dag?.tasks.length > 0) {
+                item?.spec?.templates[0].dag?.tasks[0].arguments?.parameters.forEach(
+                    (element) => {
+                        map[element.name] = element.value
+                    }
+                )
+            }
+        }
+
+        return map
+    }
+
 
     const displayName = (
         item: Record<string, any>,
@@ -358,6 +383,19 @@ export default function useWorkflowInfo() {
             }
             return suffix
         }
+        if (['miner'].includes(packageType(item))) {
+            const globalArguments = getGlobalArguments({ spec })
+            const connectionQualifiedName = globalArguments['connection-qualified-name']
+            suffix = suffix.replaceAll('-', '/')
+            const found = connectorStore.list.find(
+                (i) => i.attributes.qualifiedName === connectionQualifiedName
+            )
+            if (found) {
+                return found?.attributes.name
+            }
+            return suffix || workflowName
+        }
+
         if (packageType(item) === 'schedule-query') {
             return (
                 spec?.templates[0]?.dag?.tasks?.[0]?.arguments?.parameters?.find(
@@ -385,25 +423,9 @@ export default function useWorkflowInfo() {
         return undefined
     }
 
-    const getGlobalArguments = (item) => {
-        const map = {}
-
-        if (item?.spec?.templates?.length > 0) {
-            if (item?.spec?.templates[0].dag?.tasks.length > 0) {
-                item?.spec?.templates[0].dag?.tasks[0].arguments?.parameters.forEach(
-                    (element) => {
-                        map[element.name] = element.value
-                    }
-                )
-            }
-        }
-
-        return map
-    }
-
     const workflowTemplateName = (item) =>
         item?.metadata?.labels?.[
-            'workflows.argoproj.io/workflow-template'
+        'workflows.argoproj.io/workflow-template'
         ] as string
 
     return {
@@ -411,6 +433,7 @@ export default function useWorkflowInfo() {
         creationTimestamp,
         labels,
         phase,
+        message,
         startedAt,
         finishedAt,
         podFinishedAt,

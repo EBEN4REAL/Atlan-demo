@@ -226,7 +226,7 @@ export function entitiesToEditorKeyword(
     return new Promise((resolve) => {
         response.then((res) => {
             let entities = res.entities ?? []
-            entities = sortByContextQualifiedNames(entities)
+            // entities = sortByContextQualifiedNames(entities)
 
             let words: suggestionKeywordInterface[] = []
             let len = entities.length
@@ -449,7 +449,6 @@ const refreshBody = () => {
                                             },
                                         },
                                     ],
-                                    should: [],
                                 },
                             },
                         },
@@ -679,7 +678,7 @@ async function getSuggestionsUsingType(
                     }
                 }
 
-                body.value.dsl.query.function_score.query.bool.filter.bool.should.push(
+                body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
                     {
                         terms: {
                             tableQualifiedName: tableQualifiedNames.filter(

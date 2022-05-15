@@ -559,11 +559,13 @@ export function useBody(
                                 }
                                 if (element.operator === 'startsWith') {
                                     base.filter(
-                                        'prefix',
+                                        'wildcard',
                                         element.operand,
-                                        Array.isArray(element.value)
-                                            ? JSON.stringify(element.value)
-                                            : element.value
+                                        `${
+                                            Array.isArray(element.value)
+                                                ? JSON.stringify(element.value)
+                                                : element.value
+                                        }*`
                                     )
                                 }
                                 if (element.operator === 'endsWith') {

@@ -3,7 +3,7 @@
         <template v-for="(item, index) in list" :key="item.typeName">
             <div class="flex" style="width: 170px">
                 <AssetSelector
-                    :key="`${index}_${filter.connectionQualifiedName}`"
+                    :key="`${getKey(index)}_${filter.connectionQualifiedName}`"
                     :modelValue="asset[item.attribute]"
                     :type-name="item.typeName"
                     :filters="getFilter(index)"
@@ -27,10 +27,11 @@
         Ref,
         toRefs,
         PropType,
+        provide,
     } from 'vue'
+    import bodybuilder from 'bodybuilder'
     import { Components } from '~/types/atlas/client'
     import AssetSelector from './assetSelector.vue'
-    import bodybuilder from 'bodybuilder'
     import { usePersonaStore } from '~/store/persona'
     import { useConnectionStore } from '~/store/connection'
 
@@ -58,7 +59,7 @@
             filter: {
                 type: Object as PropType<Components.Schemas.FilterCriteria>,
                 required: false,
-                default: () => '',
+                default: () => {},
             },
             bgGrayForSelector: {
                 type: Boolean,
@@ -75,6 +76,8 @@
         emits: ['labelChange', 'change'],
         setup(props, { emit }) {
             const { connector, filter, persona } = toRefs(props)
+            const offset = ref<number>(0)
+            const limit = ref<number>(100)
 
             const list: ComputedRef<any[]> = computed(
                 () =>
@@ -179,7 +182,8 @@
                             .filter('term', '__state', 'ACTIVE')
                             .filter('term', '__typeName.keyword', typeName)
                             .sort('name.keyword', 'asc')
-                            .size(100)
+                            .from(offset.value || 0)
+                            .size(limit.value || 0)
                             .build()
                     }
                 }
@@ -215,7 +219,8 @@
                             return q
                         })
                         .sort('name.keyword', 'asc')
-                        .size(100)
+                        .from(offset.value || 0)
+                        .size(limit.value || 0)
                         .build()
                 }
             }
@@ -287,7 +292,14 @@
                     })
 
                 setSelectorValue()
+                offset.value = 0
             }
+
+            const handleLoadMore = () => {
+                offset.value += limit.value
+            }
+
+            provide('loadMore', handleLoadMore)
 
             return {
                 list,
@@ -296,9 +308,10 @@
                 handleChange,
                 isDisabled,
                 getKey,
-                persona,
                 applicableTerms,
                 personaStore,
+                offset,
+                limit,
             }
         },
     })

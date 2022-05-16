@@ -29,6 +29,7 @@ export default async function useComputeGraph({
 }) {
     const lineageStore = useLineageStore()
     lineageStore.selectedNodeId = ''
+    lineageStore.selectedPortId = ''
     lineageStore.cyclicRelations = []
     lineageStore.portToSelect = {}
     lineageStore.mergedLineageData = {}

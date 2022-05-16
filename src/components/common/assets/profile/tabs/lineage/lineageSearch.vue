@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts">
-    /** Vue */
+    /** VUE */
     import {
         defineComponent,
         Ref,
@@ -69,13 +69,13 @@
     } from 'vue'
     import { useDebounceFn, whenever } from '@vueuse/core'
 
-    /** Utils */
+    /** UTILS */
     import { getNodeSourceImage, getSource } from './util'
 
-    /** Composables */
+    /** COMPOSABLES */
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
-    /** Components */
+    /** COMPONENTS */
     import AssetItem from '@/common/assets/preview/lineage/list/assetItem.vue'
     import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
 
@@ -119,7 +119,6 @@
             })
 
             /** METHODS */
-
             // searchEvent
             const sendSearchEvent = useDebounceFn(() => {
                 useAddEvent('lineage', 'search', 'changed', {
@@ -128,6 +127,7 @@
                 })
             }, 600)
 
+            // sendSearchResultClickEvent
             const sendSearchResultClickEvent = useDebounceFn((item, index) => {
                 useAddEvent('lineage', 'search_result', 'clicked', {
                     click_index: index,

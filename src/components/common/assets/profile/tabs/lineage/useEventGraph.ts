@@ -88,7 +88,7 @@ export default function useEventGraph({
         message.error(msg)
     }
 
-    // handleAnalyticsEvents
+    // sendNodeClickedEvent - Analytics Events
     const sendNodeClickedEvent = useDebounceFn(
         (asset_type, connector, node_id) => {
             useAddEvent('lineage', 'node', 'clicked', {
@@ -99,7 +99,7 @@ export default function useEventGraph({
         },
         400
     )
-
+    // sendSubNodeClickedEvent - Analytics Events
     const sendSubNodeClickedEvent = useDebounceFn(
         (asset_type, connector, click_index, node_id) => {
             useAddEvent('lineage', 'sub_node', 'clicked', {
@@ -112,6 +112,7 @@ export default function useEventGraph({
         400
     )
 
+    // sendSubNodeShowMoreEvent - Analytics Events
     const sendSubNodeShowMoreEvent = useDebounceFn(
         (current_list_count, load_more_size, node_id) => {
             useAddEvent('lineage', 'sub_node', 'show_more', {
@@ -123,6 +124,7 @@ export default function useEventGraph({
         400
     )
 
+    // sendProcessClickedEvent - Analytics Events
     const sendProcessClickedEvent = useDebounceFn(
         (is_group, is_cyclic, edge_id) => {
             useAddEvent('lineage', 'process', 'clicked', {
@@ -134,6 +136,7 @@ export default function useEventGraph({
         400
     )
 
+    // sendNodeExpandedEvent - Analytics Events
     const sendNodeExpandedEvent = useDebounceFn(
         (child_count, node_id, type) => {
             useAddEvent(

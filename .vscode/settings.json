@@ -1,7 +1,5 @@
 {
-    "i18n-ally.localesPaths": [
-        "locales"
-    ],
+    "i18n-ally.localesPaths": ["locales"],
     "editor.formatOnSave": true,
     "css.validate": false, // Disable css built-in lint
     "less.validate": false,
@@ -9,6 +7,5 @@
     "editor.tabSize": 4,
     "[vue]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "workbench.sideBar.location": "right"
+    }
 }

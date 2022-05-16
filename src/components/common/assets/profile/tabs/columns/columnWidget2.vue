@@ -1,11 +1,12 @@
 <template>
-    <div class="p-6 bg-white border border-gray-300 rounded-lg">
+    <div class="bg-white border border-gray-300 rounded-lg">
         <!-- Search and Filter -->
-        <div class="flex w-full">
-            <div class="w-64 px-4 mb-3 border border-gray-200 rounded-md">
+        <div class="flex items-center w-full px-5 py-4 gap-x-4">
+            <div class="w-64 px-4 border rounded-md border-gray-light">
                 <SearchAdvanced
                     v-model:value="queryText"
                     :placeholder="`Search ${totalCount} columns`"
+                    size="minimal"
                     @change="handleSearchChange"
                 >
                     <template #postFilter>
@@ -23,6 +24,11 @@
                     </template>
                 </SearchAdvanced>
             </div>
+            <AggregationTabs
+                v-model="postFacets.dataType"
+                :list="columnDataTypeAggregationList"
+                @change="handleDataTypeChange"
+            ></AggregationTabs>
         </div>
         <!-- Table -->
         <div
@@ -231,6 +237,7 @@
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import AtlanBtn from '@/UI/button.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
+    import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
 
     // Composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -253,6 +260,7 @@
             AtlanBtn,
             Sorting,
             ColumnKeys,
+            AggregationTabs,
         },
         setup() {
             /** DATA */
@@ -343,6 +351,7 @@
                 list: combinedList,
                 isLoading,
                 quickChange,
+                getAggregationList,
                 totalCount,
                 error,
                 isValidating,
@@ -360,6 +369,14 @@
                 relationAttributes,
                 suppressLogs: true,
             })
+
+            const columnDataTypeAggregationList = computed(() =>
+                getAggregationList(
+                    `group_by_${aggregationAttributeName}`,
+                    [],
+                    true
+                )
+            )
 
             /** UTILS */
             const route = useRoute()
@@ -449,6 +466,11 @@
                 offset.value = 0
                 quickChange()
             }, 150)
+
+            const handleDataTypeChange = () => {
+                offset.value = 0
+                quickChange()
+            }
 
             const handleChangeSort = () => {
                 quickChange()
@@ -560,17 +582,20 @@
                 handleListUpdate,
                 handleCloseColumnSidebar,
                 isScrubbed,
+                columnDataTypeAggregationList,
                 isLoading,
                 columnsList,
                 totalCount,
                 preference,
                 error,
                 isValidating,
+                postFacets,
                 certificateStatus,
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
                 dataTypeCategoryImage,
+                handleDataTypeChange,
                 selectedRow,
                 columnsData,
                 queryText,

@@ -332,7 +332,7 @@
             onMounted(() => {
                 if (window?.announcekit)
                     window.announcekit.push({
-                        widget: 'https://announcekit.co/widgets/v2/3w3MA',
+                        widget: 'https://announcekit.co/widgets/v2/1JYrEk',
                         selector: '.announcekit-widget',
                         lang: 'en',
                         user: {

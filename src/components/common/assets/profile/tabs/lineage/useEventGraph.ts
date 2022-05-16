@@ -265,7 +265,10 @@ export default function useEventGraph({
         const entity = getX6Node(guid)?.store?.data?.entity
         onSelectAsset(entity)
 
-        if (guid) selectedNodeId.value = guid
+        if (guid) {
+            selectedNodeId.value = guid
+            lineageStore.setSelectedNodeId(guid)
+        }
 
         if (isCyclicRelation) {
             highlightNode(selectedNodeId.value, 'select')
@@ -1479,6 +1482,7 @@ export default function useEventGraph({
     const resetSelectedNode = () => {
         nodesEdgesHighlighted.value = []
         selectedNodeId.value = ''
+        lineageStore.setSelectedNodeId('')
         selectNode(null)
     }
 

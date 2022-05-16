@@ -1,4 +1,7 @@
 export const getters = {
+    getSelectedNodeId(state) {
+        return () => state.selectedNodeId
+    },
     getPreferences(state) {
         return () => state.preferences
     },

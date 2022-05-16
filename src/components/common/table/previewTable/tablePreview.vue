@@ -370,13 +370,14 @@
             max-width: 200px;
             min-width: 200px;
             height: 28px !important;
-            padding: 4px 12px !important;
+            padding: 3px 12px !important;
             font-size: 14px !important;
             @apply border border-gray-light  bg-white;
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: hidden;
             font-family: IBMPlexSans !important;
+            letter-spacing: 0.02rem;
             position: relative;
             color: #3e4359 !important;
             // text-align: right !important;

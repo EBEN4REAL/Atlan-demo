@@ -196,13 +196,6 @@
                         s3ObjectStorageClass(selectedAsset)
                     }}</span>
                 </div>
-                <div class="flex flex-col text-sm">
-                    <span class="mb-1 text-gray-500">Content Type</span>
-
-                    <span class="text-gray-700">{{
-                        s3ObjectContentType(selectedAsset)
-                    }}</span>
-                </div>
 
                 <div class="flex flex-col text-sm">
                     <span class="mb-1 text-gray-500">Last Modified Time</span>
@@ -524,7 +517,6 @@
                 s3ObjectLastModifiedTime,
                 s3ObjectStorageClass,
                 s3ObjectKey,
-                s3ObjectContentType,
                 s3ObjectVersionId,
                 awsArn,
                 awsPartition,
@@ -580,7 +572,6 @@
                 s3ObjectLastModifiedTime,
                 s3ObjectStorageClass,
                 s3ObjectKey,
-                s3ObjectContentType,
                 s3ObjectVersionId,
                 awsArn,
                 awsPartition,

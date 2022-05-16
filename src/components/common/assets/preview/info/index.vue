@@ -567,13 +567,22 @@
 
             <div
                 v-if="['S3Object'].includes(selectedAsset.typeName)"
-                class="flex flex-col px-5 text-sm"
+                class="flex flex-col px-5 gap-y-4"
             >
-                <span class="mb-1 text-gray-500">Size</span>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Content Type</span>
 
-                <span class="text-gray-700"
-                    >{{ s3ObjectSize(selectedAsset) }}B</span
-                >
+                    <span class="text-gray-700">{{
+                        s3ObjectContentType(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Size</span>
+
+                    <span class="text-gray-700"
+                        >{{ s3ObjectSize(selectedAsset) }}B</span
+                    >
+                </div>
             </div>
 
             <div
@@ -1226,6 +1235,7 @@
                 awsArn,
                 s3ObjectSize,
                 s3ObjectCount,
+                s3ObjectContentType,
             } = useAssetInfo()
 
             const {
@@ -1425,6 +1435,7 @@
                 awsArn,
                 s3ObjectSize,
                 s3ObjectCount,
+                s3ObjectContentType,
                 quickChange,
                 limit,
                 title,

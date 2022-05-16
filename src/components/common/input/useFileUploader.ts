@@ -1,6 +1,7 @@
 import { computed, ref, Ref } from 'vue'
 // import { useAPI } from '~/services/api/useAPI';
 import genericAPI from '~/services/api/generic'
+import { message } from 'ant-design-vue'
 import { getStringFromPath, genParams, keyIDs } from './asyncSelect.utils'
 
 interface FileItem {
@@ -12,23 +13,27 @@ interface FileItem {
     preview?: string
     originFileObj?: any
     file: string | Blob
+    type?: string
 }
 
 export default function useFileUploader(reqConfig, emit) {
     const fileList: Ref<FileItem> = ref([])
     const uploading = ref(false)
-
-    const beforeUpload = (file: FileItem) => {
-        fileList.value = [...fileList.value, file]
-        return false
-    }
-
     const handleRemove = (file: FileItem) => {
         const index = fileList.value.indexOf(file)
         const newFileList = fileList.value.slice()
         newFileList.splice(index, 1)
         fileList.value = newFileList
     }
+
+    const beforeUpload = (file: FileItem) => {
+        if (file?.type === 'text/csv') {
+            console.log("yes")
+            fileList.value = [...fileList.value, file]
+            return false
+        }
+    }
+
 
     const error = ref(false)
     const success = ref(false)

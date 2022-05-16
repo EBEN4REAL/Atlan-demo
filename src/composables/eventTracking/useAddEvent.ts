@@ -65,7 +65,7 @@ export const identifyUser = async () => {
                 const roleName = role?.name?.startsWith('$')
                 return roleName
             })
-            ;(window as any).analytics.identify(authStore?.id, {
+            const detailsObj = {
                 name: authStore.name || '',
                 firstName: authStore.firstName,
                 lastName: authStore.lastName,
@@ -80,6 +80,12 @@ export const identifyUser = async () => {
                     ? authStore.purposes.length
                     : 0,
                 created_at: authStore.createdAt ? authStore.createdAt : '',
+            }
+            ;(window as any).analytics.identify(authStore?.id, detailsObj, {
+                integrations: {
+                    All: true,
+                    Salesforce: true,
+                },
             })
         }
     }

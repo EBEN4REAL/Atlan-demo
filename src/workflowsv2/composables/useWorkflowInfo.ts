@@ -220,7 +220,7 @@ export default function useWorkflowInfo() {
             case 'Succeeded':
                 return 'bg-new-green-100'
             case 'Running':
-                return 'bg-new-yellow-100 animate-pulse'
+                return 'bg-new-yellow-100'
             case 'Failed':
             case 'Error':
             case 'Stopped':

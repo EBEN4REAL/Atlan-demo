@@ -2,6 +2,7 @@ import { useStorage } from '@vueuse/core'
 
 export const state = {
     selectedNodeId: useStorage('lin_selected_node_id', ''),
+    selectedPortId: useStorage('lin_selected_port_id', ''),
     preferences: useStorage('lin_preferences', {
         showArrow: true,
         showSchema: true,

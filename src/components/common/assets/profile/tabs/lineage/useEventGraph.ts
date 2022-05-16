@@ -1125,6 +1125,7 @@ export default function useEventGraph({
         if (portEntity) {
             onSelectAsset(portEntity)
             selectedPortId.value = portId
+            lineageStore.setSelectedPortId(portId)
             if (fetchLineage) {
                 controlPortsLoader(node, true, 'item')
                 fetchPortLineage(node, portId)
@@ -1657,6 +1658,7 @@ export default function useEventGraph({
         })
 
         selectedPortId.value = ''
+        lineageStore.setSelectedPortId('')
         activeNodesToggled.value = {}
         portHighlightedBINodes.value = []
         currPortLineage.value = {}

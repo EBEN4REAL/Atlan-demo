@@ -2,7 +2,7 @@
     <LineageImpactModal
         v-if="hasImpactedAssets"
         v-model:visible="showImpactedAssets"
-        :guid="selectedNodeId || baseEntityGuid"
+        :guid="guidForImpactedAssets"
         :asset-name="'assetName'"
         style="z-index: 600"
     />
@@ -149,11 +149,24 @@
             const mergedLineageData = computed(() =>
                 lineageStore.getMergedLineageData()
             )
+            const currentPortLineageData = computed(() => {
+                const selectedPortId = lineageStore.getSelectedPortId()
+                const data = lineageStore.getPortsLineage(selectedPortId)
+                return data
+            })
             const baseEntityGuid = computed(
                 () => mergedLineageData.value.baseEntityGuid
             )
             const selectedNodeId = computed(() =>
                 lineageStore.getSelectedNodeId()
+            )
+            const selectedPortId = computed(() =>
+                lineageStore.getSelectedPortId()
+            )
+            const guidForImpactedAssets = computed(() =>
+                !selectedPortId.value
+                    ? selectedNodeId.value || baseEntityGuid.value
+                    : selectedPortId.value
             )
             const searchItems = computed(() => {
                 const d = mergedLineageData.value
@@ -238,10 +251,13 @@
 
             // checkImpactedAsset
             const checkImpactedAsset = () => {
-                const guid = selectedNodeId.value || baseEntityGuid.value
-                const { childrenCounts } = mergedLineageData.value
+                const guid = guidForImpactedAssets.value
+                const type = !selectedPortId.value ? 'node' : 'port'
+                const { childrenCounts } =
+                    type === 'node'
+                        ? mergedLineageData.value
+                        : currentPortLineageData.value
                 const hasDownstreamAssets = childrenCounts[guid].OUTPUT
-                console.log('hasDownstreamAssets:', hasDownstreamAssets)
                 if (hasDownstreamAssets) hasImpactedAssets.value = true
                 else hasImpactedAssets.value = false
             }
@@ -260,6 +276,10 @@
 
             watch(selectedNodeId, () => {
                 checkImpactedAsset()
+            })
+
+            watch(currentPortLineageData, (newVal) => {
+                if (newVal?.childrenCounts) checkImpactedAsset()
             })
 
             whenever(showSearch, async () => {
@@ -284,6 +304,7 @@
                 showImpactedAssets,
                 selectedNodeId,
                 baseEntityGuid,
+                guidForImpactedAssets,
                 setQuery,
                 setSearchItem,
                 onBlur,

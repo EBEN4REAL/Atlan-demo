@@ -50,14 +50,14 @@
                 :item="item"
                 class="search-results__item"
                 disable-links
-                @click="setSearchItem(item)"
+                @click="setSearchItem(item, index)"
             ></AssetItem>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    /** Vue */
+    /** VUE */
     import {
         defineComponent,
         Ref,
@@ -67,12 +67,15 @@
         watch,
         nextTick,
     } from 'vue'
-    import { whenever } from '@vueuse/core'
+    import { useDebounceFn, whenever } from '@vueuse/core'
 
-    /** Utils */
+    /** UTILS */
     import { getNodeSourceImage, getSource } from './util'
 
-    /** Components */
+    /** COMPOSABLES */
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
+
+    /** COMPONENTS */
     import AssetItem from '@/common/assets/preview/lineage/list/assetItem.vue'
     import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
 
@@ -116,16 +119,40 @@
             })
 
             /** METHODS */
+            // searchEvent
+            const sendSearchEvent = useDebounceFn(() => {
+                useAddEvent('lineage', 'search', 'changed', {
+                    result_count: filteredItems.value.length,
+                    search_query: query.value.toLowerCase(),
+                })
+            }, 600)
+
+            // sendSearchResultClickEvent
+            const sendSearchResultClickEvent = useDebounceFn((item, index) => {
+                useAddEvent('lineage', 'search_result', 'clicked', {
+                    click_index: index,
+                    result_count: filteredItems.value.length,
+                    asset_type: item.typeName?.toLowerCase(),
+                    connector:
+                        item.attributes?.connectorName ||
+                        item.attributes?.qualifiedName?.split('/')[1],
+                })
+            }, 600)
+
             // setQuery
             const setQuery = (e) => {
                 query.value = e.target.value
+
+                if (e.target.value) sendSearchEvent()
             }
 
             // setSearchItem
-            const setSearchItem = (item) => {
+            const setSearchItem = (item, index) => {
                 searchItem.value = item.guid
                 onSelectAsset(item, true)
                 emit('select', item.guid)
+
+                sendSearchResultClickEvent(item, index)
             }
 
             // onBlur

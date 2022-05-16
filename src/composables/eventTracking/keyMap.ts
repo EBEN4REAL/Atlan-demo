@@ -295,6 +295,81 @@ const keyMap = {
             },
         },
     },
+    lineage: {
+        search: {
+            changed: {
+                action: 'lineage_search_changed',
+                properties: (props) => ({
+                    result_count: props?.result_count,
+                    search_query: props?.search_query,
+                }),
+            },
+        },
+        search_result: {
+            clicked: {
+                action: 'lineage_search_result_clicked',
+                properties: (props) => ({
+                    click_index: props?.click_index,
+                    result_count: props?.result_count,
+                    asset_type: props?.asset_type,
+                    connector: props?.connector,
+                }),
+            },
+        },
+        process: {
+            clicked: {
+                action: 'lineage_process_clicked',
+                properties: (props) => ({
+                    is_group: !!props?.is_group,
+                    is_cyclic: !!props?.is_cyclic,
+                    edge_id: props?.edge_id,
+                }),
+            },
+        },
+        node: {
+            expanded: {
+                action: 'lineage_node_expanded',
+                properties: (props) => ({
+                    child_count: props?.child_count,
+                    node_id: props?.node_id,
+                }),
+            },
+            collapsed: {
+                action: 'lineage_node_collapsed',
+                properties: (props) => ({
+                    child_count: props?.child_count,
+                    node_id: props?.node_id,
+                }),
+            },
+            clicked: {
+                action: 'lineage_node_clicked',
+                properties: (props) => ({
+                    asset_type: props?.asset_type,
+                    connector: props?.connector,
+                    node_id: props?.node_id,
+                }),
+            },
+        },
+        sub_node: {
+            clicked: {
+                action: 'lineage_sub_node_clicked',
+                properties: (props) => ({
+                    asset_type: props?.asset_type,
+                    connector: props?.connector,
+                    click_index: props?.click_index,
+                    node_id: props?.node_id,
+                }),
+            },
+            show_more: {
+                action: 'lineage_sub_node_show_more',
+                properties: (props) => ({
+                    current_list_count: props?.current_list_count,
+                    load_more_size: props?.load_more_size,
+                    node_id: props?.node_id,
+                }),
+            },
+        },
+    },
     gtc: {
         term: {
             created: {
@@ -306,9 +381,9 @@ const keyMap = {
             deleted: {
                 action: 'gtc_term_deleted',
             },
-            bulk_upload_initiated:{
+            bulk_upload_initiated: {
                 action: 'gtc_term_bulk_upload_initiated',
-            }
+            },
         },
         category: {
             created: {

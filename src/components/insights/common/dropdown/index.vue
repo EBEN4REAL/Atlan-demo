@@ -2,7 +2,7 @@
     <a-dropdown :trigger="[`${trigger}`]" @visibleChange="visibleChange">
         <slot name="menuTrigger"> </slot>
 
-        <template #overlay>
+        <template #overlay v-if="showOverlay">
             <a-menu
                 class="py-1 text-gray-700"
                 :style="`min-width: ${minWidth}px`"
@@ -128,20 +128,26 @@
                 required: false,
                 default: () => 'bottomCenter',
             },
-            trigger: {
-                type: String,
-                default: () => 'click',
-                required: false,
-            },
             minWidth: {
                 type: String,
                 required: false,
                 default: () => '180',
             },
+            showOverlay: {
+                type: Boolean,
+                required: false,
+                default: () => true,
+            },
+            trigger: {
+                type: String,
+                default: () => 'click',
+                required: false,
+            },
         },
         emits: ['addBackground', 'visibleChange'],
         setup(props, { emit }) {
-            const { options, item, placement, trigger, minWidth } = props
+            const { options, item, placement, minWidth, showOverlay, trigger } =
+                props
 
             const handleMenuItemClick = (option: any) => {
                 option.handleClick(option)
@@ -162,6 +168,7 @@
                 handleMenuItemClick,
                 placement,
                 minWidth,
+                showOverlay,
             }
         },
     })

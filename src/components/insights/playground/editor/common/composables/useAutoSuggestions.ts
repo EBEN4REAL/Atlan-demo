@@ -226,7 +226,7 @@ export function entitiesToEditorKeyword(
     return new Promise((resolve) => {
         response.then((res) => {
             let entities = res.entities ?? []
-            entities = sortByContextQualifiedNames(entities)
+            // entities = sortByContextQualifiedNames(entities)
 
             let words: suggestionKeywordInterface[] = []
             let len = entities.length
@@ -340,9 +340,10 @@ export function entitiesToEditorKeyword(
                                 entity: entities[i],
                             },
                             sortText: sortString,
-                            insertText: isDotBased
-                                ? `${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`
-                                : `${contextPrefix}${assetQuoteType}${tableName}${assetQuoteType}.${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`,
+                            // insertText: isDotBased
+                            //     ? `${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`
+                            //     : `${contextPrefix}${assetQuoteType}${tableName}${assetQuoteType}.${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`,
+                            insertText: `${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`,
                         }
                         words.push(keyword)
                         // }
@@ -449,7 +450,6 @@ const refreshBody = () => {
                                             },
                                         },
                                     ],
-                                    should: [],
                                 },
                             },
                         },
@@ -679,7 +679,7 @@ async function getSuggestionsUsingType(
                     }
                 }
 
-                body.value.dsl.query.function_score.query.bool.filter.bool.should.push(
+                body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
                     {
                         terms: {
                             tableQualifiedName: tableQualifiedNames.filter(
@@ -773,18 +773,6 @@ export async function useAutoSuggestions(
     let databaseName = getDatabaseName(attributeValue ?? '')
     let schemaName = getSchemaName(attributeValue ?? '')
 
-    // taking context from sql query if there are no DB |Schema
-    const { _schemaName, _databaseName } = getSchemaAndDatabaseFromSqlQueryText(
-        editorInstance?.getValue(),
-        {
-            connectionQualifiedName,
-            databaseName,
-            schemaName,
-        }
-    )
-    databaseName = _databaseName
-    schemaName = _schemaName
-
     /* ------------For BETA----------- */
     // const connectionQualifiedName =
     //     'default/snowflake/atlan-snowflake-crawler-wpwvc'
@@ -835,8 +823,11 @@ export async function useAutoSuggestions(
     }
     if (lastIndex > 0) {
         currAliasWord = currAliasWord.slice(0, lastIndex + 1)
-    } else if (currAliasWord[currAliasWord.length - 1] === '.') {
-        currAliasWord = currAliasWord.slice(0, currAliasWord.length - 1)
+    } else if (currAliasWord.includes('.')) {
+        // trim x., x.cccc
+        let tokens = currAliasWord.split('')
+        const _index = tokens.findIndex((token) => token === '.')
+        currAliasWord = currAliasWord.slice(0, _index)
     }
 
     /////////////////////////////////////
@@ -921,6 +912,17 @@ export async function useAutoSuggestions(
     ).filter((el) => el.name !== '')
 
     /////////////////////////////////////////////////////////
+    // taking context from sql query if there are no DB |Schema
+    const { _schemaName, _databaseName } = getSchemaAndDatabaseFromSqlQueryText(
+        editorInstance?.getValue(),
+        {
+            connectionQualifiedName,
+            databaseName,
+            schemaName,
+        }
+    )
+    databaseName = _databaseName
+    schemaName = _schemaName
 
     let tokens = editorTextTillCursorPos.split(/[ ,\n;"')(]+/gm)
     // console.log(tokens, 'tokk')

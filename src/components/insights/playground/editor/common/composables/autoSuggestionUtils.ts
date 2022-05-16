@@ -5,6 +5,7 @@ import {
 } from './useMapping'
 import { instances } from '~/components/insights/playground/editor/monaco/useMonaco'
 import { getLastMappedKeyword } from './useAutoSuggestions'
+import { contextStore } from './useMapping'
 export type contextKeywordType = {
     name: string
     type: 'TABLE' | 'COLUMN'
@@ -64,13 +65,35 @@ export function getSchemaAndDatabaseFromSqlQueryText(
     const sqlTextTokens = sqlText.replace(/\"/g, '').split(/[ ;]+/)
     sqlTextTokens.forEach((token) => {
         const _spliitedToken = token.split('.')
-        if (!databaseName && _spliitedToken.length >= 3) {
-            //D.S.T
-            databaseName = _spliitedToken[0].replaceAll('^"|"$', '')
-            schemaName = _spliitedToken[1].replaceAll('^"|"$', '')
-        } else if (!schemaName && _spliitedToken.length == 2) {
-            //S.T
-            schemaName = _spliitedToken[0].replaceAll('^"|"$', '')
+        const contexts = [
+            ...contextStore.value.left,
+            ...contextStore.value.right,
+        ]
+        if (!schemaName && _spliitedToken.length == 2) {
+            contexts.forEach((context) => {
+                if (
+                    context.name?.toUpperCase() ===
+                        _spliitedToken[
+                            _spliitedToken.length - 1
+                        ]?.toUpperCase() &&
+                    context.type === 'TABLE'
+                ) {
+                    schemaName = _spliitedToken[0].replaceAll('^"|"$', '')
+                }
+            })
+        } else if (!databaseName && _spliitedToken.length == 3) {
+            contexts.forEach((context) => {
+                if (
+                    context.name?.toUpperCase() ===
+                        _spliitedToken[
+                            _spliitedToken.length - 1
+                        ]?.toUpperCase() &&
+                    context.type === 'TABLE'
+                ) {
+                    databaseName = _spliitedToken[0].replaceAll('^"|"$', '')
+                    schemaName = _spliitedToken[1].replaceAll('^"|"$', '')
+                }
+            })
         }
     })
     return {
@@ -90,12 +113,12 @@ export function createAliasesMap(text: string) {
             // check for table
             const leftTexts = text
                 .slice(0, i + 1)
-                .split(/[,; ]/)
+                .split(/[,;\n ]/)
                 .filter((e) => e !== '' && e !== ';' && e !== ',')
                 .map((e) => e.replace(/\"/g, ''))
             const rightTexts = text
                 .slice(i + 4, text.length)
-                .split(/[,; ]/)
+                .split(/[,;\n ]/)
                 .filter((e) => e !== '' && e !== ';' && e !== ',')
                 .map((e) => e.replace(/\"/g, ''))
             let key, value
@@ -106,9 +129,16 @@ export function createAliasesMap(text: string) {
                     mappingKeywordsKeys,
                     typesKeywordsMap
                 )
-                key = leftTexts
-                    .reverse()[0]
-                    .replace(/[&\/\\#,+()~%.:*?<>{}\n\s]/g, '')
+                // INCASE there is DB.SCHEMA.TABLE
+                let _lefttext = leftTexts.reverse()[0]
+                if (_lefttext.includes('.')) {
+                    const _temp = _lefttext.split('.')
+                    // taking the end
+                    if (_temp[_temp.length - 1] !== '.') {
+                        _lefttext = _temp[_temp.length - 1]
+                    }
+                }
+                key = _lefttext.replace(/[&\/\\#,+()~%.:*?<>{}\n\s]/g, '')
                 value = rightTexts[0].replace(/[&\/\\#,+()~%.:*?<>{}\n\s]/g, '')
                 aliasMap[key] = {
                     key: key,

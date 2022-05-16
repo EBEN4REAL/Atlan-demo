@@ -25,6 +25,7 @@
                         :selectedAsset="item"
                         :noBorder="true"
                         :showAssetName="true"
+                        :allowEdit="false"
                         class="mb-1 last:mb-0"
                     />
                 </div>
@@ -82,6 +83,7 @@
             const defaultAttributes = ref([
                 'name',
                 'displayName',
+                'anchor',
                 'announcementMessage',
                 'announcementTitle',
                 'announcementType',

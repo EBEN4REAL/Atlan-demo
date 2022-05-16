@@ -32,6 +32,10 @@
                     router.replace('/workflowsv1/setup')
                     return
                 }
+                if (route.fullPath.includes('/workflows/monitor')) {
+                    router.replace('/workflowsv1')
+                    return
+                }
                 const newRoute = route.fullPath.replace(
                     '/workflows',
                     '/workflowsv1'

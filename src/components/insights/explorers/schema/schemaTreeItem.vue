@@ -982,7 +982,7 @@
 
             const tooltipText = computed(() => {
                 if (
-                    activeInlineTab.value.playground.resultsPane.result
+                    activeInlineTab?.value?.playground?.resultsPane?.result
                         .isQueryRunning === 'loading'
                 ) {
                     return 'Another query is running'

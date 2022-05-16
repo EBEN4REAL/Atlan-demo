@@ -1,4 +1,7 @@
 export const actions = {
+    setSelectedNodeId(nodeId) {
+        this.selectedNodeId = nodeId
+    },
     setPreference(key, value) {
         this.preferences[key] = value
     },

@@ -1,16 +1,57 @@
 <template>
+    <LineageImpactModal
+        v-if="hasImpactedAssets"
+        v-model:visible="showImpactedAssets"
+        :guid="selectedNodeId || baseEntityGuid"
+        :asset-name="'assetName'"
+        style="z-index: 600"
+    />
     <div class="flex flex-col">
         <div class="flex items-center">
-            <div class="control-item" @click="showSearch = !showSearch">
-                <a-tooltip placement="top" :mouse-enter-delay="0.4">
-                    <template #title>
-                        <span>search graph</span>
-                    </template>
-                    <AtlanIcon
-                        icon="Search"
-                        class="mx-1 my-2 outline-none"
-                    ></AtlanIcon>
-                </a-tooltip>
+            <div class="flex items-center px-4x control-itemx">
+                <div
+                    class="mx-4 cursor-pointer"
+                    @click="showSearch = !showSearch"
+                >
+                    <a-tooltip placement="bottom" :mouse-enter-delay="0.4">
+                        <template #title>
+                            <span>search graph</span>
+                        </template>
+                        <AtlanIcon
+                            icon="Search"
+                            class="outline-none"
+                        ></AtlanIcon>
+                    </a-tooltip>
+                </div>
+                <div class="w-px bg-new-gray-200 h-9"></div>
+                <div
+                    class="mx-4"
+                    :class="
+                        hasImpactedAssets
+                            ? 'cursor-pointer'
+                            : 'cursor-not-allowed'
+                    "
+                    @click="controlImpactedAssets"
+                >
+                    <a-tooltip placement="bottom" :mouse-enter-delay="0.4">
+                        <template #title>
+                            <span>{{
+                                hasImpactedAssets
+                                    ? 'View Impacted Assets'
+                                    : 'No Impacted Assets'
+                            }}</span>
+                        </template>
+                        <AtlanIcon
+                            icon="ImpactedAssets"
+                            :class="
+                                hasImpactedAssets
+                                    ? 'text-new-blue-400'
+                                    : 'text-new-gray-200'
+                            "
+                            class="outline-none"
+                        ></AtlanIcon>
+                    </a-tooltip>
+                </div>
             </div>
 
             <div v-if="showSearch" class="search">
@@ -66,6 +107,7 @@
         computed,
         watch,
         nextTick,
+        onMounted,
     } from 'vue'
     import { useDebounceFn, whenever } from '@vueuse/core'
 
@@ -78,13 +120,14 @@
     /** COMPONENTS */
     import AssetItem from '@/common/assets/preview/lineage/list/assetItem.vue'
     import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
+    import LineageImpactModal from '@/common/assets/preview/lineage/lineageImpactModal.vue'
 
     /** STORE */
     import useLineageStore from '~/store/lineage'
 
     export default defineComponent({
         name: 'LineageSearch',
-        components: { AssetItem, NoResultIllustration },
+        components: { AssetItem, NoResultIllustration, LineageImpactModal },
         emits: ['select'],
         setup(_, { emit }) {
             /** INITIALIZE */
@@ -96,13 +139,24 @@
             const showResults = ref(false)
             const searchBar: Ref<null | HTMLInputElement> = ref(null)
             const showSearch = ref(false)
+            const hasImpactedAssets = ref(false)
+            const showImpactedAssets = ref(false)
 
             /** INJECTIONS */
             const onSelectAsset = inject('onSelectAsset')
 
             /** COMPUTED */
+            const mergedLineageData = computed(() =>
+                lineageStore.getMergedLineageData()
+            )
+            const baseEntityGuid = computed(
+                () => mergedLineageData.value.baseEntityGuid
+            )
+            const selectedNodeId = computed(() =>
+                lineageStore.getSelectedNodeId()
+            )
             const searchItems = computed(() => {
-                const d = lineageStore.getMergedLineageData()
+                const d = mergedLineageData.value
                 const g = d.guidEntityMap
                 const v = Object.values(g)
 
@@ -182,15 +236,40 @@
                 return getNodeSourceImage[source]
             }
 
+            // checkImpactedAsset
+            const checkImpactedAsset = () => {
+                const guid = selectedNodeId.value || baseEntityGuid.value
+                const { childrenCounts } = mergedLineageData.value
+                const hasDownstreamAssets = childrenCounts[guid].OUTPUT
+                console.log('hasDownstreamAssets:', hasDownstreamAssets)
+                if (hasDownstreamAssets) hasImpactedAssets.value = true
+                else hasImpactedAssets.value = false
+            }
+
+            // controlImpactedAssets
+            const controlImpactedAssets = () => {
+                if (!hasImpactedAssets.value) return
+                showImpactedAssets.value = !showImpactedAssets.value
+            }
+
             /** WATCHERS */
             watch(query, (val) => {
                 if (val) showResults.value = true
                 else showResults.value = false
             })
 
+            watch(selectedNodeId, () => {
+                checkImpactedAsset()
+            })
+
             whenever(showSearch, async () => {
                 await nextTick()
                 searchBar.value?.focus()
+            })
+
+            /** LIFECYCLE */
+            onMounted(async () => {
+                checkImpactedAsset()
             })
 
             return {
@@ -201,12 +280,17 @@
                 searchBar,
                 showResults,
                 showSearch,
+                hasImpactedAssets,
+                showImpactedAssets,
+                selectedNodeId,
+                baseEntityGuid,
                 setQuery,
                 setSearchItem,
                 onBlur,
                 onFocus,
                 onEsc,
                 sourceImg,
+                controlImpactedAssets,
             }
         },
     })

@@ -85,7 +85,6 @@
             const activeKey = computed({
                 get: () => route?.params?.tab,
                 set: (key) => {
-                    debugger
                     router.push({ params: { tab: key } })
                 },
             })

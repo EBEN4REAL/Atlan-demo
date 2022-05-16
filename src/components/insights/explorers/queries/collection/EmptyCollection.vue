@@ -1,8 +1,8 @@
 <template>
-    <div class="flex flex-col items-center w-full h-full">
+    <div class="flex flex-col items-center h-full">
         <div class="flex flex-col items-center w-full">
             <AtlanIcon icon="CollectionHeader" class="w-full h-auto" />
-            <span class="-mt-12 text-2xl font-bold bg-transparent"
+            <span class="-mt-20 text-2xl font-bold bg-transparent"
                 >Collections</span
             >
             <p style="max-width: 18rem" class="mt-2 text-base text-center">
@@ -26,7 +26,7 @@
         </div>
 
         <AtlanButton2
-            class="mt-6 font-bold w-36"
+            class="w-56 mt-6 font-bold"
             size="large"
             label="Create a collection"
             suffixIcon="ArrowRight"

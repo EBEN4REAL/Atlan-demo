@@ -9,6 +9,7 @@ export function getBISourceTypes() {
                 item.attributes?.category.toLowerCase() === 'bi' ||
                 item.attributes?.connectorName?.toLowerCase() ===
                     'salesforce' ||
+                item.attributes?.connectorName?.toLowerCase() === 's3' ||
                 item.attributes?.connectorName?.toLowerCase() === 'glue'
             )
                 BItypes.add(item.attributes?.connectorName)

@@ -93,6 +93,15 @@
                         "
                         class="self-center mr-1 text-gray-500 mb-0.5"
                     ></AtlanIcon>
+                    <AtlanIcon
+                        v-if="
+                            ['s3object', 's3bucket'].includes(
+                                selectedAsset.typeName?.toLowerCase()
+                            )
+                        "
+                        :icon="selectedAsset?.typeName"
+                        class="self-center mr-1 text-gray-500 mb-0.5"
+                    ></AtlanIcon>
                     <a-tooltip
                         class="flex items-center"
                         v-if="
@@ -410,6 +419,9 @@
                 () => import('./activity/activityTab.vue')
             ),
             queries: defineAsyncComponent(() => import('./queries/index.vue')),
+            s3Objects: defineAsyncComponent(
+                () => import('./s3objects/index.vue')
+            ),
             relations: defineAsyncComponent(
                 () => import('./relations/index.vue')
             ),

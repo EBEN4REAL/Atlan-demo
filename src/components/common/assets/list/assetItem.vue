@@ -170,6 +170,16 @@
                             <!-- Info bar -->
                             <div class="flex flex-wrap items-center mt-1.5">
                                 <div class="flex items-center mr-2">
+                                    <AtlanIcon
+                                        v-if="
+                                            ['s3object', 's3bucket'].includes(
+                                                item.typeName?.toLowerCase()
+                                            )
+                                        "
+                                        :icon="item?.typeName"
+                                        class="self-center mr-1 text-gray-500 mb-0.5"
+                                    ></AtlanIcon>
+
                                     <a-tooltip
                                         class="flex items-center"
                                         v-if="
@@ -1167,6 +1177,49 @@
                                         reports</span
                                     >
                                 </div>
+                                <div
+                                    v-if="
+                                        ['s3bucket'].includes(
+                                            item.typeName?.toLowerCase()
+                                        ) && s3ObjectCount(item) !== '0'
+                                    "
+                                    class="flex text-sm text-gray-500"
+                                >
+                                    <span class="text-gray-500">
+                                        <span
+                                            class="tracking-tight text-gray-500"
+                                            >{{ s3ObjectCount(item) }}</span
+                                        >
+                                        objects</span
+                                    >
+                                </div>
+
+                                <div
+                                    v-if="
+                                        ['s3object'].includes(
+                                            item.typeName?.toLowerCase()
+                                        )
+                                    "
+                                    class="flex mr-2 text-sm text-gray-500 gap-x-2"
+                                >
+                                    <a-tooltip placement="bottomLeft">
+                                        <div
+                                            v-if="s3BucketName(item)"
+                                            class="flex items-center text-gray-500"
+                                        >
+                                            <span class="tracking-tight">
+                                                in
+                                                {{ s3BucketName(item) }}
+                                            </span>
+                                        </div>
+                                        <template #title>
+                                            <span
+                                                >Parent Bucket -
+                                                {{ s3BucketName(item) }}</span
+                                            >
+                                        </template>
+                                    </a-tooltip>
+                                </div>
                             </div>
 
                             <div class="flex flex-wrap items-center gap-x-1">
@@ -1582,6 +1635,7 @@
                 sourceViewCount,
                 sourceChildCount,
                 fieldCount,
+                s3ObjectCount,
                 isCustom,
                 announcementType,
                 assetTypeImage,
@@ -1591,6 +1645,7 @@
                 connectionQualifiedName,
                 parentTable,
                 parentView,
+                s3BucketName,
             } = useAssetInfo()
 
             const icon = computed(() => {
@@ -1785,6 +1840,7 @@
                 sourceChildCount,
                 terms,
                 fieldCount,
+                s3ObjectCount,
                 isCustom,
                 getGlossaryStatusIcon,
                 meanings,
@@ -1805,6 +1861,7 @@
                 getEntityStatusIcon,
                 parentTable,
                 parentView,
+                s3BucketName,
             }
         },
     })

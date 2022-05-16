@@ -1,4 +1,10 @@
 export const actions = {
+    setSelectedNodeId(nodeId) {
+        this.selectedNodeId = nodeId
+    },
+    setSelectedPortId(portId) {
+        this.selectedPortId = portId
+    },
     setPreference(key, value) {
         this.preferences[key] = value
     },

@@ -1,69 +1,144 @@
 <template>
     <div
         :id="`${item.qualifiedName}`"
-        class="h-8"
+        class="h-auto"
         :class="`w-full group ${item.qualifiedName}`"
         :data-test-id="item?.guid"
     >
-        <!-- {{ errorNode }} -->
-
         <div class="flex justify-between w-full overflow-hidden">
-            <div class="flex w-full m-0">
+            <div class="flex w-full">
                 <div
-                    v-if="item.typeName === 'Folder'"
+                    v-if="item.typeName === 'Folder' && item.isCta !== 'cta'"
                     class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
-                    <div class="py-1.5 w-full">
-                        <div class="flex w-11/12 parent-ellipsis-container">
-                            <AtlanIcon
-                                :icon="
-                                    expandedKeys.find((key) => key === item.key)
-                                        ? 'FolderOpen'
-                                        : 'FolderClosed'
-                                "
-                                class="w-4 h-4 my-auto mr-1 parent-ellipsis-container-extension"
-                                color="#5277D7"
-                            ></AtlanIcon>
-                            <span
-                                class="mt-0.5 text-sm text-gray-700 parent-ellipsis-container-base"
-                                >{{ title(item) }}</span
-                            >
-                            <div
-                                :id="`${item.qualifiedName}-menu`"
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
-                            >
-                                <InsightsThreeDotMenu
-                                    @click.stop="() => {}"
-                                    :options="dropdownFolderOptions"
-                                    :item="item"
+                    <InsightsThreeDotMenu
+                        trigger="contextmenu"
+                        :options="dropdownFolderOptions"
+                        :item="item"
+                        :showOverlay="hasWritePermission ? true : false"
+                        minWidth=""
+                    >
+                        <template #menuTrigger>
+                            <div class="py-1.5 w-full">
+                                <div
+                                    class="flex w-11/12 parent-ellipsis-container"
                                 >
-                                    <template #menuTrigger>
-                                        <div
-                                            class="pl-1"
-                                            v-if="hasWritePermission"
+                                    <AtlanIcon
+                                        :icon="
+                                            expandedKeys.find(
+                                                (key) => key === item.key
+                                            )
+                                                ? 'FolderOpen'
+                                                : 'FolderClosed'
+                                        "
+                                        class="w-4 h-4 my-auto mr-1 parent-ellipsis-container-extension"
+                                        color="#5277D7"
+                                    ></AtlanIcon>
+                                    <span
+                                        class="mt-0.5 text-sm text-gray-700 parent-ellipsis-container-base"
+                                        >{{ title(item) }}</span
+                                    >
+                                    <div
+                                        :id="`${item.qualifiedName}-menu`"
+                                        class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                                    >
+                                        <InsightsThreeDotMenu
+                                            @click.stop="() => {}"
+                                            :options="dropdownFolderOptions"
+                                            :item="item"
+                                            minWidth="150"
                                         >
-                                            <div
-                                                class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                            >
-                                                <AtlanIcon
-                                                    icon="KebabMenuHorizontal"
-                                                    class="w-4 h-4 my-auto"
-                                                ></AtlanIcon>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </InsightsThreeDotMenu>
+                                            <template #menuTrigger>
+                                                <div
+                                                    class="pl-1"
+                                                    v-if="hasWritePermission"
+                                                >
+                                                    <div
+                                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                                    >
+                                                        <AtlanIcon
+                                                            icon="KebabMenuHorizontal"
+                                                            class="w-4 h-4 my-auto"
+                                                        ></AtlanIcon>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </InsightsThreeDotMenu>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        </template>
+                    </InsightsThreeDotMenu>
                 </div>
                 <!--Empty NODE -->
                 <div
-                    v-else-if="item.typeName === 'Empty'"
-                    class="h-8 text-sm font-bold text-gray-500"
+                    v-else-if="
+                        item.typeName === 'Folder' && item.isCta === 'cta'
+                    "
+                    class="relative flex content-center w-full h-12 py-1 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                 >
-                    {{ item.title }}
+                    <div class="w-full">
+                        <div v-if="hasWritePermission" class="flex w-11/12">
+                            <span
+                                class="text-sm text-gray-700 text-new-gray-600"
+                                >empty folder, create a
+                                <span
+                                    @click="newQuery"
+                                    class="cursor-pointer text-new-blue-400 hover:underline"
+                                    >query</span
+                                >,
+                                <span
+                                    @click="newVisualQuery"
+                                    class="cursor-pointer text-new-blue-400 hover:underline"
+                                    >visual query</span
+                                >
+                                or a
+                                <span
+                                    @click="newFolder"
+                                    class="cursor-pointer text-new-blue-400 hover:underline"
+                                    >folder
+                                </span></span
+                            >
+                            <!-- <div
+                                :id="`${item.qualifiedName}-menu`"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                            ></div> -->
+                        </div>
+                        <a-tooltip v-else color="#363636" placement="right">
+                            <template #title
+                                ><div>
+                                    You have view only access, cannot create
+                                    queries and folders.
+                                </div>
+                            </template>
+                            <div class="flex w-11/12 cursor-not-allowed">
+                                <span
+                                    class="text-sm text-gray-700 text-new-gray-600"
+                                    >empty folder, create a
+                                    <span
+                                        class="text-new-blue-400 hover:underline"
+                                        >query</span
+                                    >,
+                                    <span
+                                        class="text-new-blue-400 hover:underline"
+                                        >visual query</span
+                                    >
+                                    or a
+                                    <span
+                                        class="text-new-blue-400 hover:underline"
+                                        >folder
+                                    </span></span
+                                >
+                                <!-- <div
+                                :id="`${item.qualifiedName}-menu`"
+                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                            ></div> -->
+                            </div>
+                        </a-tooltip>
+                    </div>
+                    <!-- {{ item.title }} -->
                 </div>
+
                 <!------------------------------->
                 <!-- Popover Allowed -->
 
@@ -74,107 +149,133 @@
                     mouse-enter-delay="0.6"
                     @previewAsset="openSidebar"
                 >
-                    <div
-                        :id="`${item.qualifiedName}`"
-                        class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
+                    <InsightsThreeDotMenu
+                        trigger="contextmenu"
+                        :options="dropdownQueryRightClickOptions"
+                        :item="item"
+                        :showOverlay="hasWritePermission ? true : false"
+                        minWidth=""
                     >
-                        <div class="parent-ellipsis-container py-1.5 w-11/12">
-                            <AtlanIcon
-                                :icon="
-                                    item?.attributes?.isVisualQuery
-                                        ? getEntityStatusIcon(
-                                              'vqb',
-                                              certificateStatus(item)
-                                          )
-                                        : getEntityStatusIcon(
-                                              'query',
-                                              certificateStatus(item)
-                                          )
-                                "
-                                class="w-4 h-4 my-auto mr-1 parent-ellipsis-container-extension"
-                                color="#5277D7"
-                            ></AtlanIcon>
-                            <span
-                                class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                                >{{ title(item) }}</span
-                            >
-
+                        <template #menuTrigger>
                             <div
-                                class="absolute flex items-center text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
-                                :class="[
-                                    item?.selected
-                                        ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                        : 'bg-gradient-to-l from-tree-light-color via-tree-light-color',
-                                    hasWritePermission ? 'right-7' : 'right-0',
-                                ]"
+                                :id="`${item.qualifiedName}`"
+                                class="relative flex content-center w-full h-8 my-auto overflow-hidden text-sm leading-5 text-gray-700"
                             >
                                 <div
-                                    :data-test-id="'run-saved-query'"
-                                    class="ml-24"
-                                    @click="() => actionClick('play', item)"
+                                    class="parent-ellipsis-container py-1.5 w-11/12"
                                 >
-                                    <a-tooltip color="#363636" placement="top">
-                                        <template #title>Run Query</template>
-                                        <div
-                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                        >
-                                            <AtlanIcon
-                                                icon="Play"
-                                                class="w-4 h-4 my-auto outline-none"
-                                            ></AtlanIcon>
-                                        </div>
-                                    </a-tooltip>
-                                </div>
+                                    <AtlanIcon
+                                        :icon="
+                                            item?.attributes?.isVisualQuery
+                                                ? getEntityStatusIcon(
+                                                      'vqb',
+                                                      certificateStatus(item)
+                                                  )
+                                                : getEntityStatusIcon(
+                                                      'query',
+                                                      certificateStatus(item)
+                                                  )
+                                        "
+                                        class="w-4 h-4 my-auto mr-1 parent-ellipsis-container-extension"
+                                        color="#5277D7"
+                                    ></AtlanIcon>
+                                    <span
+                                        class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                                        >{{ title(item) }}</span
+                                    >
 
-                                <div
-                                    class="pl-1"
-                                    @click.stop="
-                                        () => actionClick('info', item)
-                                    "
-                                >
-                                    <a-tooltip color="#363636" placement="top">
-                                        <template #title
-                                            >Open preview sidebar</template
-                                        >
+                                    <div
+                                        class="absolute flex items-center text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                                        :class="[
+                                            item?.selected
+                                                ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
+                                                : 'bg-gradient-to-l from-tree-light-color via-tree-light-color',
+                                            hasWritePermission
+                                                ? 'right-7'
+                                                : 'right-0',
+                                        ]"
+                                    >
                                         <div
-                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                            :data-test-id="'run-saved-query'"
+                                            class="ml-24"
+                                            @click="
+                                                () => actionClick('play', item)
+                                            "
                                         >
-                                            <AtlanIcon
-                                                icon="SidebarSwitch"
-                                                class="w-4 h-4 my-auto outline-none"
-                                            ></AtlanIcon>
+                                            <a-tooltip
+                                                color="#363636"
+                                                placement="top"
+                                            >
+                                                <template #title
+                                                    >Run Query</template
+                                                >
+                                                <div
+                                                    class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                                >
+                                                    <AtlanIcon
+                                                        icon="Play"
+                                                        class="w-4 h-4 my-auto outline-none"
+                                                    ></AtlanIcon>
+                                                </div>
+                                            </a-tooltip>
                                         </div>
-                                    </a-tooltip>
-                                </div>
-                            </div>
-                            <div
-                                :id="`${item.qualifiedName}-menu`"
-                                class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
-                                @click.stop="() => {}"
-                            >
-                                <InsightsThreeDotMenu
-                                    :options="dropdownQueryOptions"
-                                    :item="item"
-                                >
-                                    <template #menuTrigger>
+
                                         <div
                                             class="pl-1"
-                                            v-if="hasWritePermission"
+                                            @click.stop="
+                                                () => actionClick('info', item)
+                                            "
                                         >
-                                            <div
-                                                class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                            <a-tooltip
+                                                color="#363636"
+                                                placement="top"
                                             >
-                                                <AtlanIcon
-                                                    icon="KebabMenuHorizontal"
-                                                    class="w-4 h-4 my-auto"
-                                                ></AtlanIcon>
-                                            </div>
+                                                <template #title
+                                                    >Open query
+                                                    sidebar</template
+                                                >
+                                                <div
+                                                    class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                                >
+                                                    <AtlanIcon
+                                                        icon="SidebarSwitch"
+                                                        class="w-4 h-4 my-auto outline-none"
+                                                    ></AtlanIcon>
+                                                </div>
+                                            </a-tooltip>
                                         </div>
-                                    </template>
-                                </InsightsThreeDotMenu>
+                                    </div>
+                                    <div
+                                        :id="`${item.qualifiedName}-menu`"
+                                        class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                                        @click.stop="() => {}"
+                                    >
+                                        <InsightsThreeDotMenu
+                                            :options="dropdownQueryOptions"
+                                            :item="item"
+                                            minWidth="150"
+                                        >
+                                            <template #menuTrigger>
+                                                <div
+                                                    class="pl-1"
+                                                    v-if="hasWritePermission"
+                                                >
+                                                    <div
+                                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                                    >
+                                                        <AtlanIcon
+                                                            icon="KebabMenuHorizontal"
+                                                            class="w-4 h-4 my-auto"
+                                                        ></AtlanIcon>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </InsightsThreeDotMenu>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        </template>
+                    </InsightsThreeDotMenu>
                 </PopoverAsset>
             </div>
         </div>
@@ -351,6 +452,7 @@
             InsightsThreeDotMenu,
             ScheduleQuery,
         },
+
         props: {
             item: {
                 type: Object as PropType<assetInterface>,
@@ -393,7 +495,7 @@
             //     default: () => {},
             // },
         },
-        setup(props) {
+        setup(props, { emit }) {
             const { canUserDeleteFolder } = useAccess()
             const {
                 expandedKeys,
@@ -422,9 +524,18 @@
             const activeInlineTab = inject(
                 'activeInlineTab'
             ) as ComputedRef<activeInlineTabInterface>
-            const toggleCreateQueryModal = inject<(guid: string) => void>(
-                'toggleCreateQueryModal'
+
+            const createFolderInput =
+                inject<(guid: string) => void>('createFolderInput')
+
+            const createFolderInputFromCta = inject<(guid: string) => void>(
+                'createFolderInputFromCta'
             )
+
+            const toggleCreateQueryModal = inject<
+                (guid: string, isVQB: boolean) => void
+            >('toggleCreateQueryModal')
+
             const savedQueryType = inject('savedQueryType') as Ref<object>
             const permissions = inject('permissions') as ComputedRef<any>
 
@@ -474,6 +585,14 @@
                     tree?: 'personal' | 'all'
                 ) => void
             >('refetchNode', () => {})
+
+            const refetchNodeLocally = inject<
+                (
+                    guid: string,
+                    type: 'query' | 'Folder',
+                    tree?: 'personal' | 'all'
+                ) => void
+            >('refetchNodeLocally', () => {})
 
             const activeInlineTabKey = inject(
                 'activeInlineTabKey'
@@ -628,9 +747,22 @@
 
             const newQuery = () => {
                 removeBackground()
+                const isVQB = false
                 if (toggleCreateQueryModal) {
-                    toggleCreateQueryModal(item)
+                    toggleCreateQueryModal(item, isVQB)
                 }
+            }
+
+            const newVisualQuery = () => {
+                removeBackground()
+                const isVQB = true
+                if (toggleCreateQueryModal) {
+                    toggleCreateQueryModal(item, isVQB)
+                }
+            }
+
+            const newFolder = () => {
+                if (createFolderInputFromCta) createFolderInputFromCta(item)
             }
 
             const addBackground = (visible) => {
@@ -671,6 +803,7 @@
                 const parentNode = document.getElementsByClassName(
                     `${item.value.qualifiedName}`
                 )[0]
+                debugger
 
                 const childNode = parentNode?.firstChild as HTMLElement
                 childNode?.classList?.add('hidden')
@@ -1052,6 +1185,7 @@
                 isDeleteLoading.value = true
 
                 watch([data, error, isLoading], ([newData, newError]) => {
+                    // debugger
                     isDeleteLoading.value = isLoading.value
                     console.log('delete: ', isLoading.value)
                     if (newData && !newError) {
@@ -1064,8 +1198,17 @@
                             pushGuidToURL
                         )
 
+                        // find the parent of the deleted node
+                        // filter the children of the parent where key != deleted node's key
+                        // children is empty? add cta
+
+                        // Dont refetch node, only add a child to it
                         setTimeout(() => {
-                            refetchNode(
+                            // refetchNode(
+                            //     parentGuid,
+                            //     type === 'Query' ? 'query' : 'Folder'
+                            // )
+                            refetchNodeLocally(
                                 parentGuid,
                                 type === 'Query' ? 'query' : 'Folder'
                             )
@@ -1258,6 +1401,7 @@
                                 {}
                             )
                         watch([error, data, isLoading], (newError) => {
+                            debugger
                             // if (newError) {
 
                             if (isLoading.value == false) {
@@ -1266,16 +1410,27 @@
                                     // props.refetchTreeData()
 
                                     setTimeout(async () => {
-                                        await refetchNode(
+                                        await refetchNodeLocally(
                                             previousParentGuId,
                                             'Folder'
                                         )
                                     }, 1000)
                                     setTimeout(async () => {
-                                        await refetchNode(
+                                        await refetchNodeLocally(
                                             selectedParentGuid,
                                             'Folder'
                                         )
+                                        // Fetching the queries in the node where a folder has been moved to
+                                        await refetchNodeLocally(
+                                            selectedParentGuid,
+                                            'query'
+                                        )
+                                        // Fetching the data of the folder moved after it has moved - First the queries and then the folders, so as to check for empty state if necessary
+                                        await refetchNodeLocally(
+                                            item.guid,
+                                            'query'
+                                        )
+                                        refetchNodeLocally(item.guid, 'Folder')
                                     }, 2000)
 
                                     message.success(`Folder moved successfully`)
@@ -1301,15 +1456,19 @@
                                 isUpdating.value = false
                                 if (error.value == undefined) {
                                     setTimeout(async () => {
-                                        await refetchNode(
+                                        await refetchNodeLocally(
                                             previousParentGuId,
                                             'query'
                                         )
                                     }, 1000)
                                     setTimeout(async () => {
-                                        await refetchNode(
+                                        await refetchNodeLocally(
                                             selectedParentGuid,
                                             'query'
+                                        )
+                                        await refetchNodeLocally(
+                                            selectedParentGuid,
+                                            'Folder'
                                         )
                                     }, 2000)
 
@@ -1381,7 +1540,6 @@
                 },
                 {
                     title: 'Move Query',
-
                     key: 'move',
                     class: 'border-b border-gray-300',
                     component: MenuItem,
@@ -1392,7 +1550,6 @@
                 },
                 {
                     title: 'Rename',
-
                     key: 'rename',
                     class: '',
                     component: MenuItem,
@@ -1401,7 +1558,6 @@
                 },
                 {
                     title: 'Edit',
-
                     key: 'edit',
                     class: 'border-b border-gray-300',
                     component: MenuItem,
@@ -1412,7 +1568,6 @@
                 },
                 {
                     title: 'Delete',
-
                     key: 'delete',
                     class: 'text-red-600',
                     component: MenuItem,
@@ -1422,22 +1577,39 @@
                     },
                 },
             ]
+
+            const dropdownQueryRightClickOptions = [
+                {
+                    title: 'Run Query',
+                    key: 'run',
+                    class: '',
+                    component: MenuItem,
+                    disabled: false,
+                    handleClick: ({ item }) => {
+                        actionClick('play', item)
+                    },
+                },
+                {
+                    title: 'Open query sidebar',
+                    key: 'sidebar',
+                    class: '',
+                    component: MenuItem,
+                    disabled: false,
+                    handleClick: ({ item }) => {
+                        actionClick('info', item)
+                    },
+                },
+                ...dropdownQueryOptions,
+            ]
+
             const dropdownFolderOptions = [
                 {
-                    title: 'Rename folder',
+                    title: 'Rename',
                     key: 'rename',
                     class: '',
                     disabled: false,
                     component: MenuItem,
                     handleClick: renameFolder,
-                },
-                {
-                    title: 'New query',
-                    key: 'newQuery',
-                    component: MenuItem,
-                    class: '',
-                    disabled: false,
-                    handleClick: newQuery,
                 },
                 {
                     title: 'Move folder',
@@ -1450,8 +1622,31 @@
                     },
                 },
                 {
-                    title: 'Delete folder',
-
+                    title: 'New query',
+                    key: 'newQuery',
+                    component: MenuItem,
+                    class: '',
+                    disabled: false,
+                    handleClick: newQuery,
+                },
+                {
+                    title: 'New visual query',
+                    key: 'newVisualQuery',
+                    component: MenuItem,
+                    class: '',
+                    disabled: false,
+                    handleClick: newVisualQuery,
+                },
+                {
+                    title: 'New folder',
+                    key: 'new',
+                    class: 'border-b border-gray-300',
+                    disabled: false,
+                    component: MenuItem,
+                    handleClick: newFolder,
+                },
+                {
+                    title: 'Delete',
                     key: 'delete',
                     class: 'text-red-600',
                     component: MenuItem,
@@ -1465,6 +1660,7 @@
             return {
                 dropdownFolderOptions,
                 dropdownQueryOptions,
+                dropdownQueryRightClickOptions,
                 scheduleQueryModal,
                 toggleScheduleQueryModal,
                 evaluatePermisson,
@@ -1474,6 +1670,8 @@
                 renameFolder,
                 delteItem,
                 newQuery,
+                newVisualQuery,
+                newFolder,
                 savedQueryType,
                 item,
                 expandedKeys,
@@ -1504,6 +1702,8 @@
                 collectionName,
                 addBackground,
                 removeBackground,
+                createFolderInput,
+                createFolderInputFromCta,
                 // input,
                 // newFolderName,
             }
@@ -1549,7 +1749,6 @@
     .parent-ellipsis-container-extension {
         flex-shrink: 0;
     }
-
     /* ------------------------------- */
 </style>
 <style lang="less" module>

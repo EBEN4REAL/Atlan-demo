@@ -43,7 +43,11 @@
                     <span
                         class="font-bold tracking-wide truncate cursor-pointer text-new-gray-800"
                         >{{
-                            displayName(packageObject, name(workflowObject))
+                            displayName(
+                                packageObject,
+                                name(workflowObject),
+                                workflowObject.spec
+                            )
                         }}</span
                     >
                     <span class="italic truncate text-grey-500">
@@ -339,8 +343,8 @@
             const dropdownOptions = [
                 {
                     title: 'Delete',
-                    icon: 'Trash',
-                    class: 'text-red-700',
+                    icon: 'Delete',
+                    class: 'text-red-500',
                     handleClick: () =>
                         archiveWorkflow(workflowObject.value?.metadata?.name),
                 },

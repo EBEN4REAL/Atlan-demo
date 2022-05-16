@@ -2,16 +2,19 @@
     <div
         v-if="isLoading"
         style="height: 150px; width: 100%"
-        class="flex items-center justify-center p-3 mt-3 bg-white border gap-x-2"
+        class="flex items-center justify-center p-3 mt-3 bg-white gap-x-2"
     >
         <AtlanLoader class="h-6" />
         <span>Loading Run</span>
     </div>
     <a-tabs v-else v-model:activeKey="activeKey" :class="$style.previewtab">
         <a-tab-pane key="summary" tab="Summary">
-            <div class="pt-2 space-y-2" style="background-color: #f9fafc">
+            <div
+                class="pt-2 space-y-2 overflow-y-auto"
+                style="background-color: #f9fafc"
+            >
                 <div class="flex px-5 py-3 mb-2 bg-white gap-x-3">
-                    <div class="flex flex-col w-full">
+                    <div class="flex flex-col w-full gap-y-4">
                         <div class="flex items-center justify-between w-full">
                             <div>
                                 <p class="mb-1 info-title">Status</p>
@@ -46,15 +49,27 @@
                                 class="text-new-blue-400 border-new-blue-300"
                                 label="Retry"
                                 color="secondary"
-                                prefixIcon="Retry"
+                                prefix-icon="Retry"
                                 @click="handleRetry"
                             />
+                        </div>
+                        <div
+                            v-if="
+                                ['Failed', 'Error'].includes(
+                                    phase(selectedRun)
+                                ) && statusMessage(selectedRun)
+                            "
+                        >
+                            <p class="mb-1 info-title">Message</p>
+                            <span class="">
+                                {{ statusMessage(selectedRun) }}
+                            </span>
                         </div>
                         <button
                             v-if="
                                 ['Failed', 'Error'].includes(phase(selectedRun))
                             "
-                            class="flex items-center justify-center py-2 mt-4 font-bold transition-colors rounded gap-x-1 text-new-red-400 bg-new-red-200 bg-opacity-20 hover:bg-opacity-30"
+                            class="flex items-center justify-center py-2 font-bold transition-colors rounded gap-x-1 text-new-red-400 bg-new-red-200 bg-opacity-20 hover:bg-opacity-30"
                             @click="activeKey = 'failed'"
                         >
                             View Failed tasks
@@ -115,19 +130,19 @@
                 >View Metrics</a-button
             >-->
                         <a-modal
+                            v-model:visible="isMetricVisible"
                             width="100%"
                             :centered="true"
-                            :bodyStyle="{
+                            :body-style="{
                                 height: 'calc(100vh - 100px)',
                             }"
-                            :destroyOnClose="true"
-                            v-model:visible="isMetricVisible"
+                            :destroy-on-close="true"
                             :closable="false"
                         >
                             <div class="h-full px-6 py-3">
                                 <WorkflowMetrics
-                                    :selectedPod="selectedPod"
-                                    :selectedRun="selectedRun"
+                                    :selected-pod="selectedPod"
+                                    :selected-run="selectedRun"
                                 ></WorkflowMetrics>
                             </div>
                             <template #footer> </template>
@@ -139,14 +154,14 @@
                     <div>
                         <p class="info-title">Run Mode</p>
                         <div
-                            class="mb-2 text-gray-700"
                             v-if="isCronRun(selectedRun)"
+                            class="mb-2 text-gray-700"
                         >
                             Scheduled Run
                         </div>
                         <div
-                            class="mb-2 text-gray-700"
                             v-else-if="creatorUsername(selectedRun)"
+                            class="mb-2 text-gray-700"
                         >
                             Manually Run by
                             <template
@@ -170,9 +185,9 @@
                         <a
                             :href="link"
                             target="_blank"
-                            class="mb-2 font-medium text-primary"
+                            class="mb-2 font-medium text-primary hover:underline"
                         >
-                            {{ name(selectedRun) }}
+                            Open in Argo
                         </a>
                     </div>
                     <!-- <div
@@ -186,50 +201,54 @@
             </div>
         </a-tab-pane>
         <a-tab-pane
+            v-if="['Error', 'Failed'].includes(phase(selectedRun))"
             key="failed"
             class="shadow"
             tab="Failed Tasks"
-            v-if="['Error', 'Failed'].includes(phase(selectedRun))"
         >
             <div
-                class="flex flex-col px-3 pt-4 pb-2 bg-white border-b border-l border-r shadow"
+                class="flex flex-col px-3 pt-4 pb-2 overflow-y-auto bg-white shadow"
             >
                 <div class="flex flex-col gap-y-2">
                     <div class="flex w-full mb-2 gap-x-2">
-                        <div class="flex-grow">
+                        <div class="flex flex-grow gap-x-2">
                             <a-select
+                                class="flex-grow"
                                 ref="select"
-                                class="w-full"
                                 v-model:value="selectedPodName"
+                                :dropdown-match-select-width="false"
+                                style="max-width: 240px"
                             >
                                 <a-select-option
                                     v-for="pod in failedPods"
                                     :key="pod.name"
                                     >{{ pod.displayName }}</a-select-option
                                 >
+                                <template #suffixIcon>
+                                    <AtlanIcon icon="CaretDown" class="" />
+                                </template>
                             </a-select>
+                            <AtlanButton2
+                                label="Logs"
+                                color="secondary"
+                                @click="handleLogs"
+                            />
                         </div>
 
-                        <AtlanButton2
-                            label="Logs"
-                            color="secondary"
-                            @click="handleLogs"
-                        />
-
                         <a-modal
-                            :destroyOnClose="true"
                             v-model:visible="isLogVisible"
+                            :destroy-on-close="true"
                             :closable="false"
                             width="80%"
                             :centered="true"
-                            :bodyStyle="{
+                            :body-style="{
                                 height: 'calc(100vh - 100px)',
                             }"
                         >
                             <div class="h-full px-6 py-3">
                                 <WorkflowLogs
-                                    :selectedPod="selectedPod"
-                                    :selectedRun="selectedRun"
+                                    :selected-pod="selectedPod"
+                                    :selected-run="selectedRun"
                                 ></WorkflowLogs>
                             </div>
                             <template #footer> </template>
@@ -237,8 +256,20 @@
                     </div>
                     <div class="flex flex-col">
                         <p class="info-title">Name</p>
-                        <div class="mb-2 text-gray-700">
+                        <div class="mb-2 text-gray-700 break-all">
                             {{ selectedPod?.name }}
+                        </div>
+                    </div>
+                    <div
+                        v-if="
+                            ['Failed', 'Error'].includes(selectedPod?.phase) &&
+                            selectedPod?.message
+                        "
+                        class="flex flex-col"
+                    >
+                        <p class="info-title">Message</p>
+                        <div class="mb-2 text-gray-700">
+                            {{ selectedPod.message }}
                         </div>
                     </div>
                     <div class="flex flex-col">
@@ -266,7 +297,7 @@
                     </div>
                     <div class="flex flex-col">
                         <p class="info-title">Reference</p>
-                        <div class="mb-2 text-gray-700">
+                        <div class="mb-2 text-gray-700 break-all">
                             {{ selectedPod?.id }}
                         </div>
                     </div>
@@ -279,7 +310,6 @@
 <script lang="ts">
     // Vue
     import { computed, defineComponent, inject, ref, toRefs, watch } from 'vue'
-    import useWorkflowRunRetry from '~/workflows/composables/package/useWorkflowRunRetry'
     import { Modal, message } from 'ant-design-vue'
     import {
         promiseTimeout,
@@ -287,6 +317,7 @@
         useTimeoutFn,
         watchOnce,
     } from '@vueuse/core'
+    import useWorkflowRunRetry from '~/workflows/composables/package/useWorkflowRunRetry'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import useWorkflowLogsStream from '~/workflows/composables/package/useWorkflowLogsStream'
     import WorkflowLogs from './logs.vue'
@@ -327,6 +358,7 @@
 
             const {
                 phase,
+                message: statusMessage,
                 startedAt,
                 finishedAt,
                 duration,
@@ -465,6 +497,7 @@
                 startedAt,
                 finishedAt,
                 duration,
+                statusMessage,
                 selectedRun,
                 activeKey,
                 name,
@@ -495,6 +528,10 @@
 
 <style lang="less" module>
     .previewtab {
+        :global(.ant-tabs-tabpane) {
+            @apply flex flex-col overflow-hidden;
+        }
+
         :global(.ant-tabs-tab:first-child) {
             @apply ml-6;
         }

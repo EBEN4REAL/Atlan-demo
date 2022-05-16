@@ -9,10 +9,15 @@ import useLineageStore from '~/store/lineage'
 
 /** COMPOSABLES */
 import useGraph from './useGraph'
+import useGetNodes from './useGetNodes'
+import useTransformGraph from './useTransformGraph'
 
 /** UTILS */
-import { isCyclicEdge, getFilteredRelations } from './util.js'
-import useGetNodes from './useGetNodes'
+import {
+    getFilteredRelations,
+    controlCyclicEdges,
+    controlGroupedEdges,
+} from './util.js'
 
 export default async function useComputeGraph({
     graph,
@@ -35,6 +40,7 @@ export default async function useComputeGraph({
     const mergedLineageData = ref({})
 
     const { createNodeData, createEdgeData } = useGraph(graph)
+    const { fit } = useTransformGraph(graph, () => {})
 
     mergedLineageData.value = { ...lineage.value }
     lineageStore.setMergedLineageData(mergedLineageData.value)
@@ -70,20 +76,16 @@ export default async function useComputeGraph({
         return z.map((x) => x.guid)
     })
 
-    const fromAndToIdSetForNodes = new Set()
-
     const createNodesFromEntityMap = (data, hasBase = true) => {
         const lineageData = { ...data }
-
         const { relations, baseEntityGuid } = lineageData
-
         const getAsset = (id) => lineageData.guidEntityMap[id]
-
         const isNodeExist = (id) => nodes.value.find((x) => x.id === id)
 
-        relations.forEach((x) => {
+        // compute vertical pagination
+        const filteredRelations = getFilteredRelations(relations)
+        filteredRelations.forEach((x) => {
             const { fromEntityId: from, toEntityId: to } = x
-
             const { typeName: fromTypeName, guid: fromGuid } = getAsset(from)
             const { typeName: toTypeName, guid: toGuid } = getAsset(to)
 
@@ -92,65 +94,46 @@ export default async function useComputeGraph({
 
             if (from === to) return
 
-            const fromAndToId = `${from}@${to}`
-            if (!fromAndToIdSetForNodes.has(fromAndToId))
-                fromAndToIdSetForNodes.add(fromAndToId)
-            else return
-
             if (isNodeExist(fromGuid) && isNodeExist(toGuid)) return
 
-            // same source
+            // compute sameSourceCount vertical pagination
             if (sameSourceCount.value[from]) {
                 sameSourceCount.value[from].count += 1
 
-                if (sameSourceCount.value[from].count <= 4)
-                    sameSourceCount.value[from].targetsVisible = [
-                        ...sameSourceCount.value[from].targetsVisible,
-                        getAsset(to),
-                    ]
-                else {
+                if (sameSourceCount.value[from].count > 4)
                     sameSourceCount.value[from].targetsHidden = [
                         ...sameSourceCount.value[from].targetsHidden,
                         getAsset(to),
                     ]
-                }
             } else
                 sameSourceCount.value = {
                     ...sameSourceCount.value,
                     [from]: {
                         count: 1,
-                        targetsVisible: [getAsset(to)],
                         targetsHidden: [],
                     },
                 }
 
-            // same target
+            // compute sameTargetCount vertical pagination
             if (sameTargetCount.value[to]) {
                 sameTargetCount.value[to].count += 1
 
-                if (sameTargetCount.value[to].count <= 4)
-                    sameTargetCount.value[to].sourcesVisible = [
-                        ...sameTargetCount.value[to].sourcesVisible,
-                        getAsset(from),
-                    ]
-                else {
+                if (sameTargetCount.value[to].count > 4)
                     sameTargetCount.value[to].sourcesHidden = [
                         ...sameTargetCount.value[to].sourcesHidden,
                         getAsset(from),
                     ]
-                }
             } else
                 sameTargetCount.value = {
                     ...sameTargetCount.value,
                     [to]: {
                         count: 1,
-                        sourcesVisible: [getAsset(from)],
                         sourcesHidden: [],
                     },
                 }
         })
 
-        // same source
+        // add nodes for same source vertical pagination to entityMap
         Object.entries(sameSourceCount.value).forEach(([k, v]) => {
             if (v.count < 5) return
             if (!v.targetsHidden.length) return
@@ -159,14 +142,17 @@ export default async function useComputeGraph({
                 [`vpNodeSS-${k}`]: {
                     typeName: 'vpNode',
                     guid: `vpNodeSS-${k}`,
-                    attributes: {
-                        hiddenCount: v.targetsHidden.length,
+                    dataObj: {
+                        mode: 'vpNodeSS',
+                        modeId: k,
+                        count: v.targetsHidden.length,
+                        hiddenEntities: v.targetsHidden,
                     },
                 },
             }
         })
 
-        // same target
+        // add nodes for same target vertical pagination to entityMap
         Object.entries(sameTargetCount.value).forEach(([k, v]) => {
             if (v.count < 5) return
             if (!v.sourcesHidden.length) return
@@ -175,15 +161,18 @@ export default async function useComputeGraph({
                 [`vpNodeST-${k}`]: {
                     typeName: 'vpNode',
                     guid: `vpNodeST-${k}`,
-                    attributes: {
-                        hiddenCount: v.sourcesHidden.length,
+                    dataObj: {
+                        mode: 'vpNodeST',
+                        modeId: k,
+                        count: v.sourcesHidden.length,
+                        hiddenEntities: v.sourcesHidden,
                     },
                 },
             }
         })
 
+        // create all other nodes from entityMap
         const guidEntityMapValues = Object.values(lineageData.guidEntityMap)
-
         guidEntityMapValues.forEach((entity) => {
             const ent = { ...entity }
             const { typeName, guid } = ent
@@ -199,7 +188,8 @@ export default async function useComputeGraph({
 
             const { nodeData } = createNodeData(
                 ent,
-                hasBase ? baseEntityGuid : null
+                hasBase ? baseEntityGuid : null,
+                entity?.dataObj || {}
             )
 
             nodes.value.push(nodeData)
@@ -212,7 +202,7 @@ export default async function useComputeGraph({
     const createNodeEdges = (data) => {
         const lineageData = { ...data }
 
-        // same source
+        // add edges for same source vertical pagination to relations
         Object.entries(sameSourceCount.value).forEach(([k, v]) => {
             if (v.count < 5) return
             if (!v.targetsHidden.length) return
@@ -224,7 +214,7 @@ export default async function useComputeGraph({
             })
         })
 
-        // same target
+        // add edges for same target vertical pagination to relations
         Object.entries(sameTargetCount.value).forEach(([k, v]) => {
             if (v.count < 5) return
             if (!v.sourcesHidden.length) return
@@ -236,9 +226,9 @@ export default async function useComputeGraph({
             })
         })
 
-        const newRels = getFilteredRelations(lineageData.relations)
-
-        newRels.forEach((rel) => {
+        // create all other edges from filtered relations
+        const filteredRelations = getFilteredRelations(lineageData.relations)
+        filteredRelations.forEach((rel) => {
             const { fromEntityId: from, toEntityId: to, processId } = rel
 
             if (from === to) return
@@ -251,20 +241,6 @@ export default async function useComputeGraph({
             if (allSourcesHiddenIds.value.find((y) => [from, to].includes(y)))
                 return
 
-            let edgeExtraData = {}
-            const styles = {
-                stroke: '#B2B8C7',
-            }
-
-            if (isCyclicEdge(mergedLineageData, from, to)) {
-                styles.stroke = '#ff4848'
-                edgeExtraData = { ...edgeExtraData, isCyclicEdge: true }
-
-                lineageStore.setCyclicRelation(`${from}@${to}`)
-            }
-
-            edgeExtraData = { ...edgeExtraData, isDup: !!rel?.isDup }
-
             const relation = {
                 id: `${processId}/${from}@${to}`,
                 sourceCell: from,
@@ -273,7 +249,7 @@ export default async function useComputeGraph({
                 targetPort: `${to}-invisiblePort`,
             }
 
-            const { edgeData } = createEdgeData(relation, edgeExtraData, styles)
+            const { edgeData } = createEdgeData(relation, {})
             edges.value.push(edgeData)
         })
     }
@@ -302,48 +278,58 @@ export default async function useComputeGraph({
 
         graph.value.freeze('createCTAs')
         graph.value.getNodes().forEach((node) => {
+            const { disableCta } = node.getData()
+            const isCyclicGraph = !!lineageStore.getCyclicRelations().length
             const isColNode = isCollapsible(node.id)
             const isHoPaNode = hasHoPa(node.id)
             const isRootNode = graph.value.isRootNode(node.id)
             const isLeafNode = graph.value.isLeafNode(node.id)
 
-            if (
-                (isColNode && successors.includes(node.id)) ||
-                (baseEntityGuid === node.id && successors.length)
-            ) {
-                const id = `${node.id}-ctaRight-hoTo`
-                node.updateData({
-                    ctaRightIcon: 'col',
-                    ctaRightId: id,
-                })
-            }
-
-            if (
-                (isColNode && predecessors.includes(node.id)) ||
-                (baseEntityGuid === node.id && predecessors.length)
-            ) {
-                const id = `${node.id}-ctaLeft-hoTo`
-                node.updateData({
-                    ctaLeftIcon: 'col',
-                    ctaLeftId: id,
-                })
-            }
-
-            if ((isRootNode || isLeafNode) && isHoPaNode) {
-                const pos = isLeafNode ? 'ctaRight' : 'ctaLeft'
-                const id = `${node.id}-${pos}-hoPa`
-                if (pos === 'ctaRight')
+            if (!disableCta && !isCyclicGraph) {
+                // create CTAs for "right" horizontal expand/collpase
+                if (
+                    (isColNode && successors.includes(node.id)) ||
+                    (baseEntityGuid === node.id && successors.length)
+                ) {
+                    const id = `${node.id}-ctaRight-hoTo`
                     node.updateData({
-                        ctaRightIcon: 'exp',
+                        ctaRightIcon: 'col',
                         ctaRightId: id,
                     })
-                if (pos === 'ctaLeft')
+                }
+
+                // create CTAs for "left" horizontal expand/collpase
+                if (
+                    (isColNode && predecessors.includes(node.id)) ||
+                    (baseEntityGuid === node.id && predecessors.length)
+                ) {
+                    const id = `${node.id}-ctaLeft-hoTo`
                     node.updateData({
-                        ctaLeftIcon: 'exp',
+                        ctaLeftIcon: 'col',
                         ctaLeftId: id,
                     })
+                }
             }
 
+            // create CTAs for horizontal pagination
+            if (!disableCta) {
+                if ((isRootNode || isLeafNode) && isHoPaNode) {
+                    const pos = isLeafNode ? 'ctaRight' : 'ctaLeft'
+                    const id = `${node.id}-${pos}-hoPa`
+                    if (pos === 'ctaRight')
+                        node.updateData({
+                            ctaRightIcon: 'exp',
+                            ctaRightId: id,
+                        })
+                    if (pos === 'ctaLeft')
+                        node.updateData({
+                            ctaLeftIcon: 'exp',
+                            ctaLeftId: id,
+                        })
+                }
+            }
+
+            // increase width of node's invisible port to fit the CTAs
             const { ctaRightIcon, ctaLeftIcon } = node.getData()
             if (!ctaRightIcon && !ctaLeftIcon) return
 
@@ -402,6 +388,9 @@ export default async function useComputeGraph({
             },
         })
 
+        const { relations } = mergedLineageData.value
+        controlCyclicEdges(graph, relations)
+        controlGroupedEdges(graph, relations)
         createCTAs()
         controlPrefRetainer()
     }
@@ -474,9 +463,7 @@ export default async function useComputeGraph({
                 x !== newData.baseEntityGuid &&
                 graph.value.getNodes().find((y) => y.id === x)
         )
-        const cellToFit = graph.value.getCellById(assetGuidToFit)
-
-        graph.value.scrollToCell(cellToFit, { animation: { duration: 600 } })
+        fit(assetGuidToFit)
     }
 
     return {

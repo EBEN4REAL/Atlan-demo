@@ -98,15 +98,14 @@ export default function useWorkflowLogsStream() {
             .connect()
             .then((sse) => {
                 status.value = 'CONNECTED'
-                // sseClient.value.disconnect()
-                // Unsubscribes from event-less messages after 7 seconds
+                // Disconect if no logs fetched after 7 seconds
                 setTimeout(() => {
-                    if (sse) {
+                    if (sse && !logArray.value.length) {
                         sse.off('message', handleMessage)
                         sse.disconnect()
+                        status.value = 'TIMEDOUT'
                     }
-                    status.value = 'TIMEDOUT'
-                }, 70000)
+                }, 7 * 1000)
             })
             .catch((err) => {
                 console.log('error')

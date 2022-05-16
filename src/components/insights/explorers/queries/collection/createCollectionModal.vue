@@ -285,7 +285,7 @@
     import UserList from './userList.vue'
     import PermissionType from './permissionType.vue'
     import UserItem from './userItem.vue'
-    import Owners from './owner.vue'
+    import Owners from '~/components/common/collection/owner.vue'
     import whoami from '~/composables/user/whoami'
     import Avatar from '~/components/common/avatar/index.vue'
     import IconPicker from '~/components/common/IconPicker/IconPicker.vue'

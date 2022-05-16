@@ -87,7 +87,6 @@
             /** INJECTIONS */
             const lineage = inject('lineage')
             const selectedAsset = inject('selectedAsset')
-            const preferences = inject('preferences', ref({}))
             const control = inject('control')
 
             /** DATA */
@@ -142,7 +141,6 @@
                 // usePrefGraph
                 const { controlPrefRetainer } = usePrefGraph({
                     graph,
-                    preferences,
                 })
 
                 // useComputeGraph
@@ -167,7 +165,6 @@
                 useEventGraph({
                     graph,
                     currZoom,
-                    preferences,
                     guidToSelectOnGraph,
                     mergedLineageData,
                     sameSourceCount,

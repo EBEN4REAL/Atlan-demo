@@ -14,6 +14,7 @@ import useLineageService from '~/services/meta/lineage/lineage_service'
 import useUpdateGraph from './useUpdateGraph'
 import useGetNodes from './useGetNodes'
 import useGraph from './useGraph'
+import useTransformGraph from './useTransformGraph'
 import fetchPorts from './fetchPorts'
 
 /** CONSTANTS */
@@ -23,12 +24,18 @@ import {
 } from '~/constant/projection'
 
 /** UTILS */
-import { isCyclicEdge, getFilteredRelations } from './util.js'
+import {
+    getFilteredRelations,
+    getCyclicRelations,
+    controlCyclicEdges,
+    controlGroupedEdges,
+    setFront,
+    setBack,
+} from './util.js'
 
 export default function useEventGraph({
     graph,
     currZoom,
-    preferences,
     guidToSelectOnGraph,
     mergedLineageData,
     sameSourceCount,
@@ -47,11 +54,13 @@ export default function useEventGraph({
     const { highlightNode, highlightNodes, highlightEdges, dimNodesEdges } =
         useUpdateGraph(graph)
     const { addNode, addEdge, createEdgeData, createNodeData } = useGraph(graph)
+    const { fit } = useTransformGraph(graph, () => {})
 
     /** DATA */
     const selectedNodeId = ref('')
     const selectedNodeEdgeId = ref('')
     const selectedPortId = ref('')
+    const selectedPortIdNext = ref('')
     const selectedPortEdgeId = ref('')
     const nodesEdgesHighlighted = ref([])
     const nodesTranslated = ref({})
@@ -64,6 +73,7 @@ export default function useEventGraph({
     const depthCounter = ref(1)
     const isGraphLoading = ref(false)
     const portToggledNodes = ref({})
+    const preferences = lineageStore.getPreferences()
 
     /** METHODS */
     /** Utils */
@@ -270,6 +280,9 @@ export default function useEventGraph({
 
     // selectNodeEdge
     const selectNodeEdge = (edgeId) => {
+        const cell = graph.value.getCellById(edgeId)
+        const isCyclicEdge = cell.store.data.data?.isCyclicEdge
+        if (isCyclicEdge) return
         const processId = edgeId.split('/')[0]
         onSelectAsset({ guid: processId })
 
@@ -302,38 +315,17 @@ export default function useEventGraph({
     }
 
     // selectVpNode
-    const selectVpNode = (node, nodeIdsToAdd: string[] = []) => {
-        const nodeIdArr = node.id.split('-')
-        nodeIdArr.splice(0, 1)
-        const id = nodeIdArr.join('-')
-        const identifier = node.id.split('-').splice(0, 1)[0]
-        const mode = identifier.includes('vpNodeSS')
-            ? 'sameSource'
-            : 'sameTarget'
+    const selectVpNode = (node, entityIdsToAdd: string[] = []) => {
+        if (!node?.getData()) return
+        const { mode, modeId, hiddenEntities } = node.getData()
 
-        const hidden =
-            mode === 'sameSource'
-                ? sameSourceCount.value?.[id]?.targetsHidden
-                : sameTargetCount.value?.[id]?.sourcesHidden
-
-        let entitiesHidden = [...hidden]
-
-        const handleNodeIdsToAdd = (nita) => {
-            const nh = entitiesHidden.filter((x) => !nita.includes(x.guid))
-            const nta = entitiesHidden.filter((x) => nita.includes(x.guid))
-            entitiesHidden = nh
-            return nta
-        }
-        const entitiesToAdd = !nodeIdsToAdd.length
-            ? entitiesHidden.splice(0, 4)
-            : handleNodeIdsToAdd(nodeIdsToAdd)
-
-        if (mode === 'sameSource')
-            sameSourceCount.value[id].targetsHidden = entitiesHidden
-        if (mode === 'sameTarget')
-            sameTargetCount.value[id].sourcesHidden = entitiesHidden
-
-        const { relations } = mergedLineageData.value
+        const entitiesToAdd = !entityIdsToAdd.length
+            ? hiddenEntities.slice(0, 4)
+            : hiddenEntities.filter((hn) => entityIdsToAdd.includes(hn.guid))
+        const filteredEntityIdsToAdd = entitiesToAdd.map((ent) => ent.guid)
+        const filteredHiddenEntities = hiddenEntities.filter(
+            (ent) => !filteredEntityIdsToAdd.includes(ent.guid)
+        )
 
         graph.value.freeze('selectVpNode-entitiesToAdd')
         entitiesToAdd.forEach((ent) => {
@@ -343,18 +335,16 @@ export default function useEventGraph({
         })
         graph.value.unfreeze('selectVpNode-entitiesToAdd')
 
-        const entitiesToAddIds = entitiesToAdd.map((ent) => ent.guid)
+        const { relations } = mergedLineageData.value
+        const filteredRelations = getFilteredRelations(relations)
+        const relationsToAdd = filteredRelations.filter((rel) =>
+            mode === 'vpNodeSS'
+                ? filteredEntityIdsToAdd.includes(rel.toEntityId)
+                : filteredEntityIdsToAdd.includes(rel.fromEntityId)
+        )
 
-        const relsToAdd = relations.filter((rel) => {
-            if (mode === 'sameSource')
-                return entitiesToAddIds.includes(rel.toEntityId)
-            return entitiesToAddIds.includes(rel.fromEntityId)
-        })
-
-        graph.value.freeze('selectVpNode-relsToAdd')
-        const newRels = getFilteredRelations(relsToAdd)
-
-        newRels.forEach((rel) => {
+        graph.value.freeze('selectVpNode-relationsToAdd')
+        relationsToAdd.forEach((rel) => {
             const { fromEntityId: from, toEntityId: to, processId } = rel
 
             if (from === to) return
@@ -367,102 +357,68 @@ export default function useEventGraph({
                 targetPort: `${to}-invisiblePort`,
             }
 
-            const exists = edges.value.find((edge) => edge.id === relation.id)
+            const itExist = edges.value.find((edge) => edge.id === relation.id)
+            if (itExist) return
 
-            if (exists) return
-
-            let edgeExtraData = { isDup: !!rel?.isDup }
-            const styles = {
-                stroke: '#B2B8C7',
-            }
-
-            const _isCyclicEdge = isCyclicEdge(mergedLineageData, from, to)
-
-            if (_isCyclicEdge) {
-                edgeExtraData = { ...edgeExtraData, isCyclicEdge: true }
-
-                const newSource = mode === 'sameSource' ? to : from
-                const newTarget = mode === 'sameSource' ? from : to
-
-                const exist = edges.value.find((x) => {
-                    const [f, t] = x.id.split('/')[1].split('@')
-                    if (f === newSource && t === newTarget) return true
-                    return false
-                })
-
-                if (exist) return
-
-                const newRelation = {
-                    id: `${processId}/${newSource}@${newTarget}`,
-                    sourceCell: newSource,
-                    sourcePort: `${newSource}-invisiblePort`,
-                    targetCell: newTarget,
-                    targetPort: `${newTarget}-invisiblePort`,
-                }
-
-                styles.stroke = '#ff4848'
-                const { edgeData } = createEdgeData(
-                    newRelation,
-                    edgeExtraData,
-                    styles
-                )
-                edges.value.push(edgeData)
-                addEdge(newRelation)
-
-                lineageStore.setCyclicRelation(`${from}@${to}`)
-            }
-
-            const { edgeData } = createEdgeData(relation, edgeExtraData, styles)
+            const { edgeData } = createEdgeData(relation, {})
             edges.value.push(edgeData)
             addEdge(relation)
+
+            const entry = `${from}@${to}`
+            const cyclicRelations = getCyclicRelations(filteredRelations)
+
+            if (cyclicRelations.includes(entry)) {
+                const relACW = filteredRelations.find(
+                    (r) => r.fromEntityId === to && r.toEntityId === from
+                )
+                const relationACW = {
+                    id: `${relACW.processId}/${to}@${from}`,
+                    sourceCell: to,
+                    sourcePort: `${to}-invisiblePort`,
+                    targetCell: from,
+                    targetPort: `${from}-invisiblePort`,
+                }
+                const { edgeData: edACW } = createEdgeData(relationACW, {})
+                edges.value.push(edACW)
+                addEdge(relationACW)
+            }
         })
-        graph.value.unfreeze('selectVpNode-relsToAdd')
+        graph.value.unfreeze('selectVpNode-relationsToAdd')
 
-        nodes.value = nodes.value.filter((x) => x.id !== node.id)
-        edges.value = edges.value.filter((x) => {
-            if (mode === 'sameSource')
-                return x.id !== `vpNodeProcessId/${id}@${node.id}`
-            return x.id !== `vpNodeProcessId/${node.id}@${id}`
-        })
+        nodes.value = nodes.value.filter((n) => n.id !== node.id)
+        edges.value = edges.value.filter((e) =>
+            mode === 'vpNodeSS'
+                ? e.id !== `vpNodeProcessId/${modeId}@${node.id}`
+                : e.id !== `vpNodeProcessId/${node.id}@${modeId}`
+        )
 
-        renderLayout()
+        if (filteredHiddenEntities.length !== 0) {
+            // add back vp node
+            const entity = node?.store?.data?.entity || node.entity
+            const { nodeData } = createNodeData(entity, null)
+            nodeData.data.mode = mode
+            nodeData.data.modeId = modeId
+            nodeData.data.count = filteredHiddenEntities.length
+            nodeData.data.hiddenEntities = filteredHiddenEntities
+            nodes.value.push(nodeData)
+            addNode(nodeData.entity)
 
-        if (entitiesHidden.length === 0) return
-
-        // add back vp node
-        const entity = node?.store?.data?.entity || node.entity
-        const { nodeData } = createNodeData(entity, null)
-        nodeData.data.hiddenCount = entitiesHidden.length
-        nodes.value.push(nodeData)
-        graph.value.freeze('selectVpNode-addVpNode')
-        addNode(nodeData.entity)
-        graph.value.unfreeze('selectVpNode-addVpNode')
-
-        // add back vp edge
-        const from = mode === 'sameSource' ? id : node.id
-        const processId = 'vpNodeProcessId'
-        const to = mode === 'sameSource' ? node.id : id
-
-        const relation = {
-            id: `${processId}/${from}@${to}`,
-            sourceCell: from,
-            sourcePort: `${from}-invisiblePort`,
-            targetCell: to,
-            targetPort: `${to}-invisiblePort`,
+            // add back vp edge
+            const from = mode === 'vpNodeSS' ? modeId : node.id
+            const processId = 'vpNodeProcessId'
+            const to = mode === 'vpNodeSS' ? node.id : modeId
+            const relation = {
+                id: `${processId}/${from}@${to}`,
+                sourceCell: from,
+                sourcePort: `${from}-invisiblePort`,
+                targetCell: to,
+                targetPort: `${to}-invisiblePort`,
+            }
+            const { edgeData } = createEdgeData(relation, {})
+            edges.value.push(edgeData)
+            addEdge(relation)
         }
 
-        const styles = { stroke: '#B2B8C7' }
-        const { edgeData } = createEdgeData(relation, {}, styles)
-        edges.value.push(edgeData)
-        graph.value.freeze('selectVpNode-addVpEdge')
-        addEdge(relation)
-        graph.value.unfreeze('selectVpNode-addVpEdge')
-
-        const cell = graph.value.getCellById(node.id)
-        const updatedData = {
-            hiddenCount: entitiesHidden.length,
-        }
-        cell.updateData({ ...updatedData })
         renderLayout()
     }
 
@@ -479,6 +435,20 @@ export default function useEventGraph({
             allXPos[x] = v.sort((a, b) => a - b)
         })
         return allXPos
+    }
+
+    // updateNodeRawData
+    const updateNodeRawData = (nodeId, rawData) => {
+        const x6Node = getX6Node(nodeId)
+        const currData = x6Node.getData()
+        const newData = {
+            ...currData,
+            ...rawData,
+        }
+        nodes.value = nodes.value.map((n) => {
+            if (n.id !== nodeId) return n
+            return { ...n, data: newData }
+        })
     }
 
     // getNodeToTranslatePos
@@ -564,7 +534,7 @@ export default function useEventGraph({
 
         watchOnce(data, () => {
             const { guidEntityMap: gem1 } = mergedLineageData.value
-            const { guidEntityMap: gem2 } = data.value
+            const { guidEntityMap: gem2, relations: rel2 } = data.value
             const keys1 = Object.keys(gem1)
             const keys2 = Object.keys(gem2)
 
@@ -590,19 +560,33 @@ export default function useEventGraph({
                 addSubGraph(data.value)
                 depthCounter.value += 1
             } else {
-                message.info('No lineage to show')
-                if (path === 'right')
+                const isCircularLineage = keys2.length === 1 && rel2.length
+                message.info(
+                    `${
+                        isCircularLineage
+                            ? 'Circular lineage'
+                            : 'No lineage to show'
+                    }`
+                )
+
+                updateNodeRawData(n.id, { disableCta: true })
+
+                if (path === 'right') {
                     n.updateData({
+                        disableCta: true,
                         ctaRightIcon: '',
                         ctaRightId: '',
                         ctaRightLoading: false,
                     })
-                if (path === 'left')
+                }
+                if (path === 'left') {
                     n.updateData({
+                        disableCta: true,
                         ctaLeftIcon: '',
                         ctaLeftId: '',
                         ctaLeftLoading: false,
                     })
+                }
             }
 
             if (Object.keys(actions.value).length) {
@@ -697,6 +681,17 @@ export default function useEventGraph({
                     else removeShowMorePort(node)
 
                     translateSubsequentNodes(node)
+
+                    if (Object.keys(actions.value).length) {
+                        Object.entries(actions.value).forEach(([k, v]) => {
+                            if (k === 'selectPort') {
+                                const portId = v
+                                if (!portId) return
+                                selectPort(node, portId, true)
+                                delete actions.value[k]
+                            }
+                        })
+                    }
                 } else
                     message.info(
                         `No ${getNodePortLabel(
@@ -855,10 +850,7 @@ export default function useEventGraph({
 
         if (isPortEdgesPresent()) {
             const parentNode = getPortNode(portId)
-            const cellToFit = graph.value.getCellById(parentNode.id)
-            graph.value.scrollToCell(cellToFit, {
-                animation: { duration: 600 },
-            })
+            fit(parentNode.id)
         }
 
         controlPortsLoader(node, false, 'item')
@@ -928,6 +920,9 @@ export default function useEventGraph({
 
     // removePorts
     const removePorts = (node, options = {}) => {
+        if (selectedPortIdNext.value && node.hasPort(selectedPortIdNext.value))
+            return
+
         removeX6Ports(node)
         node.updateData({
             ports: [],
@@ -1038,7 +1033,7 @@ export default function useEventGraph({
     const getAllNodesQN = () => {
         const res = graph.value
             .getNodes()
-            .map((x) => x.store.data.entity.attributes.qualifiedName)
+            .map((x) => x?.store?.data?.entity?.attributes?.qualifiedName)
         return res
     }
 
@@ -1060,6 +1055,8 @@ export default function useEventGraph({
         dimNodesEdges(true)
 
         const { guidEntityMap, relations } = portLineage
+        const filteredRelations = getFilteredRelations(relations)
+
         Object.entries(nodesForPortLineage).forEach(([k, ports]) => {
             const parentNode = getX6Node(k)
             if (!parentNode) return
@@ -1088,7 +1085,7 @@ export default function useEventGraph({
         Object.values(nodesForPortLineage).forEach((ports) => {
             graph.value.freeze('addPortEdges')
             ports.forEach((port) => {
-                const rels = relations.filter((y) => {
+                const rels = filteredRelations.filter((y) => {
                     const { fromEntityId, toEntityId } = y
                     const fromToId = `${fromEntityId}@${toEntityId}`
                     if (fromToSet.has(fromToId)) return false
@@ -1120,6 +1117,9 @@ export default function useEventGraph({
                 'There are no related assets present on the graph for the selected port'
             )
             resetSelectedPort()
+        } else {
+            // controlCyclicEdges(graph, relations, 'port')
+            controlGroupedEdges(graph, relations, 'port')
         }
     }
 
@@ -1213,15 +1213,13 @@ export default function useEventGraph({
             targetPort,
         }
 
-        const edgeExtraData = { isDup: !!relation?.isDup }
-
         addEdge(
             sanitizedRelation,
             {
                 stroke: '#3c71df',
-                arrowSize: preferences.value.showArrow ? 12 : 0.1,
+                arrowSize: preferences.showArrow ? 12 : 0.1,
             },
-            edgeExtraData
+            {}
         )
     }
 
@@ -1300,7 +1298,7 @@ export default function useEventGraph({
             if (!newState && !cell.isVisible()) newState = 'col'
             cell.toggleVisible()
 
-            if (newState === 'col') n.toBack()
+            if (newState === 'col') setBack(n)
         })
         graph.value.unfreeze('controlHoriToggleCTA')
 
@@ -1329,7 +1327,7 @@ export default function useEventGraph({
                         : edge.getTargetNode().id === node.id
                 )
                 .forEach((edge) => {
-                    edge.toBack()
+                    setBack(edge)
                 })
         }
 
@@ -1338,28 +1336,29 @@ export default function useEventGraph({
                 .getEdges()
                 .filter((edge) => edge.id.includes('port'))
                 .forEach((edge) => {
-                    edge.toFront()
+                    setFront(edge)
                 })
 
-        node.toFront()
+        setFront(node)
     }
 
     // controlEdgeAnimation
     const controlEdgeAnimation = (edge, animate = true) => {
         if (!edge) return
 
-        const _isCyclicEdge = edge.store.data.data?.isCyclicEdge
+        const isCyclicEdge = edge.store.data.data?.isCyclicEdge
         const isPortEdge = !!edge.id.includes('port')
-        const isHighlightedEdge = (edgeId) =>
-            nodesEdgesHighlighted.value.find((x) => x === edgeId)
+        const isHighlightedEdge = nodesEdgesHighlighted.value.find(
+            (e) => e === edge.id
+        )
 
-        const defaultStateColor = _isCyclicEdge ? '#ff4848' : '#B2B8C7'
-        const highlightStateColor = _isCyclicEdge ? '#ff4848' : '#3c71df'
+        const defaultStateColor = isCyclicEdge ? '#F4B444' : '#B2B8C7'
+        const highlightStateColor = isCyclicEdge ? '#F4B444' : '#3c71df'
 
         const nodeEdgeDefaultStroke =
             // eslint-disable-next-line no-nested-ternary
             selectedNodeId.value || selectedNodeEdgeId.value
-                ? isHighlightedEdge(edge.id)
+                ? isHighlightedEdge
                     ? highlightStateColor
                     : '#dce0e5'
                 : defaultStateColor
@@ -1368,28 +1367,24 @@ export default function useEventGraph({
             ? portEdgeDefaultStroke
             : nodeEdgeDefaultStroke
 
-        edge.attr('line/strokeWidth', animate ? 2 : 1.6)
-        edge.attr('line/strokeDasharray', animate ? 5 : 0)
-        edge.attr(
-            'line/stroke',
-            animate ? highlightStateColor : edgeDefaultStroke
-        )
-        edge.attr(
-            'line/style/animation',
-            animate ? 'ant-line 30s infinite linear' : 'unset'
-        )
-        edge.attr(
-            'line/targetMarker/stroke',
-            animate ? highlightStateColor : edgeDefaultStroke
-        )
-
-        // TODO: redundant
-        // if (animate || isHighlightedEdge(edge.id)) edge.setZIndex(0)
-        // else if (
-        //     !animate &&
-        //     !(selectedPortId.value || selectedPortEdgeId.value)
-        // )
-        //     edge.toBack()
+        if (!isCyclicEdge) {
+            edge.attr('line/strokeWidth', animate ? 2 : 1.6)
+            edge.attr('line/strokeDasharray', animate ? 5 : 0)
+            edge.attr(
+                'line/stroke',
+                animate ? highlightStateColor : edgeDefaultStroke
+            )
+            edge.attr(
+                'line/style/animation',
+                animate ? 'ant-line 30s infinite linear' : 'unset'
+            )
+            edge.attr(
+                'line/targetMarker/stroke',
+                animate ? highlightStateColor : edgeDefaultStroke
+            )
+            if (animate) setFront(edge)
+            else if (!isPortEdge && !isHighlightedEdge) setBack(edge)
+        }
 
         edge.setLabels(
             edge.getLabels().map((lbl) => ({
@@ -1498,8 +1493,6 @@ export default function useEventGraph({
 
     // resetSelectedPort
     const resetSelectedPort = () => {
-        const parentNode = getPortNode(selectedPortId.value)
-
         portHighlightedBINodes.value.forEach((nodeId) => {
             const portEdges = graph.value
                 .getEdges()
@@ -1516,33 +1509,25 @@ export default function useEventGraph({
         const _expandedNodes = [...expandedNodes.value]
         _expandedNodes.forEach((nodeId) => {
             const x6Node = getX6Node(nodeId)
-            if (parentNode?.id !== nodeId) {
-                if (lineageStore.hasPortsList(x6Node?.id)) {
-                    graph.value
-                        .getEdges()
-                        .filter((edge) => edge.id.includes('port'))
-                        .forEach((edge) => {
-                            const cell = graph.value.getCellById(edge.id)
-                            cell.remove()
-                        })
-                    x6Node.updateData({
-                        highlightPorts: [],
-                        selectedPortId: '',
+            if (lineageStore.hasPortsList(x6Node?.id)) {
+                graph.value
+                    .getEdges()
+                    .filter((edge) => edge.id.includes('port'))
+                    .forEach((edge) => {
+                        const cell = graph.value.getCellById(edge.id)
+                        cell.remove()
                     })
-                } else {
-                    removePorts(x6Node, {
-                        portsCount: null,
-                        highlightPorts: [],
-                    })
-                    resetNodeTranslatedNodes(x6Node)
-                }
-            }
-
-            if (parentNode?.id === nodeId)
-                parentNode.updateData({
+                x6Node.updateData({
                     highlightPorts: [],
                     selectedPortId: '',
                 })
+            } else {
+                removePorts(x6Node, {
+                    portsCount: null,
+                    highlightPorts: [],
+                })
+                resetNodeTranslatedNodes(x6Node)
+            }
         })
 
         selectedPortId.value = ''
@@ -1628,10 +1613,23 @@ export default function useEventGraph({
             const ele = controlPortClickEvent(e, 'isportitem')
             const portId = ele.getAttribute('isportitem')
 
-            if (portId === selectedPortId.value) resetState()
-            else {
+            if (portId === selectedPortId.value) {
                 resetState()
-                selectPort(node, portId)
+            } else {
+                const { portsCount } = node.getData()
+                if (!portsCount) selectedPortIdNext.value = portId
+
+                resetState()
+
+                if (!portsCount) {
+                    const newAction = { selectPort: portId }
+                    actions.value = { ...actions.value, ...newAction }
+                    node.updateData({ highlightPorts: [] })
+                    fetchNodePorts(node)
+                    return
+                }
+
+                selectPort(node, portId, true)
             }
             return
         }
@@ -1715,9 +1713,7 @@ export default function useEventGraph({
     // Blank - Click
     graph.value.on('blank:click', () => {
         if (isGraphLoading.value) return
-
-        if (selectedNodeId.value) resetSelectedNode()
-        if (selectedNodeEdgeId.value) resetSelectedNodeEdge()
+        resetState()
     })
 
     // Blank - Mousewheel

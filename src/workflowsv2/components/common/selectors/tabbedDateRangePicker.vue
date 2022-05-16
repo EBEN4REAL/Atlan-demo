@@ -55,7 +55,9 @@
             }
 
             // Select today by default
-            handleSelect('Today', { gt: dayjs().startOf('day').valueOf() })
+            handleSelect('Last 24 Hours', {
+                gt: dayjs().subtract(1, 'day').valueOf(),
+            })
 
             return { selected, dateRanges, handleSelect }
         },

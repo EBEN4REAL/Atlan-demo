@@ -113,12 +113,12 @@ export function createAliasesMap(text: string) {
             // check for table
             const leftTexts = text
                 .slice(0, i + 1)
-                .split(/[,; ]/)
+                .split(/[,;\n ]/)
                 .filter((e) => e !== '' && e !== ';' && e !== ',')
                 .map((e) => e.replace(/\"/g, ''))
             const rightTexts = text
                 .slice(i + 4, text.length)
-                .split(/[,; ]/)
+                .split(/[,;\n ]/)
                 .filter((e) => e !== '' && e !== ';' && e !== ',')
                 .map((e) => e.replace(/\"/g, ''))
             let key, value

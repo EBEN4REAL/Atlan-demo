@@ -429,6 +429,13 @@ export function useBody(
                 }
                 break
             }
+            case 's3BucketQualifiedName': {
+                if (filterObject) {
+                    base.filter('term', 's3BucketQualifiedName', filterObject)
+                }
+                break
+            }
+
             case 'glossary': {
                 if (filterObject) {
                     base.filter('term', '__glossary', filterObject)
@@ -786,6 +793,7 @@ export function useBody(
             'SQL',
             'BI',
             'SaaS',
+            'ObjectStore',
         ])
         base.orFilter('terms', '__typeName.keyword', [
             'Query',

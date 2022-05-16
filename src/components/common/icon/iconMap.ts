@@ -108,6 +108,8 @@ import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
 import Relation from '~/assets/images/icons/relation.svg'
 import RelationActive from '~/assets/images/icons/relations-active.svg'
+import S3Object from '~/assets/images/icons/s3object.svg'
+import S3Bucket from '~/assets/images/icons/s3bucket.svg'
 import User from '~/assets/images/icons/user.svg'
 import Chats from '~/assets/images/icons/chats.svg'
 import OpenTermProfile from '~/assets/images/icons/openTermProfile.svg'
@@ -358,6 +360,7 @@ import Looker from '~/assets/images/source/svg/Looker.svg'
 import Salesforce from '~/assets/images/source/svg/Salesforce.svg'
 import MySQL from '~/assets/images/source/svg/MySQL.svg'
 import Glue from '~/assets/images/source/svg/glue.svg'
+import S3 from '~/assets/images/source/svg/s3.svg'
 
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
@@ -539,6 +542,8 @@ export default {
     Hash,
     Column,
     RelationActive,
+    S3Object,
+    S3Bucket,
     CreateGroups,
     NoGroups,
     NoUsers,
@@ -826,6 +831,7 @@ export default {
     BigQuery,
     Looker,
     Salesforce,
+    S3,
     SSO,
     SMTP,
     APIKey,

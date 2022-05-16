@@ -20,6 +20,16 @@ export const previewTabs = [
         analyticsKey: 'columns',
     },
     {
+        name: 'Objects',
+        component: 's3Objects',
+        includes: ['S3Bucket'],
+        icon: 'S3Object',
+        tooltip: 'Objects',
+        scrubbed: false,
+        requiredInProfile: true,
+        analyticsKey: 's3objects',
+    },
+    {
         name: 'Lineage',
         component: 'lineage',
         excludes: [
@@ -33,6 +43,13 @@ export const previewTabs = [
             'Schema',
             'Connection',
             'Procedure',
+            'SalesforceOrganization',
+            'SalesforceDashboard',
+            'SalesforceReport',
+            'SalesforceObject',
+            'SalesforceField',
+            'S3Bucket',
+            'S3Object',
         ],
         icon: 'Lineage',
         tooltip: 'Lineage',
@@ -55,6 +72,8 @@ export const previewTabs = [
             'Column',
             'Procedure',
             'Collection',
+            'S3Bucket',
+            'S3Object',
         ],
         icon: 'Relation',
         activeIcon: 'RelationActive',
@@ -140,7 +159,7 @@ export const JiraPreviewTab = {
 
 export const SlackResourcesTab = {
     name: 'Slack',
-    title: "Slack Conversations",
+    title: 'Slack Conversations',
     component: 'SlackResourcesTab',
     icon: 'Slack',
     activeIcon: 'Slack',

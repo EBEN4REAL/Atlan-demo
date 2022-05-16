@@ -76,6 +76,9 @@
             RelatedAssets: defineAsyncComponent(
                 () => import('./tabs/relatedAssets/index.vue')
             ),
+            Objects: defineAsyncComponent(
+                () => import('./tabs/s3objects/index.vue')
+            ),
             UploadHistory: defineAsyncComponent(
                 () => import('./tabs/uploadHistory/index.vue')
             ),
@@ -111,9 +114,9 @@
                     router.replace(`/${page.value}/${route.params.id}/${key}`),
             })
 
-            const changeActiveTab=(value)=>{
-                console.log("changing active tab")
-                activeKey.value=value
+            const changeActiveTab = (value) => {
+                console.log('changing active tab')
+                activeKey.value = value
             }
             provide('changeActiveTab', changeActiveTab)
             return {

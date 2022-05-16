@@ -1,19 +1,19 @@
 <template>
-    <div class="relative w-full px-3 py-1">
+    <div class="relative w-full px-3 py-1 truncate">
         <div class="flex items-center w-full" v-if="selectedColumn?.label">
             <component
                 :is="getDataTypeImage(selectedColumn?.type)"
                 class="flex-none w-auto h-4 text-gray-500 -mt-0.5"
             ></component>
-            <div style="max-width: 90%" class="truncate">
+            <div style="max-width: 75%" class="truncate">
                 <span class="mb-0 ml-1 text-sm text-gray-700">
                     {{ selectedColumn?.label }}
                 </span>
             </div>
         </div>
-        <span v-else class="text-gray-500">
+        <div v-else class="text-gray-500 truncate" style="max-width: 85%">
             {{ placeholder }}
-        </span>
+        </div>
 
         <div class="absolute right-3 top-1">
             <AtlanIcon

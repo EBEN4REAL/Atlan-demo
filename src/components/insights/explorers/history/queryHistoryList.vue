@@ -5,7 +5,7 @@
                 :queryInfo="queryInfo"
                 :savedQueryMetaMap="savedQueryMetaMap"
                 :isHover="isHover"
-                @mouseover="isHover = queryInfo?._id"
+                @mouseenter="isHover = queryInfo?._id"
                 @mouseleave="isHover = null"
             />
         </template>

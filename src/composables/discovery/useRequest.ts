@@ -2,13 +2,37 @@ import { computed, Ref, watch } from 'vue'
 import { getRequests } from '~/services/service/requests'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
-export function useRequest(guid,  pagination: Ref, type, filterStatus = {value: {}}) {
-    const payloadFilter = type === 'AtlasGlossaryTerm' || type === 'AtlasGlossary'? {
-        '$or': [{sourceGuid: guid}, {destinationGuid: guid}]
-    } : {
-        destinationGuid: guid,
+export function useRequest(
+    guid,
+    qfName,
+    pagination: Ref,
+    type,
+    filterStatus = { value: {} },
+) {
+    let payloadFilter = {}
+    if (type === 'AtlasGlossary') {
+        payloadFilter = {
+            $or: [
+                { sourceGuid: guid },
+                { destinationGuid: guid },
+                {
+                    destinationQualifiedName: {
+                        $like: `%${qfName}`,
+                    },
+                },
+            ],
+        }
+    } else if (type === 'AtlasGlossaryTerm') {
+        payloadFilter = {
+            $or: [{ sourceGuid: guid }, { destinationGuid: guid }],
+        }
+    } else {
+        payloadFilter = {
+            destinationGuid: guid,
+        }
     }
-    //  const filterType = type === 'AtlasGlossaryTerm' ? 'sourceGuid' :'destinationGuid'
+   const filterType =
+        type === 'AtlasGlossaryTerm' ? 'sourceGuid' : 'destinationGuid'
     const params = computed(() => {
         const temp = {
             sort: '-createdAt',

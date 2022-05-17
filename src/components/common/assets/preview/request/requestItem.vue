@@ -3,109 +3,123 @@
         <div
             class="relative mx-1 border border-gray-200 rounded-lg cursor-pointer hover:border-primary card-container"
         >
-            <div class="flex items-center bg-gray-100 px-3 py-3 rounded-lg">
-                <div
-                    v-if="item.requestType === 'term_link' && isGlossary"
-                    class="text-sm font-bold text-gray-500"
-                >
-                    Link Asset
-                </div>
-                <div v-else class="text-sm font-bold text-gray-500">
-                    {{ typeCopyMapping[item?.requestType] }}
-                    {{ destinationAttributeMapping[item.destinationAttribute] }}
-                </div>
-                <!-- <div class="flex">
-                    <span class="ml-1 text-gray-400 truncate"
-                        >has requested to</span
-                    >
-                    <span class="ml-1 font-bold text-gray-700 truncate"
-                        >{{
-                            item?.requestType === 'attribute'
-                                ? `${typeCopyMapping[item?.requestType]} ${
-                                      typeCopyMapping[
-                                          item?.destinationAttribute
-                                      ]
-                                  }`
-                                : typeCopyMapping[item?.requestType]
-                        }}
-                    </span>
-                    <span
-                        v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
-                        class="ml-1 text-gray-400"
-                        >on</span
-                    >
-                </div> -->
-                <div
-                    v-if="item.status === 'active'"
-                    v-auth="[map.APPROVE_REQUEST]"
-                    class="flex -mr-1.5 hover-action linear-gradient"
-                >
-                    <RequestDropdown
-                        :type="'approve'"
-                        :is-loading="loadingApproval"
-                        :item-drop-down="'Approve with comment'"
-                        @submit="(message) => handleApproval(message || '')"
-                    >
-                        <span class="text-xs text-green-500"> Approve </span>
-                    </RequestDropdown>
-                    <RequestDropdown
-                        :type="'reject'"
-                        :is-loading="isLoading"
-                        :class="'mr-cta'"
-                        :item-drop-down="'Reject with comment'"
-                        @submit="(message) => handleRejection(message || '')"
-                    >
-                        <span class="text-xs text-red-500"> Reject </span>
-                    </RequestDropdown>
-                </div>
-                <!-- hover-reject-approve -->
-                <div class="flex items-center justify-end ml-auto">
+            <div class="flex flex-col bg-gray-100 px-3 py-3 rounded-lg">
+                <div class="flex items-center">
                     <div
-                        v-if="
-                            item.status === 'rejected' ||
-                            item.status === 'approved'
-                        "
-                        class="flex items-center justify-end text-xs font-light whitespace-nowrap linear-gradient hover-reject-approve"
-                        :class="
-                            item.status === 'approved'
-                                ? 'text-success'
-                                : 'text-error'
-                        "
+                        v-if="item.requestType === 'term_link' && isGlossary"
+                        class="text-sm font-bold text-gray-500"
                     >
-                        {{
-                            item.status === 'approved'
-                                ? 'Approved by'
-                                : 'Rejected by'
-                        }}
-                        <div class="flex items-center mx-1 truncate">
-                            <Avatar
-                                :allow-upload="false"
-                                :avatar-name="nameUpdater"
-                                :avatar-size="18"
-                                :avatar-shape="'circle'"
-                                class="mr-1"
-                            />
-
-                            <span class="text-xs text-gray-700">{{
-                                nameUpdater
-                            }}</span>
-                        </div>
+                        Link Asset
                     </div>
-                    <AtlanIcon
-                        v-if="
-                            item.status === 'rejected' ||
-                            item.status === 'approved'
-                        "
-                        :class="{
-                            'approved-icon text-success':
-                                item.status === 'approved',
-                            'rejected-icon': item.status === 'rejected',
-                        }"
+                    <div v-else class="text-sm font-bold text-gray-500">
+                        {{ typeCopyMapping[item?.requestType] }}
+                        {{
+                            destinationAttributeMapping[
+                                item.destinationAttribute
+                            ]
+                        }}
+                    </div>
+                    <div
+                        v-if="item.status === 'active'"
+                        v-auth="[map.APPROVE_REQUEST]"
+                        class="flex -mr-1.5 hover-action linear-gradient"
+                    >
+                        <RequestDropdown
+                            :type="'approve'"
+                            :is-loading="loadingApproval"
+                            :item-drop-down="'Approve with comment'"
+                            @submit="(message) => handleApproval(message || '')"
+                        >
+                            <span class="text-xs text-green-500">
+                                Approve
+                            </span>
+                        </RequestDropdown>
+                        <RequestDropdown
+                            :type="'reject'"
+                            :is-loading="isLoading"
+                            :class="'mr-cta'"
+                            :item-drop-down="'Reject with comment'"
+                            @submit="
+                                (message) => handleRejection(message || '')
+                            "
+                        >
+                            <span class="text-xs text-red-500"> Reject </span>
+                        </RequestDropdown>
+                    </div>
+                    <!-- hover-reject-approve -->
+                    <div class="flex items-center justify-end ml-auto">
+                        <div
+                            v-if="
+                                item.status === 'rejected' ||
+                                item.status === 'approved'
+                            "
+                            class="flex items-center justify-end text-xs font-light whitespace-nowrap linear-gradient hover-reject-approve"
+                            :class="
+                                item.status === 'approved'
+                                    ? 'text-success'
+                                    : 'text-error'
+                            "
+                        >
+                            {{
+                                item.status === 'approved'
+                                    ? 'Approved by'
+                                    : 'Rejected by'
+                            }}
+                            <div class="flex items-center mx-1 truncate">
+                                <Avatar
+                                    :allow-upload="false"
+                                    :avatar-name="nameUpdater"
+                                    :avatar-size="18"
+                                    :avatar-shape="'circle'"
+                                    class="mr-1"
+                                />
+
+                                <span class="text-xs text-gray-700">{{
+                                    nameUpdater
+                                }}</span>
+                            </div>
+                        </div>
+                        <AtlanIcon
+                            v-if="
+                                item.status === 'rejected' ||
+                                item.status === 'approved'
+                            "
+                            :class="{
+                                'approved-icon text-success':
+                                    item.status === 'approved',
+                                'rejected-icon': item.status === 'rejected',
+                            }"
+                            :icon="
+                                item.status === 'rejected'
+                                    ? 'CrossCircle'
+                                    : 'Check'
+                            "
+                        />
+                        <AtlanIcon v-else icon="Clock" class="icon-warning" />
+                    </div>
+                </div>
+                <div
+                    v-if="selectedAsset?.typeName === 'AtlasGlossary'"
+                    class="flex items-center space-x-2 mt-1"
+                >
+                    <atlan-icon
                         :icon="
-                            item.status === 'rejected' ? 'CrossCircle' : 'Check'
+                            capitalizeFirstLetter(
+                                glossaryLabel[item?.entityType]
+                            )
                         "
+                        class="h-4"
                     />
-                    <AtlanIcon v-else icon="Clock" class="icon-warning" />
+                    <Tooltip
+                        :tooltip-text="
+                            item?.destinationEntity?.attributes?.name
+                        "
+                        placement="topRight"
+                        :routeTo="`/glossary/${item?.destinationEntity?.guid}`"
+                        :mouseLeaveDelay="0"
+                        :shouldOpenInNewTab="true"
+                        :classes="'hover:text-primary cursor-pointer'"
+                    />
                 </div>
             </div>
             <div v-if="item.requestType === 'term_link' && isGlossary">
@@ -425,8 +439,9 @@
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import map from '~/constant/accessControl/map'
     import { useRoute } from 'vue-router'
-    // import PopOverUser from '@/common/popover/user/user.vue'
-    // import PopOverGroup from '@/common/popover/user/groups.vue'
+    import glossaryLabel from '@/glossary/constants/assetTypeLabel'
+    import { capitalizeFirstLetter } from '~/utils/string'
+    import Tooltip from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'RequestItem',
@@ -445,6 +460,7 @@
             TermPiece,
             BMPiece,
             CategoryPiece,
+            Tooltip,
             // PopOverUser,
             // PopOverGroup,
         },
@@ -568,41 +584,6 @@
                 isReady,
                 termError,
             } = useTermPopover()
-            // onMounted(() => {
-            //     if (
-            //         item.value.status === 'approved' ||
-            //         item.value.status === 'rejected'
-            //     ) {
-            //         const userId =
-            //             item.value.status === 'approved'
-            //                 ? `${item.value.approvedBy[0].userId}`
-            //                 : `${item.value.rejectedBy[0].userId}`
-            //         const payloadFilter = {
-            //             $and: [
-            //                 {
-            //                     id: userId,
-            //                 },
-            //             ],
-            //         }
-            //         const { data } = Users.List(
-            //             {
-            //                 limit: 1,
-            //                 offset: 0,
-            //                 filter: JSON.stringify(payloadFilter),
-            //             },
-            //             { cacheKey: userId }
-            //         )
-            //         watch(data, () => {
-            //             if (!data?.value?.records) {
-            //                 updatedBy.value = {
-            //                     username: '',
-            //                 }
-            //             } else {
-            //                 updatedBy.value = data?.value?.records[0]
-            //             }
-            //         })
-            //     }
-            // })
             const nameUpdater = computed(() => {
                 if (item.value.status === 'approved') {
                     const userUpdater = item.value?.approvedBy || []
@@ -643,6 +624,8 @@
                 map,
                 destinationAttributeMapping,
                 isGlossary,
+                glossaryLabel,
+                capitalizeFirstLetter,
             }
         },
     })

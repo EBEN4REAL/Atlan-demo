@@ -61,9 +61,8 @@
                     @change="handleWorkflowChannelChange"
                 />
                 <AddQueryOutputChannel
-                    v-model:workflowChannel="workflowChannel.name"
-                    :invalid="workflowChannel.invalid"
-                    @change="handleWorkflowChannelChange"
+                    v-model:queryOutputChannels="queryOutputChannels"
+                    @change="handleQueryOutputChannelChange"
                 />
             </section>
         </template>
@@ -78,6 +77,7 @@
             v-model:unsavedChanges="unsavedChanges"
             :workflow-channel="workflowChannel"
             :channels="channels"
+            :queryOutputChannels="queryOutputChannels"
             @handleFailedChannels="handleFailed"
         />
     </section>
@@ -160,6 +160,9 @@
 
             const channelValue = ref([])
             const workflowChannel = ref({ name: '', invalid: false })
+            const queryOutputChannels: Ref<
+                { name: string; invalid?: boolean }[]
+            > = ref([])
 
             const handleFailed = (failedC) => {
                 failedC.forEach((c) => {
@@ -168,8 +171,16 @@
                     const index = channels.value.findIndex(
                         (ch) => ch.name === c
                     )
+                    const _queryOutputIndex =
+                        queryOutputChannels.value.findIndex(
+                            (ch) => ch.name === c
+                        )
                     if (index > -1) {
                         channels.value[index].invalid = true
+                    }
+                    if (_queryOutputIndex > -1) {
+                        queryOutputChannels.value[_queryOutputIndex].invalid =
+                            true
                     }
                 })
             }
@@ -194,16 +205,21 @@
                 unsavedChanges.value = true
                 if (!v) workflowChannel.value = { name: '', invalid: false }
             }
+            const handleQueryOutputChannelChange = (v) => {
+                unsavedChanges.value = true
+            }
 
             onMounted(() => {
                 activeTabKey.value = 'configuration'
-
                 channels.value = tenantSlackStatus.value.channels as any
                 workflowChannel.value.name =
                     tenantSlackStatus.value?.alertsWorkflowChannel?.name || ''
+                queryOutputChannels.value =
+                    tenantSlackStatus.value?.queryOutputChannels || []
             })
 
             return {
+                queryOutputChannels,
                 channelValue,
                 workflowChannel,
                 channels,
@@ -212,6 +228,7 @@
                 handleFailed,
                 addChannel,
                 removeChannel,
+                handleQueryOutputChannelChange,
                 handleWorkflowChannelChange,
                 avatarURL,
                 openKeys,

@@ -138,7 +138,7 @@
 
     const getChannels = () => {
         channels.value =
-            tenantSlackStatus.value.channels.map((channel) => ({
+            tenantSlackStatus.value.queryOutputChannels.map((channel) => ({
                 value: channel.id,
                 label: `# ${channel.name}`,
             })) ?? []

@@ -216,7 +216,7 @@
                             class="px-4 py-2 text-sm"
                             v-if="
                                 tenantSlackStatus?.configured &&
-                                tenantSlackStatus?.channels?.length
+                                tenantSlackStatus?.queryOutputChannels?.length
                             "
                         >
                             <SlackShareModal

@@ -48,12 +48,16 @@
             type: Array,
             required: true,
         },
+        queryOutputChannels: {
+            type: Array,
+            required: true,
+        },
         unsavedChanges: { type: Boolean, required: true },
     })
 
     const emit = defineEmits(['handleFailedChannels'])
 
-    const { workflowChannel, channels } = toRefs(props)
+    const { workflowChannel, channels, queryOutputChannels } = toRefs(props)
     const { unsavedChanges } = useVModels(props, emit)
 
     const store = integrationStore()
@@ -64,6 +68,9 @@
 
     const body = computed(() => ({
         channels: channels.value.map((c) => ({ name: c.name })),
+        queryOutputChannels: queryOutputChannels.value.map((c) => ({
+            name: c.name,
+        })),
 
         ...(workflowChannel.value.name
             ? {

@@ -1144,6 +1144,7 @@ export default function useEventGraph({
 
     // selectPortEdge
     const selectPortEdge = (edgeId, edge) => {
+        // TODO: Handle Event - lineage_process_clicked
         const processId = edgeId.split('/')[1]
         onSelectAsset({ guid: processId })
 
@@ -1369,9 +1370,13 @@ export default function useEventGraph({
             return
 
         if (isExpandedNode(node.id)) {
+            // TODO: Handle Event - lineage_node_collapsed
             removePorts(node)
             resetNodeTranslatedNodes(node)
-        } else fetchNodePorts(node)
+        } else {
+            // TODO: Handle Event - lineage_node_expanded
+            fetchNodePorts(node)
+        }
     }
 
     // controlHoPaCTALoader
@@ -1758,18 +1763,22 @@ export default function useEventGraph({
                     return
                 }
 
+                // TODO: Handle Event - lineage_sub_node_clicked
                 selectPort(node, portId, true)
             }
             return
         }
 
         if (controlPortClickEvent(e, 'isportshowmore')) {
+            // TODO: Handle Event - lineage_sub_node_show_more
             const { ports } = lineageStore.getNodesPortList(node.id)
             const newOffset = ports.length
 
             fetchNodePorts(node, newOffset)
             return
         }
+
+        // TODO: Handle Event - lineage_node_clicked
 
         if (node.id.includes('vpNode')) {
             if (selectedNodeId.value) controlSelectedNodeAction(node, null)

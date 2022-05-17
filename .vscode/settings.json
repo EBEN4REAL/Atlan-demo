@@ -1,7 +1,5 @@
 {
-    "i18n-ally.localesPaths": [
-        "locales"
-    ],
+    "i18n-ally.localesPaths": ["locales"],
     "editor.formatOnSave": true,
     "css.validate": false, // Disable css built-in lint
     "less.validate": false,
@@ -10,5 +8,5 @@
     "[vue]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "workbench.sideBar.location": "left"
+    "workbench.sideBar.location": "right"
 }

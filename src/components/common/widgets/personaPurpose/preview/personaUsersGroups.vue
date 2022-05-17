@@ -101,16 +101,7 @@
                                             class="flex flex-col"
                                             :data-test-id="item.username"
                                         >
-                                            <div
-                                                class="truncate cursor-pointer"
-                                                @click="
-                                                    () => {
-                                                        showUserPreviewDrawer(
-                                                            item
-                                                        )
-                                                    }
-                                                "
-                                            >
+                                            <div class="truncate">
                                                 <div class="flex items-center">
                                                     <a-tooltip>
                                                         <template #title>
@@ -265,16 +256,7 @@
                                             ></AtlanIcon>
                                         </div>
                                         <div class="flex flex-col">
-                                            <div
-                                                class="truncate cursor-pointer"
-                                                @click="
-                                                    () => {
-                                                        showGroupPreviewDrawer(
-                                                            item
-                                                        )
-                                                    }
-                                                "
-                                            >
+                                            <div class="truncate">
                                                 <span class="text-primary">{{
                                                     item.name || '-'
                                                 }}</span>
@@ -837,10 +819,10 @@
     .card-container {
         :hover {
             .type-data {
-                display: none;
+                // display: none;
             }
             .remove-data {
-                display: block;
+                display: none;
             }
         }
         .remove-data {
@@ -848,12 +830,12 @@
         }
     }
     .list-wrapper {
-        max-height: 20rem;
+        // max-height: 80vh;
     }
     .loading-view {
         min-height: 10rem;
     }
     .user-group-wrapper {
-        height: 25rem;
+        height: 85vh;
     }
 </style>

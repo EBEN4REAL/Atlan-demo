@@ -99,8 +99,11 @@
                     </div>
                 </div>
                 <div
-                    v-if="selectedAsset?.typeName === 'AtlasGlossary'"
-                    class="flex items-center space-x-2 mt-1"
+                    v-if="
+                        selectedAsset?.typeName === 'AtlasGlossary' &&
+                        item?.destinationEntity?.attributes?.name
+                    "
+                    class="flex items-center space-x-1 mt-1"
                 >
                     <atlan-icon
                         :icon="

@@ -293,7 +293,6 @@
                 table?.setDataListener(dataHere(rows))
 
                 table?.addStyleListener(() => {
-                    // if (!window?.regularTable?.querySelectorAll) return
                     // style all the table column headers
                     table.querySelectorAll('thead th').forEach((th) => {
                         setRowHeaderStyle(th, columns, table)

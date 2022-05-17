@@ -76,6 +76,9 @@ export default function useEventGraph({
     const portToggledNodes = ref({})
     const preferences = lineageStore.getPreferences()
 
+    // Prevent duplicate events
+    const isExpandedNodeEventSideEffect = ref(false)
+
     /** METHODS */
     /** Utils */
     // handleError
@@ -711,8 +714,14 @@ export default function useEventGraph({
             })
             removeShowMorePort(node)
             if (p.length < t) addShowMorePort(node)
+            // Handle Event - lineage_node_expanded
+            if (!isExpandedNodeEventSideEffect.value) {
+                sendNodeExpandedEvent(t, node.id, 'expanded')
+            }
+
             translateSubsequentNodes(node)
             controlPortsLoader(node, false)
+            isExpandedNodeEventSideEffect.value = false
             return
         }
 
@@ -764,6 +773,11 @@ export default function useEventGraph({
                     if (portsLength < total) addShowMorePort(node)
                     else removeShowMorePort(node)
 
+                    // Handle Event - lineage_node_expanded
+                    if (!isExpandedNodeEventSideEffect.value) {
+                        sendNodeExpandedEvent(total, node.id, 'expanded')
+                    }
+
                     translateSubsequentNodes(node)
 
                     if (Object.keys(actions.value).length) {
@@ -784,6 +798,7 @@ export default function useEventGraph({
                     )
 
                 controlPortsLoader(node, false)
+                isExpandedNodeEventSideEffect.value = false
             },
             { deep: true }
         )
@@ -1348,17 +1363,7 @@ export default function useEventGraph({
 
             removePorts(node)
             resetNodeTranslatedNodes(node)
-        } else {
-            // TODO: Handle Event - lineage_node_expanded
-
-            sendNodeExpandedEvent(
-                nodeData?.data?.portsCount,
-                node.id,
-                'expanded'
-            )
-
-            fetchNodePorts(node)
-        }
+        } else fetchNodePorts(node)
     }
 
     // controlHoPaCTALoader
@@ -1767,6 +1772,7 @@ export default function useEventGraph({
             const newOffset = ports.length
 
             // Handle Event - lineage_sub_node_show_more
+            isExpandedNodeEventSideEffect.value = true
             sendSubNodeShowMoreEvent(
                 ports.at(-1)?.typeName === 'showMorePort'
                     ? ports.length - 1

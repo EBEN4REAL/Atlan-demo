@@ -2,11 +2,15 @@
     <div class="bg-white border border-gray-300 rounded-lg">
         <!-- Search and Filter -->
         <div class="flex items-center w-full px-5 py-4 gap-x-4">
-            <div class="w-64 px-4 border rounded-md border-gray-light">
+            <div class="px-4 border rounded-md border-gray-light w-72">
                 <SearchAdvanced
                     v-model:value="queryText"
                     :placeholder="`Search ${totalCount} columns`"
-                    size="minimal"
+                    :autofocus="true"
+                    :allow-clear="true"
+                    size="small"
+                    :noBorder="true"
+                    :is-loading="isValidating"
                     @change="handleSearchChange"
                 >
                     <template #postFilter>

@@ -95,7 +95,9 @@
             clearable: { type: Boolean, default: () => false },
             placeholder: { type: String, default: () => 'Search' },
             size: {
-                type: String as PropType<'default' | 'minimal' | 'large'>,
+                type: String as PropType<
+                    'default' | 'minimal' | 'large' | 'small'
+                >,
                 default: () => 'default',
             },
             modelValue: {

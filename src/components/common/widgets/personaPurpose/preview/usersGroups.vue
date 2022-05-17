@@ -419,7 +419,7 @@
     import RaisedTab from '@/UI/raisedTab.vue'
 
     export default defineComponent({
-        name: 'PersonaUsersGroups',
+        name: 'PersonaPurposeUsersGroups',
         components: {
             Avatar,
             AtlanBtn,

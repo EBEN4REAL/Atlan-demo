@@ -40,7 +40,7 @@
     import UserPill from '@/common/pills/user.vue'
 
     export default defineComponent({
-        name: 'PersonaProperties',
+        name: 'PersonaPurposeProperties',
         components: {
             UserPill,
         },

@@ -3,7 +3,7 @@
         <div class="flex items-center text-sm font-bold text-gray-600">
             <AtlanIcon icon="Overview" class="mb-1 mr-2" />Overview
         </div>
-        <div class="flex mt-6">
+        <div v-if="item?.type === 'persona'" class="flex mt-6">
             <div class="flex-1">
                 <div class="text-gray-600">User and Groups</div>
                 <div class="mt-2 text-sm font-bold text-primary">
@@ -24,18 +24,18 @@
                 {{ item.description || 'No description' }}
             </div>
         </div>
-        <div class="mt-7">
+        <div v-if="item?.type === 'persona'" class="mt-7">
             <div class="text-gray-600">Connections</div>
             <div class="flex flex-col gap-2 p-2 mt-2 bg-gray-100 rounded-lg">
                 <div
-                    v-for="con in connection"
-                    :key="con.connectorName"
+                    v-for="connection in connections"
+                    :key="connection?.connectorName"
                     class="bg-white rounded-lg px-2.5 py-1.5 text-sm text-gray-800 flex"
                 >
-                    <img class="w-4 h-4 mr-2" :src="con.imgPath" />
-                    {{ con.connectorName }}
+                    <img class="w-4 h-4 mr-2" :src="connection?.imgPath" />
+                    {{ connection?.connectorName }}
                 </div>
-                <div v-if="!connection.length" class="text-sm text-gray-600">
+                <div v-if="!connections?.length" class="text-sm text-gray-600">
                     No connection
                 </div>
             </div>
@@ -59,22 +59,26 @@
     import { getCountString } from '~/utils/number'
 
     export default defineComponent({
-        name: 'PersonaOverview',
+        name: 'PersonaPurposeOverview',
         components: {},
         props: {
             item: {
                 type: Object,
                 required: true,
             },
+            globalState: {
+                Array,
+                required: true,
+            },
         },
         emits: [],
         setup(props) {
-            const { item } = toRefs(props)
+            const { item, globalState } = toRefs(props)
             console.log('this', item)
             const aggregations = ref(['typeName'])
             const limit = ref(1)
             const offset = ref(0)
-            const globalState = ref(['persona', item.value.id])
+            // const globalState = ref(['persona', item.value.id])
             const { fetch, isLoading, assetTypeAggregationList } =
                 useDiscoverList({
                     isCache: false,
@@ -108,29 +112,32 @@
                 const metadataPolicies = item.value?.metadataPolicies || []
                 const dataPolicies = item.value?.dataPolicies || []
                 const policies = [...metadataPolicies, ...dataPolicies]
-                policies
-                    .map((policy) => policy.assets[0])
-                    .forEach((asset) => {
-                        if (asset.startsWith('default')) {
-                            const connectorName = asset.split('/')[1]
-                            const imgPath =
-                                getConnectorImageMap.value[connectorName]
-                            if (!unique.includes(imgPath)) {
-                                result.push({
-                                    imgPath,
-                                    connectorName,
-                                })
-                                unique.push(imgPath)
+                if (policies.length > 0) {
+                    policies
+                        .map((policy) => policy.assets[0])
+                        .forEach((asset) => {
+                            if (asset.startsWith('default')) {
+                                const connectorName = asset.split('/')[1]
+                                const imgPath =
+                                    getConnectorImageMap.value[connectorName]
+                                if (!unique.includes(imgPath)) {
+                                    result.push({
+                                        imgPath,
+                                        connectorName,
+                                    })
+                                    unique.push(imgPath)
+                                }
                             }
-                        }
-                    })
+                        })
 
+                    return result
+                }
                 return result
             }
-            const connection = computed(() => getUniqueTypeIcons())
+            const connections = computed(() => getUniqueTypeIcons())
             return {
                 userGroup,
-                connection,
+                connections,
                 totalAsset,
                 getCountString,
                 isLoading,

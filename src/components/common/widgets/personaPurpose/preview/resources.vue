@@ -93,7 +93,7 @@
     import Avatar from '~/components/common/avatar/index.vue'
 
     export default defineComponent({
-        name: 'PersonaResources',
+        name: 'PersonaPurposeResources',
         components: {
             Avatar,
         },

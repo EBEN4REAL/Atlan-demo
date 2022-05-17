@@ -11,6 +11,7 @@ import {
     mysql,
     mssql,
     glue,
+    salesforce,
 } from './icons'
 
 /** STORE */
@@ -59,6 +60,12 @@ export const getNodeTypeText = {
     TableauSite: 'Site',
     TableauFlow: 'Flow',
     TableauMetric: 'Metric',
+    // Salesforce
+    SalesforceOrganization: 'Organization',
+    SalesforceDashboard: 'Dashboard',
+    SalesforceReport: 'Report',
+    SalesforceObject: 'Object',
+    SalesforceField: 'Field',
 }
 
 /* This is a mapping of the source of the asset to the image. */
@@ -75,6 +82,7 @@ export const getNodeSourceImage = {
     mysql,
     mssql,
     glue,
+    salesforce,
 }
 
 /**

@@ -55,7 +55,7 @@
                                                 >•</span
                                             >
                                             {{selectedUser.enabled ? selectedUser?.workspaceRole : '' }}
-                                            <button class="bg-new-gray-600 rounded-md px-3 text-xs pt-1 pb-0.5 tracking-wider text-white text-bold" v-if="!selectedUser.enabled">DISABLED</button>
+                                           <button class="rounded bg-new-red-100 px-3 text-xs pt-1 pb-0.5 text-new-red-400 tracking-wider font-bold" v-if="!selectedUser.enabled">DISABLED</button>
                                         </div>
                                         <span
                                             v-if="

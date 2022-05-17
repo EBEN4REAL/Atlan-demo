@@ -80,7 +80,7 @@
                                 <span class="text-gray-300">&bull;</span>
                                 <span class="ml-1">
                                     {{selectedUser.enabled ?  details : '' }} 
-                                    <button class="bg-new-gray-600 rounded-md px-3 text-xs pt-1 pb-0.5 tracking-wider text-white text-bold" v-if="!selectedUser.enabled">DISABLED</button>
+                                    <button class="rounded bg-new-red-100 px-3 text-xs pt-1 pb-0.5 text-new-red-400 tracking-wider font-bold" v-if="!selectedUser.enabled">DISABLED</button>
                                 </span>
                             </span>
                             <span
@@ -102,14 +102,14 @@
                                     <template #title>
                                         {{
                                             selectedUser.last_active_time
-                                        }}</template
-                                    >
+                                        }}
+                                    </template>
                                     <span class="ml-1">
                                         Active
                                         {{
                                             selectedUser.last_active_time_ago_short_notation
-                                        }}</span
-                                    >
+                                        }}
+                                    </span>
                                 </a-tooltip>
                             </span>
                         </div>

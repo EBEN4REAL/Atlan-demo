@@ -1,6 +1,6 @@
 <template>
     <div ref="monacoRoot" class="relative monacoeditor"></div>
-    <!-- <div
+    <div
         id="auto-suggestions"
         class="absolute max-w-md py-2 overflow-auto bg-gray-100 shadow max-h-64"
     >
@@ -13,7 +13,6 @@
             :id="`sugg-${index}`"
         >
             <div
-                @keyup.enter.stop="handleApplySuggestion(listItem)"
                 @click.stop="handleApplySuggestion(listItem)"
                 class="px-2"
             >
@@ -28,14 +27,14 @@
                 >{{ listItem.label }}
             </div>
         </div>
-    </div> -->
-    <SuggestionList
+    </div>
+    <!-- <SuggestionList
         id="auto-suggestions"
         @applySuggestions="handleApplySuggestion"
         :suggestions="list"
         :isAutoComplete="isAutoComplete"
         :editor="editor"
-    />
+    /> -->
 </template>
 
 <script lang="ts">
@@ -710,28 +709,28 @@
                 // editor?.addCommand(16, function () {
                 //     traverseUp()
                 // })
-                // const keyDownEv = editor?.onKeyDown((e) => {
-                //     if (e.keyCode === 18 && isAutoComplete.value) {
-                //         // debugger
-                //         traverseDown()
-                //         e.preventDefault()
-                //         e.stopPropagation()
-                //     }
-                //     if (e.keyCode === 16 && isAutoComplete.value) {
-                //         e.preventDefault()
-                //         e.stopPropagation()
-                //         traverseUp()
-                //     }
-                //     if (e.keyCode === 3 && isAutoComplete.value) {
-                //         // document.activeElement.blur()
-                //         e.preventDefault()
-                //         e.stopPropagation()
-                //         handleApplySuggestion(
-                //             list.value[selectedSuggestionIndex.value]
-                //         )
-                //     }
-                //     // console.log('YAYAYAYAYA', e.keyCode)
-                // })
+                const keyDownEv = editor?.onKeyDown((e) => {
+                    if (e.keyCode === 18 && isAutoComplete.value) {
+                        // debugger
+                        traverseDown()
+                        e.preventDefault()
+                        e.stopPropagation()
+                    }
+                    if (e.keyCode === 16 && isAutoComplete.value) {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        traverseUp()
+                    }
+                    if (e.keyCode === 3 && isAutoComplete.value) {
+                        // document.activeElement.blur()
+                        e.preventDefault()
+                        e.stopPropagation()
+                        handleApplySuggestion(
+                            list.value[selectedSuggestionIndex.value]
+                        )
+                    }
+                    // console.log('YAYAYAYAYA', e.keyCode)
+                })
                 // editor.addAction({
                 //     id: 'test',
                 //     label: 'test',

@@ -5,17 +5,65 @@
         </div>
         <div class="mt-5">
             <div
-                class="flex items-center p-3 border border-gray-100 rounded-xl"
+                v-for="(resource, index) in item?.resources?.links"
+                :key="index"
+                class="flex items-center p-3 mb-3 border border-gray-300 rounded-xl"
             >
                 <div class="p-2.5 rounded-full bg-gray-100 mr-3">
-                    <AtlanIcon icon="Slack" class="w-4 h-4" />
+                    <AtlanIcon
+                        v-if="resource.attributes.link === ''"
+                        icon="Link"
+                        class="w-auto h-7"
+                    />
+
+                    <img
+                        v-else
+                        :src="
+                            getDomain(resource.attributes.link) !== 'atlan.com'
+                                ? `https://www.google.com/s2/favicons?domain=${getDomain(
+                                      resource.attributes.link
+                                  )}&sz=64`
+                                : '/ico.ico'
+                        "
+                        alt=""
+                        class="w-8"
+                        style=""
+                        @error="defaultIcon = true"
+                    />
                 </div>
-                <div>
+                <div class="w-full">
                     <div class="text-sm font-bold text-gray-800">
-                        Slack Resource name
+                        {{ resource?.attributes?.name }}
                     </div>
-                    <div class="mt-1 text-sm text-gray-700">
-                        Edited a day ago
+                    <div
+                        class="flex justify-between mt-1 text-sm text-gray-700"
+                    >
+                        Edited
+                        {{
+                            useTimeAgo(
+                                resource?.attributes?.__modificationTimestamp ||
+                                    resource?.attributes?.__timestamp
+                            ).value
+                        }}
+                        <Avatar
+                            :avatar-bg-class="'bg-primary-light border-white border border-2 uppercase -mt-1'"
+                            :initial-name="
+                                (resource?.attributes?.__modifiedBy &&
+                                    resource?.attributes?.__modifiedBy[0]) ||
+                                (resource?.attributes?.__createdBy &&
+                                    resource?.attributes?.__createdBy[0])
+                            "
+                            :image-url="
+                                imageUrl(
+                                    (resource?.attributes?.__modifiedBy &&
+                                        resource?.attributes?.__modifiedBy) ||
+                                        (resource?.attributes?.__createdBy &&
+                                            resource?.attributes?.__createdBy)
+                                )
+                            "
+                            :avatar-size="24"
+                            :avatar-shape="'circle'"
+                        />
                     </div>
                 </div>
             </div>
@@ -24,14 +72,31 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, toRefs } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
+    import { getDomain } from '~/utils/url'
+    import Avatar from '~/components/common/avatar/index.vue'
 
     export default defineComponent({
         name: 'PersonaResources',
-        components: {},
-        props: {},
+        components: {
+            Avatar,
+        },
+        props: {
+            item: {
+                type: Object,
+                required: true,
+            },
+        },
         setup(props) {
-            return {}
+            const { item } = toRefs(props)
+            const imageUrl = (username: any) =>
+                `${window.location.origin}/api/service/avatars/${username}`
+            return {
+                useTimeAgo,
+                getDomain,
+                imageUrl,
+            }
         },
     })
 </script>

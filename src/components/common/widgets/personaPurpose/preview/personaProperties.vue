@@ -5,27 +5,27 @@
         </div>
         <div class="mt-3">
             <div class="py-3">
-                <div class="text-base text-gray-600">Last updated by</div>
+                <div class="text-sm text-gray-600">Last updated by</div>
             </div>
             <UserPill class="w-24" :username="item?.updatedBy" />
             <div class="py-3">
-                <div class="text-base text-gray-600">Last updated at</div>
-                <div class="mt-2 text-base text-gray-800">
+                <div class="text-sm text-gray-600">Last updated at</div>
+                <div class="mt-2 text-sm text-gray-800">
                     {{ formatDateTime(item?.updatedAt) }} ({{
                         useTimeAgo(item?.updatedAt).value
                     }})
                 </div>
             </div>
             <div class="py-3">
-                <div class="text-base text-gray-600">Created at</div>
-                <div class="mt-2 text-base text-gray-800">
+                <div class="text-sm text-gray-600">Created at</div>
+                <div class="mt-2 text-sm text-gray-800">
                     {{ formatDateTime(item?.createdAt) }} ({{
                         useTimeAgo(item?.createdAt).value
                     }})
                 </div>
             </div>
             <div class="py-3">
-                <div class="text-base text-gray-600">Created by</div>
+                <div class="text-sm text-gray-600">Created by</div>
                 <UserPill class="w-24" :username="item?.createdBy" />
             </div>
         </div>

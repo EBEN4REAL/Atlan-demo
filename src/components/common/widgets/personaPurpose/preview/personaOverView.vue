@@ -59,7 +59,7 @@
     import { getCountString } from '~/utils/number'
 
     export default defineComponent({
-        name: 'PersonaOverView',
+        name: 'PersonaOverview',
         components: {},
         props: {
             item: {
@@ -70,6 +70,7 @@
         emits: [],
         setup(props) {
             const { item } = toRefs(props)
+            console.log('this', item)
             const aggregations = ref(['typeName'])
             const limit = ref(1)
             const offset = ref(0)

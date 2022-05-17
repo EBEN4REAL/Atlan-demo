@@ -62,7 +62,7 @@
     import { defineComponent, ref, computed, toRefs, watch } from 'vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import AssetList from '@/common/assetList/assetList.vue'
-    import PersonaOverview from './preview/personaOverView.vue'
+    import PersonaOverview from './preview/personaOverview.vue'
     import PersonaUsersGroups from './preview/personaUsersGroups.vue'
     import PersonaResources from './preview/personaResources.vue'
     import PersonaProperties from './preview/personaProperties.vue'

@@ -7,34 +7,56 @@
             <div class="py-3">
                 <div class="text-base text-gray-600">Last updated by</div>
             </div>
+            <UserPill class="w-24" :username="item?.updatedBy" />
             <div class="py-3">
                 <div class="text-base text-gray-600">Last updated at</div>
                 <div class="mt-2 text-base text-gray-800">
-                    May 5, 2022, 4:41:55 PM (5 days ago)
+                    {{ formatDateTime(item?.updatedAt) }} ({{
+                        useTimeAgo(item?.updatedAt).value
+                    }})
                 </div>
             </div>
             <div class="py-3">
                 <div class="text-base text-gray-600">Created at</div>
                 <div class="mt-2 text-base text-gray-800">
-                    May 5, 2022, 4:41:55 PM (5 days ago)
+                    {{ formatDateTime(item?.createdAt) }} ({{
+                        useTimeAgo(item?.createdAt).value
+                    }})
                 </div>
             </div>
             <div class="py-3">
                 <div class="text-base text-gray-600">Created by</div>
+                <UserPill class="w-24" :username="item?.createdBy" />
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue'
+    import { defineComponent, toRefs } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
+
+    import { formatDateTime } from '~/utils/date'
+    import UserPill from '@/common/pills/user.vue'
 
     export default defineComponent({
         name: 'PersonaProperties',
-        components: {},
-        props: {},
+        components: {
+            UserPill,
+        },
+        props: {
+            item: {
+                type: Object,
+                required: true,
+            },
+        },
         setup(props) {
-            return {}
+            const { item } = toRefs(props)
+            console.log(item?.value, 'iteeemm')
+            return {
+                useTimeAgo,
+                formatDateTime,
+            }
         },
     })
 </script>

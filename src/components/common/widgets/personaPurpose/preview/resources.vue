@@ -3,7 +3,7 @@
         <div class="flex items-center text-sm font-bold text-gray-600">
             <AtlanIcon icon="Link" class="mb-1 mr-2" />Resources
         </div>
-        <div v-if="item?.resources?.links > 0" class="mt-5">
+        <div v-if="item?.resources?.links?.length > 0" class="mt-5">
             <div
                 v-for="(resource, index) in item?.resources?.links"
                 :key="index"
@@ -69,8 +69,10 @@
             </div>
         </div>
         <div v-else class="mt-5">
-            <div class="flex flex-col items-center justify-center h-96 gap-y-6">
-                <div class="w-24">
+            <div
+                class="flex flex-col items-center justify-center h-96 gap-y-10"
+            >
+                <div class="w-full h-28">
                     <AtlanIcon
                         icon="EmptyResource2"
                         alt="EmptyResource"
@@ -105,12 +107,14 @@
         },
         setup(props) {
             const { item } = toRefs(props)
+            console.log('iteeem', item)
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
             return {
                 useTimeAgo,
                 getDomain,
                 imageUrl,
+                item,
             }
         },
     })

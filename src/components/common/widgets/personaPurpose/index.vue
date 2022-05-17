@@ -192,7 +192,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, ref, watch } from 'vue'
+    import { defineComponent, computed, ref, watch, onMounted } from 'vue'
     import { Carousel } from 'ant-design-vue'
     import AtlanLoader from '@common/loaders/atlanLoader.vue'
     import { useRouter } from 'vue-router'
@@ -243,8 +243,8 @@
                         return found
                     }) || []
             )
-            watch(personas, () => {
-                if (personas.value.length && !userList?.value?.length) {
+            watch(personas, (newVal) => {
+                if (newVal.length && !userList?.value?.length) {
                     let userIds = []
                     personas.value.forEach((el) => {
                         userIds = [...userIds, ...el.users]
@@ -252,7 +252,6 @@
                     userIds = [...new Set(userIds)]
                     const filter = userIds.map((el) => ({ id: el }))
                     params.value = { filter: { $or: filter } }
-                    mutate()
                 }
             })
             const purposes = computed(
@@ -263,6 +262,7 @@
                         const policies = [...metadataPolicies, ...dataPolicies]
                         const users = []
                         const groups = []
+                        let isAllUsers = false
                         policies.forEach((policy) => {
                             if (policy.users.length) {
                                 users.push(...policy.users)
@@ -270,12 +270,18 @@
                             if (policy.groups.length) {
                                 groups.push(...policy.groups)
                             }
+                            if (policy?.allUsers) {
+                                isAllUsers = true
+                            }
                         })
                         let found = false
                         if (username) {
                             found =
                                 found ||
                                 users.some((user) => [username].includes(user))
+                        }
+                        if (isAllUsers) {
+                            found = isAllUsers
                         }
                         // if (ownerGroups && ownerGroups.length) {
                         //     found =
@@ -297,8 +303,6 @@
             const handleViewAssets = (item) => {
                 assetStore.setGlobalState([activeTab.value, item.id])
                 router.push('/assets')
-                // selectedItem.value = item
-                // visible.value = true
             }
             const handleOverView = (item) => {
                 selectedItem.value = item
@@ -308,6 +312,9 @@
                 visible.value = false
                 selectedItem.value = {}
             }
+            onMounted(() => {
+                mutate()
+            })
             return {
                 personas,
                 activeTab,

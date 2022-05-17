@@ -3,11 +3,21 @@
         <div class="flex items-center text-sm font-bold text-gray-600">
             <AtlanIcon icon="Overview" class="mb-1 mr-2" />Overview
         </div>
-        <div v-if="item?.type === 'persona'" class="flex mt-6">
+        <div class="flex mt-6">
             <div class="flex-1">
                 <div class="text-gray-600">User and Groups</div>
-                <div class="mt-2 text-sm font-bold text-primary">
+                <div
+                    v-if="item?.type === 'persona'"
+                    class="mt-2 text-sm font-bold text-primary"
+                >
                     {{ userGroup }}
+                </div>
+
+                <div
+                    v-if="item?.type === 'purpose'"
+                    class="mt-2 text-sm font-bold text-primary"
+                >
+                    <!-- {{ purposeAllUsers ? 'All Users' : '' }} -->
                 </div>
             </div>
             <div class="flex-1">
@@ -67,7 +77,7 @@
                 required: true,
             },
             globalState: {
-                Array,
+                type: Array,
                 required: true,
             },
         },

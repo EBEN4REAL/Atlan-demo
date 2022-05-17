@@ -7,7 +7,10 @@
             <div class="py-3">
                 <div class="text-sm text-gray-600">Last updated by</div>
             </div>
-            <UserPill class="w-24" :username="item?.updatedBy" />
+            <UserPill
+                class="w-24"
+                :username="item?.updatedBy || item?.createdBy"
+            />
             <div class="py-3">
                 <div class="text-sm text-gray-600">Last updated at</div>
                 <div class="mt-2 text-sm text-gray-800">

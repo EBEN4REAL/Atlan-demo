@@ -76,6 +76,9 @@ export default function useEventGraph({
     const portToggledNodes = ref({})
     const preferences = lineageStore.getPreferences()
 
+    // Prevent duplicate events
+    const isExpandedNodeEventSideEffect = ref(false)
+
     /** METHODS */
     /** Utils */
     // handleError
@@ -89,16 +92,16 @@ export default function useEventGraph({
     }
 
     // sendNodeClickedEvent - Analytics Events
-    // const sendNodeClickedEvent = useDebounceFn(
-    //     (asset_type, connector, node_id) => {
-    //         useAddEvent('lineage', 'node', 'clicked', {
-    //             asset_type,
-    //             connector,
-    //             node_id,
-    //         })
-    //     },
-    //     400
-    // )
+    const sendNodeClickedEvent = useDebounceFn(
+        (asset_type, connector, node_id) => {
+            useAddEvent('lineage', 'node', 'clicked', {
+                asset_type,
+                connector,
+                node_id,
+            })
+        },
+        400
+    )
 
     // sendSubNodeClickedEvent - Analytics Events
     const sendSubNodeClickedEvent = useDebounceFn(
@@ -334,14 +337,6 @@ export default function useEventGraph({
         if (guid) {
             selectedNodeId.value = guid
             lineageStore.setSelectedNodeId(guid)
-        }
-
-        if (entity) {
-            // sendNodeClickedEvent(
-            //     entity.typeName,
-            //     entity.attributes?.qualifiedName?.split('/')[1],
-            //     guid
-            // )
         }
 
         if (isCyclicRelation) {
@@ -719,8 +714,14 @@ export default function useEventGraph({
             })
             removeShowMorePort(node)
             if (p.length < t) addShowMorePort(node)
+            // Handle Event - lineage_node_expanded
+            if (!isExpandedNodeEventSideEffect.value) {
+                sendNodeExpandedEvent(t, node.id, 'expanded')
+            }
+
             translateSubsequentNodes(node)
             controlPortsLoader(node, false)
+            isExpandedNodeEventSideEffect.value = false
             return
         }
 
@@ -772,6 +773,11 @@ export default function useEventGraph({
                     if (portsLength < total) addShowMorePort(node)
                     else removeShowMorePort(node)
 
+                    // Handle Event - lineage_node_expanded
+                    if (!isExpandedNodeEventSideEffect.value) {
+                        sendNodeExpandedEvent(total, node.id, 'expanded')
+                    }
+
                     translateSubsequentNodes(node)
 
                     if (Object.keys(actions.value).length) {
@@ -792,6 +798,7 @@ export default function useEventGraph({
                     )
 
                 controlPortsLoader(node, false)
+                isExpandedNodeEventSideEffect.value = false
             },
             { deep: true }
         )
@@ -1004,15 +1011,6 @@ export default function useEventGraph({
                     portItemLoading: show,
                 })
             if (type === 'showMore') {
-                const nodePorts = node.data?.ports
-                sendSubNodeShowMoreEvent(
-                    nodePorts[nodePorts.length - 1].typeName === 'showMorePort'
-                        ? nodePorts.length - 1
-                        : nodePorts?.length,
-                    5,
-                    node.id
-                )
-
                 node.updateData({
                     portShowMoreLoading: show,
                 })
@@ -1034,10 +1032,6 @@ export default function useEventGraph({
         })
         const index = expandedNodes.value.findIndex((x) => x === node.id)
         expandedNodes.value.splice(index, 1)
-
-        if (node.data?.portsCount) {
-            sendNodeExpandedEvent(node.data?.portsCount, node.id, 'collapsed')
-        }
     }
 
     // removeX6Ports
@@ -1073,10 +1067,6 @@ export default function useEventGraph({
             expandedNodes.value.push(node.id)
 
         addX6Ports(node, uniquePorts)
-
-        if (node.data?.portsCount) {
-            // sendNodeExpandedEvent(node.data?.portsCount, node.id, 'expanded')
-        }
     }
 
     // addX6Ports
@@ -1131,30 +1121,22 @@ export default function useEventGraph({
                 controlPortsLoader(node, true, 'item')
                 fetchPortLineage(node, portId)
             }
-
-            sendSubNodeClickedEvent(
-                portEntity.typeName?.toLowerCase(),
-                portEntity.attributes?.connectorName ||
-                    portEntity.attributes?.qualifiedName?.split('/')[1],
-                portIndex,
-                node.id
-            )
         }
     }
 
     // selectPortEdge
     const selectPortEdge = (edgeId, edge) => {
-        // TODO: Handle Event - lineage_process_clicked
-        const processId = edgeId.split('/')[1]
-        onSelectAsset({ guid: processId })
-
-        if (edgeId) selectedPortEdgeId.value = edgeId
-
+        // Handle Event - lineage_process_clicked
         sendProcessClickedEvent(
             !!edge?.data?.isGroupEdge,
             !!edge?.data?.isCyclicEdge,
             edgeId
         )
+
+        const processId = edgeId.split('/')[1]
+        onSelectAsset({ guid: processId })
+
+        if (edgeId) selectedPortEdgeId.value = edgeId
     }
 
     // getAllNodesQN
@@ -1369,14 +1351,19 @@ export default function useEventGraph({
         )
             return
 
+        const nodeData = node?.store?.data
+
         if (isExpandedNode(node.id)) {
-            // TODO: Handle Event - lineage_node_collapsed
+            // Handle Event - lineage_node_collapsed
+            sendNodeExpandedEvent(
+                nodeData?.data?.portsCount,
+                node.id,
+                'collapsed'
+            )
+
             removePorts(node)
             resetNodeTranslatedNodes(node)
-        } else {
-            // TODO: Handle Event - lineage_node_expanded
-            fetchNodePorts(node)
-        }
+        } else fetchNodePorts(node)
     }
 
     // controlHoPaCTALoader
@@ -1750,7 +1737,10 @@ export default function useEventGraph({
             if (portId === selectedPortId.value) {
                 resetState()
             } else {
-                const { portsCount } = node.getData()
+                const { ports, portsCount } = node.getData()
+                const portEntity = ports.find((x) => x.guid === portId)
+                const portIndex = ports.findIndex((x) => x.guid === portId)
+
                 if (!portsCount) selectedPortIdNext.value = portId
 
                 resetState()
@@ -1763,22 +1753,48 @@ export default function useEventGraph({
                     return
                 }
 
-                // TODO: Handle Event - lineage_sub_node_clicked
+                // Handle Event - lineage_sub_node_clicked
+                sendSubNodeClickedEvent(
+                    portEntity.typeName?.toLowerCase(),
+                    portEntity.attributes?.connectorName ||
+                        portEntity.attributes?.qualifiedName?.split('/')[1],
+                    portIndex,
+                    node.id
+                )
+
                 selectPort(node, portId, true)
             }
             return
         }
 
         if (controlPortClickEvent(e, 'isportshowmore')) {
-            // TODO: Handle Event - lineage_sub_node_show_more
             const { ports } = lineageStore.getNodesPortList(node.id)
             const newOffset = ports.length
+
+            // Handle Event - lineage_sub_node_show_more
+            isExpandedNodeEventSideEffect.value = true
+            sendSubNodeShowMoreEvent(
+                ports.at(-1)?.typeName === 'showMorePort'
+                    ? ports.length - 1
+                    : ports?.length,
+                5,
+                node.id
+            )
 
             fetchNodePorts(node, newOffset)
             return
         }
 
-        // TODO: Handle Event - lineage_node_clicked
+        // Handle Event - lineage_node_clicked
+        const nodeEntity = node?.store?.data?.entity
+
+        if (nodeEntity) {
+            sendNodeClickedEvent(
+                nodeEntity.typeName,
+                nodeEntity.attributes?.qualifiedName?.split('/')[1],
+                node.id
+            )
+        }
 
         if (node.id.includes('vpNode')) {
             if (selectedNodeId.value) controlSelectedNodeAction(node, null)

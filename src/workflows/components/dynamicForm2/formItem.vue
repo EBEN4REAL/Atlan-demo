@@ -19,11 +19,21 @@
                     :isEdit="isEdit"
                 ></Component>
 
+                <Component
+                    v-else-if="
+                        ['header', 'divider'].includes(property.ui?.widget)
+                    "
+                    :is="componentName(property)"
+                    :class="property.ui?.class"
+                    :style="property.ui?.style"
+                    >{{ property.ui?.label }}</Component
+                >
+
                 <a-form-item
+                    v-else
                     :name="property.name"
                     :required="property.required"
                     :rules="property.ui.rules"
-                    v-else
                 >
                     <template #label>
                         <AtlanIcon
@@ -169,7 +179,14 @@
                             return 'Input'
                     }
                 } else {
-                    return property.ui.widget
+                    switch (property.ui?.widget) {
+                        case 'divider':
+                            return 'a-divider'
+                        case 'header':
+                            return 'h5'
+                        default:
+                            return property.ui.widget
+                    }
                 }
             }
 

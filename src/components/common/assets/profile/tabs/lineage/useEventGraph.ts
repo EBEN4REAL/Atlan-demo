@@ -89,16 +89,17 @@ export default function useEventGraph({
     }
 
     // sendNodeClickedEvent - Analytics Events
-    const sendNodeClickedEvent = useDebounceFn(
-        (asset_type, connector, node_id) => {
-            useAddEvent('lineage', 'node', 'clicked', {
-                asset_type,
-                connector,
-                node_id,
-            })
-        },
-        400
-    )
+    // const sendNodeClickedEvent = useDebounceFn(
+    //     (asset_type, connector, node_id) => {
+    //         useAddEvent('lineage', 'node', 'clicked', {
+    //             asset_type,
+    //             connector,
+    //             node_id,
+    //         })
+    //     },
+    //     400
+    // )
+
     // sendSubNodeClickedEvent - Analytics Events
     const sendSubNodeClickedEvent = useDebounceFn(
         (asset_type, connector, click_index, node_id) => {
@@ -336,11 +337,11 @@ export default function useEventGraph({
         }
 
         if (entity) {
-            sendNodeClickedEvent(
-                entity.typeName,
-                entity.attributes?.qualifiedName?.split('/')[1],
-                guid
-            )
+            // sendNodeClickedEvent(
+            //     entity.typeName,
+            //     entity.attributes?.qualifiedName?.split('/')[1],
+            //     guid
+            // )
         }
 
         if (isCyclicRelation) {
@@ -1074,7 +1075,7 @@ export default function useEventGraph({
         addX6Ports(node, uniquePorts)
 
         if (node.data?.portsCount) {
-            sendNodeExpandedEvent(node.data?.portsCount, node.id, 'expanded')
+            // sendNodeExpandedEvent(node.data?.portsCount, node.id, 'expanded')
         }
     }
 

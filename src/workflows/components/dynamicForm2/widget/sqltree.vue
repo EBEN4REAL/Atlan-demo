@@ -2,7 +2,7 @@
     <SQLTreeSelect
         :credential="credentialBody"
         :credentialID="credentialID"
-        :query="property.ui.sql"
+        :query="computedSQL"
         :include="property.ui.schemaIncludePattern"
         :exclude="property.ui.schemaExcludePattern"
         v-model="localValue"
@@ -23,6 +23,7 @@
     import SQLTreeSelect from '@common/treeselect/sql/index.vue'
     import { useWorkflowHelper } from '~/workflows/composables/package/useWorkflowHelper'
     import { useVModels } from '@vueuse/core'
+    import { moustacheInterpolator } from '~/workflowsv2/composables/utils'
 
     export default defineComponent({
         name: 'FormBuilder',
@@ -51,6 +52,8 @@
         setup(props, { emit }) {
             const { property, baseKey, configMap, isEdit } = toRefs(props)
             const formState = inject('formState')
+            const workflowTemplate = inject('workflowTemplate')
+
             const componentProps = computed(() => property.value.ui)
 
             const { modelValue } = useVModels(props, emit)
@@ -136,6 +139,13 @@
                 return formState[property.value.ui.credential]
             })
 
+            const computedSQL = computed(() =>
+                moustacheInterpolator(componentProps.value.sql, {
+                    form: formState,
+                    workflowTemplate,
+                })
+            )
+
             return {
                 property,
                 componentProps,
@@ -148,6 +158,7 @@
                 handleChange,
                 isEdit,
                 credentialID,
+                computedSQL,
             }
         },
     })

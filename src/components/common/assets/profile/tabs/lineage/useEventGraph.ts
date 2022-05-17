@@ -718,6 +718,7 @@ export default function useEventGraph({
             })
             removeShowMorePort(node)
             if (p.length < t) addShowMorePort(node)
+            // TODO: Handle Event - lineage_node_expanded
             translateSubsequentNodes(node)
             controlPortsLoader(node, false)
             return
@@ -771,6 +772,7 @@ export default function useEventGraph({
                     if (portsLength < total) addShowMorePort(node)
                     else removeShowMorePort(node)
 
+                    // TODO: Handle Event - lineage_node_expanded
                     translateSubsequentNodes(node)
 
                     if (Object.keys(actions.value).length) {
@@ -1372,10 +1374,7 @@ export default function useEventGraph({
             // TODO: Handle Event - lineage_node_collapsed
             removePorts(node)
             resetNodeTranslatedNodes(node)
-        } else {
-            // TODO: Handle Event - lineage_node_expanded
-            fetchNodePorts(node)
-        }
+        } else fetchNodePorts(node)
     }
 
     // controlHoPaCTALoader

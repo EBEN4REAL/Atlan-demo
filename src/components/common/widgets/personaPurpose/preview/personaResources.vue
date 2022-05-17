@@ -3,7 +3,7 @@
         <div class="flex items-center text-sm font-bold text-gray-600">
             <AtlanIcon icon="Link" class="mb-1 mr-2" />Resources
         </div>
-        <div class="mt-5">
+        <div v-if="item?.resources?.links > 0" class="mt-5">
             <div
                 v-for="(resource, index) in item?.resources?.links"
                 :key="index"
@@ -66,6 +66,21 @@
                         />
                     </div>
                 </div>
+            </div>
+        </div>
+        <div v-else class="mt-5">
+            <div class="flex flex-col items-center justify-center h-96 gap-y-6">
+                <div class="w-24">
+                    <AtlanIcon
+                        icon="EmptyResource2"
+                        alt="EmptyResource"
+                        class="w-full h-full"
+                    />
+                </div>
+                <p class="w-3/4 text-sm text-center">
+                    Resources is the place to document all knowledge around the
+                    persona
+                </p>
             </div>
         </div>
     </div>

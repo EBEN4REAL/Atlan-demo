@@ -22,6 +22,7 @@
             <div class="flex flex-col h-full">
                 <div class="flex items-center bg-white shadow-sm">
                     <ConnectorSelect
+                        v-if="showFilters"
                         style="min-width: 150px"
                         v-model="facets.connector"
                         class="px-1 border-r"

@@ -75,6 +75,8 @@ export default function useAssetInfo() {
 
     const parentObject = (asset: assetInterface) => attributes(asset)?.object
 
+    const parentBucket = (asset: assetInterface) => attributes(asset)?.bucket
+
     const reportCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.reportCount, true)
 
@@ -870,6 +872,10 @@ export default function useAssetInfo() {
         return assetType(asset)?.includes('Salesforce')
     }
 
+    const isObjectAsset = (asset: assetInterface) => {
+        return assetType(asset)?.includes('S3')
+    }
+
     const isSQLAsset = (asset: assetInterface) => {
         return (
             assetType(asset) === 'Table' ||
@@ -1256,6 +1262,68 @@ export default function useAssetInfo() {
 
     const formula = (asset: assetInterface) => attributes(asset)?.formula
 
+    const awsArn = (asset: assetInterface) => attributes(asset)?.awsArn || '-'
+
+    const awsPartition = (asset: assetInterface) =>
+        attributes(asset)?.awsPartition || '-'
+
+    const awsService = (asset: assetInterface) =>
+        attributes(asset)?.awsService || '-'
+
+    const awsRegion = (asset: assetInterface) =>
+        attributes(asset)?.awsRegion || '-'
+
+    const awsAccountId = (asset: assetInterface) =>
+        attributes(asset)?.awsAccountId || '-'
+
+    const awsResourceId = (asset: assetInterface) =>
+        attributes(asset)?.awsResourceId || '-'
+
+    const awsOwnerName = (asset: assetInterface) =>
+        attributes(asset)?.awsOwnerName || '-'
+
+    const awsOwnerId = (asset: assetInterface) =>
+        attributes(asset)?.awsOwnerId || '-'
+
+    const awsTags = (asset: assetInterface) => attributes(asset)?.awsTags || []
+
+    const s3ObjectCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.s3ObjectCount, true)
+
+    const s3BucketVersioningEnabled = (asset: assetInterface) =>
+        !!attributes(asset)?.s3BucketVersioningEnabled
+
+    const s3BucketName = (asset: assetInterface) =>
+        attributes(asset)?.s3BucketName || '-'
+
+    const s3ObjectSize = (asset: assetInterface) =>
+        attributes(asset)?.s3ObjectSize || '-'
+
+    const s3ObjectStorageClass = (asset: assetInterface) =>
+        attributes(asset)?.s3ObjectStorageClass || '-'
+
+    const s3ObjectKey = (asset: assetInterface) =>
+        attributes(asset)?.s3ObjectKey || '-'
+
+    const s3ObjectLastModifiedTime = (asset: assetInterface) => {
+        if (attributes(asset)?.s3ObjectLastModifiedTime) {
+            return raw
+                ? formatDateTime(attributes(asset)?.s3ObjectLastModifiedTime) ||
+                      'N/A'
+                : useTimeAgo(attributes(asset)?.s3ObjectLastModifiedTime).value
+        }
+        return '-'
+    }
+
+    const s3ObjectContentType = (asset: assetInterface) =>
+        attributes(asset)?.s3ObjectContentType || '-'
+
+    const s3ObjectContentDisposition = (asset: assetInterface) =>
+        attributes(asset)?.s3ObjectContentDisposition || '-'
+
+    const s3ObjectVersionId = (asset: assetInterface) =>
+        attributes(asset)?.s3ObjectVersionId || '-'
+
     return {
         attributes,
         title,
@@ -1349,6 +1417,7 @@ export default function useAssetInfo() {
         selectedAssetUpdatePermission,
         isSQLAsset,
         isSaasAsset,
+        isObjectAsset,
         getLineagePath,
         isUserDescription,
         isScrubbed,
@@ -1399,6 +1468,7 @@ export default function useAssetInfo() {
         viewCount,
         parentOrganization,
         parentObject,
+        parentBucket,
         lastSyncRun,
         lastSyncRunAt,
         sourceId,
@@ -1412,5 +1482,24 @@ export default function useAssetInfo() {
         isPublished,
         databaseQualifiedName,
         schemaQualifiedName,
+        awsArn,
+        awsPartition,
+        awsService,
+        awsRegion,
+        awsAccountId,
+        awsResourceId,
+        awsOwnerName,
+        awsOwnerId,
+        awsTags,
+        s3ObjectCount,
+        s3BucketVersioningEnabled,
+        s3ObjectLastModifiedTime,
+        s3BucketName,
+        s3ObjectSize,
+        s3ObjectStorageClass,
+        s3ObjectKey,
+        s3ObjectContentType,
+        s3ObjectContentDisposition,
+        s3ObjectVersionId,
     }
 }

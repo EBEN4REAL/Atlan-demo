@@ -794,6 +794,7 @@
         },
     })
 </script>
+
 <style lang="less" module>
     html {
         --duration: 0.1s;
@@ -933,6 +934,7 @@
         }
     }
 </style>
+
 <style lang="less" scoped>
     // .placeholder {
     //     background-color: #f4f4f4;

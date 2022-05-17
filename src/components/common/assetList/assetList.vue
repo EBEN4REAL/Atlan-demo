@@ -50,7 +50,10 @@
                 </SearchAdvanced>
                 <slot name="searchAction"></slot>
             </div>
-            <div v-if="list.length !== 0" :class="aggregationTabClass">
+            <div
+                v-if="list.length !== 0 && showAggregations"
+                :class="aggregationTabClass"
+            >
                 <AggregationTabs
                     v-model="postFilters.typeName"
                     :list="assetTypeAggregationList"
@@ -232,6 +235,12 @@
                 type: String,
                 required: false,
                 default: '',
+            },
+            // whether to show aggregation pills or not
+            showAggregations: {
+                type: Boolean,
+                required: false,
+                default: true,
             },
 
             /** Style Props */

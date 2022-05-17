@@ -267,6 +267,10 @@
                     connectorName: getConnectorName(connectionQfName.value),
                     connectionQualifiedName: connectionQfName.value,
                 },
+                typeName:
+                    getConnectorName(connectionQfName.value) === 's3'
+                        ? 'S3Bucket'
+                        : null,
             }))
 
             // Tab related data

@@ -46,7 +46,7 @@ export const getColumnAlignment = (data_type) => {
 export const setRowHeaderStyle = (th, columns, regularTableInstance) => {
     // add default # to first row as default symbol
     if (th.classList.contains('rt-group-corner')) {
-        th.innerText = '#'
+        // th.innerText = '#'
         th.style.setProperty('text-align', 'center', 'important')
     }
 

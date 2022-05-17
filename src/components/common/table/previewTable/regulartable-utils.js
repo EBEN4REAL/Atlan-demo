@@ -65,7 +65,7 @@ export const setRowHeaderStyle = (th, columns, regularTableInstance) => {
         const span = document.createElement('span')
         span.setAttribute('id', 'icon')
         if (imageMap[getDataType(column?.data_type)]) {
-            span.innerHTML = `<img style="filter: grayscale(100%);" data-tooltip=${
+            span.innerHTML = `<img style="filter: invert(45%) sepia(20%) saturate(522%) hue-rotate(184deg) brightness(96%) contrast(87%);" data-tooltip=${
                 column?.data_type
             }  class="cursor-pointer inline-flex w-4 h-4 mr-1 mb-0.5" src="${
                 imageMap[getDataType(column?.data_type)]

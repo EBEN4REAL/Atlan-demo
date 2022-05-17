@@ -28,6 +28,8 @@ export default async function useComputeGraph({
     controlPrefRetainer,
 }) {
     const lineageStore = useLineageStore()
+    lineageStore.selectedNodeId = ''
+    lineageStore.selectedPortId = ''
     lineageStore.cyclicRelations = []
     lineageStore.portToSelect = {}
     lineageStore.mergedLineageData = {}
@@ -44,6 +46,7 @@ export default async function useComputeGraph({
 
     mergedLineageData.value = { ...lineage.value }
     lineageStore.setMergedLineageData(mergedLineageData.value)
+    lineageStore.setSelectedNodeId(mergedLineageData.value.baseEntityGuid)
 
     model.value = null
     edges.value = []

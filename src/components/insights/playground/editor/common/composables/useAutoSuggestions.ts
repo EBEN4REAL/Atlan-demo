@@ -340,9 +340,10 @@ export function entitiesToEditorKeyword(
                                 entity: entities[i],
                             },
                             sortText: sortString,
-                            insertText: isDotBased
-                                ? `${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`
-                                : `${contextPrefix}${assetQuoteType}${tableName}${assetQuoteType}.${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`,
+                            // insertText: isDotBased
+                            //     ? `${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`
+                            //     : `${contextPrefix}${assetQuoteType}${tableName}${assetQuoteType}.${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`,
+                            insertText: `${assetQuoteType}${entities[i].attributes.name}${assetQuoteType}`,
                         }
                         words.push(keyword)
                         // }

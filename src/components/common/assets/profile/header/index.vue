@@ -297,6 +297,7 @@
                         !isGTC(item) &&
                         !isBiAsset(item) &&
                         !isSaasAsset(item) &&
+                        !isObjectAsset(item) &&
                         assetType(item) !== 'Connection' &&
                         connectorName(item) !== 'glue'
                     "
@@ -346,7 +347,9 @@
 
                 <a-button
                     v-if="
-                        (isBiAsset(item) || isSaasAsset(item)) &&
+                        (isBiAsset(item) ||
+                            isSaasAsset(item) ||
+                            isObjectAsset(item)) &&
                         (webURL(item) || sourceURL(item))
                     "
                     block
@@ -505,6 +508,7 @@
                 isGTC,
                 isBiAsset,
                 isSaasAsset,
+                isObjectAsset,
                 assetTypeLabel,
                 webURL,
                 sourceURL,
@@ -669,6 +673,7 @@
                 checkAccess,
                 isBiAsset,
                 isSaasAsset,
+                isObjectAsset,
                 webURL,
                 handleBIRedirect,
                 handleClick,

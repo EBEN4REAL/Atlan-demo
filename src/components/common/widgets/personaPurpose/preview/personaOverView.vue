@@ -52,14 +52,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, toRefs, ref, watch } from 'vue'
+    import { defineComponent, computed, toRefs, ref } from 'vue'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { getCountString } from '~/utils/number'
 
     export default defineComponent({
-        name: 'OverviewPersonaWidget',
+        name: 'PersonaOverView',
         components: {},
         props: {
             item: {
@@ -70,7 +70,6 @@
         emits: [],
         setup(props) {
             const { item } = toRefs(props)
-            console.log(item.value, 'shdgjhsgdjhsgd')
             const aggregations = ref(['typeName'])
             const limit = ref(1)
             const offset = ref(0)

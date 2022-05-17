@@ -62,20 +62,20 @@
     import { defineComponent, ref, computed, toRefs, watch } from 'vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import AssetList from '@/common/assetList/assetList.vue'
-    import OverviewPersonaWidget from './overview/overViewPersona.vue'
-    import UsersGroupsPersona from './overview/usersGroupsPersona.vue'
-    import Resources from './overview/resouces.vue'
-    import Property from './overview/propertyPersona.vue'
+    import PersonaOverview from './preview/personaOverView.vue'
+    import PersonaUsersGroups from './preview/personaUsersGroups.vue'
+    import PersonaResources from './preview/personaResources.vue'
+    import PersonaProperties from './preview/personaProperties.vue'
 
     export default defineComponent({
         name: 'DrawerWidgetPersonaPurpose',
         components: {
             PreviewTabsIcon,
             AssetList,
-            OverviewPersonaWidget,
-            UsersGroupsPersona,
-            Resources,
-            Property,
+            PersonaOverview,
+            PersonaUsersGroups,
+            PersonaResources,
+            PersonaProperties,
         },
         props: {
             visible: {
@@ -113,13 +113,13 @@
                                 tooltip: 'Overview',
                                 icon: 'Overview',
                                 activeIcon: 'Overview',
-                                component: 'OverviewPersonaWidget',
+                                component: 'PersonaOverview',
                             },
                             {
                                 tooltip: 'Users and groups',
                                 icon: 'GroupLight',
                                 activeIcon: 'GroupActive',
-                                component: 'UsersGroupsPersona',
+                                component: 'PersonaUsersGroups',
                             },
                             {
                                 tooltip: 'Assets',
@@ -131,13 +131,13 @@
                                 tooltip: 'Resources',
                                 icon: 'Link',
                                 activeIcon: 'Link',
-                                component: 'Resources',
+                                component: 'PersonaResources',
                             },
                             {
                                 tooltip: 'Property',
                                 icon: 'Property',
                                 activeIcon: 'Property',
-                                component: 'Property',
+                                component: 'PersonaProperties',
                             },
                         ]
                     } else {

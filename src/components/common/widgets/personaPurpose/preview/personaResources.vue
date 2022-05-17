@@ -27,7 +27,7 @@
     import { defineComponent } from 'vue'
 
     export default defineComponent({
-        name: 'Resources',
+        name: 'PersonaResources',
         components: {},
         props: {},
         setup(props) {

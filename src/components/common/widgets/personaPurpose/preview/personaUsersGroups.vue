@@ -437,7 +437,7 @@
     import RaisedTab from '@/UI/raisedTab.vue'
 
     export default defineComponent({
-        name: 'UsersGroupsPersonaWidget',
+        name: 'PersonaUsersGroups',
         components: {
             Avatar,
             AtlanBtn,

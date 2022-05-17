@@ -30,7 +30,7 @@
     import { defineComponent } from 'vue'
 
     export default defineComponent({
-        name: 'PropertyPersona',
+        name: 'PersonaProperties',
         components: {},
         props: {},
         setup(props) {

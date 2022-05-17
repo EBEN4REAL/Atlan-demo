@@ -73,12 +73,15 @@
                                 </span>
                             </div>
                             <span class="mr-1 text-sm truncate w-28">
-                                {{ name }}
+                                {{ name }} 
                             </span>
 
                             <span v-if="details" class="mr-1 text-sm">
                                 <span class="text-gray-300">&bull;</span>
-                                <span class="ml-1">{{ details }}</span>
+                                <span class="ml-1">
+                                    {{selectedUser.enabled ?  details : '' }} 
+                                    <button class="bg-new-gray-600 rounded-md px-3 text-xs pt-1 pb-0.5 tracking-wider text-white text-bold" v-if="!selectedUser.enabled">DISABLED</button>
+                                </span>
                             </span>
                             <span
                                 v-if="

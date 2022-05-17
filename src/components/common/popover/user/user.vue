@@ -35,9 +35,10 @@
                                         <div
                                             class="flex text-sm font-semibold capitalize"
                                         >
-                                            <span>{{
-                                                selectedUser?.name
-                                            }}</span>
+                                            <span class="mr-2">{{
+                                                selectedUser?.name 
+                                            }} 
+                                            </span>
                                             <!-- <span
                                                 v-if="userProfiles?.slack"
                                                 class="ml-1 text-sm font-semibold"
@@ -53,7 +54,8 @@
                                             <span class="mx-1 text-gray-400"
                                                 >•</span
                                             >
-                                            {{ selectedUser?.workspaceRole }}
+                                            {{selectedUser.enabled ? selectedUser?.workspaceRole : '' }}
+                                            <button class="bg-new-gray-600 rounded-md px-3 text-xs pt-1 pb-0.5 tracking-wider text-white text-bold" v-if="!selectedUser.enabled">DISABLED</button>
                                         </div>
                                         <span
                                             v-if="

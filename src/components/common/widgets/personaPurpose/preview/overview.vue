@@ -42,7 +42,7 @@
             >
                 No classification attached
             </div>
-            <div v-else class="flex gap-2 mt-2">
+            <div v-else class="flex gap-2 mt-2 overflow-scroll max-h-40">
                 <div
                     v-for="(classification, i) in listClassifications"
                     :key="classification.guid"

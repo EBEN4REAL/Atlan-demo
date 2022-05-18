@@ -52,7 +52,7 @@
         </div>
         <div class="mt-7">
             <div class="text-gray-600">Readme</div>
-            <ReadmeView :readme="item.readme" />
+            <ReadmeView :max-height="180" :readme="item.readme" />
         </div>
     </div>
 </template>

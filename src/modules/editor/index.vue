@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-full bg-white editor">
+    <div class="w-full h-full editor">
         <bubble-menu
             v-if="
                 editor &&

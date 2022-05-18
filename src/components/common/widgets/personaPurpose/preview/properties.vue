@@ -8,7 +8,9 @@
                 <div class="text-sm text-gray-600">Last updated by</div>
             </div>
             <div class="flex">
-                <UserPill :username="item?.updatedBy || item?.createdBy" />
+                <PopOverUser :item="item?.updatedBy || item?.createdBy">
+                    <UserPill :username="item?.updatedBy || item?.createdBy" />
+                </PopOverUser>
             </div>
             <div class="py-3">
                 <div class="text-sm text-gray-600">Last updated at</div>
@@ -29,7 +31,9 @@
             <div class="py-3">
                 <div class="text-sm text-gray-600">Created by</div>
                 <div class="flex">
-                    <UserPill :username="item?.createdBy" />
+                    <PopOverUser :item="item?.createdBy">
+                        <UserPill :username="item?.createdBy" />
+                    </PopOverUser>
                 </div>
             </div>
         </div>
@@ -41,12 +45,14 @@
     import { useTimeAgo } from '@vueuse/core'
 
     import { formatDateTime } from '~/utils/date'
+    import PopOverUser from '@/common/popover/user/user.vue'
     import UserPill from '@/common/pills/user.vue'
 
     export default defineComponent({
         name: 'PersonaPurposeProperties',
         components: {
             UserPill,
+            PopOverUser,
         },
         props: {
             item: {

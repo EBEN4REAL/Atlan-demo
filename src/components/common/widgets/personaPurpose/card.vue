@@ -94,9 +94,18 @@
                     />
                     <div
                         v-else-if="user.username === 'all-users'"
-                        class="text-sm text-gray-600"
+                        class="flex items-center text-xs text-gray-700"
                     >
-                        All users
+                        <Avatar
+                            class="mb-1 mr-1"
+                            :avatar-bg-class="'bg-primary-light border-white border border-2 uppercase'"
+                            :image-url="logoUrl"
+                            :avatar-size="14"
+                            :avatar-shape="'circle'"
+                        />
+                        <div class="truncate display-name">
+                            Everyone at {{ displayName }}
+                        </div>
                     </div>
                 </div>
                 <div
@@ -138,6 +147,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
+    import { useTenantStore } from '~/store/tenant'
 
     export default defineComponent({
         name: 'WidgetPersonaPurposeCard',
@@ -162,6 +172,8 @@
         },
         emits: ['viewAssets', 'overView'],
         setup(props) {
+            const tenantStore = useTenantStore()
+            const { logoUrl } = toRefs(tenantStore)
             const { classificationList } = useTypedefData()
             const { getConnectorImageMap } = useAssetInfo()
             const { item, type, userList } = toRefs(props)
@@ -269,18 +281,24 @@
             })
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
+            const displayName = computed(() => tenantStore.displayName)
             return {
                 connection,
                 users,
                 classifications,
                 listClassifications,
                 imageUrl,
+                logoUrl,
+                displayName,
             }
         },
     })
 </script>
 
 <style lang="less">
+    .display-name {
+        max-width: 131px;
+    }
     .pill-class-widget {
         max-width: 60px !important;
     }

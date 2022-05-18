@@ -98,6 +98,32 @@
                         <AtlanIcon v-else icon="Clock" class="icon-warning" />
                     </div>
                 </div>
+                <div
+                    v-if="
+                        selectedAsset?.typeName === 'AtlasGlossary' &&
+                        item?.destinationEntity?.attributes?.name
+                    "
+                    class="flex items-center space-x-1 mt-1"
+                >
+                    <atlan-icon
+                        :icon="
+                            capitalizeFirstLetter(
+                                glossaryLabel[item?.entityType]
+                            )
+                        "
+                        class="h-4 mb-0.5"
+                    />
+                    <Tooltip
+                        :tooltip-text="
+                            item?.destinationEntity?.attributes?.name
+                        "
+                        placement="topRight"
+                        :routeTo="`/glossary/${item?.destinationEntity?.guid}`"
+                        :mouseLeaveDelay="0"
+                        :shouldOpenInNewTab="true"
+                        :classes="'hover:text-primary cursor-pointer'"
+                    />
+                </div>
             </div>
             <div v-if="item.requestType === 'term_link' && isGlossary">
                 <div
@@ -297,30 +323,6 @@
                     {{ item.destinationValue }}
                 </div>
             </div>
-            <div
-                v-if="
-                    selectedAsset?.typeName === 'AtlasGlossary' &&
-                    item?.destinationEntity?.attributes?.name
-                "
-                class="flex items-center space-x-1 mx-4"
-            >
-                For
-                <atlan-icon
-                    :icon="
-                        capitalizeFirstLetter(glossaryLabel[item?.entityType])
-                    "
-                    class="h-4 ml-1 mb-0.5"
-                />
-                <Tooltip
-                    :tooltip-text="item?.destinationEntity?.attributes?.name"
-                    placement="topRight"
-                    :routeTo="`/glossary/${item?.destinationEntity?.guid}`"
-                    :mouseLeaveDelay="0"
-                    :shouldOpenInNewTab="true"
-                    :classes="'hover:text-primary cursor-pointer'"
-                />
-            </div>
-
             <div
                 class="flex px-3 py-2 mt-2 border-t border-gray-200 text-gray-500"
             >

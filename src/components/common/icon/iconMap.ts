@@ -187,7 +187,7 @@ import NoSavedQueriesPersonal from '~/assets/images/icons/saved-queries-personal
 import AddQuery from '~/assets/images/icons/add-query.svg'
 import NoSchema from '~/assets/images/icons/no-schema.svg'
 import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
-import queryErorrIllus from '~/assets/images/icons/queryError.svg'
+import queryAbortIllus from '~/assets/images/icons/queryAbort.svg'
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg'
 import Slack from '~/assets/images/admin/integrations/slack.svg'
@@ -576,7 +576,7 @@ export default {
     ExplorerTrigger,
     MaterialisedView,
     TablePartition,
-    queryErorrIllus,
+    queryAbortIllus,
     NoSavedQueriesAll,
     NoSchema,
     NoDataInsights,

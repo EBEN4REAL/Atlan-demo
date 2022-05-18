@@ -1,18 +1,20 @@
 <template>
     <!-- Error on running a query -->
     <div
-        class="flex flex-col items-center justify-center w-full h-full"
+        class="flex flex-col items-center justify-center w-full h-full bg-new-gray-100"
         v-if="isQueryRunning === '' && isQueryAborted"
     >
-        <AtlanIcon icon="queryErorrIllus" class="w-36 h-28" />
         <div
-            style="width: 300px"
-            class="flex flex-col items-center justify-center mt-2"
+            style="width: 350px"
+            class="flex flex-col items-center justify-center mt-2 mb-6"
         >
-            <p class="mt-2 mb-0 text-base font-bold text-center text-gray-700">
-                Query Aborted
+            <p
+                class="mt-2 mb-0 text-base text-2xl font-bold text-center text-new-gray-700"
+            >
+                Whoops! Query was aborted.
             </p>
         </div>
+        <AtlanIcon icon="queryAbortIllus" class="w-36 h-36" />
     </div>
     <!-- ---------------------- -->
 </template>

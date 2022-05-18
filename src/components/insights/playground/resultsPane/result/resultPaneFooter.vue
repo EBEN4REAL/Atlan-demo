@@ -226,6 +226,11 @@
                                 :columns="
                                     activeInlineTab.playground.editor.columnList
                                 "
+                                v-if="
+                                    tenantSlackStatus?.configured &&
+                                    tenantSlackStatus?.queryOutputChannels
+                                        ?.length
+                                "
                             >
                                 <div class="flex items-center">
                                     <AtlanIcon

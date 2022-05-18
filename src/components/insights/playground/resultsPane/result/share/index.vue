@@ -6,7 +6,7 @@
     <a-popover
         placement="topLeft"
         overlayClassName="slack_popover"
-        :visible="visible"
+        v-model:visible="visible"
         class="mb-4"
     >
         <template #content>
@@ -45,7 +45,7 @@
                     <AtlanButton2
                         color="secondary"
                         label="Cancel"
-                        class="font-bold border border-new-gray-300"
+                        class="flex-1 font-bold border border-new-gray-300"
                         @click="visible = false"
                     />
 
@@ -56,7 +56,7 @@
                             loading
                         "
                         :label="ctaText"
-                        class="font-bold"
+                        class="flex-1 font-bold"
                         @click="handleCtaClick"
                     />
                 </div>

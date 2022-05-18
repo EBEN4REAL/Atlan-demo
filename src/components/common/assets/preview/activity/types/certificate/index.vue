@@ -16,7 +16,6 @@
             class="inline-flex self-center w-auto h-4 mb-1"
         /><b>{{ ' ' }}{{ newCertificate.label }}</b> -->
 
-        
         <Certificate
             :selected-asset="data.value"
             :showMessage="true"

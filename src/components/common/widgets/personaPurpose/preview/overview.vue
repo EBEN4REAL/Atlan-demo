@@ -223,7 +223,10 @@
                                 if (!unique.includes(imgPath)) {
                                     result.push({
                                         imgPath,
-                                        connectorName,
+                                        connectorName: asset
+                                            .split('/')
+                                            .slice(1, 3)
+                                            .join('/'),
                                     })
                                     unique.push(imgPath)
                                 }

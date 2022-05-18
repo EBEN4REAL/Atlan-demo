@@ -125,7 +125,11 @@
                 </template>
 
             </a-tooltip> -->
+            <template v-if="user.username === currentUserUsername">
+                {{ user.role_object.name }}
+            </template>
             <ChangeRole
+                v-else
                 :user="user"
                 :selected-user="selectedUser"
                 :role-list="roleList"
@@ -513,7 +517,7 @@
         setup(props, { emit }) {
             const { userList, selectedUserId } = toRefs(props)
 
-            const { username: currentUserUsername } = whoami()
+            const { username: currentUserUsername, userId } = whoami()
             const activeSortObject = ref({ key: '', order: '' })
 
             const imageUrl = (username: any) =>
@@ -614,6 +618,8 @@
             }
 
             return {
+                currentUserUsername,
+                userId,
                 roleList,
                 userColumns,
                 nameCase,

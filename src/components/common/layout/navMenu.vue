@@ -140,7 +140,13 @@
                 </AtlanButton2>
             </a-dropdown>
             <div class="announcekit-widget">
-                <AtlanIcon icon="Gift" class="h-6" />
+                <a-tooltip>
+                    <template #title>
+                        <span>What's New</span>
+                        <span class="text-lg"> ✨ </span>
+                    </template>
+                    <AtlanIcon icon="Gift" class="h-6" />
+                </a-tooltip>
             </div>
             <!-- <atlan-icon icon="Search" class="h-5 mr-3" />
 

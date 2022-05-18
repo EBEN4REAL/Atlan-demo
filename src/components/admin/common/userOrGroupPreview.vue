@@ -93,8 +93,8 @@
                                 <span class="text-gray-300">&bull;</span>
                                 <span class="ml-1">Invited</span>
                             </span>
-                            <!-- <span
-                                v-if="selectedUser?.last_active_time"
+                            <span
+                                v-if="selectedUser?.last_active_time && selectedUser.enabled"
                                 class="text-sm"
                             >
                                 <span class="text-gray-300">&bull;</span>
@@ -111,7 +111,7 @@
                                         }}
                                     </span>
                                 </a-tooltip>
-                            </span> -->
+                            </span>
                         </div>
                         <div v-auth="map.UPDATE_GROUP" class="ml-auto">
                             <a-button-group v-if="previewType === 'group'">

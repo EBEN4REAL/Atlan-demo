@@ -55,7 +55,7 @@
                         :allow-delete="false"
                         :color="classification.options?.color"
                         :created-by="classification?.createdBy"
-                        class="border-none"
+                        class="px-2 border border-gray-200"
                         :no-hover="true"
                     />
                 </div>

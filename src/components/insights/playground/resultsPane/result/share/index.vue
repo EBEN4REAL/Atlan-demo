@@ -4,6 +4,7 @@
     </span>
 
     <a-popover
+        trigger="click"
         placement="topLeft"
         overlayClassName="slack_popover"
         v-model:visible="visible"

@@ -116,7 +116,10 @@
                             insights_Store.activePreviewGuid !== undefined
                         "
                         @mouseout="recordTooltipPresence"
-                        @click="toggleShareSlackModal"
+                        @click="
+                            () =>
+                                toggleShareSlackModal(slackSharePopoverVisible)
+                        "
                         class="py-0.5 px-2 mr-2 text-sm border-none text-xs rounded shadow cursor-pointer"
                         style="height: 24px"
                     >
@@ -138,7 +141,9 @@
                     @mouseout="recordTooltipPresence"
                     class="py-0.5 px-2 mr-2 text-sm border-none rounded shadow cursor-pointer"
                     style="height: 24px"
-                    @click="toggleShareSlackModal"
+                    @click="
+                        () => toggleShareSlackModal(slackSharePopoverVisible)
+                    "
                 >
                     <AtlanIcon
                         icon="Slack"
@@ -790,8 +795,12 @@
                 fullScreenTabActive.value = Number(index)
             }
 
-            const toggleShareSlackModal = () => {
-                debugger
+            const toggleShareSlackModal = (visible) => {
+                setTimeout(() => {
+                    if (!slackSharePopoverVisible.value || visible) {
+                        slackSharePopoverVisible.value = false
+                    }
+                }, 100)
             }
             watch(
                 () => insights_Store.activePreviewGuid,

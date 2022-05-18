@@ -120,8 +120,12 @@ keycloak
             }, 6000)
             inputFocusDirective(app)
             authDirective(app)
+
+
             const { mutate } = useTenant(false)
             await mutate()
+            const { mutate: mutatePermissions } = usePermissions(false)
+            await mutatePermissions()
             app.use(router).mount('#app')
             const redirectUrl = localStorage.getItem('redirectURL') // "/admin/integrations"
             if (redirectUrl) {

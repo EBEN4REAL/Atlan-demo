@@ -79,28 +79,43 @@
                 </div>
             </div>
             <div class="flex items-center h-6 px-4">
-                <Avatar
-                    v-for="(user, index) in users"
-                    :key="user.id"
-                    :avatar-bg-class="'bg-primary-light border-white border border-2 uppercase'"
-                    :initial-name="user.username[0]"
-                    :image-url="imageUrl(user.username)"
-                    :avatar-size="24"
-                    :avatar-shape="'circle'"
-                    :style="{
-                        'z-index': `${index + 1}`,
-                        transform: `translateX(-${index * 8}px)`,
-                    }"
-                />
+                <div v-for="(user, index) in users" :key="user.id">
+                    <Avatar
+                        v-if="user.username !== 'all-users'"
+                        :avatar-bg-class="'bg-primary-light border-white border border-2 uppercase'"
+                        :initial-name="user.username[0]"
+                        :image-url="imageUrl(user.username)"
+                        :avatar-size="24"
+                        :avatar-shape="'circle'"
+                        :style="{
+                            'z-index': `${index + 1}`,
+                            transform: `translateX(-${index * 8}px)`,
+                        }"
+                    />
+                    <div
+                        v-else-if="user.username === 'all-users'"
+                        class="text-sm text-gray-600"
+                    >
+                        All users
+                    </div>
+                </div>
                 <div
-                    v-if="item.users?.length > 3 && users.length"
+                    v-if="
+                        (type === 'persona'
+                            ? item.users?.length
+                            : users.length) > 3 && users.length
+                    "
                     class="flex items-center justify-center w-6 h-6 mt-1 text-xs text-gray-600 bg-gray-100 rounded-full"
                     :style="{
                         'z-index': `4`,
                         transform: `translateX(-24px)`,
                     }"
                 >
-                    +{{ item.users?.length - 3 }}
+                    +{{
+                        (type === 'persona'
+                            ? item.users?.length
+                            : users.length) - 3
+                    }}
                 </div>
             </div>
             <div
@@ -193,14 +208,38 @@
                 return arr
             })
             const users = computed(() => {
+                if (type.value === 'purpose') {
+                    let userPurposes = []
+                    const { metadataPolicies, dataPolicies } = item.value
+                    dataPolicies.forEach((el) => {
+                        userPurposes = [...userPurposes, ...el.users]
+                    })
+                    metadataPolicies.forEach((el) => {
+                        userPurposes = [...userPurposes, ...el.users]
+                    })
+                    if (!userPurposes.includes('all-users')) {
+                        const result = [...new Set(userPurposes)].map(
+                            (el, i) => ({
+                                username: el,
+                                id: i,
+                            })
+                        )
+                        return result
+                    }
+                    return [{ username: 'all-users' }]
+                }
                 if (!userList?.value.length) return []
-                const usersItem = item.value?.users?.slice(0, 3) || []
-                const personaUsers = usersItem.map(
-                    (el) =>
-                        userList?.value?.find((elc: any) => elc?.id === el) ||
-                        el
-                )
-                return personaUsers
+                if (type.value === 'persona') {
+                    const usersItem = item.value?.users?.slice(0, 3) || []
+                    const personaUsers = usersItem.map(
+                        (el) =>
+                            userList?.value?.find(
+                                (elc: any) => elc?.id === el
+                            ) || el
+                    )
+                    return personaUsers
+                }
+                return []
             })
             const connection = computed(() => {
                 // const glossary = item.value?.glossaryPolicies?.length || 0

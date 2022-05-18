@@ -7,17 +7,17 @@
             <div class="flex-1">
                 <div class="text-gray-600">User and Groups</div>
                 <div
-                    v-if="item?.type === 'persona'"
+                    v-if="activeTab === 'persona'"
                     class="mt-2 text-sm font-bold text-primary"
                 >
                     {{ userGroup }}
                 </div>
 
                 <div
-                    v-if="item?.type === 'purpose'"
+                    v-if="activeTab === 'purpose'"
                     class="mt-2 text-sm font-bold text-primary"
                 >
-                    <!-- {{ purposeAllUsers ? 'All Users' : '' }} -->
+                    {{ userGroupPurpose }}
                 </div>
             </div>
             <div class="flex-1">
@@ -52,11 +52,7 @@
         </div>
         <div class="mt-7">
             <div class="text-gray-600">Readme</div>
-            <div class="p-4 bg-gray-100 rounded-lg">
-                <div v-if="!item.readme" class="text-sm text-gray-600">
-                    No readme
-                </div>
-            </div>
+            <ReadmeView :readme="item.readme" />
         </div>
     </div>
 </template>
@@ -67,10 +63,11 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { getCountString } from '~/utils/number'
+    import ReadmeView from '~/components/common/readmeView/index.vue'
 
     export default defineComponent({
         name: 'PersonaPurposeOverview',
-        components: {},
+        components: { ReadmeView },
         props: {
             item: {
                 type: Object,
@@ -80,11 +77,14 @@
                 type: Array,
                 required: true,
             },
+            activeTab: {
+                type: String,
+                required: true,
+            },
         },
         emits: [],
         setup(props) {
-            const { item, globalState } = toRefs(props)
-            console.log('this', item)
+            const { item, globalState, activeTab } = toRefs(props)
             const aggregations = ref(['typeName'])
             const limit = ref(1)
             const offset = ref(0)
@@ -96,6 +96,14 @@
                     offset,
                     aggregations,
                     globalState,
+                    facets:
+                        activeTab.value === 'purpose'
+                            ? {
+                                  __traitNames: {
+                                      classifications: item.value.tags,
+                                  },
+                              }
+                            : {},
                 })
             fetch()
 
@@ -107,6 +115,43 @@
                 )
             )
             const { getConnectorImageMap } = useAssetInfo()
+            const userGroupPurpose = computed(() => {
+                let userPurposes = []
+                let groupPurposes = []
+                const { metadataPolicies, dataPolicies } = item.value
+                dataPolicies?.forEach((el) => {
+                    userPurposes = [...userPurposes, ...el.users]
+                    groupPurposes = [...groupPurposes, ...el.groups]
+                })
+                metadataPolicies?.forEach((el) => {
+                    userPurposes = [...userPurposes, ...el.users]
+                    groupPurposes = [...groupPurposes, ...el.groups]
+                })
+                if (
+                    !userPurposes.includes('all-users') &&
+                    userPurposes.length
+                ) {
+                    const resultUser = [...new Set(userPurposes)].length
+                    const resultUserGroups = [...new Set(groupPurposes)].length
+                    return `${
+                        resultUser
+                            ? `${resultUser} ${
+                                  resultUser > 1 ? 'users' : 'user'
+                              }`
+                            : ''
+                    }${resultUser && resultUserGroups ? ', ' : ''} ${
+                        resultUserGroups
+                            ? `${resultUserGroups} ${
+                                  resultUserGroups > 1 ? 'groups' : 'group'
+                              }`
+                            : ''
+                    }`
+                }
+                if (userPurposes.includes('all-users')) {
+                    return 'All users'
+                }
+                return '-'
+            })
             const userGroup = computed(() => {
                 const users = item.value.users?.length
                 const groups = item.value.groups?.length
@@ -151,6 +196,7 @@
                 totalAsset,
                 getCountString,
                 isLoading,
+                userGroupPurpose,
             }
         },
     })

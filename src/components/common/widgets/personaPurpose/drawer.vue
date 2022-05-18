@@ -14,8 +14,30 @@
         </div>
         <div class="px-4 py-5 border-b border-gray-200">
             <div class="text-lg font-bold">{{ item.name }}</div>
-            <div class="text-gray-700 mt-3.5 flex items-center uppercase">
-                <AtlanIcon icon="Term" class="mb-1 mr-1" />{{ activeTab }}
+            <div class="flex items-center">
+                <div class="text-gray-700 mt-3.5 flex items-center uppercase">
+                    <AtlanIcon icon="Term" class="mb-1 mr-1" />{{ activeTab }}
+                </div>
+                <div
+                    class="flex items-center ml-auto text-base text-gray-700 border border-gray-300 rounded cursor-pointer"
+                >
+                    <div
+                        class="flex items-center py-1.5 px-2.5"
+                        @click="handleViewAssets"
+                    >
+                        <AtlanIcon icon="AssetsInactiveLight" class="mr-1" />
+                        View assets
+                    </div>
+                    <a
+                        v-if="item.attributes?.channelLink"
+                        :href="item.attributes?.channelLink"
+                        target="_blank"
+                    >
+                        <div class="py-1.5 px-2.5 border-l border-gray-300">
+                            <AtlanIcon icon="Slack" class="" />
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
         <div class="content">
@@ -51,6 +73,7 @@
                         :item="item"
                         :persona="item"
                         :global-state="globalState"
+                        :active-tab="activeTab"
                     />
                 </a-tab-pane>
             </a-tabs>
@@ -60,6 +83,8 @@
 
 <script lang="ts">
     import { defineComponent, ref, computed, toRefs, watch } from 'vue'
+    import { useRouter } from 'vue-router'
+    import useAssetStore from '~/store/asset'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import AssetList from '@/common/assetList/assetList.vue'
     import Overview from '@/common/widgets/personaPurpose/preview/overview.vue'
@@ -92,6 +117,7 @@
             },
         },
         setup(props) {
+            const router = useRouter()
             const { item, activeTab, visible }: { item: any } = toRefs(props)
             const globalState = ref([])
             const tabList = ref([
@@ -141,7 +167,7 @@
                             },
                         ]
                     } else {
-                        globalState.value = ['purpose', item.value.id]
+                        globalState.value = []
                         tabList.value = [
                             {
                                 tooltip: 'Overview',
@@ -193,8 +219,19 @@
                     },
                 }
             })
-
-            return { tabList, activeKey, filterConfig, globalState }
+            const assetStore = useAssetStore()
+            const handleViewAssets = () => {
+                assetStore.setGlobalState([activeTab.value, item.id])
+                router.push('/assets')
+            }
+            console.log(item.value, 'sdkjsgdjhsgdhjsgdhjsgj')
+            return {
+                tabList,
+                activeKey,
+                filterConfig,
+                globalState,
+                handleViewAssets,
+            }
         },
     })
 </script>
@@ -219,6 +256,9 @@
                 padding: 3px 8px !important;
 
                 @apply justify-center;
+            }
+            :global(.ant-tabs-tab-active) {
+                @apply bg-primary-light;
             }
 
             :global(.ant-tabs-tab:first-child) {

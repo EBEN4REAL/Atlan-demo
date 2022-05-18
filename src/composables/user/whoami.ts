@@ -13,6 +13,11 @@ export default function whoami() {
             app?.appContext?.config?.globalProperties?.$keycloak?.tokenParsed
                 ?.username
     )
+    const userId = computed(
+        () =>
+            app?.appContext?.config?.globalProperties?.$keycloak?.tokenParsed
+                ?.userId
+    )
     const email = computed(
         () =>
             app?.appContext?.config?.globalProperties?.$keycloak?.tokenParsed
@@ -47,6 +52,7 @@ export default function whoami() {
         groups,
         name,
         username,
+        userId,
         role,
         user,
         email,

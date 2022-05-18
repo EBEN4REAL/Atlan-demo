@@ -253,6 +253,7 @@ import Flash from '~/assets/images/icons/flash.svg'
 import FlashColor from '~/assets/images/icons/flash-color.svg'
 import DisableUser from '~/assets/images/icons/disabled-user.svg'
 import ImpactedAssets from '~/assets/images/icons/impacted-assets.svg'
+import Gift from '~/assets/images/admin/integrations/gift.svg'
 
 import Code from '~/assets/images/readme/code.svg'
 import Underline from '~/assets/images/readme/text-underline.svg'
@@ -486,6 +487,7 @@ import CSVLogo from '~/assets/images/icons/csv-logo.svg'
 import PaperClip from '~/assets/images/icons/paper-clip.svg'
 
 export default {
+    Gift,
     NoSearchResultsQuery,
     SlackTabEmpty,
     PreviewQuery,

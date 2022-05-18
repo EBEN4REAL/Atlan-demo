@@ -56,6 +56,9 @@
             ProcessSQL: defineAsyncComponent(
                 () => import('./types/lineage/processSQL.vue')
             ),
+            MultipleAttributes: defineAsyncComponent(
+                () => import('./types/multipleAttributes/index.vue')
+            ),
         },
         props: {
             data: {

@@ -400,7 +400,4 @@
             @apply absolute -right-2 top-4 !important;
         }
     }
-    // :globa(.announcekit-widget-badge) {
-    //     @apply absolute -right-2 top-5;
-    // }
 </style>

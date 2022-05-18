@@ -164,10 +164,10 @@ export const getCyclicRelations = (relations) => {
 export const getGroupedRelations = (relations) => {
     let res = {}
     relations.forEach((rel) => {
-        const { fromEntityId, toEntityId } = rel
+        const { processId, fromEntityId, toEntityId } = rel
         const entry = `${fromEntityId}@${toEntityId}`
-        if (res[entry]) res[entry] += 1
-        else res = { ...res, [entry]: 1 }
+        if (res[entry]) res[entry].push(processId)
+        else res = { ...res, [entry]: [processId] }
     })
 
     Object.entries(res).forEach(([k, v]) => {
@@ -218,8 +218,8 @@ export const controlCyclicEdges = (graph, relations, mode = 'node') => {
  * @param relations - the relations object from the graph data
  */
 export const controlGroupedEdges = (graph, relations, mode = 'node') => {
-    const groupedRelations = Object.keys(getGroupedRelations(relations))
-    groupedRelations.forEach((rel) => {
+    const groupedRelations = Object.entries(getGroupedRelations(relations))
+    groupedRelations.forEach(([rel, processIds]) => {
         const [sourceId, targetId] = rel.split('@')
 
         const edge = graph.value.getEdges().find((e) => {
@@ -229,11 +229,13 @@ export const controlGroupedEdges = (graph, relations, mode = 'node') => {
             return sourceId === from && targetId === to
         })
         if (!edge) return
-        edge.updateData({ isGroupEdge: true })
+        const count = processIds.length
+
+        edge.updateData({ isGroupEdge: true, groupCount: count })
         edge.setLabels({
             attrs: {
                 label: {
-                    text: 'grouped-processes',
+                    text: `process (${count})`,
                 },
             },
         })

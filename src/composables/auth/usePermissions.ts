@@ -8,7 +8,10 @@ import { useAuthStore } from '~/store/auth'
 export default function usePermissions(immediate = true) {
     const { data, mutate } = Access.WhoAmI({
         asyncOptions: {
-            immediate
+            immediate,
+            onError: (e) => {
+                throw e
+            },
         }
     })
     const authStore = useAuthStore()

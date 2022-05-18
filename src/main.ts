@@ -16,6 +16,7 @@ import { useAuthStore } from '~/store/auth'
 import { inputFocusDirective } from '~/utils/directives/input-focus'
 import { authDirective } from './utils/directives/auth'
 import { Tenant } from '~/services/service/tenant'
+import fetchConfigs from '~/composables/configs/fetchConfigs.ts'
 
 import {
     identifyGroup,
@@ -121,13 +122,11 @@ keycloak
             inputFocusDirective(app)
             authDirective(app)
 
-
-            const { mutate } = useTenant(false)
-            await mutate()
-            const { mutate: mutatePermissions } = usePermissions(false)
-            await mutatePermissions()
+            // ? necessary API calls needed before app mounting
+            await fetchConfigs()
             app.use(router).mount('#app')
-            const redirectUrl = localStorage.getItem('redirectURL') // "/admin/integrations"
+
+            const redirectUrl = localStorage.getItem('redirectURL') // eg - "/admin/integrations"
             if (redirectUrl) {
                 const { checkAccess } = useAuth()
                 if (
@@ -148,6 +147,8 @@ keycloak
         }
     })
     .catch(() => {
+        app.use(router).mount('#app')
+        router.push('/error')
         authStore.setFailed(true)
         authStore.setIsAuthenticated(false)
     })

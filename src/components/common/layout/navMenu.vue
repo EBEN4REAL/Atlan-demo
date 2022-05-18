@@ -139,7 +139,7 @@
                     <AtlanIcon icon="QuestionRound" class="h-6" />
                 </AtlanButton2>
             </a-dropdown>
-            <div class="announcekit-widget">
+            <div class="flex announcekit-widget" @click="trackUpdateViewEvent">
                 <a-tooltip>
                     <template #title>
                         <span>What's New</span>
@@ -186,6 +186,7 @@
     import { usePersonaStore } from '~/store/persona'
     import { usePurposeStore } from '~/store/purpose'
     import whoami from '~/composables/user/whoami'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'Navigation Menu',
@@ -351,7 +352,12 @@
                     })
             })
 
+            const trackUpdateViewEvent = () => {
+                useAddEvent('main_header', 'updates_cta', 'clicked')
+            }
+
             return {
+                trackUpdateViewEvent,
                 page,
                 isHome,
                 logoUrl,

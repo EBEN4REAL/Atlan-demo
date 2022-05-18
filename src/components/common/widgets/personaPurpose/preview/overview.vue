@@ -64,7 +64,9 @@
         </div>
         <div v-if="item?.type === 'persona'" class="mt-7">
             <div class="text-gray-600">Connections</div>
-            <div class="flex flex-col gap-2 p-2 mt-2 bg-gray-100 rounded-lg">
+            <div
+                class="flex flex-col gap-2 p-2 mt-2 overflow-scroll bg-gray-100 rounded-lg max-h-44"
+            >
                 <div
                     v-for="connection in connections"
                     :key="connection?.connectorName"
@@ -80,7 +82,7 @@
         </div>
         <div class="mt-7">
             <div class="text-gray-600">Readme</div>
-            <ReadmeView :max-height="180" :readme="item.readme" />
+            <ReadmeView :max-height="170" :readme="item.readme" />
         </div>
     </div>
 </template>
@@ -154,17 +156,25 @@
                 let userPurposes = []
                 let groupPurposes = []
                 const { metadataPolicies, dataPolicies } = item.value
+                let isAllUser = false
                 dataPolicies?.forEach((el) => {
+                    if (el.allUsers) {
+                        isAllUser = true
+                    }
                     userPurposes = [...userPurposes, ...el.users]
                     groupPurposes = [...groupPurposes, ...el.groups]
                 })
                 metadataPolicies?.forEach((el) => {
+                    if (el.allUsers) {
+                        isAllUser = true
+                    }
                     userPurposes = [...userPurposes, ...el.users]
                     groupPurposes = [...groupPurposes, ...el.groups]
                 })
                 if (
                     !userPurposes.includes('all-users') &&
-                    userPurposes.length
+                    userPurposes.length &&
+                    !isAllUser
                 ) {
                     const resultUser = [...new Set(userPurposes)].length
                     const resultUserGroups = [...new Set(groupPurposes)].length
@@ -182,7 +192,7 @@
                             : ''
                     }`
                 }
-                if (userPurposes.includes('all-users')) {
+                if (userPurposes.includes('all-users') || isAllUser) {
                     return 'All users'
                 }
                 return '-'

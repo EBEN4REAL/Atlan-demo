@@ -209,15 +209,22 @@
             })
             const users = computed(() => {
                 if (type.value === 'purpose') {
+                    let isAllUser = false
                     let userPurposes = []
                     const { metadataPolicies, dataPolicies } = item.value
                     dataPolicies.forEach((el) => {
+                        if (el.allUsers) {
+                            isAllUser = true
+                        }
                         userPurposes = [...userPurposes, ...el.users]
                     })
                     metadataPolicies.forEach((el) => {
+                        if (el.allUsers) {
+                            isAllUser = true
+                        }
                         userPurposes = [...userPurposes, ...el.users]
                     })
-                    if (!userPurposes.includes('all-users')) {
+                    if (!userPurposes.includes('all-users') && !isAllUser) {
                         const result = [...new Set(userPurposes)].map(
                             (el, i) => ({
                                 username: el,

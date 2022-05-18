@@ -111,7 +111,7 @@
                 </template>
                 <template #nextArrow>
                     <div
-                        class="flex items-center justify-center w-8 h-8 mr-2 text-gray-800 bg-white border border-gray-300 border-solid rounded-full"
+                        class="flex items-center justify-center w-8 h-8 mr-5 text-gray-800 bg-white border border-gray-300 border-solid rounded-full"
                     >
                         <AtlanIcon icon="ChevronRight" class="w-4 h-4" />
                     </div>

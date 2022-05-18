@@ -391,7 +391,9 @@
 
             <div
                 v-if="
-                    ((isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)) &&
+                    ((isBiAsset(selectedAsset) ||
+                        isSaasAsset(selectedAsset) ||
+                        isObjectAsset(selectedAsset)) &&
                         ![
                             'PowerBIWorkspace',
                             'TableauSite',
@@ -399,8 +401,11 @@
                             'LookerProject',
                             'LookerQuery',
                             'SalesforceOrganization',
+                            'S3Bucket',
                         ].includes(selectedAsset?.typeName)) ||
-                    ['Schema'].includes(selectedAsset?.typeName)
+                    ['Schema', 'ColumnProcess', 'BIProcess'].includes(
+                        selectedAsset?.typeName
+                    )
                 "
                 class="flex px-5"
             >
@@ -525,6 +530,58 @@
                         :array="fieldsLookerQuery(selectedAsset)"
                         class="rounded-lg"
                     />
+                </div>
+            </div>
+
+            <div
+                v-if="['S3Object', 'S3Bucket'].includes(selectedAsset.typeName)"
+                class="flex flex-col px-5 text-sm"
+            >
+                <div class="flex items-center mb-1 text-gray-500">
+                    <span>ARN</span>
+                    <a-tooltip title="Copy">
+                        <div
+                            @click="
+                                handleCopyValue(awsArn(selectedAsset), 'ARN')
+                            "
+                        >
+                            <AtlanIcon
+                                icon="CopyOutlined"
+                                class="w-auto ml-1 cursor-pointer mb-0.5"
+                            /></div
+                    ></a-tooltip>
+                </div>
+                <span class="text-gray-700">{{ awsArn(selectedAsset) }}</span>
+            </div>
+
+            <div
+                v-if="['S3Bucket'].includes(selectedAsset.typeName)"
+                @click="switchTab(selectedAsset, 'Objects')"
+                class="flex flex-col px-5 text-sm cursor-pointer"
+            >
+                <span class="mb-1 text-sm text-gray-500">Objects</span>
+                <span class="font-semibold text-primary">{{
+                    s3ObjectCount(selectedAsset)
+                }}</span>
+            </div>
+
+            <div
+                v-if="['S3Object'].includes(selectedAsset.typeName)"
+                class="flex flex-col px-5 gap-y-4"
+            >
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Content Type</span>
+
+                    <span class="text-gray-700">{{
+                        s3ObjectContentType(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Size</span>
+
+                    <span class="text-gray-700"
+                        >{{ s3ObjectSize(selectedAsset) }}B</span
+                    >
                 </div>
             </div>
 
@@ -977,7 +1034,6 @@
                     )
                 "
                 :selected-asset="selectedAsset"
-                class="px-5"
                 :edit-permission="editPermission"
                 :allow-delete="editPermission"
                 :is-drawer="isDrawer"
@@ -1162,6 +1218,7 @@
                 externalLocationFormat,
                 isBiAsset,
                 isSaasAsset,
+                isObjectAsset,
                 getConnectorLabel,
                 connectorName,
                 fieldsLookerQuery,
@@ -1175,6 +1232,10 @@
                 parentTable,
                 parentView,
                 title,
+                awsArn,
+                s3ObjectSize,
+                s3ObjectCount,
+                s3ObjectContentType,
             } = useAssetInfo()
 
             const {
@@ -1355,6 +1416,7 @@
                 handleCollectionClick,
                 isBiAsset,
                 isSaasAsset,
+                isObjectAsset,
                 isProfile,
                 getConnectorLabel,
                 connectorName,
@@ -1370,6 +1432,10 @@
                 getEntityStatusIcon,
                 parentTable,
                 parentView,
+                awsArn,
+                s3ObjectSize,
+                s3ObjectCount,
+                s3ObjectContentType,
                 quickChange,
                 limit,
                 title,

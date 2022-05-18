@@ -39,7 +39,7 @@
             </div>
         </template>
 
-        <template v-if="jiraAppStatusReady">
+        <template v-if="!jiraAppStatusLoading">
             <div v-if="tenantJiraStatus.created && !jiraAppInstalled" class="">
                 <AtlanButton
                     v-auth="access.DELETE_INTEGRATION"
@@ -122,7 +122,7 @@
     const props = defineProps({
         isOpen: { type: Boolean, required: true },
         jiraAppInstalled: { type: Boolean, required: true },
-        jiraAppStatusReady: { type: Boolean, required: true },
+        jiraAppStatusLoading: { type: Boolean, required: true },
     })
 
     const emit = defineEmits(['disconnect'])

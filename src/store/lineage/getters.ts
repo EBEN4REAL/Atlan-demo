@@ -1,4 +1,13 @@
 export const getters = {
+    getSelectedNodeId(state) {
+        return () => state.selectedNodeId
+    },
+    getSelectedPortId(state) {
+        return () => state.selectedPortId
+    },
+    getPreferences(state) {
+        return () => state.preferences
+    },
     getCyclicRelations(state) {
         return () => state.cyclicRelations
     },

@@ -4,7 +4,7 @@
             :visible="popOverVisible"
             :trigger="['click']"
             placement="bottom"
-            destroy-on-close
+            :destroy-on-close="true"
             :on-visible-change="
                 (e) => {
                     popOverVisible = e
@@ -17,13 +17,15 @@
                 :is-updating="isUpdating"
             />
             <template #content>
-                <EmojiPicker
+                <IconPicker
                     :emoji="metadata.options.emoji"
                     :image="metadata.options.imageId"
+                    :loading="isUpdating"
+                    :picker-element-id="'CM-emoji-picker'"
+                    :allow-image-upload="true"
                     @select="handleEmojiSelect"
                     @remove="removeAvatar"
                     @upload="handleUploadImage"
-                    :loading="isUpdating"
                 />
             </template>
         </a-popover>
@@ -36,11 +38,11 @@
     import useCustomMetadataAvatar from './composables/useCustomMetadataAvatar'
 
     import CustomMetadataAvatar from './CustomMetadataAvatar.vue'
-    import EmojiPicker from '@/common/avatar/emojiPicker.vue'
+    import IconPicker from '~/components/common/IconPicker/IconPicker.vue'
 
     export default defineComponent({
         components: {
-            EmojiPicker,
+            IconPicker,
             CustomMetadataAvatar,
         },
         props: {

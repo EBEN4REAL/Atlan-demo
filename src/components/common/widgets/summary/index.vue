@@ -164,6 +164,9 @@
             ReportCount: defineAsyncComponent(
                 () => import('./types/reportCount.vue')
             ),
+            S3ObjectCount: defineAsyncComponent(
+                () => import('./types/s3ObjectCount.vue')
+            ),
         },
 
         props: {

@@ -2,8 +2,10 @@
     <div
         :key="item.guid"
         :class="[
-            'flex items-center justify-between px-4 cursor-pointer hover:bg-primary-light group relative overflow-x-hidden w-full',
-            selectedCollection?.guid === item?.guid ? 'bg-primary-light' : '',
+            'flex items-center justify-between px-4 cursor-pointer  group relative overflow-x-hidden w-full',
+            selectedCollection?.guid === item?.guid
+                ? 'bg-primary-light'
+                : 'hover:bg-new-gray-100',
         ]"
         style="height: 34px"
         @click="handleChange(item.guid)"
@@ -21,9 +23,15 @@
             </div>
 
             <div class="truncate" style="max-width: 210px">
-                <span class="mr-1 text-sm text-gray-700">{{
-                    item.attributes.name
-                }}</span>
+                <span
+                    :class="[
+                        'mr-1 text-sm text-gray-700',
+                        selectedCollection?.guid === item?.guid
+                            ? 'font-bold'
+                            : '',
+                    ]"
+                    >{{ item.attributes.name }}</span
+                >
             </div>
             <div>
                 <AtlanIcon
@@ -33,17 +41,39 @@
                 ></AtlanIcon>
             </div>
         </div>
-        <div class="absolute opacity-100 group right-3 y-center">
+        <AtlanIcon
+            v-if="selectedCollection?.guid === item?.guid"
+            icon="Check"
+            class="ml-1 text-primary group-hover:opacity-0"
+        />
+        <div
+            class="absolute flex pl-5 opacity-0 group-hover:opacity-100 right-3 y-center"
+        >
+            <div
+                class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-200"
+                @click.stop="openInSidebar(item, false)"
+            >
+                <AtlanIcon
+                    icon="SidebarSwitch"
+                    class="w-4 h-4 my-auto outline-none"
+                ></AtlanIcon>
+            </div>
             <InsightsThreeDotMenu
+                v-if="username === item?.createdBy"
                 @click.stop="() => {}"
                 :options="dropdownOptions"
+                class="pl-1"
             >
                 <template #menuTrigger>
-                    <div v-if="username === item?.createdBy" class="pl-5">
-                        <AtlanIcon
-                            icon="KebabMenu"
-                            class="w-4 h-4 my-auto"
-                        ></AtlanIcon>
+                    <div class="">
+                        <div
+                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-200"
+                        >
+                            <AtlanIcon
+                                icon="KebabMenuHorizontal"
+                                class="w-4 h-4 my-auto text-new-gray-600"
+                            ></AtlanIcon>
+                        </div>
                     </div>
                 </template>
             </InsightsThreeDotMenu>
@@ -138,6 +168,11 @@
             selectedCollection: {
                 type: Object,
                 required: false,
+            },
+            openInSidebar: {
+                type: Function,
+                required: false,
+                default: () => {},
             },
         },
         setup(props, { emit }) {

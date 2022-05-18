@@ -33,6 +33,7 @@ interface params {
     ownerUsers?: Array<any>
     ownerGroups?: Array<any>
     glossaryPayload?: any
+    CMPayload?: any
 }
 interface eventPayload {
     request_type:
@@ -43,6 +44,7 @@ interface eventPayload {
         | 'certificateStatus'
         | 'ownerUser'
         | 'ownerGroup'
+        | 'bm_attribute'
         | ''
     asset_type: String
     count: Number
@@ -61,6 +63,7 @@ export function useCreateRequests({
     ownerUsers = [],
     ownerGroups = [],
     glossaryPayload,
+    CMPayload,
 }: params) {
     const requests = ref<requestPayload[]>([])
     const eventPayload = ref<eventPayload>({
@@ -211,7 +214,8 @@ export function useCreateRequests({
                 approvalType: 'single',
                 entityType: 'AtlasGlossaryTerm',
                 sourceType: 'static',
-                sourceGuid: glossaryPayload?.relationshipAttributes?.anchor?.guid,
+                sourceGuid:
+                    glossaryPayload?.relationshipAttributes?.anchor?.guid,
                 id: glossaryPayload?.attributes?.name,
                 payload: glossaryPayload,
             })
@@ -221,10 +225,28 @@ export function useCreateRequests({
                 requestType: 'create_category',
                 approvalType: 'single',
                 entityType: 'AtlasGlossaryCategory',
-                sourceGuid: glossaryPayload?.relationshipAttributes?.anchor?.guid,
+                sourceGuid:
+                    glossaryPayload?.relationshipAttributes?.anchor?.guid,
                 sourceType: 'static',
                 id: glossaryPayload?.attributes?.name,
                 payload: glossaryPayload,
+            })
+        }
+        if (requestType === 'bm_attribute') {
+            eventPayload.value.request_type = 'bm_attribute'
+            eventPayload.value.action = 'edit'
+            Object.keys(CMPayload)?.forEach((el) => {
+                requests.value.push({
+                    requestType: 'bm_attribute',
+                    approvalType: 'single',
+                    destinationAttribute: el,
+                    id: assetGuid,
+                    destinationGuid: assetGuid,
+                    destinationQualifiedName: assetQf,
+                    payload: CMPayload[el],
+                    entityType: assetType,
+                    sourceType: 'static',
+                })
             })
         }
 

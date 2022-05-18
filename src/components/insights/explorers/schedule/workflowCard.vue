@@ -1,33 +1,40 @@
 <template>
-    <div
-        class="w-full p-3 mb-3 text-sm bg-white border border-white rounded-lg shadow hover:border-primary group"
-        @click="() => onSelectCard(item.metadata.uid)"
+    <InsightsThreeDotMenu
+        :options="dropdownQueryOptions"
+        trigger="contextmenu"
+        minWidth="100"
+        :item="item"
     >
-        <div class="flex items-center justify-between">
-            <div class="flex items-center" style="flex: 1">
-                <AtlanIcon
-                    :icon="
-                        getEntityStatusIcon(
-                            savedQueryMetData?.attributes?.isVisualQuery
-                                ? 'Vqb'
-                                : 'Query',
-                            certificateStatus(savedQueryMetData)
-                        )
-                    "
-                    class="text-primary -mt-0.5 mr-1"
-                />
-                <p class="w-full text-gray-500">
-                    <Tooltip
-                        clampPercentage="99%"
-                        :tooltip-text="title(savedQueryMetData)"
-                        :rows="1"
-                        classes="text-gray-500"
-                    />
-                </p>
-            </div>
-            <div class="" style="">
-                <div class="items-center hidden h-5 group-hover:flex">
-                    <!-- <a-tooltip color="#363636" placement="top">
+        <template #menuTrigger>
+            <div
+                class="w-full p-3 mb-3 text-sm bg-white border border-white rounded-lg shadow hover:border-primary group"
+                @click="() => onSelectCard(item.metadata.uid)"
+            >
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center" style="flex: 1">
+                        <AtlanIcon
+                            :icon="
+                                getEntityStatusIcon(
+                                    savedQueryMetData?.attributes?.isVisualQuery
+                                        ? 'Vqb'
+                                        : 'Query',
+                                    certificateStatus(savedQueryMetData)
+                                )
+                            "
+                            class="text-primary -mt-0.5 mr-1"
+                        />
+                        <p class="w-full text-gray-500">
+                            <Tooltip
+                                clampPercentage="99%"
+                                :tooltip-text="title(savedQueryMetData)"
+                                :rows="1"
+                                classes="text-gray-500"
+                            />
+                        </p>
+                    </div>
+                    <div class="" style="">
+                        <div class="items-center hidden h-5 group-hover:flex">
+                            <!-- <a-tooltip color="#363636" placement="top">
                         style="min-width: 44px"
                         <template #title>Open preview sidebar</template>
 
@@ -37,57 +44,62 @@
                             style="min-width: 16px"
                         ></AtlanIcon>
                     </a-tooltip> -->
-                    <!-- <AtlanIcon
+                            <!-- <AtlanIcon
                         icon="KebabMenuHorizontal"
                         class="w-4 h-4 pl-2 my-auto text-gray-500 outline-none"
                         style="min-width: 16px"
                     /> -->
-                    <ThreeDotMenu :dropdownOptions="dropdownOptions" />
+                            <ThreeDotMenu :dropdownOptions="dropdownOptions" />
+                        </div>
+                        <AtlanIcon
+                            icon="Mail"
+                            class="visible text-gray-500 group-hover:hidden"
+                        />
+                    </div>
                 </div>
-                <AtlanIcon
-                    icon="Mail"
-                    class="visible text-gray-500 group-hover:hidden"
-                />
-            </div>
-        </div>
-        <div class="w-full pb-3 mt-1 mb-3 font-bold border-b border-gray-300">
-            <Tooltip
-                clampPercentage="99%"
-                :tooltip-text="scheduleQueryName"
-                :rows="2"
-            />
-        </div>
-        <div class="flex items-center text-xs text-gray-500">
-            <span class="capitalize">{{ frequency }}</span>
-            <div class="w-1 h-1 bg-gray-300 mx-1.5 rounded-full"></div>
-            <div>
-                <AtlanIcon icon="Clock" class="w-4 h-4 -mt-0.5 mr-1" />
-                <span> {{ _date?.format(format) }}&nbsp;</span>
-                <span>{{ _date?.format('DD MMMM') }}</span>
-            </div>
-            <div
-                v-if="Object.keys(queryVariables).length"
-                class="w-1 h-1 bg-gray-300 mx-1.5 rounded-full"
-            ></div>
-            <div v-if="Object.keys(queryVariables).length">
-                <AtlanIcon icon="Flash" class="mr-1 -mt-0.5" />
-                <span>{{ Object.keys(queryVariables).length }}</span>
-            </div>
-        </div>
-        <div class="flex items-center mt-3">
-            <!-- <div class="w-6 h-1 mr-1 rounded bg-success"></div>
+                <div
+                    class="w-full pb-3 mt-1 mb-3 font-bold border-b border-gray-300"
+                >
+                    <Tooltip
+                        clampPercentage="99%"
+                        :tooltip-text="scheduleQueryName"
+                        :rows="2"
+                    />
+                </div>
+                <div class="flex items-center text-xs text-gray-500">
+                    <span class="capitalize">{{ frequency }}</span>
+                    <div class="w-1 h-1 bg-gray-300 mx-1.5 rounded-full"></div>
+                    <div>
+                        <AtlanIcon icon="Clock" class="w-4 h-4 -mt-0.5 mr-1" />
+                        <span> {{ _date?.format(format) }}&nbsp;</span>
+                        <span>{{ _date?.format('DD MMMM') }}</span>
+                    </div>
+                    <div
+                        v-if="Object.keys(queryVariables).length"
+                        class="w-1 h-1 bg-gray-300 mx-1.5 rounded-full"
+                    ></div>
+                    <div v-if="Object.keys(queryVariables).length">
+                        <AtlanIcon icon="Flash" class="mr-1 -mt-0.5" />
+                        <span>{{ Object.keys(queryVariables).length }}</span>
+                    </div>
+                </div>
+                <div class="flex items-center mt-3">
+                    <!-- <div class="w-6 h-1 mr-1 rounded bg-success"></div>
             <div class="w-6 h-1 mr-1 rounded bg-success"></div>
             <div class="w-6 h-1 mr-1 rounded bg-success"></div> -->
-            <div class="flex items-center w-full">
-                <RunWidget
-                    :item="runMap[item.metadata.name]"
-                    :workflow="item.metadata.name"
-                    :runs="runs(item.metadata.name)"
-                    statusType="line"
-                ></RunWidget>
+                    <div class="flex items-center w-full">
+                        <RunWidget
+                            :item="runMap[item.metadata.name]"
+                            :workflow="item.metadata.name"
+                            :runs="runs(item.metadata.name)"
+                            statusType="line"
+                        ></RunWidget>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
+        </template>
+    </InsightsThreeDotMenu>
+
     <a-modal
         :visible="scheduleQueryModal"
         :footer="null"
@@ -132,6 +144,8 @@
     import ScheduleQuery from '~/components/insights/explorers/queries/schedule/index.vue'
     import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import { getCronFrequency } from '~/components/insights/explorers/queries/schedule/composables/useSchedule'
+    import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
+    import { MenuItem } from 'ant-design-vue'
 
     export default defineComponent({
         components: {
@@ -140,6 +154,7 @@
             Ellipsis,
             ThreeDotMenu,
             ScheduleQuery,
+            InsightsThreeDotMenu,
         },
         props: {
             item: {
@@ -259,6 +274,35 @@
                 ]
             })
 
+            const dropdownQueryOptions = [
+                {
+                    title: 'Edit',
+                    key: 'edit',
+                    // class: 'text-gray-700',
+                    disabled: !savedQueryMetData.value?.attributes,
+                    component: MenuItem,
+
+                    handleClick: () => {
+                        debugger
+                        scheduleQueryModal.value = true
+                    },
+                },
+                {
+                    title: 'Delete',
+                    key: 'delete',
+                    component: MenuItem,
+                    class: '',
+                    disabled: false,
+                    handleClick: () => {
+                        emit(
+                            'archive',
+                            item.value?.metadata?.name,
+                            scheduleQueryName.value
+                        )
+                    },
+                },
+            ]
+
             const cronModel = ref(cronObject(item.value))
 
             return {
@@ -278,6 +322,8 @@
                 onSelectCard,
                 selectedCardKey,
                 dropdownOptions,
+                dropdownQueryOptions,
+
                 scheduleQueryModal,
                 cronModel,
                 workflowParameters,

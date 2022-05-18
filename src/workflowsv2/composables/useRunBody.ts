@@ -157,6 +157,25 @@ export function useRunBody(
                     }
                     break
                 }
+                case 'excludePrefix': {
+                    if (filterObject?.length) {
+                        // TODO  can be done w/o for loop
+                        filterObject.forEach(pre => {
+                            base.notFilter('nested', {
+                                path: 'spec',
+                                ...bodybuilder()
+                                    .query(
+                                        'prefix',
+                                        'spec.workflowTemplateRef.name.keyword',
+                                        pre
+                                    )
+                                    .build(),
+                            })
+                        })
+
+                    }
+                    break
+                }
             }
         })
     } catch (e) {
@@ -189,9 +208,9 @@ export function useRunBody(
                                                         sort: [
                                                             {
                                                                 'status.startedAt':
-                                                                    {
-                                                                        order: 'desc',
-                                                                    },
+                                                                {
+                                                                    order: 'desc',
+                                                                },
                                                             },
                                                         ],
                                                         _source: {

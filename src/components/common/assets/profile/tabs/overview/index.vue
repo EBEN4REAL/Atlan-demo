@@ -80,6 +80,33 @@
             />
         </template>
     </SaasOverview>
+    <ObjectOverview
+        v-else-if="isObjectAsset(selectedAsset)"
+        :selected-asset="selectedAsset"
+        :readme-edit-permission="readmeEditPermission"
+    >
+        <template #readme>
+            <AtlanReadme
+                v-model="localReadmeContent"
+                class="flex flex-col bg-white border border-gray-200 rounded-lg"
+                :is-editing-allowed="readmeEditPermission"
+                :asset-type="selectedAsset.typeName"
+                :handle-save="handleSave"
+                :handle-success="handleSuccess"
+                :handle-failure="handleFailure"
+                @saved-changes="
+                    () => {
+                        savedAllChanges = true
+                    }
+                "
+                @editing="
+                    () => {
+                        savedAllChanges = false
+                    }
+                "
+            />
+        </template>
+    </ObjectOverview>
     <SQLOverview
         v-else-if="isSQLAsset(selectedAsset)"
         :selected-asset="selectedAsset"
@@ -169,6 +196,7 @@
     import BiOverview from './bi/index.vue'
     import GlossaryOverview from './glossary/index.vue'
     import SaasOverview from './saas/index.vue'
+    import ObjectOverview from './object/index.vue'
     import GeneralOverview from './general/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
@@ -181,6 +209,7 @@
             GlossaryOverview,
             GeneralOverview,
             SaasOverview,
+            ObjectOverview,
         },
         props: {
             selectedAsset: {
@@ -195,6 +224,7 @@
                 isGTC,
                 isSQLAsset,
                 isSaasAsset,
+                isObjectAsset,
                 selectedAssetUpdatePermission,
                 assetPermission,
             } = useAssetInfo()
@@ -281,6 +311,7 @@
                 isGTC,
                 isSQLAsset,
                 isSaasAsset,
+                isObjectAsset,
                 readmeEditPermission,
                 cancel,
                 confirm,

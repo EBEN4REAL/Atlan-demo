@@ -1,4 +1,13 @@
 export const actions = {
+    setSelectedNodeId(nodeId) {
+        this.selectedNodeId = nodeId
+    },
+    setSelectedPortId(portId) {
+        this.selectedPortId = portId
+    },
+    setPreference(key, value) {
+        this.preferences[key] = value
+    },
     setCyclicRelation(relStr) {
         if (this.cyclicRelations.includes(relStr)) return
         this.cyclicRelations.push(relStr)

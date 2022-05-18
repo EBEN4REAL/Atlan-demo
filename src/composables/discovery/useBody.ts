@@ -84,6 +84,10 @@ export function useBody(
             base.orQuery('match', 'userDescription', {
                 query: tempQuery,
             })
+            base.orQuery('match', 'sql', {
+                query: tempQuery,
+                boost: 40,
+            })
             base.orQuery('match', '__meaningsText', {
                 query: tempQuery,
                 boost: 20,
@@ -142,10 +146,18 @@ export function useBody(
 
                 if (found) {
                     if (found.tags.length > 0) {
-                        base.filter('terms', '__traitNames', found.tags)
-                        // base.filter('bool', (q) => {
-                        //     q.orFilter('terms', '__traitNames', found.tags)
-                        // })
+                        /*  base.filter('terms', '__traitNames', found.tags) */
+
+                        base.filter('bool', (q) => {
+                            q.orFilter('terms', '__traitNames', found.tags)
+                            q.orFilter(
+                                'terms',
+                                '__propagatedTraitNames',
+                                found.tags
+                            )
+
+                            return q
+                        })
                     }
                 }
                 // const connectionIdList = personaStore.getConnectionList(
@@ -417,6 +429,13 @@ export function useBody(
                 }
                 break
             }
+            case 's3BucketQualifiedName': {
+                if (filterObject) {
+                    base.filter('term', 's3BucketQualifiedName', filterObject)
+                }
+                break
+            }
+
             case 'glossary': {
                 if (filterObject) {
                     base.filter('term', '__glossary', filterObject)
@@ -526,17 +545,7 @@ export function useBody(
                             if (element.operator === 'isNotNull') {
                                 base.filter('exists', element.operand)
                             }
-                            if (
-                                element.operator === 'boolean' &&
-                                element.operand === '__hasLineage'
-                            ) {
-                                element.value
-                                    ? base.filter('exists', element.operand)
-                                    : base.notFilter('exists', element.operand)
-                            } else if (
-                                element.value != null &&
-                                element.value !== ''
-                            ) {
+                            if (element.value != null && element.value !== '') {
                                 if (element.operator === 'equals') {
                                     base.filter(
                                         'term',
@@ -557,11 +566,13 @@ export function useBody(
                                 }
                                 if (element.operator === 'startsWith') {
                                     base.filter(
-                                        'prefix',
+                                        'wildcard',
                                         element.operand,
-                                        Array.isArray(element.value)
-                                            ? JSON.stringify(element.value)
-                                            : element.value
+                                        `${
+                                            Array.isArray(element.value)
+                                                ? JSON.stringify(element.value)
+                                                : element.value
+                                        }*`
                                     )
                                 }
                                 if (element.operator === 'endsWith') {
@@ -774,13 +785,15 @@ export function useBody(
         !facets?.typeNames?.includes('AtlasGlossaryTerm') &&
         !facets?.typeNames?.includes('AtlasGlossaryCategory') &&
         !facets?.typeNames?.includes('Link') &&
-        !facets?.guid
+        !facets?.guid &&
+        !facets?.guidList
     ) {
         // Global TypeName Filters
         base.orFilter('terms', '__superTypeNames.keyword', [
             'SQL',
             'BI',
             'SaaS',
+            'ObjectStore',
         ])
         base.orFilter('terms', '__typeName.keyword', [
             'Query',
@@ -788,6 +801,7 @@ export function useBody(
             'AtlasGlossaryCategory',
             'AtlasGlossaryTerm',
             'Connection',
+            'Process',
         ])
     }
 

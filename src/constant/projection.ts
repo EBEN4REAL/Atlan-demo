@@ -128,6 +128,24 @@ export const AssetAttributes = [
     'picklistValues',
     'formula',
     'isPublished',
+    'process',
+    'bucket',
+    's3ObjectCount',
+    's3BucketVersioningEnabled',
+    's3ObjectLastModifiedTime',
+    's3BucketName',
+    's3ObjectSize',
+    's3ObjectStorageClass',
+    's3ObjectKey',
+    's3ObjectContentType',
+    'awsArn',
+    'awsPartition',
+    'awsRegion',
+    'awsAccountId',
+    'awsResourceId',
+    'awsOwnerName',
+    'awsTags',
+    's3ObjectVersionId',
 ]
 
 export const SQLAttributes = [
@@ -263,6 +281,10 @@ export const MinimalAttributes = [
     'isDist',
     'order',
     'isPublished',
+    'process',
+    'bucket',
+    's3ObjectCount',
+    's3BucketName',
 ]
 
 export const BasicSearchAttributes = [

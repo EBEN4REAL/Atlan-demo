@@ -142,11 +142,39 @@
                 dateRange: filters.value?.dateRange,
                 status: filters.value?.status,
                 creators: filters.value?.creators,
+                excludePrefix: [
+                    'atlan-gtc-bulk-upload-',
+                    'atlan-schedule-query-',
+                    'asq-',
+                    // ? if filtering by BQ package, then exclude miner as both has same prefix
+                    ...(workflowStore.packageMeta?.[filters.value?.packageId]
+                        ?.metadata?.name === 'atlan-bigquery'
+                        ? ['atlan-bigquery-miner']
+                        : []),
+                    // ? if filtering by Snowflake package, then exclude miner as both has same prefix
+                    ...(workflowStore.packageMeta?.[filters.value?.packageId]
+                        ?.metadata?.name === 'atlan-snowflake'
+                        ? ['atlan-snowflake-miner']
+                        : []),
+                    // ? if filtering by Redshift package, then exclude miner as both has same prefix
+                    ...(workflowStore.packageMeta?.[filters.value?.packageId]
+                        ?.metadata?.name === 'atlan-redshift'
+                        ? ['atlan-redshift-miner']
+                        : []),
+                ],
                 filterOut: [
                     'atlan-typedef-seeder',
                     'atlan', // atlan-upadate
                     'cloud-es-log-policy',
                     'cloud-backups',
+                    'fantastic-octopus',
+                    'atlan-metastore-migrations-haslineage',
+                    'atlan-gtc-bulk-upload',
+                    'atlan-schedule-query',
+                    'atlan-init',
+                    'atlan-atlas',
+                    'atlan-atlas-reset',
+                    'cloud-atlan-bootstrap',
                 ],
             }))
 
@@ -246,6 +274,8 @@
             })
 
             return {
+                filters,
+                facets,
                 runs,
                 status,
                 creators,

@@ -21,26 +21,6 @@
                     </div>
                 </a-menu-item>
                 <!-- Bulk upload hidden for GA  : only available for secret url i.e. ?sandbox=true-->
-                <a-menu-item
-                    v-if="sandbox"
-                    key="bulk"
-                    class="flex items-center"
-                    @click="closeMenu"
-                >
-                    <BulkUploadModal :entity="entity">
-                        <template #trigger>
-                            <div class="flex items-center">
-                                <AtlanIcon
-                                    icon="Download"
-                                    class="m-0 mr-2 transform rotate-180 text-primary"
-                                />
-                                <p class="p-0 m-0 text-gray-700 capitalize">
-                                    Bulk upload terms
-                                </p>
-                            </div>
-                        </template>
-                    </BulkUploadModal>
-                </a-menu-item>
                 <a-menu-divider></a-menu-divider>
                 <!-- Archive -->
                 <a-menu-item
@@ -100,17 +80,8 @@
 
     // components
     import { message } from 'ant-design-vue'
-    import StatusBadge from '@common/badge/status/index.vue'
-    // import Owners from './owners.vue'
-    // import Status from './status.vue'
-    import AddGtcModal from '@/glossary/modal/addGtcModal.vue'
-    // import Categories from '@/glossary/common/categories.vue'
-    import ModalHeader from '@/glossary/modal/modalHeader.vue'
-    // import BulkModal from '@/glossary/gtcCrud/bulkModal.vue'
-
     // utils
     import { copyToClipboard } from '~/utils/clipboard'
-    import BulkUploadModal from '@/glossary/modal/bulkUploadModal.vue'
     import RemoveGTCModal from '@/glossary/modal/removeGTCModal.vue'
     import assetTypeLabel from '@/glossary/constants/assetTypeLabel'
     // composables
@@ -123,15 +94,7 @@
 
     export default defineComponent({
         components: {
-            // Status,
-            // Owners,
-            StatusBadge,
-            BulkUploadModal,
-            AddGtcModal,
-            // Categories,
-            ModalHeader,
             RemoveGTCModal,
-            // BulkModal,
         },
         props: {
             entity: {
@@ -222,8 +185,6 @@
                 assetTypeLabel,
                 isVisible,
                 isModalVisible,
-                // updateTree,
-                // handleDelete,
                 handleCancel,
                 showModal,
                 closeMenu,

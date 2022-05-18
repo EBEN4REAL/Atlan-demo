@@ -48,16 +48,17 @@
                     :key="classification.guid"
                     class="flex items-end"
                 >
-                    <ClassificationPill
-                        :name="classification.name"
-                        :display-name="classification?.displayName"
-                        :is-propagated="false"
-                        :allow-delete="false"
-                        :color="classification.options?.color"
-                        :created-by="classification?.createdBy"
-                        class="px-2 border border-gray-200"
-                        :no-hover="true"
-                    />
+                    <Popover :classification="classification">
+                        <ClassificationPill
+                            :name="classification.name"
+                            :display-name="classification?.displayName"
+                            :is-propagated="false"
+                            :allow-delete="false"
+                            :color="classification.options?.color"
+                            :created-by="classification?.createdBy"
+                            class="px-2 border border-gray-200"
+                        />
+                    </Popover>
                 </div>
             </div>
         </div>
@@ -94,10 +95,11 @@
     import { mergeArray } from '~/utils/array'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import ClassificationPill from '@/common/pills/classification.vue'
+    import Popover from '@/common/popover/classification/index.vue'
 
     export default defineComponent({
         name: 'PersonaPurposeOverview',
-        components: { ReadmeView, ClassificationPill },
+        components: { ReadmeView, ClassificationPill, Popover },
         props: {
             item: {
                 type: Object,

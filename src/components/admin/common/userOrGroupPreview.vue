@@ -80,7 +80,7 @@
                                 <span class="text-gray-300">&bull;</span>
                                 <span class="ml-1">
                                     {{selectedUser.enabled ?  details : '' }} 
-                                    <button class="rounded bg-new-red-100 px-3 text-xs pt-1 pb-0.5 text-new-red-400 tracking-wider font-bold" v-if="!selectedUser.enabled">DISABLED</button>
+                                    <button class="rounded bg-new-red-100 px-2 text-xs pb-px text-new-red-400 tracking-wider font-bold" v-if="!selectedUser.enabled" style="padding-top: 3px">DISABLED</button>
                                 </span>
                             </span>
                             <span

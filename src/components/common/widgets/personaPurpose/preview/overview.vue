@@ -34,6 +34,33 @@
                 {{ item.description || 'No description' }}
             </div>
         </div>
+        <div v-if="activeTab === 'purpose'" class="mt-7">
+            <div class="text-gray-600">Classifications</div>
+            <div
+                v-if="!listClassifications.length"
+                class="mt-2 text-sm text-gray-800"
+            >
+                No classification attached
+            </div>
+            <div v-else class="flex gap-2 mt-2">
+                <div
+                    v-for="(classification, i) in listClassifications"
+                    :key="classification.guid"
+                    class="flex items-end"
+                >
+                    <ClassificationPill
+                        :name="classification.name"
+                        :display-name="classification?.displayName"
+                        :is-propagated="false"
+                        :allow-delete="false"
+                        :color="classification.options?.color"
+                        :created-by="classification?.createdBy"
+                        class="border-none"
+                        :no-hover="true"
+                    />
+                </div>
+            </div>
+        </div>
         <div v-if="item?.type === 'persona'" class="mt-7">
             <div class="text-gray-600">Connections</div>
             <div class="flex flex-col gap-2 p-2 mt-2 bg-gray-100 rounded-lg">
@@ -64,10 +91,13 @@
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { getCountString } from '~/utils/number'
     import ReadmeView from '~/components/common/readmeView/index.vue'
+    import { mergeArray } from '~/utils/array'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import ClassificationPill from '@/common/pills/classification.vue'
 
     export default defineComponent({
         name: 'PersonaPurposeOverview',
-        components: { ReadmeView },
+        components: { ReadmeView, ClassificationPill },
         props: {
             item: {
                 type: Object,
@@ -84,6 +114,7 @@
         },
         emits: [],
         setup(props) {
+            const { classificationList } = useTypedefData()
             const { item, globalState, activeTab } = toRefs(props)
             const aggregations = ref(['typeName'])
             const limit = ref(1)
@@ -191,7 +222,35 @@
                 }
                 return result
             }
+            const classifications = computed(() => {
+                const arr: any[] = []
+                classificationList.value.forEach((cl) => {
+                    item.value?.tags?.forEach((name) => {
+                        if (name === cl.name) {
+                            arr.push({
+                                typeName: cl.name,
+                                entityGuid: cl.guid,
+                                entityStatus: 'ACTIVE',
+                                propagate: false,
+                                validityPeriods: [],
+                                removePropagationsOnEntityDelete: false,
+                            })
+                        }
+                    })
+                })
+                return arr
+            })
             const connections = computed(() => getUniqueTypeIcons())
+            const listClassifications = computed(() => {
+                const { matchingIdsResult } = mergeArray(
+                    classificationList.value,
+                    classifications.value,
+                    'name',
+                    'typeName'
+                )
+
+                return matchingIdsResult
+            })
             return {
                 userGroup,
                 connections,
@@ -199,6 +258,7 @@
                 getCountString,
                 isLoading,
                 userGroupPurpose,
+                listClassifications,
             }
         },
     })

@@ -221,7 +221,7 @@
             })
             const assetStore = useAssetStore()
             const handleViewAssets = () => {
-                assetStore.setGlobalState([activeTab.value, item.id])
+                assetStore.setGlobalState([activeTab.value, item.value.id])
                 router.push('/assets')
             }
             return {

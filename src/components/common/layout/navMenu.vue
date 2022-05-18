@@ -403,7 +403,9 @@
 <style lang="less">
     .announcekit-widget {
         .announcekit-widget-badge {
-            @apply absolute -right-2 top-4 !important;
+            @apply absolute  !important;
+            top: -0.1rem !important;
+            right: -0.3rem !important;
         }
     }
 </style>

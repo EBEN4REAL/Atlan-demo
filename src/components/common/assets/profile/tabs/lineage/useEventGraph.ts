@@ -1068,7 +1068,7 @@ export default function useEventGraph({
             ...options,
         })
 
-        if (!overrideExp || !isExpandedNode(node.id))
+        if (!overrideExp && !isExpandedNode(node.id))
             expandedNodes.value.push(node.id)
 
         addX6Ports(node, uniquePorts)
@@ -1658,6 +1658,7 @@ export default function useEventGraph({
         })
 
         selectedPortId.value = ''
+        selectedPortIdNext.value = ''
         lineageStore.setSelectedPortId('')
         activeNodesToggled.value = {}
         portHighlightedBINodes.value = []

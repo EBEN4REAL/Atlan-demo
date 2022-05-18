@@ -1,6 +1,6 @@
 <template>
     <div ref="monacoRoot" class="relative monacoeditor"></div>
-    <div
+    <!-- <div
         id="auto-suggestions"
         class="absolute max-w-md py-2 overflow-auto bg-gray-100 shadow max-h-64"
     >
@@ -12,10 +12,7 @@
             :class="selectedSuggestionIndex === index ? 'bg-gray-300' : ''"
             :id="`sugg-${index}`"
         >
-            <div
-                @click.stop="handleApplySuggestion(listItem)"
-                class="px-2"
-            >
+            <div @click.stop="handleApplySuggestion(listItem)" class="px-2">
                 <AtlanIcon
                     :icon="
                         getAssetIconWithCertification(
@@ -27,14 +24,13 @@
                 >{{ listItem.label }}
             </div>
         </div>
-    </div>
-    <!-- <SuggestionList
+    </div> -->
+    <SuggestionList
         id="auto-suggestions"
         @applySuggestions="handleApplySuggestion"
         :suggestions="list"
-        :isAutoComplete="isAutoComplete"
-        :editor="editor"
-    /> -->
+        v-model:selectedSuggestionIndex="selectedSuggestionIndex"
+    />
 </template>
 
 <script lang="ts">
@@ -109,41 +105,30 @@
 
         setup(props, { emit }) {
             const list = ref([])
+            /** declare and update selectedSuggestionIndex */
             const selectedSuggestionIndex = ref(0)
-
-            const { ArrowUp, ArrowDown, x } = useMagicKeys()
-
-            const traverseUp = () => {
-                selectedSuggestionIndex.value =
-                    (selectedSuggestionIndex.value - 1) % list.value.length
-            }
-            const traverseDown = () => {
-                // debugger
-                console.log('HUHUHUHUHUHU')
-                selectedSuggestionIndex.value =
-                    (selectedSuggestionIndex.value + 1) % list.value.length
-                console.log(selectedSuggestionIndex.value)
+            const scrollSuggestionList = () => {
                 const el = document.getElementById(
                     `sugg-${selectedSuggestionIndex.value}`
                 )
                 if (el)
                     el.scrollIntoView({
                         behavior: 'smooth',
-                        // block: 'end',
                         block: 'end',
                         inline: 'nearest',
                     })
             }
-            // document.addEventListener('keydown', (e) => {
-            //     console.log('HAI', e, e.key)
-            // })
-            whenever(ArrowUp, traverseUp)
-            whenever(ArrowDown, traverseDown)
+            const traverseUp = () => {
+                selectedSuggestionIndex.value =
+                    (selectedSuggestionIndex.value - 1) % list.value.length
+                scrollSuggestionList()
+            }
+            const traverseDown = () => {
+                selectedSuggestionIndex.value =
+                    (selectedSuggestionIndex.value + 1) % list.value.length
+                scrollSuggestionList()
+            }
 
-            // watch(ArrowDown, (v) => {
-            //     traverseDown()
-            //     if (v) console.log('space has been pressed')
-            // })
             const cancelTokenSource = ref()
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -271,26 +256,8 @@
                 'atlansql',
                 languageTokens
             )
-
             const { assetType, certificateStatus } = useAssetInfo()
-            const getAssetIconWithCertification = (asset) => {
-                // debugger
-                if (!asset) return ''
-                const type =
-                    capitalizeFirstLetter(
-                        assetType(asset)?.toLowerCase() ||
-                            asset.typeName.toLowerCase() ||
-                            ''
-                    ) || ''
-                const certification =
-                    capitalizeFirstLetter(
-                        certificateStatus(asset)?.toLowerCase() || ''
-                    ) || ''
-
-                if (type && certification) return `${type}${certification}`
-                if (type) return `${type}`
-                return ''
-            }
+            /** declare flag to know the state of auto-suggestion dropdown */
             const isAutoComplete = ref(false)
             const hideAutoCompletion = () => {
                 const el = document.getElementById('auto-suggestions')
@@ -302,8 +269,6 @@
                 el?.classList.remove('hidden')
                 isAutoComplete.value = true
                 selectedSuggestionIndex.value = 0
-                // document.activeElement.blur()
-                // setEditorFocusedState(false, editorFocused)
             }
 
             watch(
@@ -314,21 +279,17 @@
                 },
                 { deep: true }
             )
+            /** fix dropdown's position */
             const setDropdown = () => {
                 const cursor = document.querySelector(
                     '.cursor.monaco-mouse-cursor-text'
                 )
-                const parentEl = document.getElementsByClassName(
-                    'view-lines monaco-mouse-cursor-text'
-                )[0]
-
-                const cursorRect = cursor.getBoundingClientRect()
-                const parentRect = parentEl.getBoundingClientRect()
-                console.log('BOOO', cursor.offsetLeft, cursor.offsetTop)
-                const divA = document.getElementById('auto-suggestions')
-                console.log(divA)
-                divA.style.top = `${cursor.offsetTop + 27}px`
-                divA.style.left = `${cursor.offsetLeft + 65}px`
+                const autoSuggestionsDropdown =
+                    document.getElementById('auto-suggestions')
+                autoSuggestionsDropdown.style.top = `${cursor.offsetTop + 27}px`
+                autoSuggestionsDropdown.style.left = `${
+                    cursor.offsetLeft + 65
+                }px`
             }
             const triggerAutoCompletion = (
                 promise: Promise<{
@@ -436,14 +397,13 @@
             }
 
             const handleApplySuggestion = (suggestion) => {
-                // debugger
                 // get current cursor position
                 const editorPosition = editor?.getPosition() as monaco.IPosition
                 // use current cursor position to get position of the word to be replaced
                 const wordPosition = editor
                     ?.getModel()
                     ?.getWordAtPosition(editorPosition)
-                // debugger
+
                 if (
                     wordPosition?.endColumn &&
                     wordPosition?.startColumn &&
@@ -703,13 +663,8 @@
                         multiLineComment()
                     }
                 }
-                // editor?.addCommand(18, function () {
-                //     traverseDown()
-                // })
-                // editor?.addCommand(16, function () {
-                //     traverseUp()
-                // })
-                const keyDownEv = editor?.onKeyDown((e) => {
+                /**Add event to enable keyboard actions for autoSuggestions dropdown*/
+                editor?.onKeyDown((e) => {
                     if (e.keyCode === 18 && isAutoComplete.value) {
                         // debugger
                         traverseDown()
@@ -729,35 +684,8 @@
                             list.value[selectedSuggestionIndex.value]
                         )
                     }
-                    // console.log('YAYAYAYAYA', e.keyCode)
                 })
-                // editor.addAction({
-                //     id: 'test',
-                //     label: 'test',
-                //     // An optional array of keybindings for the action.
-                //     keybindings: [3],
 
-                //     // A precondition for this action.
-                //     precondition: !!isAutoComplete.value,
-
-                //     // A rule to evaluate on top of the precondition in order to dispatch the keybindings.
-                //     keybindingContext: !!isAutoComplete.value,
-
-                //     // Method that will be executed when the action is triggered.
-                //     // @param editor The editor instance is passed in as a convenience
-                //     run: function (ed) {
-                //         handleApplySuggestion(
-                //             list.value[selectedSuggestionIndex.value]
-                //         )
-                //     },
-                // })
-                // editor?.addCommand(3, function () {
-                //     if (isAutoComplete.value)
-                //         handleApplySuggestion(
-                //             list.value[selectedSuggestionIndex.value]
-                //         )
-                //     else return
-                // })
                 /* IMP for cmd+enter/ ctrl+enter to run query when editor is focused */
                 editor?.addCommand(
                     monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
@@ -993,14 +921,28 @@
                     if (activeInlineTab.value) {
                         if (tabs.value[_index.value]?.playground?.isVQB) return
                         findAndChangeCustomVariablesColor(true)
-                        // debugger
-                        const parentElement =
-                            document.getElementsByClassName('monacoeditor')[0]
-                        const el = document.getElementById('auto-suggestions')
-                        parentElement.appendChild(el)
                     }
                 }
             )
+            watch(
+                () => tabs.value[_index.value].playground.editor,
+                () => {
+                    if (activeInlineTab.value) {
+                        /** when active tab changes, create and append suto-suggestions dropdown to the active tab's editor */
+                        const parentElementForAutoSuggestions =
+                            document.getElementsByClassName('monacoeditor')[0]
+                        if (parentElementForAutoSuggestions) {
+                            const autoSuggestionsDropdown =
+                                document.getElementById('auto-suggestions')
+                            parentElementForAutoSuggestions.appendChild(
+                                autoSuggestionsDropdown
+                            )
+                        }
+                    }
+                },
+                { immediate: true }
+            )
+
             watch(outputPaneSize, () => {
                 if (monacoRoot.value) {
                     monacoRoot.value.style.height = `${
@@ -1010,10 +952,6 @@
             })
 
             onMounted(() => {
-                const parentElement =
-                    document.getElementsByClassName('monacoeditor')[0]
-                const el = document.getElementById('auto-suggestions')
-                parentElement.appendChild(el)
                 tabs.value.forEach((tab) => {
                     const newModel = monaco.editor.createModel(
                         tab.playground.editor.text,
@@ -1044,7 +982,6 @@
                 list,
                 handleApplySuggestion,
                 selectedSuggestionIndex,
-                getAssetIconWithCertification,
             }
         },
     })

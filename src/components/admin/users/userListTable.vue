@@ -517,7 +517,7 @@
         setup(props, { emit }) {
             const { userList, selectedUserId } = toRefs(props)
 
-            const { username: currentUserUsername, userId } = whoami()
+            const { username: currentUserUsername } = whoami()
             const activeSortObject = ref({ key: '', order: '' })
 
             const imageUrl = (username: any) =>
@@ -619,7 +619,6 @@
 
             return {
                 currentUserUsername,
-                userId,
                 roleList,
                 userColumns,
                 nameCase,

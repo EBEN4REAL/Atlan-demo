@@ -3,7 +3,7 @@
         <div
             class="border cursor-pointer rounded-xl hover:border-blue-200"
             :class="active ? 'border-primary ' : 'border-gray-300'"
-            @click="$emit('overView', item)"
+            @click.stop="$emit('overView', item)"
         >
             <div v-if="type === 'persona'" class="flex h-9">
                 <div class="p-1 bg-gray-100 rounded-tl-xl rounded-br-xl">
@@ -32,9 +32,9 @@
                     {{ item.name }}
                 </div>
                 <div
-                    :class="`w-40 h-16 mt-2 ${
+                    :class="`w-40 h-8 mb-8 mt-2 ${
                         item.description ? 'text-gray-600' : 'text-gray-400'
-                    } text-xs  line-clamp-2`"
+                    } text-xs line-clamp-2`"
                 >
                     {{ item.description || 'No description available' }}
                 </div>
@@ -42,7 +42,7 @@
             <div class="flex">
                 <div
                     v-if="type === 'purpose'"
-                    class="flex items-end mx-4 border-b border-gray-300 border-dashed h-9"
+                    class="flex items-end h-4 mx-4 mb-6 border-b border-gray-300 border-dashed"
                 >
                     <div
                         v-if="!listClassifications.length"

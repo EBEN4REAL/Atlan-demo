@@ -224,7 +224,6 @@
                 assetStore.setGlobalState([activeTab.value, item.id])
                 router.push('/assets')
             }
-            console.log(item.value, 'sdkjsgdjhsgdhjsgdhjsgj')
             return {
                 tabList,
                 activeKey,
@@ -260,12 +259,16 @@
             :global(.ant-tabs-tab-active) {
                 @apply bg-primary-light;
             }
-
+            :global(.ant-tabs-tab) {
+                padding: 3px 8px !important;
+                @apply justify-center;
+                @apply py-3 !important;
+                @apply mt-0 !important;
+            }
             :global(.ant-tabs-tab:first-child) {
                 padding: 3px 8px !important;
-                @apply mt-3 !important;
-
                 @apply justify-center;
+                @apply py-3 !important;
             }
 
             :global(.ant-tabs-content) {

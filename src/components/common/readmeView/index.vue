@@ -6,6 +6,7 @@
         :style="`max-height: ${maxHeight}px`"
     >
         <AtlanEditor
+            v-if="readme"
             ref="editor"
             v-model="localReadmeContent"
             placeholder="Type '/' for commands"
@@ -13,8 +14,7 @@
             class="bg-transparent"
             @transitionend.stop="() => {}"
         />
-        <!-- <div v-html="decode"></div> -->
-        <div v-if="!readme" class="text-sm text-gray-600">No readme</div>
+        <div v-else-if="!readme" class="text-sm text-gray-600">No readme</div>
         <div
             v-if="expandShow"
             class="absolute bottom-0 left-0 flex justify-center w-full py-4 bg-over-flow-btn"

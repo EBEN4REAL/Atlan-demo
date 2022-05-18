@@ -88,6 +88,15 @@
             const aggregations = ref(['typeName'])
             const limit = ref(1)
             const offset = ref(0)
+            const facets = ref(
+                activeTab.value === 'purpose'
+                    ? {
+                          __traitNames: {
+                              classifications: item.value.tags,
+                          },
+                      }
+                    : {}
+            )
             // const globalState = ref(['persona', item.value.id])
             const { fetch, isLoading, assetTypeAggregationList } =
                 useDiscoverList({
@@ -96,14 +105,7 @@
                     offset,
                     aggregations,
                     globalState,
-                    facets:
-                        activeTab.value === 'purpose'
-                            ? {
-                                  __traitNames: {
-                                      classifications: item.value.tags,
-                                  },
-                              }
-                            : {},
+                    facets,
                 })
             fetch()
 

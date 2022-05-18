@@ -44,6 +44,13 @@ interface EMBED_README_EVENT_RETURN_INTERFACE {
 }
 
 const keyMap = {
+    main_header: {
+        updates_cta: {
+            clicked: {
+                action: 'main_header_updates_cta_clicked',
+            }
+        }
+    },
     discovery: {
         filter: {
             changed: {
@@ -63,11 +70,11 @@ const keyMap = {
                 action: 'discovery_cta_action_clicked',
                 properties: (props: {
                     action:
-                        | 'open_asset'
-                        | 'vqb_query'
-                        | 'sql_query'
-                        | 'copy_link'
-                        | 'open_in_source'
+                    | 'open_asset'
+                    | 'vqb_query'
+                    | 'sql_query'
+                    | 'copy_link'
+                    | 'open_in_source'
                     asset_type: string
                 }) => ({
                     ...props,

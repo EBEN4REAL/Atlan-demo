@@ -93,7 +93,7 @@
                 </div>
             </a>
         </div>
-        <div v-else-if="!loadingChange" class="p-6">
+        <div v-else-if="!loadingChange" class="p-6 carousel-container">
             <Carousel
                 :draggable="true"
                 :swipe="true"
@@ -104,14 +104,14 @@
             >
                 <template #prevArrow>
                     <div
-                        class="z-10 flex items-center justify-center w-8 h-8 text-gray-800 bg-white border border-gray-300 border-solid rounded-full"
+                        class="z-10 flex items-center justify-center w-8 h-8 ml-2 text-gray-800 bg-white border border-gray-300 border-solid rounded-full"
                     >
                         <AtlanIcon icon="ChevronLeft" class="w-4 h-4" />
                     </div>
                 </template>
                 <template #nextArrow>
                     <div
-                        class="flex items-center justify-center w-8 h-8 text-gray-800 bg-white border border-gray-300 border-solid rounded-full"
+                        class="flex items-center justify-center w-8 h-8 mr-2 text-gray-800 bg-white border border-gray-300 border-solid rounded-full"
                     >
                         <AtlanIcon icon="ChevronRight" class="w-4 h-4" />
                     </div>
@@ -348,5 +348,12 @@
     }
     .active-widget-tab {
         box-shadow: 0px 1px 4px 0px #0000001f;
+    }
+</style>
+<style lang="less">
+    .carousel-container {
+        .slick-disabled {
+            display: none !important;
+        }
     }
 </style>

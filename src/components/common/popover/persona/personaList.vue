@@ -1,6 +1,6 @@
 <template>
     <div class="flex items-center justify-center">
-        <div class="w-full h-full">
+        <div class="flex flex-col flex-grow w-full h-full overflow-hidden">
             <div class="mx-4 border-b">
                 <SearchAdvanced
                     v-model="searchTerm"
@@ -177,7 +177,6 @@
 </script>
 <style lang="less" scoped>
     .persona-list-wrapper {
-        height: calc(100% - 2rem);
         overflow-y: auto;
     }
 </style>

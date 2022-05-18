@@ -1,5 +1,5 @@
 <template>
-    <div v-if="showLabel" class="mb-0 capitalize">Asset was updated</div>
+    <div v-if="showLabel" class="mb-0">Asset was <b>updated</b></div>
     <div class="border rounded-lg mt-2 p-2">
         <div v-for="el in attributesData" :key="el?.component" class="p-2">
             <component
@@ -70,10 +70,14 @@
                     console.log(attributes)
                     if (Object.keys(attributes)?.length)
                         Object.keys(attributes).forEach((el) => {
-                            if (attributesToDisplay.includes(el)) {
+                            if (
+                                attributesToDisplay.includes(el) &&
+                                attributes[el]?.length
+                            ) {
                                 if (
                                     ['ownerUsers', 'ownerGroups'].includes(el)
                                 ) {
+                                    console.log('dheet')
                                     const data = { value: {} }
                                     if (attributes?.ownerUsers) {
                                         data.value.ownerUsers =

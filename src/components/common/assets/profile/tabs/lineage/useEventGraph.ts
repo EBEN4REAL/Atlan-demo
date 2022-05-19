@@ -492,12 +492,6 @@ export default function useEventGraph({
             nodeData.data.modeId = modeId
             nodeData.data.count = filteredHiddenEntities.length
             nodeData.data.hiddenEntities = filteredHiddenEntities
-            if (mode === 'vpNodeSS')
-                sameSourceCount.value[modeId].targetsHidden =
-                    filteredHiddenEntities
-            else
-                sameTargetCount.value[modeId].sourcesHidden =
-                    filteredHiddenEntities
             nodes.value.push(nodeData)
             addNode(nodeData.entity)
 

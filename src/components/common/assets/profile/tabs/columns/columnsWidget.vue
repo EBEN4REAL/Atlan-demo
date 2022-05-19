@@ -1,9 +1,7 @@
 <template>
     <div
-        class="h-full transition-all duration-500 bg-white border border-gray-300 rounded-lg"
-        :class="{
-            ' max-profile-width': showColumnSidebar,
-        }"
+        class="h-full bg-white border border-gray-300 rounded-lg"
+        :class="showColumnSidebar ? 'max-collapsed-width' : 'max-full-width'"
     >
         <!-- Search and Filter -->
         <div class="flex items-center w-full px-5 py-4 gap-x-4">
@@ -253,6 +251,7 @@
             :show-mask="false"
             :show-drawer="showColumnSidebar"
             :show-collapse-button="true"
+            :watch-guid="true"
             @closeDrawer="handleCloseColumnSidebar"
             @update="handleListUpdate"
         />
@@ -664,23 +663,20 @@
                         fixed: 'left',
                     },
                     {
-                        width: 400,
+                        width: 600,
                         title: 'COLUMN',
                         dataIndex: 'column_name',
                         key: 'column_name',
-                        fixed: 'left',
                     },
                     {
                         title: 'CLASSIFICATIONS',
                         dataIndex: 'classifications',
                         key: 'classifications',
-                        width: 200,
                     },
                     {
                         title: 'TERMS',
                         dataIndex: 'terms',
                         key: 'terms',
-                        width: 200,
                     },
                 ],
                 selectedAssetUpdatePermission,
@@ -704,7 +700,13 @@
         @apply border-r-2 border-primary !important;
     }
 
-    .max-profile-width {
+    .max-collapsed-width {
         max-width: calc(100vw - 528px);
+        transition: max-width 0.3s ease-in-out;
+    }
+
+    .max-full-width {
+        max-width: calc(100vw - 108px);
+        transition: max-width 0.3s ease-in-out;
     }
 </style>

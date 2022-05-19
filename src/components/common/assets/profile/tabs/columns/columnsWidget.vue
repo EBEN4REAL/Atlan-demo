@@ -8,7 +8,6 @@
                     :placeholder="`Search ${totalCount} columns`"
                     :autofocus="true"
                     :allow-clear="true"
-                    :no-border="true"
                     :is-loading="isValidating"
                     @change="handleSearchChange"
                 >
@@ -36,7 +35,7 @@
         </div>
         <!-- Table -->
         <div
-            class="flex items-center justify-center w-full border rounded border-gray-light h-96"
+            class="flex items-center justify-center w-full border rounded border-gray-light"
         >
             <div
                 v-if="isLoading"
@@ -66,7 +65,7 @@
                 v-else-if="columnsList.length > 0 && !isLoading"
                 :columns="columns"
                 :data-source="columnsData.filteredList"
-                :scroll="{ y: 342, x: 780 }"
+                :scroll="{ x: 1500, y: 'calc(100vh - 364px)' }"
                 :pagination="false"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
@@ -89,16 +88,23 @@
                                 <component
                                     :is="dataTypeCategoryImage(record.item)"
                                     class="h-4 mr-2 text-gray-500 mb-0.5"
+                                    style="min-width: 16px"
                                 ></component>
 
                                 <Tooltip
                                     :tooltip-text="text"
                                     classes="hover:text-primary"
                                     :clamp-percentage="
-                                        isScrubbed(record.item) ||
-                                        certificateStatus(record.item)
-                                            ? '88%'
-                                            : '93%'
+                                        record.is_primary ||
+                                        record.is_foreign ||
+                                        record.is_partition ||
+                                        record.is_sort ||
+                                        record.is_indexed
+                                            ? '60%'
+                                            : isScrubbed(record.item) ||
+                                              certificateStatus(record.item)
+                                            ? '80%'
+                                            : '84%'
                                     "
                                 />
 
@@ -526,9 +532,7 @@
 
             // rowClassName Antd
             const rowClassName = (record: { key: null }) =>
-                record.key === selectedRow.value
-                    ? 'bg-primary-light'
-                    : 'bg-transparent'
+                record.key === selectedRow.value ? 'bg-primary-light' : ''
 
             /** WATCHERS */
             watch(
@@ -643,22 +647,26 @@
                         dataIndex: 'hash_index',
                         key: 'hash_index',
                         align: 'center',
+                        fixed: 'left',
                     },
                     {
-                        width: 350,
+                        width: 400,
                         title: 'COLUMN',
                         dataIndex: 'column_name',
                         key: 'column_name',
+                        fixed: 'left',
                     },
                     {
                         title: 'CLASSIFICATIONS',
                         dataIndex: 'classifications',
                         key: 'classifications',
+                        width: 200,
                     },
                     {
                         title: 'TERMS',
                         dataIndex: 'terms',
                         key: 'terms',
+                        width: 200,
                     },
                 ],
                 selectedAssetUpdatePermission,

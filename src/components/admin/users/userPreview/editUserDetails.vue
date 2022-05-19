@@ -94,7 +94,9 @@
                 </div>
             </div>
         </a-form>
-        <div class="absolute bottom-0 flex justify-end w-full py-2 bg-white">
+        <div
+            class="sticky flex justify-end w-full py-2 mt-10 bg-white -bottom-2"
+        >
             <AtlanButton2
                 class="mr-2 border-0 shadow-none"
                 color="secondary"

@@ -8,7 +8,6 @@
                     :placeholder="`Search ${totalCount} columns`"
                     :autofocus="true"
                     :allow-clear="true"
-                    size="small"
                     :no-border="true"
                     :is-loading="isValidating"
                     @change="handleSearchChange"
@@ -31,6 +30,7 @@
             <AggregationTabs
                 v-model="postFacets.dataType"
                 :list="columnDataTypeAggregationList"
+                class="mt-1"
                 @change="handleDataTypeChange"
             ></AggregationTabs>
         </div>
@@ -84,16 +84,7 @@
                         </div>
                     </template>
                     <template v-else-if="column.key === 'column_name'">
-                        <div
-                            :class="{
-                                'flex items-center justify-between':
-                                    record.is_primary ||
-                                    record.is_foreign ||
-                                    record.is_partition ||
-                                    record.is_sort ||
-                                    record.is_indexed,
-                            }"
-                        >
+                        <div class="flex flex-col">
                             <div class="flex items-center">
                                 <component
                                     :is="dataTypeCategoryImage(record.item)"
@@ -122,6 +113,7 @@
                                     "
                                     class="mb-0.5 ml-1"
                                 ></CertificateBadge>
+
                                 <a-tooltip
                                     v-if="isScrubbed(record.item)"
                                     placement="right"
@@ -131,25 +123,41 @@
                                         class="h-3.5 mb-0.5 ml-1"
                                     ></AtlanIcon
                                 ></a-tooltip>
+
+                                <div class="ml-2 data-type">
+                                    {{ record.data_type }}
+                                </div>
+
+                                <div
+                                    v-if="
+                                        record.is_primary ||
+                                        record.is_foreign ||
+                                        record.is_partition ||
+                                        record.is_sort ||
+                                        record.is_indexed
+                                    "
+                                    class="flex items-center ml-2"
+                                >
+                                    <ColumnKeys
+                                        :is-primary="record.is_primary"
+                                        :is-foreign="record.is_foreign"
+                                        :is-partition="record.is_partition"
+                                        :is-sort="record.is_sort"
+                                        :is-indexed="record.is_indexed"
+                                    />
+                                </div>
                             </div>
-                            <div
-                                v-if="
-                                    record.is_primary ||
-                                    record.is_foreign ||
-                                    record.is_partition ||
-                                    record.is_sort ||
-                                    record.is_indexed
+
+                            <EditableDescription
+                                :asset-item="record.item"
+                                :tooltip-text="record.description"
+                                :allow-editing="
+                                    selectedAssetUpdatePermission(
+                                        record.item,
+                                        true
+                                    )
                                 "
-                                class="flex items-center"
-                            >
-                                <ColumnKeys
-                                    :is-primary="record.is_primary"
-                                    :is-foreign="record.is_foreign"
-                                    :is-partition="record.is_partition"
-                                    :is-sort="record.is_sort"
-                                    :is-indexed="record.is_indexed"
-                                />
-                            </div>
+                            />
                         </div>
                     </template>
 
@@ -239,6 +247,7 @@
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import EditableClassifications from './editableClassifications.vue'
     import EditableTerms from './editableTerms.vue'
+    import Pill from '~/components/UI/pill/pill.vue'
 
     // Composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -264,6 +273,7 @@
             AggregationTabs,
             EditableClassifications,
             EditableTerms,
+            Pill,
         },
         setup() {
             /** DATA */
@@ -323,7 +333,10 @@
             const preference = ref({
                 sort: 'order-asc',
             })
-            const relationAttributes = ref([...DefaultRelationAttributes])
+            const relationAttributes = ref([
+                ...DefaultRelationAttributes,
+                '__state',
+            ])
 
             const assetQualifiedName = computed(
                 () => selectedAsset.value?.attributes?.qualifiedName
@@ -618,35 +631,21 @@
                         align: 'center',
                     },
                     {
-                        width: 280,
-                        title: 'Column Name',
+                        width: 350,
+                        title: 'COLUMN',
                         dataIndex: 'column_name',
                         key: 'column_name',
                     },
                     {
-                        width: 150,
-                        title: 'Classifications',
+                        title: 'CLASSIFICATIONS',
                         dataIndex: 'classifications',
                         key: 'classifications',
                     },
                     {
-                        width: 150,
-                        title: 'Terms',
+                        title: 'TERMS',
                         dataIndex: 'terms',
                         key: 'terms',
                     },
-                    /* {
-                        width: 150,
-                        title: 'Data Type',
-                        dataIndex: 'data_type',
-                        key: 'data_type',
-                    },
-                    {
-                        width: 300,
-                        title: 'Description',
-                        dataIndex: 'description',
-                        key: 'description',
-                    }, */
                 ],
                 selectedAssetUpdatePermission,
             }
@@ -661,7 +660,8 @@
     }
     .data-type {
         font-family: Hack !important;
-        @apply text-gray-500 text-xs !important;
+        padding: 2px 8px !important;
+        @apply text-gray-500 text-xs border border-gray-200 rounded-full bg-white !important;
     }
 
     .selected-row {

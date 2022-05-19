@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col p-6 gap-y-4 max-profile-width">
+    <div class="flex flex-col p-6 max-profile-width">
         <ColumnWidget />
     </div>
 </template>

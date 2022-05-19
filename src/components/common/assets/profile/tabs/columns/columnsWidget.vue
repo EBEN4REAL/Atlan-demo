@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white border border-gray-300 rounded-lg">
+    <div class="h-full bg-white border border-gray-300 rounded-lg">
         <!-- Search and Filter -->
         <div class="flex items-center w-full px-5 py-4 gap-x-4">
             <div class="px-4 border rounded-md border-gray-light w-72">
@@ -35,24 +35,22 @@
         </div>
         <!-- Table -->
         <div
-            class="flex items-center justify-center w-full border rounded border-gray-light"
-            style="height: calc(100vh - 364px)"
+            class="flex items-center justify-center w-full border-t border-b border-gray-light"
+            style="height: calc(100vh - 322px)"
         >
             <div
-                v-if="isLoading"
-                class="flex items-center justify-center flex-grow"
-            >
-                <AtlanLoader class="h-10" />
-            </div>
-            <div
-                v-if="!isLoading && error"
+                v-if="
+                    !isValidating &&
+                    error?.message !== 'operation cancelled' &&
+                    error
+                "
                 class="flex items-center justify-center flex-grow"
             >
                 <ErrorView />
             </div>
 
             <div
-                v-else-if="columnsList.length === 0 && !isLoading"
+                v-else-if="columnsList.length === 0 && !isValidating"
                 class="flex-grow"
             >
                 <EmptyView
@@ -62,8 +60,15 @@
                 ></EmptyView>
             </div>
 
+            <div
+                v-else-if="columnsList.length === 0 && isValidating"
+                class="flex items-center justify-center flex-grow"
+            >
+                <AtlanLoader class="h-8" />
+            </div>
+
             <a-table
-                v-else-if="columnsList.length > 0 && !isLoading"
+                v-else
                 :columns="columns"
                 :data-source="columnsData.filteredList"
                 :scroll="{ x: 1500, y: 'calc(100vh - 364px)' }"
@@ -71,6 +76,7 @@
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
                 class="self-start column-table"
+                :class="{ 'opacity-60': isValidating }"
             >
                 <template #bodyCell="{ column, record, text }">
                     <template v-if="column.key === 'hash_index'">

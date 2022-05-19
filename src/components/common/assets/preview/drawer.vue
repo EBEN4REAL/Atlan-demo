@@ -21,6 +21,15 @@
             >
                 <AtlanIcon icon="Add" class="text-white" />
             </div>
+
+            <div
+                v-if="showCollapseButton && visible"
+                class="collapse-btn"
+                @click="() => $emit('closeDrawer')"
+            >
+                <AtlanIcon icon="CaretRight" class="w-auto h-4" />
+            </div>
+
             <transition name="fade">
                 <div
                     v-if="deferredLoading"
@@ -96,6 +105,11 @@
                 default: '',
             },
             watchGuid: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            showCollapseButton: {
                 type: Boolean,
                 required: false,
                 default: false,
@@ -225,5 +239,11 @@
         right: 430px;
         top: 60px;
         cursor: pointer;
+    }
+
+    .collapse-btn {
+        @apply p-1 border-t border-b border-l fixed cursor-pointer bg-white rounded-l-md border-gray-300 shadow-sm;
+        right: 420px;
+        top: 90px;
     }
 </style>

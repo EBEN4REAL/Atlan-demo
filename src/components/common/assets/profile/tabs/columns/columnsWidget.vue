@@ -1,8 +1,8 @@
 <template>
     <div
-        class="h-full bg-white border border-gray-300 rounded-lg"
+        class="h-full transition-all duration-500 bg-white border border-gray-300 rounded-lg"
         :class="{
-            'transition-all duration-300 max-profile-width': showColumnSidebar,
+            ' max-profile-width': showColumnSidebar,
         }"
     >
         <!-- Search and Filter -->
@@ -252,6 +252,7 @@
             :guid="selectedRowGuid"
             :show-mask="false"
             :show-drawer="showColumnSidebar"
+            :show-collapse-button="true"
             @closeDrawer="handleCloseColumnSidebar"
             @update="handleListUpdate"
         />

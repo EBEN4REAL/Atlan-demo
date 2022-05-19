@@ -11,7 +11,10 @@
             </keep-alive>
         </div>
 
-        <div class="relative hidden bg-white asset-preview-container md:block">
+        <div
+            v-if="showAssetPreview"
+            class="relative hidden bg-white asset-preview-container md:block"
+        >
             <AssetPreview :selected-asset="localSelected" />
         </div>
     </div>
@@ -47,6 +50,8 @@
             const isItem = computed(() => !!route.params.id)
             const localSelected = ref()
 
+            const showAssetPreview = ref(true)
+
             const assetStore = useAssetStore()
 
             const handlePreview = (asset) => {
@@ -60,8 +65,14 @@
                 handlePreview(asset)
             }
 
+            const handlePreviewVisibility = (value) => {
+                showAssetPreview.value = value
+            }
+
             provide('updateList', updateList)
             provide('preview', handlePreview)
+
+            provide('handlePreviewVisibility', handlePreviewVisibility)
 
             const sendPageEvent = () => {
                 useTrackPage('assets', 'discovery')
@@ -84,6 +95,7 @@
                 assetdiscovery,
                 localSelected,
                 sendPageEvent,
+                showAssetPreview,
             }
         },
     })

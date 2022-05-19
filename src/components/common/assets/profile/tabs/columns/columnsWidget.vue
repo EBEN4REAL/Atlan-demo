@@ -1,5 +1,10 @@
 <template>
-    <div class="h-full bg-white border border-gray-300 rounded-lg">
+    <div
+        class="h-full bg-white border border-gray-300 rounded-lg"
+        :class="{
+            'transition-all duration-300 max-profile-width': showColumnSidebar,
+        }"
+    >
         <!-- Search and Filter -->
         <div class="flex items-center w-full px-5 py-4 gap-x-4">
             <div class="px-4 border rounded-md border-gray-light w-72">
@@ -245,6 +250,7 @@
 
         <AssetDrawer
             :guid="selectedRowGuid"
+            :show-mask="false"
             :show-drawer="showColumnSidebar"
             @closeDrawer="handleCloseColumnSidebar"
             @update="handleListUpdate"
@@ -695,5 +701,9 @@
 
     .selected-row {
         @apply border-r-2 border-primary !important;
+    }
+
+    .max-profile-width {
+        max-width: calc(100vw - 528px);
     }
 </style>

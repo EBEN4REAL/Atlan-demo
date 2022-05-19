@@ -39,6 +39,8 @@
         toRefs,
         provide,
         computed,
+        watch,
+        inject,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -119,6 +121,21 @@
                 activeKey.value = value
             }
             provide('changeActiveTab', changeActiveTab)
+
+            const handlePreviewVisibility = inject('handlePreviewVisibility')
+
+            watch(
+                activeKey,
+                () => {
+                    if (activeKey.value === 'columns') {
+                        handlePreviewVisibility(false)
+                    } else {
+                        handlePreviewVisibility(true)
+                    }
+                },
+                { immediate: true }
+            )
+
             return {
                 getProfileTabs,
                 activeKey,

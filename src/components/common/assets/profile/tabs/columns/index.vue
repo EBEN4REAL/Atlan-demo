@@ -1,12 +1,12 @@
 <template>
-    <div class="flex flex-col p-6 max-profile-width">
+    <div class="flex flex-col p-6">
         <ColumnWidget />
     </div>
 </template>
 
 <script lang="ts">
     // Vue
-    import { defineComponent } from 'vue'
+    import { defineComponent, inject } from 'vue'
     import { storeToRefs } from 'pinia'
 
     import ColumnWidget from './columnsWidget.vue'
@@ -26,9 +26,3 @@
         },
     })
 </script>
-
-<style lang="less" scoped>
-    .max-profile-width {
-        max-width: calc(100vw - 480px);
-    }
-</style>

@@ -173,48 +173,61 @@
 
         <!-- Pagination -->
         <div
-            v-if="(columnsList && columnsList.length) || isLoading"
-            class="flex flex-row items-center justify-end w-full mt-4"
+            v-if="(columnsList && columnsList.length) || isValidating"
+            class="flex flex-row items-center justify-end w-full px-5 py-3 text-sm"
         >
-            <AtlanBtn
-                class="bg-transparent rounded-r-none"
-                size="sm"
-                color="secondary"
-                padding="compact"
-                :disabled="pagination.current === 1"
-                @click="handlePagination(pagination.current - 1)"
-            >
-                <AtlanIcon icon="CaretLeft" />
-            </AtlanBtn>
-            <AtlanBtn
-                class="bg-transparent border-l-0 border-r-0 rounded-none cursor-default"
-                size="sm"
-                color="secondary"
-                padding="compact"
-            >
-                {{ pagination.current }} of
-                <span v-if="Math.ceil(pagination.total)"
-                    >{{ Math.ceil(pagination.total) }}
-                </span>
-
-                <div
-                    v-else-if="isValidating"
-                    class="flex items-center justify-center"
+            <div class="mr-auto text-new-gray-600">
+                Showing
+                <span class="font-bold"
+                    >{{ offset + 1 }}-{{
+                        offset + columnsList?.length || 0
+                    }}</span
                 >
-                    <AtlanLoader />
-                </div>
-            </AtlanBtn>
+                out of {{ totalCount }} columns
+            </div>
+            <div class="flex flex-row items-center">
+                <AtlanBtn
+                    class="bg-transparent rounded-r-none"
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    :disabled="pagination.current === 1"
+                    @click="handlePagination(pagination.current - 1)"
+                >
+                    <AtlanIcon icon="CaretLeft" />
+                </AtlanBtn>
+                <AtlanBtn
+                    class="bg-transparent border-l-0 border-r-0 rounded-none cursor-default"
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                >
+                    {{ pagination.current }} of
+                    <span v-if="Math.ceil(pagination.total)"
+                        >{{ Math.ceil(pagination.total) }}
+                    </span>
 
-            <AtlanBtn
-                class="bg-transparent rounded-l-none"
-                size="sm"
-                color="secondary"
-                padding="compact"
-                :disabled="pagination.current === Math.ceil(pagination.total)"
-                @click="handlePagination(pagination.current + 1)"
-            >
-                <AtlanIcon icon="CaretRight" />
-            </AtlanBtn>
+                    <div
+                        v-else-if="isValidating"
+                        class="flex items-center justify-center"
+                    >
+                        <AtlanLoader />
+                    </div>
+                </AtlanBtn>
+
+                <AtlanBtn
+                    class="bg-transparent rounded-l-none"
+                    size="sm"
+                    color="secondary"
+                    padding="compact"
+                    :disabled="
+                        pagination.current === Math.ceil(pagination.total)
+                    "
+                    @click="handlePagination(pagination.current + 1)"
+                >
+                    <AtlanIcon icon="CaretRight" />
+                </AtlanBtn>
+            </div>
         </div>
 
         <AssetDrawer
@@ -621,7 +634,8 @@
                 pagination,
                 selectedRowGuid,
                 defaultAttributes,
-
+                limit,
+                offset,
                 columns: [
                     {
                         width: 50,

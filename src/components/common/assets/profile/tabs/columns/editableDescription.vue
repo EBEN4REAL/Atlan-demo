@@ -12,7 +12,7 @@
         :class="{ 'cursor-text': allowEditing }"
         @click="handleEdit($event)"
     >
-        <p>{{ allowEditing ? 'Add a description' : '' }}</p>
+        <p>{{ allowEditing ? '+ Add a description' : '' }}</p>
     </div>
     <div v-else class="inline-editable" @click.stop>
         <a-textarea

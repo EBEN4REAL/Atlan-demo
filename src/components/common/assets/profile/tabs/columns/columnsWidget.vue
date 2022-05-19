@@ -36,6 +36,7 @@
         <!-- Table -->
         <div
             class="flex items-center justify-center w-full border rounded border-gray-light"
+            style="height: calc(100vh - 364px)"
         >
             <div
                 v-if="isLoading"

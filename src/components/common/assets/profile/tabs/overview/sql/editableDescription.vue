@@ -8,7 +8,7 @@
     />
     <div
         v-else-if="!isEditing && localDescription.length === 0"
-        class="text-gray-400"
+        class="text-transparent hover:text-gray-400"
         :class="{ 'cursor-text': allowEditing }"
         @click="handleEdit($event)"
     >

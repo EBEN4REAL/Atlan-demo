@@ -189,13 +189,15 @@
                 </div>
             </div>
 
-            <EmptyCollection
-                @event="
-                    () => {
-                        showCollectionModal = true
-                    }
-                "
-            />
+            <div class="flex flex-col items-center w-full">
+                <EmptyCollection
+                    @event="
+                        () => {
+                            showCollectionModal = true
+                        }
+                    "
+                />
+            </div>
         </div>
         <div
             v-else-if="queryCollectionsLoading"

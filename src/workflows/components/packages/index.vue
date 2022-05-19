@@ -20,6 +20,7 @@
                     v-model:value="queryText"
                     placeholder="Search Packages"
                     @change="handleSearchChange"
+                    allow-clear
                 ></a-input>
             </div>
         </div>

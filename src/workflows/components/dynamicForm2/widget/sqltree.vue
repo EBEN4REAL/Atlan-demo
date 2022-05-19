@@ -3,8 +3,10 @@
         :credential="credentialBody"
         :credentialID="credentialID"
         :query="property.ui.sql"
-        :include="property.ui.schemaIncludePattern"
-        :exclude="property.ui.schemaExcludePattern"
+        :schemaInclude="property.ui?.schemaIncludePattern"
+        :schemaExclude="property.ui?.schemaExcludePattern"
+        :dbInclude="property.ui?.databaseIncludePattern"
+        :dbExclude="property.ui?.databaseExcludePattern"
         v-model="localValue"
         @change="handleChange"
     ></SQLTreeSelect>

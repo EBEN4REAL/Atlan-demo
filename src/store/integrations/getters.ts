@@ -150,7 +150,6 @@ const getters: _GettersTree<State> & Getters = {
         const integrations = state.allIntegrations
             .filter((integration) => integration.integrationLevel === 'tenant')
             .map((integration) => integration.name)
-        // return state.allIntegrations
         return integrations || []
     },
 }

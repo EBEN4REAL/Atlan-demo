@@ -11,12 +11,13 @@
             </keep-alive>
         </div>
 
-        <div
-            v-if="showAssetPreview"
-            class="relative hidden bg-white asset-preview-container md:block"
-        >
-            <AssetPreview :selected-asset="localSelected" />
-        </div>
+        <transition name="nested">
+            <div
+                v-if="showAssetPreview"
+                class="relative hidden bg-white asset-preview-container md:block"
+            >
+                <AssetPreview :selected-asset="localSelected" /></div
+        ></transition>
     </div>
 </template>
 
@@ -104,6 +105,17 @@
     .asset-preview-container {
         min-width: 420px !important;
         max-width: 420px !important;
+    }
+
+    .nested-enter-active,
+    .nested-leave-active {
+        transition: all 0.3s ease;
+    }
+
+    .nested-enter-from,
+    .nested-leave-to {
+        transform: translateX(30px);
+        opacity: 0;
     }
 </style>
 

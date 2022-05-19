@@ -187,6 +187,8 @@
     import { usePurposeStore } from '~/store/purpose'
     import whoami from '~/composables/user/whoami'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { signJWT } from '~/modules/jose'
+    import { getEnv } from '~/modules/__env'
 
     export default defineComponent({
         name: 'Navigation Menu',
@@ -336,20 +338,34 @@
             )
             const { username, email, userId } = whoami()
 
-            onMounted(() => {
+            const initAnnoucekIt = async () => {
+                const data = {
+                    id: userId.value,
+                    name: username.value,
+                    email: email.value,
+                }
+                const user_token = await signJWT({
+                    data,
+                    secretKey: getEnv().ANNOUCEKIT_SECRET,
+                    algorithm: 'HS256',
+                    expirationTime: '24h',
+                })
+
                 if (window?.announcekit)
                     window.announcekit.push({
                         widget: 'https://announcekit.co/widgets/v2/1JYrEk',
                         selector: '.announcekit-widget',
                         lang: 'en',
-                        user: {
-                            id: userId.value,
-                        },
+                        user_token,
                         data: {
                             domain: window.location.hostname,
                             username: username.value,
                         },
                     })
+            }
+
+            onMounted(() => {
+                initAnnoucekIt()
             })
 
             const trackUpdateViewEvent = () => {

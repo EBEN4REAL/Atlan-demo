@@ -30,6 +30,7 @@ export const getEnv = function (): any {
             import.meta.env.VITE_HOME_CLIENT_ID,
             'atlan-frontend'
         ),
+        ANNOUCEKIT_SECRET: parse(import.meta.env.VITE_ANNOUNCE_KIT_SECRET_TOKEN, '')
     }
     return config
 }

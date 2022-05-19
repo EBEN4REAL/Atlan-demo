@@ -9,7 +9,7 @@
                     :autofocus="true"
                     :allow-clear="true"
                     size="small"
-                    :noBorder="true"
+                    :no-border="true"
                     :is-loading="isValidating"
                     @change="handleSearchChange"
                 >
@@ -152,17 +152,32 @@
                             </div>
                         </div>
                     </template>
-                    <template v-else-if="column.key === 'data_type'">
-                        <span class="data-type">{{ text?.toUpperCase() }}</span>
+
+                    <template v-else-if="column.key === 'classifications'">
+                        <EditableClassifications :asset="record.item" />
                     </template>
-                    <template v-else-if="column.key === 'description'">
-                        <EditableDescription
-                            :asset-item="record.item"
-                            :tooltip-text="text"
-                            :allow-editing="
-                                selectedAssetUpdatePermission(record.item, true)
+                    <template v-else-if="column.key === 'terms'">
+                        <TermsWidget
+                            v-model="record.meanings"
+                            :selected-asset="record.item"
+                            :edit-permission="
+                                selectedAssetUpdatePermission(
+                                    record.item,
+                                    true,
+                                    'RELATIONSHIP_ADD',
+                                    'AtlasGlossaryTerm'
+                                )
                             "
-                        />
+                            :allow-delete="
+                                selectedAssetUpdatePermission(
+                                    record.item,
+                                    true,
+                                    'RELATIONSHIP_REMOVE',
+                                    'AtlasGlossaryTerm'
+                                )
+                            "
+                        >
+                        </TermsWidget>
                     </template>
                 </template>
             </a-table>
@@ -242,6 +257,8 @@
     import AtlanBtn from '@/UI/button.vue'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
+    import EditableClassifications from './editableClassifications.vue'
+    import TermsWidget from '@/common/input/terms/index.vue'
 
     // Composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -251,6 +268,7 @@
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
     import useEvaluate from '~/composables/auth/useEvaluate'
+    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
     export default defineComponent({
         components: {
@@ -265,6 +283,8 @@
             Sorting,
             ColumnKeys,
             AggregationTabs,
+            EditableClassifications,
+            TermsWidget,
         },
         setup() {
             /** DATA */
@@ -287,6 +307,8 @@
                 dataTypeCategoryImage,
                 isScrubbed,
                 selectedAssetUpdatePermission,
+                classifications,
+                meanings,
             } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
@@ -434,6 +456,8 @@
                         i.attributes.userDescription ||
                         i.attributes.description ||
                         '---',
+                    classifications: classifications(i),
+                    meanings: meanings(i),
                     item: i,
                 }))
                 columnsData.value = {
@@ -498,6 +522,36 @@
                 false,
                 true
             ) // true for secondaryEvaluations
+
+            const {
+                entity,
+                localName,
+                localDescription,
+                localCertificate,
+                localOwners,
+                localAdmins,
+                localViewers,
+                localClassifications,
+                localMeanings,
+                localCategories,
+                localSeeAlso,
+                handleSeeAlsoUpdate,
+                handleCategoriesUpdate,
+                handleMeaningsUpdate,
+                handleChangeName,
+                handleChangeDescription,
+                handleOwnersChange,
+                handleChangeAdmins,
+                handleChangeViewers,
+                handleChangeCertificate,
+                handleClassificationChange,
+                isLoadingClassification,
+                nameRef,
+                descriptionRef,
+                animationPoint,
+                localSQLQuery,
+                handleSQLQueryUpdate,
+            } = updateAssetAttributes(selectedAsset, true)
 
             // rowClassName Antd
             const rowClassName = (record: { key: null }) =>
@@ -609,6 +663,9 @@
                 pagination,
                 selectedRowGuid,
                 defaultAttributes,
+                localClassifications,
+                localMeanings,
+                handleClassificationChange,
                 columns: [
                     {
                         width: 50,
@@ -625,6 +682,18 @@
                     },
                     {
                         width: 150,
+                        title: 'Classifications',
+                        dataIndex: 'classifications',
+                        key: 'classifications',
+                    },
+                    {
+                        width: 150,
+                        title: 'Terms',
+                        dataIndex: 'terms',
+                        key: 'terms',
+                    },
+                    /* {
+                        width: 150,
                         title: 'Data Type',
                         dataIndex: 'data_type',
                         key: 'data_type',
@@ -634,7 +703,7 @@
                         title: 'Description',
                         dataIndex: 'description',
                         key: 'description',
-                    },
+                    }, */
                 ],
                 selectedAssetUpdatePermission,
             }

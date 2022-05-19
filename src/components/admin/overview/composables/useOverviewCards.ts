@@ -106,7 +106,7 @@ export default function useOverviewCards() {
         icon: 'APIKey',
         displayName: 'API Keys',
         value: totalAPIKeysCount.value,
-        valueText: `${totalAPIKeysCount.value > 0 ? 'keys' : 'key'} generated`,
+        valueText: `${totalAPIKeysCount.value > 0 ? 'tokens' : 'token'} generated`,
         emptyText: 'No keys generated',
         link: '/admin/apikeys',
         isAPIKeyCountLoading,

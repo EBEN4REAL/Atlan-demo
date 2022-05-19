@@ -165,25 +165,25 @@
             </span>
         </div>
         <div
-            :class="`px-3 py-1 mt-5 ${visibleLink && 'bg-gray-100'}`"
             v-if="haveLink"
+            :class="`px-3 py-1 mt-5 ${visibleLink && 'bg-gray-100'}`"
         >
-            <div class="mb-2.5 text-gray-500">API Keys</div>
+            <div class="mb-2.5 text-gray-500">API Tokens</div>
             <div class="flex items-center">
                 <a-popover
+                    v-if="item?.apikeys?.length"
+                    v-model:visible="visibleLink"
                     :align="{ offset: [88, -6] }"
                     trigger="click"
                     placement="bottom"
-                    v-model:visible="visibleLink"
-                    overlayClassName="popover-api-keys"
-                    v-if="item?.apikeys?.length"
+                    overlay-class-name="popover-api-keys"
                 >
                     <template #content>
                         <div class="px-4 pt-1 rounded-xl container-api">
                             <div
                                 v-for="(apiKey, index) in item.apikeys"
-                                class="w-56 py-3 border-b border-gray-200"
                                 :key="index"
+                                class="w-56 py-3 border-b border-gray-200"
                             >
                                 <div class="flex items-center justify-between">
                                     <div
@@ -208,7 +208,7 @@
                                         :avatar-size="16"
                                         :avatar-shape="'circle'"
                                         class="mr-1"
-                                        :imageUrl="imageUrl(apiKey.createdBy)"
+                                        :image-url="imageUrl(apiKey.createdBy)"
                                     />
                                     <div
                                         class="text-sm text-gray-500 truncate title-api"
@@ -239,7 +239,7 @@
                     </div>
                 </a-popover>
                 <div v-else class="text-sm text-gray-500">
-                    No api keys linked
+                    No api tokens linked
                 </div>
             </div>
         </div>
@@ -262,7 +262,7 @@
                         :avatar-size="16"
                         :avatar-shape="'circle'"
                         class="mr-2"
-                        :imageUrl="imageUrl(item.createdBy)"
+                        :image-url="imageUrl(item.createdBy)"
                     />
                     {{ item.createdBy }}</template
                 >
@@ -285,6 +285,7 @@
         watch,
     } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
+    import dayjs from 'dayjs'
     import Avatar from '~/components/common/avatar/index.vue'
     import PopOverUser from '@/common/popover/user/user.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
@@ -296,7 +297,7 @@
         getAPIKeyValidityStringRelative,
         getAPIKeyValidity,
     } from '~/components/admin/apikeys/composables/useAPIKeysList'
-    import dayjs from 'dayjs'
+
     interface IItem {
         createdAt?: string
         createdBy?: string

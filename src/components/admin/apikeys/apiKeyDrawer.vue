@@ -9,7 +9,7 @@
                     v-if="!generatedAPIKey.attributes"
                     class="text-lg font-bold"
                 >
-                    {{ apiKeyDirty.id ? apiKey.displayName : 'Add new key' }}
+                    {{ apiKeyDirty.id ? apiKey.displayName : 'Add new token' }}
                 </div>
                 <div v-else class="text-lg font-bold">
                     {{ generatedAPIKey.attributes.displayName }}

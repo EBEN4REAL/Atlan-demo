@@ -33,7 +33,7 @@ export const workspaceCentreList = computed(() => [
         icon: 'Admin',
         label: 'Admin',
         description:
-            'Manage users and groups, API keys, integrations, and more',
+            'Manage users and groups, API tokens, integrations, and more',
         isActive: true,
         auth: page.PAGE_ADMIN,
     },

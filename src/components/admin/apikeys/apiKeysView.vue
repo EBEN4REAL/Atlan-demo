@@ -5,13 +5,13 @@
             class="flex flex-col items-center justify-center h-full"
         >
             <component :is="NewAPIKeyIllustration" class="mb-4"></component>
-            <span class="text-xl font-bold">Create API Keys</span>
+            <span class="text-xl font-bold">Create API Tokens</span>
             <AtlanButton2
                 v-auth="[map.CREATE_APIKEY]"
                 size="large"
                 class="mt-6"
-                label="Generate API Key"
-                prefixIcon="Add"
+                label="Generate API Token"
+                prefix-icon="Add"
                 @click="handleGenerateKey"
             />
 
@@ -21,7 +21,7 @@
                 suffixIcon="ArrowRight"
             /> -->
         </div>
-        <DefaultLayout v-else title="API Keys">
+        <DefaultLayout v-else title="API Tokens">
             <template #header>
                 <div
                     class="flex items-center justify-between p-4 border border-b-0 border-gray-300 rounded-t-lg header-api-keys"
@@ -29,7 +29,7 @@
                     <div class="flex w-1/4">
                         <SearchAndFilter
                             v-model:value="searchText"
-                            :placeholder="`Search ${totalAPIKeysCount} api keys`"
+                            :placeholder="`Search ${totalAPIKeysCount} api tokens`"
                             class="h-8 mr-1 shadow-none"
                         />
                     </div>
@@ -38,7 +38,7 @@
 
                     <AtlanButton2
                         v-auth="[map.CREATE_APIKEY]"
-                        label="Generate API Key"
+                        label="Generate API Token"
                         @click="handleGenerateKey"
                     />
                 </div>
@@ -204,7 +204,7 @@
                 } catch (e) {
                     toggleAPIKeyDrawer()
                     message.error(
-                        'Unable to generate API Key. Please try again.'
+                        'Unable to generate API Token. Please try again.'
                     )
                 }
             }

@@ -26,7 +26,7 @@
                 </div>
             </template>
             <template #emptyText>
-                No api keys found
+                No api tokens found
                 <span v-if="searchText"
                     >with <span class="italic">{{ searchText }}</span>
                 </span>

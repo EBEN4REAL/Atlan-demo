@@ -479,6 +479,11 @@ export default function useEventGraph({
                 : e.id !== `vpNodeProcessId/${node.id}@${modeId}`
         )
 
+        if (mode === 'vpNodeSS')
+            sameSourceCount.value[modeId].targetsHidden = filteredHiddenEntities
+        else
+            sameTargetCount.value[modeId].sourcesHidden = filteredHiddenEntities
+
         if (filteredHiddenEntities.length !== 0) {
             // add back vp node
             const entity = node?.store?.data?.entity || node.entity
@@ -487,12 +492,6 @@ export default function useEventGraph({
             nodeData.data.modeId = modeId
             nodeData.data.count = filteredHiddenEntities.length
             nodeData.data.hiddenEntities = filteredHiddenEntities
-            if (mode === 'vpNodeSS')
-                sameSourceCount.value[modeId].targetsHidden =
-                    filteredHiddenEntities
-            else
-                sameTargetCount.value[modeId].sourcesHidden =
-                    filteredHiddenEntities
             nodes.value.push(nodeData)
             addNode(nodeData.entity)
 

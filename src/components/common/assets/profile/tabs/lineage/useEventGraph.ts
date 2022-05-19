@@ -926,22 +926,26 @@ export default function useEventGraph({
                 selectVpNode(vpNode, v)
 
                 if (i === a.length - 1) {
-                    const _node = graph.value
-                        .getNodes()
-                        .find((x) => x.id === node.id)
-                    if (lineageStore.hasPortsList(_node.id)) {
+                    const cell = graph.value.getCellById(node.id)
+                    const cachedData = node.getData()
+                    cell.updateData({ ...cachedData })
+                    cell.updateData({
+                        portItemLoading: false,
+                    })
+
+                    if (lineageStore.hasPortsList(cell.id)) {
                         const { ports: p, total: t } =
-                            lineageStore.getNodesPortList(_node.id)
-                        removePorts(_node)
-                        addPorts(_node, p)
-                        removeShowMorePort(_node)
-                        if (p.length < t) addShowMorePort(_node)
+                            lineageStore.getNodesPortList(cell.id)
+                        removePorts(cell)
+                        addPorts(cell, p)
+                        removeShowMorePort(cell)
+                        if (p.length < t) addShowMorePort(cell)
                     } else {
                         const port = portLineage.guidEntityMap[portId]
-                        addPorts(_node, [port])
+                        addPorts(cell, [port])
                     }
-                    translateSubsequentNodes(_node)
-                    selectPort(_node, portId, false)
+                    translateSubsequentNodes(cell)
+                    selectPort(cell, portId, false)
                     addLineagePorts(nodesForPortLineage, portLineage)
                 }
             })
@@ -1010,11 +1014,10 @@ export default function useEventGraph({
                 node.updateData({
                     portItemLoading: show,
                 })
-            if (type === 'showMore') {
+            if (type === 'showMore')
                 node.updateData({
                     portShowMoreLoading: show,
                 })
-            }
         }
     }
 
@@ -1109,7 +1112,6 @@ export default function useEventGraph({
     const selectPort = (node, portId, fetchLineage = true) => {
         const { ports } = node.getData()
         const portEntity = ports.find((x) => x.guid === portId)
-        const portIndex = ports.indexOf(portEntity)
 
         node.updateData({ selectedPortId: portId })
 
@@ -1734,10 +1736,8 @@ export default function useEventGraph({
         if (controlPortClickEvent(e, 'isportitem')) {
             const ele = controlPortClickEvent(e, 'isportitem')
             const portId = ele.getAttribute('isportitem')
-
-            if (portId === selectedPortId.value) {
-                resetState()
-            } else {
+            if (portId === selectedPortId.value) resetState()
+            else {
                 const { ports, portsCount } = node.getData()
                 const portEntity = ports.find((x) => x.guid === portId)
                 const portIndex = ports.findIndex((x) => x.guid === portId)
@@ -1762,7 +1762,6 @@ export default function useEventGraph({
                     portIndex,
                     node.id
                 )
-
                 selectPort(node, portId, true)
             }
             return

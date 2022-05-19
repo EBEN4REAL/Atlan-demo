@@ -1,13 +1,15 @@
 <template>
     <div class="pr-3">
         <div
-            class="border cursor-pointer rounded-xl hover:border-blue-200"
+            class="border cursor-pointer rounded-xl hover:border-blue-200 hover:drop-shadow-md"
             :class="active ? 'border-primary ' : 'border-gray-300'"
             @click.stop="$emit('overView', item)"
         >
             <div v-if="type === 'persona'" class="flex h-9">
-                <div class="p-1 bg-gray-100 rounded-tl-xl rounded-br-xl">
-                    <div class="p-1.5 bg-white rounded-tl-xl rounded-br-xl">
+                <div class="p-1 bg-gray-200 rounded-tl-xl rounded-br-xl">
+                    <div
+                        class="p-1.5 bg-white rounded-tl-xl rounded-br-xl drop-shadow-md"
+                    >
                         <div v-if="connection.length" class="flex gap-2">
                             <div
                                 v-for="imgPath in connection.slice(0, 3)"
@@ -68,11 +70,13 @@
                             :created-by="classification?.createdBy"
                             class="border-none"
                             :no-hover="true"
+                            class-copy="text-xs"
+                            class-icon="h-3 w-3"
                         />
                     </div>
                     <div
                         v-if="listClassifications.length > 1"
-                        class="mb-1.5 ml-1 text-xs text-gray-600"
+                        class="mb-1 ml-1 text-xs text-gray-600"
                     >
                         +{{ listClassifications.length - 1 }}
                     </div>
@@ -85,7 +89,7 @@
                         :avatar-bg-class="'bg-primary-light border-white border border-2 uppercase'"
                         :initial-name="user.username[0]"
                         :image-url="imageUrl(user.username)"
-                        :avatar-size="24"
+                        :avatar-size="30"
                         :avatar-shape="'circle'"
                         :style="{
                             'z-index': `${index + 1}`,
@@ -114,7 +118,7 @@
                             ? item.users?.length
                             : users.length) > 3 && users.length
                     "
-                    class="flex items-center justify-center w-6 h-6 mt-1 text-xs text-gray-600 bg-gray-100 rounded-full"
+                    class="flex items-center justify-center mt-1 text-xs text-gray-600 bg-gray-200 rounded-full w-7 h-7"
                     :style="{
                         'z-index': `4`,
                         transform: `translateX(-24px)`,

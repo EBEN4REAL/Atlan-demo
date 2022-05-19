@@ -16,7 +16,7 @@
             <div class="text-lg font-bold">{{ item.name }}</div>
             <div class="flex items-center">
                 <div class="text-gray-700 mt-3.5 flex items-center uppercase">
-                    <AtlanIcon icon="Term" class="mb-1 mr-1" />{{ activeTab }}
+                    {{ activeTab }}
                 </div>
                 <div
                     class="flex items-center ml-auto text-base text-gray-700 border border-gray-300 rounded cursor-pointer"

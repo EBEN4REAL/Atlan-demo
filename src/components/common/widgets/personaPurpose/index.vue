@@ -10,34 +10,44 @@
             </div>
             <div class="flex p-1 bg-gray-100 rounded-lg">
                 <div
-                    class="flex px-3 py-1 text-sm font-bold rounded cursor-pointer"
+                    class="flex px-3 py-1 text-sm rounded cursor-pointer"
                     :class="
                         activeTab === 'persona'
-                            ? 'text-primary bg-white active-widget-tab'
-                            : 'text-gray-600'
+                            ? 'text-primary bg-white active-widget-tab font-bold'
+                            : 'text-gray-600 font-medium'
                     "
                     @click="activeTab = 'persona'"
                 >
                     Persona
                     <div
                         v-if="personas.length"
-                        class="flex items-center justify-center w-5 h-5 ml-1 text-xs rounded-full bg-primary-light"
+                        class="flex items-center justify-center w-5 h-5 ml-1 text-xs rounded-full"
+                        :class="`${
+                            activeTab === 'persona'
+                                ? 'bg-primary-light'
+                                : 'bg-gray-200'
+                        }`"
                     >
                         {{ personas.length || '' }}
                     </div>
                 </div>
                 <div
-                    class="flex px-3 py-1 text-sm font-bold rounded cursor-pointer"
+                    class="flex px-3 py-1 text-sm rounded cursor-pointer"
                     :class="
                         activeTab === 'purpose'
-                            ? 'text-primary bg-white active-widget-tab'
-                            : 'text-gray-600'
+                            ? 'text-primary bg-white active-widget-tab font-bold'
+                            : 'text-gray-600 font-medium'
                     "
                     @click="activeTab = 'purpose'"
                 >
                     Purpose
                     <div
                         v-if="purposes.length"
+                        :class="`${
+                            activeTab === 'purpose'
+                                ? 'bg-primary-light'
+                                : 'bg-gray-200'
+                        }`"
                         class="flex items-center justify-center w-5 h-5 ml-1 text-xs rounded-full bg-primary-light"
                     >
                         {{ purposes.length || '' }}
@@ -118,14 +128,17 @@
                 </template>
                 <div v-if="showDemo[activeTab]" class="pr-3">
                     <div
-                        class="relative flex flex-col items-center p-4 bg-gray-100 rounded-lg"
+                        class="relative flex flex-col items-center p-4 bg-gray-100 border border-gray-200 rounded-lg"
                     >
                         <div
                             class="absolute flex items-center justify-center w-5 h-5 bg-white border border-gray-200 rounded-full cursor-pointer -top-2 -right-2"
                             @click="showDemo[activeTab] = false"
                         >
                             <div class="icon-cross">
-                                <AtlanIcon icon="Cross" class="w-4 h-4" />
+                                <AtlanIcon
+                                    icon="Cross"
+                                    class="w-5 h-5 text-gray-700"
+                                />
                             </div>
                         </div>
                         <img

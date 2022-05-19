@@ -70,7 +70,7 @@
                 <div
                     v-for="connection in connections"
                     :key="connection?.connectorName"
-                    class="bg-white rounded-lg px-2.5 py-1.5 text-sm text-gray-800 flex"
+                    class="bg-white rounded-lg px-2.5 py-1.5 text-sm text-gray-800 flex drop-shadow-md"
                 >
                     <img class="w-4 h-4 mr-2" :src="connection?.imgPath" />
                     {{ connection?.connectorName }}
@@ -279,4 +279,4 @@
     })
 </script>
 
-<style lang="less"></style>
+<style lang="less" scoped></style>

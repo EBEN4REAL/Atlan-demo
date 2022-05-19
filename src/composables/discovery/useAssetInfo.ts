@@ -159,7 +159,7 @@ export default function useAssetInfo() {
         attributes(asset)?.connectionQualifiedName ?? ''
 
     const classifications = (asset: assetInterface) =>
-        asset.classifications ?? []
+        asset?.classifications ?? []
 
     const meanings = (asset: assetInterface) =>
         attributes(asset)?.meanings ?? []

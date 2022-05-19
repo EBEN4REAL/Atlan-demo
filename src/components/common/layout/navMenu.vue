@@ -185,10 +185,8 @@
     import { helpCenterList } from '~/constant/navigation/helpCentre'
     import { usePersonaStore } from '~/store/persona'
     import { usePurposeStore } from '~/store/purpose'
-    import whoami from '~/composables/user/whoami'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
-    import { signJWT } from '~/modules/jose'
-    import { getEnv } from '~/modules/__env'
+    import { initAnnounceKit } from '~/composables/announceKIT/index'
 
     export default defineComponent({
         name: 'Navigation Menu',
@@ -336,36 +334,9 @@
                         (listItem) => listItem.id === 'documentation'
                     )?.link ?? ''
             )
-            const { username, email, userId } = whoami()
-
-            const initAnnoucekIt = async () => {
-                const data = {
-                    id: userId.value,
-                    name: username.value,
-                    email: email.value,
-                }
-                const user_token = await signJWT({
-                    data,
-                    secretKey: getEnv().ANNOUCEKIT_SECRET,
-                    algorithm: 'HS256',
-                    expirationTime: '24h',
-                })
-
-                if (window?.announcekit)
-                    window.announcekit.push({
-                        widget: 'https://announcekit.co/widgets/v2/1JYrEk',
-                        selector: '.announcekit-widget',
-                        lang: 'en',
-                        user_token,
-                        data: {
-                            domain: window.location.hostname,
-                            username: username.value,
-                        },
-                    })
-            }
 
             onMounted(() => {
-                initAnnoucekIt()
+                initAnnounceKit('.announcekit-widget', '1JYrEk')
             })
 
             const trackUpdateViewEvent = () => {

@@ -35,9 +35,7 @@
             v-else-if="!groupsError && !usersError"
             class="flex flex-col h-full overflow-y-hidden"
         >
-            <div
-                class="flex items-center justify-between w-full px-4 py-2.5 border-b"
-            >
+            <div class="flex items-center justify-between w-full px-4 py-2.5">
                 <div class="flex items-center text-sm font-bold text-gray-700">
                     <AtlanIcon icon="Group" class="w-auto h-4 mr-2" />
                     Users and groups

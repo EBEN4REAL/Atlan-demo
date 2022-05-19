@@ -149,7 +149,7 @@
                             "
                             class="ilustration"
                         />
-                        <div class="mt-5 text-xs text-center">
+                        <div class="mt-5 text-sm text-center">
                             {{
                                 activeTab === 'persona'
                                     ? 'Some description about personas goes here'
@@ -172,7 +172,7 @@
                             target="_blank"
                         >
                             <div
-                                class="flex items-center mt-4 text-xs text-gray-700 cursor-pointer"
+                                class="flex items-center mt-4 text-xs cursor-pointer text-primary"
                             >
                                 View documentation
                                 <AtlanIcon icon="External" class="h-4 ml-1" />

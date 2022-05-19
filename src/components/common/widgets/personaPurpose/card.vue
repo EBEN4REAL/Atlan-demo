@@ -132,10 +132,10 @@
                 </div>
             </div>
             <div
-                class="flex items-center justify-center px-4 py-3 mt-4 border-t border-gray-300"
+                class="flex items-center px-4 py-3 mt-4 border-t border-gray-200"
                 @click.stop="$emit('viewAssets', item)"
             >
-                <div class="text-xs text-center cursor-pointer text-primary">
+                <div class="text-sm text-center cursor-pointer text-primary">
                     View assets
                 </div>
                 <AtlanIcon icon="ArrowRight" class="ml-2 text-primary" />

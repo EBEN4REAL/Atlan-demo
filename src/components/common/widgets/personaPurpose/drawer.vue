@@ -61,7 +61,13 @@
                             :icon="tab.icon"
                             :active-icon="tab.activeIcon"
                             :is-active="activeKey === index"
-                        />
+                        >
+                            <template #label
+                                ><div class="label-drawer-persona-purpose">
+                                    {{ tab.tooltip }}
+                                </div></template
+                            >
+                        </PreviewTabsIcon>
                     </template>
                     <component
                         :is="tab.component"
@@ -74,6 +80,7 @@
                         :persona="item"
                         :global-state="globalState"
                         :active-tab="activeTab"
+                        @handleChangeTab="handleChangeTab"
                     />
                 </a-tab-pane>
             </a-tabs>
@@ -129,6 +136,14 @@
                 },
             ])
             const activeKey = ref(0)
+            const handleChangeTab = (section) => {
+                const index = tabList.value.findIndex(
+                    (el) => el.component === section
+                )
+                if (index !== -1) {
+                    activeKey.value = index
+                }
+            }
             watch(visible, () => {
                 if (visible) {
                     activeKey.value = 0
@@ -142,7 +157,7 @@
                                 component: 'Overview',
                             },
                             {
-                                tooltip: 'Users and groups',
+                                tooltip: 'Users',
                                 icon: 'GroupLight',
                                 activeIcon: 'GroupActive',
                                 component: 'UsersGroups',
@@ -230,12 +245,16 @@
                 filterConfig,
                 globalState,
                 handleViewAssets,
+                handleChangeTab,
             }
         },
     })
 </script>
 
 <style lang="less" scoped>
+    .label-drawer-persona-purpose {
+        font-size: 11px;
+    }
     .content {
         height: calc(100vh - 30px);
     }

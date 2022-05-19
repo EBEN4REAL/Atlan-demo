@@ -8,14 +8,15 @@
                 <div class="text-gray-600">User and Groups</div>
                 <div
                     v-if="activeTab === 'persona'"
-                    class="mt-2 text-sm font-bold text-primary"
+                    class="mt-2 text-sm font-bold cursor-pointer text-primary"
+                    @click="$emit('handleChangeTab', 'UsersGroups')"
                 >
                     {{ userGroup }}
                 </div>
 
                 <div
                     v-if="activeTab === 'purpose'"
-                    class="mt-2 text-sm font-bold text-primary"
+                    class="mt-2 text-sm font-bold text-gray-700"
                 >
                     {{ userGroupPurpose }}
                 </div>
@@ -23,14 +24,18 @@
             <div class="flex-1">
                 <div class="text-gray-600">Assets</div>
                 <div v-if="isLoading"><AtlanLoader class="w-4 h-4" /></div>
-                <div v-else class="mt-2 text-sm font-bold text-primary">
+                <div
+                    v-else
+                    class="mt-2 text-sm font-bold cursor-pointer text-primary"
+                    @click="$emit('handleChangeTab', 'AssetList')"
+                >
                     {{ getCountString(totalAsset) }}
                 </div>
             </div>
         </div>
         <div class="mt-7">
             <div class="text-gray-600">Description</div>
-            <div class="mt-2 text-base text-gray-800">
+            <div class="mt-2 text-sm text-gray-800">
                 {{ item.description || 'No description' }}
             </div>
         </div>
@@ -116,7 +121,7 @@
                 required: true,
             },
         },
-        emits: [],
+        emits: ['handleChangeTab'],
         setup(props) {
             const { classificationList } = useTypedefData()
             const { item, globalState, activeTab } = toRefs(props)

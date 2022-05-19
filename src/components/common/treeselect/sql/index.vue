@@ -146,35 +146,24 @@
                 }
             })
 
-            const body = computed(() => {
-                const base = {
-                    ...credential?.value,
-                    query: query?.value,
-                    schemaExcludePattern: schemaExclude?.value,
-                    schemaIncludePattern: schemaInclude.value,
-                }
-                if (dbExclude.value)
-                    base.databaseExcludePattern = dbExclude.value
-                if (dbInclude.value)
-                    base.databaseIncludePattern = dbInclude.value
-
-                return base
-            })
+            const body = computed(() => ({
+                ...credential?.value,
+                query: query?.value,
+                schemaExcludePattern: schemaExclude.value,
+                schemaIncludePattern: schemaInclude.value,
+                databaseExcludePattern: dbExclude.value,
+                databaseIncludePattern: dbInclude.value,
+            }))
 
             const { data, refresh, isLoading, error } = useQueryCredential(body)
 
-            const bodyById = computed(() => {
-                const base = {
-                    query: query?.value,
-                    schemaExcludePattern: schemaExclude?.value,
-                    schemaIncludePattern: schemaInclude.value,
-                }
-                if (dbExclude.value)
-                    base.databaseExcludePattern = dbExclude.value
-                if (dbInclude.value)
-                    base.databaseIncludePattern = dbInclude.value
-                return base
-            })
+            const bodyById = computed(() => ({
+                query: query?.value,
+                schemaExcludePattern: schemaExclude?.value,
+                schemaIncludePattern: schemaInclude.value,
+                databaseExcludePattern: dbExclude.value,
+                databaseIncludePattern: dbInclude.value,
+            }))
 
             const {
                 data: credByID,

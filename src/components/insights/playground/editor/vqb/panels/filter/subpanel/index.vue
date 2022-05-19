@@ -96,7 +96,9 @@
                                 :disabled="
                                     readOnly && !subpanel?.filter?.isVariable
                                 "
-                                @change="() => handleFilterChange(subpanel)"
+                                @change="
+                                    () => handleFilterChange(subpanel, index)
+                                "
                             />
                         </div>
 
@@ -400,7 +402,17 @@
                 )
             }
 
-            const handleFilterChange = (subpanel) => {}
+            const handleFilterChange = (subpanel, index) => {
+                // A null check
+                if (
+                    subpanel.filter.type === 'multi_input' &&
+                    typeof subpanel.filter.value !== 'object'
+                ) {
+                    subpanels.value[index].filter.value = [
+                        subpanel.filter.value,
+                    ]
+                }
+            }
 
             let hoverItem = ref(null)
 

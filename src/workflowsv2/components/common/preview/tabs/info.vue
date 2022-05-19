@@ -12,7 +12,15 @@
             <div class="grid grid-cols-3">
                 <div>
                     <p class="info-title">Run Count</p>
-                    <p class="font-bold text-primary">N</p>
+                    <p v-if="runCount" class="font-bold text-primary">
+                        {{ runCount }}
+                    </p>
+                    <p
+                        v-else-if="runCountLoading"
+                        class="text-gray-500 animate-pulse"
+                    >
+                        Loading
+                    </p>
                 </div>
                 <div v-if="estimatedRuntime" class="col-span-2">
                     <p class="info-title">Estimated Runtime</p>
@@ -23,41 +31,30 @@
                 <p class="info-title">Schedule</p>
 
                 <AtlanIcon icon="Schedule" class="text-success" />
-                <span class="ml-1 pt-0.5">{{ cronString(workflow) }}</span>
+                <span class="ml-1">{{ cronString(workflow, true) }}</span>
+            </div>
+
+            <div v-if="isCronWorkflow(workflow)">
+                <p class="info-title">Next Run</p>
+                <span class="text-sm">{{ nextRunRelativeTime(workflow) }}</span>
             </div>
 
             <div v-if="creatorUsername(workflow)">
                 <p class="info-title">Created</p>
                 <span>{{ creationTimestamp(workflow, true) }} by </span>
-                <span
-                    class="cursor-pointer hover:underline"
-                    @click="() => openUserSidebar(creatorUsername(workflow))"
-                >
-                    <img
-                        v-if="showCreatorImage"
-                        :src="avatarUrl(creatorUsername(workflow))"
-                        class="flex-none inline-block h-4 rounded-full"
-                        @error="showCreatorImage = false"
-                    />
-                    {{ creatorUsername(workflow) }}
-                </span>
+                <UserWrapper
+                    :key="creatorUsername(workflow)"
+                    :username="creatorUsername(workflow)"
+                />
             </div>
 
-            <div v-if="creatorUsername(workflow)">
+            <div v-if="modifierUsername(workflow)">
                 <p class="info-title">Modified</p>
                 <span>By </span>
-                <span
-                    class="cursor-pointer hover:underline"
-                    @click="() => openUserSidebar(creatorUsername(workflow))"
-                >
-                    <img
-                        v-if="showModifierImage"
-                        :src="avatarUrl(creatorUsername(workflow))"
-                        class="flex-none inline-block h-4 rounded-full"
-                        @error="showModifierImage = false"
-                    />
-                    {{ creatorUsername(workflow) }}
-                </span>
+                <UserWrapper
+                    :key="modifierUsername(workflow)"
+                    :username="modifierUsername(workflow)"
+                />
             </div>
 
             <div>
@@ -68,12 +65,21 @@
                     type="vertical"
                 />
             </div>
-            <a-divider class="mt-5 mb-0" />
+
+            <div class="flex mt-2">
+                <AtlanButton2
+                    prefix-icon="WorkflowsActive"
+                    label="Run Workflow"
+                    color="secondary"
+                    @click="handleRunNow"
+                />
+            </div>
+            <a-divider class="mt-1 mb-0" />
             <div class="mb-1">
                 <p class="info-title">Package and Type</p>
 
                 <div class="flex mb-2 gap-x-2">
-                    <span class="font-bold truncate text-primary">
+                    <span class="font-bold truncate text-new-gray-600">
                         {{ name(workflow) }}
                     </span>
                     <span class="italic text-gray-500"
@@ -96,20 +102,24 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
+    import { computed, defineComponent, inject, ref, toRefs, watch } from 'vue'
+    import { until, watchOnce, whenever } from '@vueuse/core'
+    import { Modal, message } from 'ant-design-vue'
     import { getDurationStringFromSec } from '~/utils/time'
 
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
-    import { useUserPreview } from '~/composables/user/showUserPreview'
-    import { avatarUrl } from '~/composables/user/useUsers'
 
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
-    import RunIndicators from '~/workflowsv2/components/common/runIndicators.vue'
+    import useWorkflowSubmit from '~/workflowsv2/composables/useWorkflowSubmit'
+
     import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
+    import RunIndicators from '~/workflowsv2/components/common/runIndicators.vue'
+    import UserWrapper from '~/workflowsv2/components/common/user.vue'
+    import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
 
     export default defineComponent({
         name: 'WorkflowInfo',
-        components: { PreviewTabsIcon, RunIndicators },
+        components: { PreviewTabsIcon, RunIndicators, UserWrapper },
         props: {
             tab: {
                 type: Object,
@@ -124,9 +134,13 @@
                 default: () => [],
             },
         },
-        emits: [],
         setup(props) {
-            const { workflow, runs } = toRefs(props)
+            const { runs, workflow } = toRefs(props)
+            const updateRunByWorkflowName = inject(
+                'updateRunByWorkflowName',
+                () => {}
+            )
+
             const {
                 isCronWorkflow,
                 cronString,
@@ -135,19 +149,11 @@
                 modifierUsername,
                 name: wfName,
                 packageType,
+                nextRunRelativeTime,
+                workflowTemplateName,
             } = useWorkflowInfo()
 
             const { name, version } = usePackageInfo()
-
-            const showCreatorImage = ref(true)
-            const showModifierImage = ref(true)
-
-            const { openUserSidebar } = useUserPreview()
-
-            watch(workflow, () => {
-                showCreatorImage.value = true
-                showModifierImage.value = true
-            })
 
             const estimatedRuntime = computed(() => {
                 const secs = runs.value.reduce((acc: number[], run: any) => {
@@ -159,21 +165,96 @@
                 return undefined
             })
 
+            const {
+                data,
+                isLoading: runCountLoading,
+                quickChange,
+            } = useRunDiscoverList({
+                facets: computed(() => ({
+                    workflowTemplate: workflow.value?.metadata.name,
+                })),
+                limit: ref(0),
+                immediate: false,
+            })
+
+            whenever(workflow, () => {
+                if (runs.value.length >= 5) quickChange()
+            })
+
+            const runCount = computed(() =>
+                runs.value.length >= 5
+                    ? data.value?.hits?.total?.value
+                    : runs.value.length
+            )
+
+            const handleRunNow = () => {
+                Modal.confirm({
+                    title: 'Are you sure you want to run this workflow?',
+
+                    content: '',
+                    okText: 'Yes',
+                    onOk: async () => {
+                        const body = {
+                            namespace: 'default',
+                            resourceKind: 'WorkflowTemplate',
+                            resourceName: wfName(workflow.value),
+                        }
+
+                        const {
+                            data: wfSubmitData,
+                            error,
+                            isLoading,
+                        } = useWorkflowSubmit(body, true)
+
+                        message.loading({
+                            content: 'Starting a new run',
+                            key: 'runKey',
+                        })
+
+                        await until(isLoading).toBe(false)
+
+                        if (error.value)
+                            message.error({
+                                content: 'Failed to start workflow',
+                                key: 'runKey',
+                            })
+
+                        if (wfSubmitData.value) {
+                            setTimeout(
+                                () =>
+                                    updateRunByWorkflowName(
+                                        workflowTemplateName(wfSubmitData.value)
+                                    ),
+                                600
+                            )
+
+                            message.success({
+                                content: 'Run started',
+                                key: 'runKey',
+                            })
+                        }
+                    },
+                    // eslint-disable-next-line @typescript-eslint/no-empty-function
+                    onCancel() {},
+                })
+            }
+
             return {
                 wfName,
-                avatarUrl,
-                openUserSidebar,
-                showCreatorImage,
-                showModifierImage,
                 isCronWorkflow,
                 cronString,
                 creatorUsername,
                 modifierUsername,
                 creationTimestamp,
+                nextRunRelativeTime,
                 packageType,
                 name,
                 version,
                 estimatedRuntime,
+                data,
+                runCountLoading,
+                runCount,
+                handleRunNow,
             }
         },
     })

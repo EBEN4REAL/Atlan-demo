@@ -293,7 +293,7 @@
                 </template>
             </a-popover>
 
-            <div class="flex justify-end w-full">
+            <div class="flex justify-end w-full gap-1">
                 <AtlanButton2
                     color="secondary"
                     label="Cancel"
@@ -302,7 +302,7 @@
 
                 <AtlanButton2
                     :loading="createUpdateLoading"
-                    :disabled="createUpdateLoading"
+                    :disabled="disabledButtonSaveUpdate"
                     :label="
                         createUpdateLoading
                             ? apiKeyDirty.id
@@ -329,7 +329,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, watch } from 'vue'
+    import { computed, defineComponent, ref, watch, toRefs } from 'vue'
     import dayjs, { Dayjs } from 'dayjs'
     import relativeTime from 'dayjs/plugin/relativeTime'
     import { useVModels } from '@vueuse/core'
@@ -375,6 +375,7 @@
         },
         emits: ['updateAPIKey', 'createAPIKey', 'closeDrawer'],
         setup(props, { emit }) {
+            const { createUpdateLoading, apiKey } = toRefs(props)
             const apiKeyDirty = ref({})
             const nameEmptyOnSubmit = ref(false)
             const addPersonaPopoverVisible = ref(false)
@@ -518,16 +519,64 @@
             }
             /* Following computed properties are reqd. only for displaying expiry date of existing API Key */
             const validityDateStringRelative = computed(() => {
+
                 if (validityDate?.value) {
                     return capitalizeFirstLetter(validityDate.value.fromNow())
                 }
                 return ''
             })
             const validityDateString = computed(() => {
+
                 if (validityDate?.value) {
                     return formatDateTime(validityDate.value.format())
                 }
                 return ''
+            })
+            const comparePersona = (personasLocal, personasProp) => {
+                if (!personasLocal.length && !personasProp.length) {
+                    return true
+                }
+                if (personasLocal.length !== personasProp.length) {
+                    return false
+                }
+                if (personasLocal.length === personasProp.length) {
+                    let count = 0
+                    personasLocal.forEach((el) => {
+                        const finded = personasProp.find(
+                            (elc) => el.id === elc.id
+                        )
+                        if (finded) {
+                            count += 1
+                        }
+                    })
+                    if (personasLocal.length === count) {
+                        return true
+                    }
+                }
+                return false
+            }
+            const disabledButtonSaveUpdate = computed(() => {
+                if (
+                    apiKeyDirty.value.id &&
+                    apiKey.value?.description == null &&
+                    !apiKeyDirty.value.description
+                )
+                    return true
+
+                if (
+                    apiKeyDirty.value.id &&
+                    apiKeyDirty.value.displayName ===
+                        apiKey.value.displayName &&
+                    apiKeyDirty.value.description ===
+                        apiKey.value.description &&
+                    comparePersona(
+                        apiKeyDirty.value.personas,
+                        apiKey.value.personas
+                    )
+                ) {
+                    return true
+                }
+                return createUpdateLoading.value
             })
             return {
                 apiKeyDirty,
@@ -549,6 +598,7 @@
                 showDatePicker,
                 validityDateStringRelative,
                 validityDateString,
+                disabledButtonSaveUpdate,
             }
         },
     })

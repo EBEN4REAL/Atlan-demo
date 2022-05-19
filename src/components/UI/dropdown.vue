@@ -1,30 +1,23 @@
 <template>
-    <a-dropdown trigger="click">
-        <AtlanBtn
-            class="flex-none"
-            size="sm"
-            color="secondary"
-            padding="compact"
-            :data-test-id="dataTestId"
-            @click.prevent
-        >
-            <AtlanIcon icon="KebabMenu" class="-mx-1 text-gray" />
-        </AtlanBtn>
+    <a-dropdown trigger="click" :overlay-class-name="$style.dropdownClass">
+        <IconButton :data-test-id="dataTestId" icon="KebabMenu" />
 
         <template #overlay>
-            <a-menu>
+            <a-menu click="overflow-hidden">
                 <a-menu-item
                     v-for="(option, index) in options"
                     :key="index"
+                    class="px-4 py-2"
+                    style="min-width: 8rem"
                     @click="() => handleMenuItemClick({ index, ...option })"
                 >
                     <div
-                        class="flex items-center"
+                        class="flex items-center m-w-20"
                         :class="option.class"
                         :data-test-id="option?.title?.toLowerCase()"
                     >
                         <AtlanIcon v-if="option.icon" :icon="option.icon" />
-                        <span class="pl-2 text-sm">{{ option.title }}</span>
+                        <span class="pl-1">{{ option.title }}</span>
                     </div>
                 </a-menu-item>
             </a-menu>
@@ -34,7 +27,6 @@
 
 <script lang="ts">
     import { defineComponent, PropType } from 'vue'
-    import AtlanBtn from '~/components/UI/button.vue'
 
     type option = {
         title: string
@@ -45,7 +37,7 @@
 
     export default defineComponent({
         name: 'Dropdown',
-        components: { AtlanBtn },
+        components: {},
         props: {
             options: {
                 type: Array as PropType<option[]>,
@@ -57,17 +49,22 @@
                 required: false,
             },
         },
-        setup(props) {
-            const { options } = props
-
+        setup() {
             const handleMenuItemClick = (option: any) => {
                 option.handleClick()
             }
 
             return {
-                options,
                 handleMenuItemClick,
             }
         },
     })
 </script>
+
+<style lang="less" module>
+    .dropdownClass {
+        :global(.ant-dropdown-menu) {
+            @apply overflow-hidden !important;
+        }
+    }
+</style>

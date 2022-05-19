@@ -1,5 +1,9 @@
 import { computed, ComputedRef } from 'vue'
 import { TabInterface } from '~/types/insights/tab.interface'
+import {
+    featureEnabledMap,
+    INSIGHT_SCHEDULE_QUERY,
+} from '~/composables/labs/labFeatureList'
 
 export default function useInsightsTabList(): {
     allTabs: TabInterface[]
@@ -43,7 +47,7 @@ export default function useInsightsTabList(): {
             name: 'Schedules',
             component: 'schedule',
             icon: 'Schedule24',
-            isVisible: true,
+            isVisible: featureEnabledMap.value[INSIGHT_SCHEDULE_QUERY],
             title: 'Schedule',
         },
     ]

@@ -46,7 +46,7 @@
 
     const handleEnumSelect = (typeName, values) => {
         form.value.options.enumType = typeName
-        form.value.typeName = typeName
+        // ?  form.value.typeName will be updated at parent watcher once above line executes
         form.value.enumValues = values
     }
 </script>

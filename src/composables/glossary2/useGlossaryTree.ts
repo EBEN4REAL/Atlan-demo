@@ -126,9 +126,13 @@ const useGlossaryTree = ({
                 return 1
             return 0
         })
-        const terms = children?.filter(el=>el?.typeName==='AtlasGlossaryTerm')
-        const categories = children?.filter(el=>el?.typeName==='AtlasGlossaryCategory')
-        return [ ...categories, ...terms]
+        const terms = children?.filter(
+            (el) => el?.typeName === 'AtlasGlossaryTerm'
+        )
+        const categories = children?.filter(
+            (el) => el?.typeName === 'AtlasGlossaryCategory'
+        )
+        return [...categories, ...terms]
     }
     const onLoadData = async (treeNode: any) => {
         treeNode.dataRef.isLoading = true
@@ -209,7 +213,10 @@ const useGlossaryTree = ({
                                     treeNode?.dataRef?.guid
                             }
                         })
-                        treeNode.dataRef.children.push(...sortTermsAndCategories(map))
+                        treeNode.dataRef.children.push(
+                            ...sortTermsAndCategories(map)
+                        )
+
                         loadedKeys.value.push(treeNode.dataRef.key)
                         checkAndAddLoadMoreNode({
                             response: data.value,
@@ -242,6 +249,7 @@ const useGlossaryTree = ({
                     treeNode.dataRef.isLoading = false
                     treeNode.dataRef.isError = null
                 }
+                treeData.value = [...treeData.value] // maintains reactivity of tree
             } catch (e) {
                 loadedKeys.value.push(treeNode.dataRef.key)
                 treeNode.dataRef.isLoading = false
@@ -329,7 +337,9 @@ const useGlossaryTree = ({
                                 }
                             })
                             treeNode.dataRef.children = []
-                            treeNode.dataRef.children.push(...sortTermsAndCategories(map))
+                            treeNode.dataRef.children.push(
+                                ...sortTermsAndCategories(map)
+                            )
                             loadedKeys.value.push(treeNode.dataRef.key)
 
                             checkAndAddLoadMoreNode({
@@ -369,6 +379,7 @@ const useGlossaryTree = ({
                             `${treeNode.attributes?.qualifiedName}_cta`
                         ] = treeNode.dataRef.key
                     }
+                    treeData.value = [...treeData.value] // maintains reactivity of tree
                     treeNode.dataRef.isLoading = false
                     treeNode.dataRef.isError = null
                 }
@@ -482,19 +493,23 @@ const useGlossaryTree = ({
                                 `${defaultGlossaryQf}_${el.attributes?.qualifiedName}`
                             )
                         })
-                       const rootTermsAndCategories= data.value?.entities.map((i) => ({
-                            ...i,
-                            id: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
-                            key: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
-                            isLeaf: i.typeName === 'AtlasGlossaryTerm',
-                            checkable:
-                                i.typeName === 'AtlasGlossaryTerm'
-                                    ? checkable
-                                    : false,
-                            disabled: disabledGuids.includes(i.guid),
-                        }))
-                        treeData.value=sortTermsAndCategories(rootTermsAndCategories)
-                       checkAndAddLoadMoreNode({
+                        const rootTermsAndCategories = data.value?.entities.map(
+                            (i) => ({
+                                ...i,
+                                id: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
+                                key: `${defaultGlossaryQf}_${i.attributes?.qualifiedName}`,
+                                isLeaf: i.typeName === 'AtlasGlossaryTerm',
+                                checkable:
+                                    i.typeName === 'AtlasGlossaryTerm'
+                                        ? checkable
+                                        : false,
+                                disabled: disabledGuids.includes(i.guid),
+                            })
+                        )
+                        treeData.value = sortTermsAndCategories(
+                            rootTermsAndCategories
+                        )
+                        checkAndAddLoadMoreNode({
                             response: data.value,
                             parentGuid: 'root',
                             parentKey: 'root',

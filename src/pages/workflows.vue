@@ -1,52 +1,56 @@
 <template>
-    <KeepAlive>
-        <router-view v-if="isItem" />
-        <WorkflowDiscovery v-else ref="assetdiscovery" />
-    </KeepAlive>
+    <router-view v-slot="{ Component, route }">
+        <keep-alive
+            :max="3"
+            exclude="WorkflowSetupPage,WorkflowProfileTabWrapper,WFProfileId"
+        >
+            <component
+                :is="Component"
+                :key="`${route.name}${route.params?.id || ''}`"
+            />
+        </keep-alive>
+    </router-view>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, onMounted, provide, ref } from 'vue'
-    import { useHead } from '@vueuse/head'
-    import { useRoute } from 'vue-router'
-    import WorkflowDiscovery from '~/workflows/components/workflows/workflowDiscovery.vue'
+    import { defineComponent } from 'vue'
+    import { useRouter, onBeforeRouteUpdate, useRoute } from 'vue-router'
+
+    import {
+        featureEnabledMap,
+        WORKFLOW_CENTER_V2,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
-        components: {
-            WorkflowDiscovery,
-        },
+        name: 'WorkflowV2Wrapper',
         setup() {
-            useHead({
-                title: 'Workflows Center',
-            })
+            const router = useRouter()
             const route = useRoute()
-            const assetdiscovery = ref()
 
-            const isItem = computed(() => route.params.id || isSetup.value)
-            const isSetup = computed(() =>
-                route.path.startsWith('/workflows/setup')
-            )
-            const localSelected = ref()
-
-            const handlePreview = (asset) => {
-                localSelected.value = asset
-            }
-            const updateList = (asset) => {
-                if (assetdiscovery.value) {
-                    assetdiscovery.value.updateCurrentList(asset)
+            if (!featureEnabledMap.value[WORKFLOW_CENTER_V2]) {
+                if (route.fullPath === '/workflows/marketplace') {
+                    router.replace('/workflowsv1/setup')
+                    return
                 }
-                handlePreview(asset)
+                if (route.fullPath.includes('/workflows/monitor')) {
+                    router.replace('/workflowsv1')
+                    return
+                }
+                const newRoute = route.fullPath.replace(
+                    '/workflows',
+                    '/workflowsv1'
+                )
+                router.replace(newRoute)
+                return
             }
 
-            provide('updateList', updateList)
-            provide('preview', handlePreview)
+            if (!route.params?.tab && !route.params?.id)
+                router.replace('/workflows/monitor')
 
-            return {
-                isSetup,
-                assetdiscovery,
-                localSelected,
-                isItem,
-            }
+            onBeforeRouteUpdate((to, _, next) => {
+                if (to.path === '/workflows') next('/workflows/monitor')
+                else next(true)
+            })
         },
     })
 </script>

@@ -153,9 +153,10 @@
             })
             const { data, isLoading, mutate } = useRequest(
                 selectedAsset.value.guid,
+                selectedAsset?.value?.attributes?.qualifiedName,
                 pagination,
                 selectedAsset.value.typeName,
-                filterStatus
+                filterStatus,
             )
             watch(selectedFilter, () => {
                 list.value = []

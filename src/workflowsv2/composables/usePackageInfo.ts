@@ -12,7 +12,7 @@ export function usePackageInfo() {
     const logo = (pkg) => annotations(pkg)?.['orchestration.atlan.com/logo']
 
     const type = (pkg) => labels(pkg)?.['orchestration.atlan.com/type']
-
+    const source = (pkg) => labels(pkg)?.['orchestration.atlan.com/source']
     const version = (pkg) => labels(pkg)?.['package.argoproj.io/version']
 
     return {
@@ -27,5 +27,6 @@ export function usePackageInfo() {
         emoji,
         type,
         version,
+        source,
     }
 }

@@ -116,10 +116,10 @@ export const listNotLinkedIssues = (assetID: Ref<string>) => {
     const searchText = ref()
     const jql = computed(() => (searchText.value ?
         `(issue.property[atlan].guid != ${assetID.value} OR issue.property[atlan].guid = null) 
-                AND (summary ~ \"${searchText.value}*\" OR description ~ \"${searchText.value}*\")
+                AND (summary ~ \"${searchText.value}*\" OR description ~ \"${searchText.value}*\") AND project in projectsWhereUserHasPermission("Edit Issues")
                 ORDER BY created DESC
                 `
-        : `(issue.property[atlan].guid != ${assetID.value} OR issue.property[atlan].guid = null) 
+        : `(issue.property[atlan].guid != ${assetID.value} OR issue.property[atlan].guid = null) AND project in projectsWhereUserHasPermission("Edit Issues")
             ORDER BY created DESC
             `))
 

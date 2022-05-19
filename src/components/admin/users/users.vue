@@ -8,8 +8,8 @@
                 <div v-auth="map.LIST_USERS" class="flex filter-user-wrapper">
                     <SearchAndFilter
                         v-model:value="searchText"
-                        :placeholder="`Search all ${
-                            filteredUserCount || ''
+                        :placeholder="`Search from ${
+                            filteredUserCount || 0
                         } users`"
                         class="h-8 mr-1 shadow-none input-filter"
                         :dot="!!statusFilter?.length"
@@ -31,6 +31,7 @@
                         <template #content>
                             <UserFilter
                                 v-model="statusFilter"
+                                v-model:role="filterRole"
                                 :user-type-agg="userTypeAgg"
                                 @changeRole="changeFilterRole"
                                 @change="updateFilters"
@@ -39,7 +40,7 @@
 
                         <AtlanButton2
                             color="secondary"
-                            :prefixIcon="
+                            :prefix-icon="
                                 filtersLength > 0 ? 'FilterDot' : 'Filter'
                             "
                             :label="`Filters
@@ -58,7 +59,7 @@
                     <AtlanButton2
                         v-if="loginWithEmail"
                         label="Invite Users"
-                        prefixIcon="AddUser"
+                        prefix-icon="AddUser"
                         @click="handleInviteUsers"
                     />
                 </div>
@@ -74,7 +75,7 @@
                     <AtlanButton2
                         color="secondary"
                         label="Try again"
-                        prefixIcon="Retry"
+                        prefix-icon="Retry"
                         @click="getUserList"
                     />
                 </div>
@@ -131,7 +132,6 @@
 
         <a-modal
             :visible="showInviteUserModal"
-            :destroy-on-close="true"
             :footer="null"
             :closable="false"
             :width="470"
@@ -301,15 +301,11 @@
                     },
                     []
                 )
-
-                console.log('user filter', userListAPIParams)
-
                 userListAPIParams.offset = 0
                 getUserList()
             }
 
-            const changeFilterRole = (role) => {
-                filterRole.value = role
+            const changeFilterRole = () => {
                 updateFilters()
             }
 
@@ -569,6 +565,7 @@
             userTypeAgg.value = getUserTypeAggregations().value
 
             return {
+                filterRole,
                 showPreview,
                 isReady,
                 tenantName,

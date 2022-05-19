@@ -64,6 +64,162 @@
             </div>
 
             <div
+                v-if="['S3Object', 'S3Bucket'].includes(selectedAsset.typeName)"
+                class="flex flex-col w-full gap-y-5"
+            >
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Partition</span>
+
+                    <span class="text-gray-700">{{
+                        awsPartition(selectedAsset)
+                    }}</span>
+                </div>
+
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Region</span>
+
+                    <span class="text-gray-700">{{
+                        awsRegion(selectedAsset)
+                    }}</span>
+                </div>
+
+                <div class="flex flex-col text-sm">
+                    <div class="flex items-center mb-1 text-gray-500">
+                        <span>Account Id</span>
+                        <a-tooltip title="Copy">
+                            <div
+                                @click="
+                                    handleCopyValue(
+                                        awsAccountId(selectedAsset),
+                                        'Account Id'
+                                    )
+                                "
+                            >
+                                <AtlanIcon
+                                    icon="CopyOutlined"
+                                    class="w-auto ml-1 cursor-pointer mb-0.5"
+                                /></div
+                        ></a-tooltip>
+                    </div>
+                    <span class="text-gray-700">{{
+                        awsAccountId(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <div class="flex items-center mb-1 text-gray-500">
+                        <span>Resource Id</span>
+                        <a-tooltip title="Copy">
+                            <div
+                                @click="
+                                    handleCopyValue(
+                                        awsResourceId(selectedAsset),
+                                        'Resource Id'
+                                    )
+                                "
+                            >
+                                <AtlanIcon
+                                    icon="CopyOutlined"
+                                    class="w-auto ml-1 cursor-pointer mb-0.5"
+                                /></div
+                        ></a-tooltip>
+                    </div>
+                    <span class="text-gray-700">{{
+                        awsResourceId(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Owner Name</span>
+
+                    <span class="text-gray-700">{{
+                        awsOwnerName(selectedAsset)
+                    }}</span>
+                </div>
+
+                <div
+                    v-if="
+                        awsTags(selectedAsset) &&
+                        awsTags(selectedAsset).length > 0
+                    "
+                    class="flex flex-col text-sm"
+                >
+                    <span class="mb-1 text-gray-500">Tags</span>
+
+                    <DetailsContainer
+                        :array="awsTags(selectedAsset)"
+                        class="rounded-lg"
+                    />
+                </div>
+            </div>
+
+            <div
+                v-if="['S3Bucket'].includes(selectedAsset.typeName)"
+                class="flex flex-col text-sm"
+            >
+                <span class="mb-1 text-sm text-gray-500"
+                    >Bucket Versioning Enabled</span
+                >
+                <span class="text-gray-700 capitalize">{{
+                    s3BucketVersioningEnabled(selectedAsset)
+                }}</span>
+            </div>
+
+            <div
+                v-if="['S3Object'].includes(selectedAsset.typeName)"
+                class="flex flex-col w-full gap-y-5"
+            >
+                <div class="flex flex-col text-sm">
+                    <div class="flex items-center mb-1 text-gray-500">
+                        <span>Object Key</span>
+                        <a-tooltip title="Copy">
+                            <div
+                                @click="
+                                    handleCopyValue(
+                                        s3ObjectKey(selectedAsset),
+                                        'Object Key'
+                                    )
+                                "
+                            >
+                                <AtlanIcon
+                                    icon="CopyOutlined"
+                                    class="w-auto ml-1 cursor-pointer mb-0.5"
+                                /></div
+                        ></a-tooltip>
+                    </div>
+                    <span class="text-gray-700">{{
+                        s3ObjectKey(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Storage Class</span>
+
+                    <span class="text-gray-700">{{
+                        s3ObjectStorageClass(selectedAsset)
+                    }}</span>
+                </div>
+
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Last Modified Time</span>
+
+                    <span class="text-gray-700">{{
+                        s3ObjectLastModifiedTime(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Object Version Id</span>
+
+                    <span class="text-gray-700">{{
+                        s3ObjectVersionId(selectedAsset)
+                    }}</span>
+                </div>
+            </div>
+
+            <a-divider
+                v-if="['S3Object', 'S3Bucket'].includes(selectedAsset.typeName)"
+                dashed
+                class="my-0 border-gray-500"
+            ></a-divider>
+
+            <div
                 v-if="['LookerTile'].includes(selectedAsset.typeName)"
                 class="flex flex-col text-sm"
             >
@@ -292,6 +448,7 @@
     import { defineComponent, PropType } from 'vue'
     import ConnectionInfo from '@common/widgets/summary/types/connection.vue'
     import { message } from 'ant-design-vue'
+    import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import map from '~/constant/accessControl/map'
 
@@ -311,6 +468,7 @@
             PopOverUser,
             ConnectionInfo,
             PreviewTabsIcon,
+            DetailsContainer,
         },
         props: {
             selectedAsset: {
@@ -356,6 +514,18 @@
                 lastSyncRun,
                 lastSyncRunAt,
                 sourceId,
+                s3ObjectLastModifiedTime,
+                s3ObjectStorageClass,
+                s3ObjectKey,
+                s3ObjectVersionId,
+                awsArn,
+                awsPartition,
+                awsRegion,
+                awsAccountId,
+                awsResourceId,
+                awsOwnerName,
+                awsTags,
+                s3BucketVersioningEnabled,
             } = useAssetInfo()
 
             const { role } = whoami()
@@ -399,6 +569,18 @@
                 lastSyncRunAt,
                 lastSyncRun,
                 sourceId,
+                s3ObjectLastModifiedTime,
+                s3ObjectStorageClass,
+                s3ObjectKey,
+                s3ObjectVersionId,
+                awsArn,
+                awsPartition,
+                awsRegion,
+                awsAccountId,
+                awsResourceId,
+                awsOwnerName,
+                awsTags,
+                s3BucketVersioningEnabled,
                 map,
                 role,
             }

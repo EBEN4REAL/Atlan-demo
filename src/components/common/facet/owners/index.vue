@@ -68,7 +68,8 @@
                 :query-text="queryText"
                 :select-user-key="selectUserKey"
                 :group-id="groupId"
-                :disabledKeys="disabledValues?.ownerUsers"
+                :disabled-keys="disabledValues?.ownerUsers"
+                :show-invited-users="showInvitedUsers"
                 @change="handleChange"
             ></Users>
             <Groups
@@ -77,7 +78,7 @@
                 v-model="localValue.ownerGroups"
                 :query-text="queryText"
                 :select-group-key="selectGroupKey"
-                :disabledKeys="disabledValues?.ownerGroups"
+                :disabled-keys="disabledValues?.ownerGroups"
                 :user-id="userId"
                 @change="handleChange"
             ></Groups>
@@ -184,10 +185,14 @@
             },
             disabledValues: {
                 type: Object,
-                required:false,
+                required: false,
+            },
+            showInvitedUsers: {
+                type: Boolean,
+                required: false,
             },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'update:selectedRecords'],
         setup(props, { emit }) {
             const { modelValue, selectedRecords } = useVModels(props, emit)
             const localValue = ref(modelValue.value)

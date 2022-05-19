@@ -19,7 +19,7 @@
         </span>
         <div v-if="size === 'small'" class="flex items-center text-xs">
             <!-- <AssetLogo :selected="selected" :asset="assetWrappper" /> -->
-            <img class="mb-0.5" :src="assetIcon" />
+            <img class="mb-0.5 h-4" :src="assetIcon" />
             <span
                 class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
                 >{{ entityType.toUpperCase() }}</span

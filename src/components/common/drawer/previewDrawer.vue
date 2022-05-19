@@ -8,6 +8,7 @@
         :width="420"
         :closable="false"
         class="drawer"
+        :zIndex="1001"
         @close="handleCloseGroupPreview"
     >
         <UserOrGroupPreview
@@ -24,6 +25,7 @@
         :width="420"
         :closable="false"
         class="drawer"
+        :zIndex="1001"
         @close="handleCloseUserPreview"
     >
         <UserOrGroupPreview
@@ -72,6 +74,7 @@
 
 <style lang="less" scoped>
     .drawer {
+        // z-index: 1001;
         :global(.ant-drawer-body) {
             @apply overflow-hidden !important;
         }

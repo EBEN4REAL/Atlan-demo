@@ -1031,7 +1031,7 @@ export default function useEventGraph({
         node.updateData({
             ports: [],
             portsListExpanded: false,
-            // ...options,
+            ...options,
         })
         const index = expandedNodes.value.findIndex((x) => x === node.id)
         expandedNodes.value.splice(index, 1)

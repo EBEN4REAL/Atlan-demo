@@ -13,7 +13,7 @@
                     class="px-3 py-2 mx-4 mb-3 bg-gray-100"
                 >
                     You don't have edit access. Suggest Terms and
-                    <span class="text-primary cursor-pointer">
+                    <span class="cursor-pointer text-primary">
                         <a-popover placement="rightBottom">
                             <template #content>
                                 <AdminList></AdminList>
@@ -64,7 +64,12 @@
                         editPermission:
                             'hover:bg-primary-light hover:border-primary',
                     }"
-                    @click="() => (isEdit = true)"
+                    @click="
+                        (e) => {
+                            e.stopPropagation()
+                            isEdit = true
+                        }
+                    "
                 >
                     <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
                 ></a-button>

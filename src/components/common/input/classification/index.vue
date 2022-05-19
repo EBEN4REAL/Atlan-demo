@@ -74,7 +74,12 @@
                             editPermission:
                                 'hover:bg-primary-light hover:border-primary',
                         }"
-                        @click="handleOpenPopover"
+                        @click="
+                            (e) => {
+                                e.stopPropagation()
+                                handleOpenPopover()
+                            }
+                        "
                     >
                         <span
                             ><AtlanIcon icon="Add" class="h-3"></AtlanIcon

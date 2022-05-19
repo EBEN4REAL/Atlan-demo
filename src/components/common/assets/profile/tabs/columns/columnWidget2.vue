@@ -157,27 +157,7 @@
                         <EditableClassifications :asset="record.item" />
                     </template>
                     <template v-else-if="column.key === 'terms'">
-                        <TermsWidget
-                            v-model="record.meanings"
-                            :selected-asset="record.item"
-                            :edit-permission="
-                                selectedAssetUpdatePermission(
-                                    record.item,
-                                    true,
-                                    'RELATIONSHIP_ADD',
-                                    'AtlasGlossaryTerm'
-                                )
-                            "
-                            :allow-delete="
-                                selectedAssetUpdatePermission(
-                                    record.item,
-                                    true,
-                                    'RELATIONSHIP_REMOVE',
-                                    'AtlasGlossaryTerm'
-                                )
-                            "
-                        >
-                        </TermsWidget>
+                        <EditableTerms :asset="record.item" />
                     </template>
                 </template>
             </a-table>
@@ -258,7 +238,7 @@
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import EditableClassifications from './editableClassifications.vue'
-    import TermsWidget from '@/common/input/terms/index.vue'
+    import EditableTerms from './editableTerms.vue'
 
     // Composables
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -268,7 +248,6 @@
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
     import useEvaluate from '~/composables/auth/useEvaluate'
-    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
 
     export default defineComponent({
         components: {
@@ -284,7 +263,7 @@
             ColumnKeys,
             AggregationTabs,
             EditableClassifications,
-            TermsWidget,
+            EditableTerms,
         },
         setup() {
             /** DATA */
@@ -307,8 +286,6 @@
                 dataTypeCategoryImage,
                 isScrubbed,
                 selectedAssetUpdatePermission,
-                classifications,
-                meanings,
             } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
@@ -456,8 +433,6 @@
                         i.attributes.userDescription ||
                         i.attributes.description ||
                         '---',
-                    classifications: classifications(i),
-                    meanings: meanings(i),
                     item: i,
                 }))
                 columnsData.value = {
@@ -522,36 +497,6 @@
                 false,
                 true
             ) // true for secondaryEvaluations
-
-            const {
-                entity,
-                localName,
-                localDescription,
-                localCertificate,
-                localOwners,
-                localAdmins,
-                localViewers,
-                localClassifications,
-                localMeanings,
-                localCategories,
-                localSeeAlso,
-                handleSeeAlsoUpdate,
-                handleCategoriesUpdate,
-                handleMeaningsUpdate,
-                handleChangeName,
-                handleChangeDescription,
-                handleOwnersChange,
-                handleChangeAdmins,
-                handleChangeViewers,
-                handleChangeCertificate,
-                handleClassificationChange,
-                isLoadingClassification,
-                nameRef,
-                descriptionRef,
-                animationPoint,
-                localSQLQuery,
-                handleSQLQueryUpdate,
-            } = updateAssetAttributes(selectedAsset, true)
 
             // rowClassName Antd
             const rowClassName = (record: { key: null }) =>
@@ -663,9 +608,7 @@
                 pagination,
                 selectedRowGuid,
                 defaultAttributes,
-                localClassifications,
-                localMeanings,
-                handleClassificationChange,
+
                 columns: [
                     {
                         width: 50,

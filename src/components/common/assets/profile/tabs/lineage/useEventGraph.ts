@@ -76,6 +76,9 @@ export default function useEventGraph({
     const portToggledNodes = ref({})
     const preferences = lineageStore.getPreferences()
 
+    // Prevent duplicate events
+    const isExpandedNodeEventSideEffect = ref(false)
+
     /** METHODS */
     /** Utils */
     // handleError
@@ -99,6 +102,7 @@ export default function useEventGraph({
         },
         400
     )
+
     // sendSubNodeClickedEvent - Analytics Events
     const sendSubNodeClickedEvent = useDebounceFn(
         (asset_type, connector, click_index, node_id) => {
@@ -333,14 +337,6 @@ export default function useEventGraph({
         if (guid) {
             selectedNodeId.value = guid
             lineageStore.setSelectedNodeId(guid)
-        }
-
-        if (entity) {
-            sendNodeClickedEvent(
-                entity.typeName,
-                entity.attributes?.qualifiedName?.split('/')[1],
-                guid
-            )
         }
 
         if (isCyclicRelation) {
@@ -718,8 +714,14 @@ export default function useEventGraph({
             })
             removeShowMorePort(node)
             if (p.length < t) addShowMorePort(node)
+            // Handle Event - lineage_node_expanded
+            if (!isExpandedNodeEventSideEffect.value) {
+                sendNodeExpandedEvent(t, node.id, 'expanded')
+            }
+
             translateSubsequentNodes(node)
             controlPortsLoader(node, false)
+            isExpandedNodeEventSideEffect.value = false
             return
         }
 
@@ -771,6 +773,11 @@ export default function useEventGraph({
                     if (portsLength < total) addShowMorePort(node)
                     else removeShowMorePort(node)
 
+                    // Handle Event - lineage_node_expanded
+                    if (!isExpandedNodeEventSideEffect.value) {
+                        sendNodeExpandedEvent(total, node.id, 'expanded')
+                    }
+
                     translateSubsequentNodes(node)
 
                     if (Object.keys(actions.value).length) {
@@ -791,6 +798,7 @@ export default function useEventGraph({
                     )
 
                 controlPortsLoader(node, false)
+                isExpandedNodeEventSideEffect.value = false
             },
             { deep: true }
         )
@@ -918,22 +926,26 @@ export default function useEventGraph({
                 selectVpNode(vpNode, v)
 
                 if (i === a.length - 1) {
-                    const _node = graph.value
-                        .getNodes()
-                        .find((x) => x.id === node.id)
-                    if (lineageStore.hasPortsList(_node.id)) {
+                    const cell = graph.value.getCellById(node.id)
+                    const cachedData = node.getData()
+                    cell.updateData({ ...cachedData })
+                    cell.updateData({
+                        portItemLoading: false,
+                    })
+
+                    if (lineageStore.hasPortsList(cell.id)) {
                         const { ports: p, total: t } =
-                            lineageStore.getNodesPortList(_node.id)
-                        removePorts(_node)
-                        addPorts(_node, p)
-                        removeShowMorePort(_node)
-                        if (p.length < t) addShowMorePort(_node)
+                            lineageStore.getNodesPortList(cell.id)
+                        removePorts(cell)
+                        addPorts(cell, p)
+                        removeShowMorePort(cell)
+                        if (p.length < t) addShowMorePort(cell)
                     } else {
                         const port = portLineage.guidEntityMap[portId]
-                        addPorts(_node, [port])
+                        addPorts(cell, [port])
                     }
-                    translateSubsequentNodes(_node)
-                    selectPort(_node, portId, false)
+                    translateSubsequentNodes(cell)
+                    selectPort(cell, portId, false)
                     addLineagePorts(nodesForPortLineage, portLineage)
                 }
             })
@@ -1002,20 +1014,10 @@ export default function useEventGraph({
                 node.updateData({
                     portItemLoading: show,
                 })
-            if (type === 'showMore') {
-                const nodePorts = node.data?.ports
-                sendSubNodeShowMoreEvent(
-                    nodePorts[nodePorts.length - 1].typeName === 'showMorePort'
-                        ? nodePorts.length - 1
-                        : nodePorts?.length,
-                    5,
-                    node.id
-                )
-
+            if (type === 'showMore')
                 node.updateData({
                     portShowMoreLoading: show,
                 })
-            }
         }
     }
 
@@ -1033,10 +1035,6 @@ export default function useEventGraph({
         })
         const index = expandedNodes.value.findIndex((x) => x === node.id)
         expandedNodes.value.splice(index, 1)
-
-        if (node.data?.portsCount) {
-            sendNodeExpandedEvent(node.data?.portsCount, node.id, 'collapsed')
-        }
     }
 
     // removeX6Ports
@@ -1068,14 +1066,10 @@ export default function useEventGraph({
             ...options,
         })
 
-        if (!overrideExp || !isExpandedNode(node.id))
+        if (!overrideExp && !isExpandedNode(node.id))
             expandedNodes.value.push(node.id)
 
         addX6Ports(node, uniquePorts)
-
-        if (node.data?.portsCount) {
-            sendNodeExpandedEvent(node.data?.portsCount, node.id, 'expanded')
-        }
     }
 
     // addX6Ports
@@ -1118,7 +1112,6 @@ export default function useEventGraph({
     const selectPort = (node, portId, fetchLineage = true) => {
         const { ports } = node.getData()
         const portEntity = ports.find((x) => x.guid === portId)
-        const portIndex = ports.indexOf(portEntity)
 
         node.updateData({ selectedPortId: portId })
 
@@ -1130,29 +1123,22 @@ export default function useEventGraph({
                 controlPortsLoader(node, true, 'item')
                 fetchPortLineage(node, portId)
             }
-
-            sendSubNodeClickedEvent(
-                portEntity.typeName?.toLowerCase(),
-                portEntity.attributes?.connectorName ||
-                    portEntity.attributes?.qualifiedName?.split('/')[1],
-                portIndex,
-                node.id
-            )
         }
     }
 
     // selectPortEdge
     const selectPortEdge = (edgeId, edge) => {
-        const processId = edgeId.split('/')[1]
-        onSelectAsset({ guid: processId })
-
-        if (edgeId) selectedPortEdgeId.value = edgeId
-
+        // Handle Event - lineage_process_clicked
         sendProcessClickedEvent(
             !!edge?.data?.isGroupEdge,
             !!edge?.data?.isCyclicEdge,
             edgeId
         )
+
+        const processId = edgeId.split('/')[1]
+        onSelectAsset({ guid: processId })
+
+        if (edgeId) selectedPortEdgeId.value = edgeId
     }
 
     // getAllNodesQN
@@ -1367,7 +1353,16 @@ export default function useEventGraph({
         )
             return
 
+        const nodeData = node?.store?.data
+
         if (isExpandedNode(node.id)) {
+            // Handle Event - lineage_node_collapsed
+            sendNodeExpandedEvent(
+                nodeData?.data?.portsCount,
+                node.id,
+                'collapsed'
+            )
+
             removePorts(node)
             resetNodeTranslatedNodes(node)
         } else fetchNodePorts(node)
@@ -1658,6 +1653,7 @@ export default function useEventGraph({
         })
 
         selectedPortId.value = ''
+        selectedPortIdNext.value = ''
         lineageStore.setSelectedPortId('')
         activeNodesToggled.value = {}
         portHighlightedBINodes.value = []
@@ -1740,11 +1736,12 @@ export default function useEventGraph({
         if (controlPortClickEvent(e, 'isportitem')) {
             const ele = controlPortClickEvent(e, 'isportitem')
             const portId = ele.getAttribute('isportitem')
+            if (portId === selectedPortId.value) resetState()
+            else {
+                const { ports, portsCount } = node.getData()
+                const portEntity = ports.find((x) => x.guid === portId)
+                const portIndex = ports.findIndex((x) => x.guid === portId)
 
-            if (portId === selectedPortId.value) {
-                resetState()
-            } else {
-                const { portsCount } = node.getData()
                 if (!portsCount) selectedPortIdNext.value = portId
 
                 resetState()
@@ -1757,6 +1754,14 @@ export default function useEventGraph({
                     return
                 }
 
+                // Handle Event - lineage_sub_node_clicked
+                sendSubNodeClickedEvent(
+                    portEntity.typeName?.toLowerCase(),
+                    portEntity.attributes?.connectorName ||
+                        portEntity.attributes?.qualifiedName?.split('/')[1],
+                    portIndex,
+                    node.id
+                )
                 selectPort(node, portId, true)
             }
             return
@@ -1766,8 +1771,29 @@ export default function useEventGraph({
             const { ports } = lineageStore.getNodesPortList(node.id)
             const newOffset = ports.length
 
+            // Handle Event - lineage_sub_node_show_more
+            isExpandedNodeEventSideEffect.value = true
+            sendSubNodeShowMoreEvent(
+                ports.at(-1)?.typeName === 'showMorePort'
+                    ? ports.length - 1
+                    : ports?.length,
+                5,
+                node.id
+            )
+
             fetchNodePorts(node, newOffset)
             return
+        }
+
+        // Handle Event - lineage_node_clicked
+        const nodeEntity = node?.store?.data?.entity
+
+        if (nodeEntity) {
+            sendNodeClickedEvent(
+                nodeEntity.typeName,
+                nodeEntity.attributes?.qualifiedName?.split('/')[1],
+                node.id
+            )
         }
 
         if (node.id.includes('vpNode')) {

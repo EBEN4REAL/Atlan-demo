@@ -32,6 +32,10 @@
                     router.replace('/workflowsv1/setup')
                     return
                 }
+                if (route.fullPath.includes('/workflows/monitor')) {
+                    router.replace('/workflowsv1')
+                    return
+                }
                 const newRoute = route.fullPath.replace(
                     '/workflows',
                     '/workflowsv1'
@@ -40,7 +44,8 @@
                 return
             }
 
-            if (!route.params?.tab) router.replace('/workflows/monitor')
+            if (!route.params?.tab && !route.params?.id)
+                router.replace('/workflows/monitor')
 
             onBeforeRouteUpdate((to, _, next) => {
                 if (to.path === '/workflows') next('/workflows/monitor')

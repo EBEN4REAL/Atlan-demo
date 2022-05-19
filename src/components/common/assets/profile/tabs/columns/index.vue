@@ -9,7 +9,7 @@
     import { defineComponent } from 'vue'
     import { storeToRefs } from 'pinia'
 
-    import ColumnWidget from './columnWidget2.vue'
+    import ColumnWidget from './columnsWidget.vue'
     import useAssetStore from '~/store/asset'
 
     export default defineComponent({

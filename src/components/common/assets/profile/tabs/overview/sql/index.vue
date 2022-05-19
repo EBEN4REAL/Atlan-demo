@@ -54,7 +54,7 @@
             Summary,
             RaisedTab,
             OverviewColumns: defineAsyncComponent(
-                () => import('../../columns/columnWidget.vue')
+                () => import('./columnsPreview.vue')
             ),
             SampleDataTable: defineAsyncComponent(
                 () => import('./sampleData.vue')

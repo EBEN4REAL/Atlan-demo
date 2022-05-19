@@ -77,7 +77,7 @@
             v-model:unsavedChanges="unsavedChanges"
             :workflow-channel="workflowChannel"
             :channels="channels"
-            :queryOutputChannels="queryOutputChannels"
+            v-model:queryOutputChannels="queryOutputChannels"
             @handleFailedChannels="handleFailed"
         />
     </section>
@@ -215,7 +215,14 @@
                 workflowChannel.value.name =
                     tenantSlackStatus.value?.alertsWorkflowChannel?.name || ''
                 queryOutputChannels.value =
-                    tenantSlackStatus.value?.queryOutputChannels || []
+                    tenantSlackStatus.value?.queryOutputChannels.map(
+                        (channel) => {
+                            return {
+                                atlanBotAdded: true,
+                                ...channel,
+                            }
+                        }
+                    ) || []
             })
 
             return {

@@ -31,13 +31,16 @@
     import {
         archiveSlack,
         UpdateSlackConfig,
+        checkAtlanBotInChannels,
     } from '~/composables/integrations/slack/useSlack'
     import { refetchIntegration } from '~/composables/integrations/useIntegrations'
+
     import access from '~/constant/accessControl/map'
     import ProjectSelector from '@/common/integrations/jira/jiraProjectsSelect.vue'
     import integrationStore from '~/store/integrations/index'
     import { integrations } from '~/constant/integrations/integrations'
     import { useVModels } from '@vueuse/core'
+    import { invoke, until, watchOnce } from '@vueuse/core'
 
     const props = defineProps({
         workflowChannel: {
@@ -57,8 +60,8 @@
 
     const emit = defineEmits(['handleFailedChannels'])
 
-    const { workflowChannel, channels, queryOutputChannels } = toRefs(props)
-    const { unsavedChanges } = useVModels(props, emit)
+    const { workflowChannel, channels } = toRefs(props)
+    const { unsavedChanges, queryOutputChannels } = useVModels(props, emit)
 
     const store = integrationStore()
     const { tenantSlackStatus } = toRefs(store)
@@ -90,6 +93,63 @@
         mutate: update,
     } = UpdateSlackConfig(pV, body, { immediate: false })
 
+    const AtlanBotBody = ref({})
+
+    const {
+        data: atlanBotData,
+        isLoading: atlanBotIsLoading,
+        error: atlanBotError,
+        mutate: atlanBotMutate,
+    } = checkAtlanBotInChannels(AtlanBotBody, {
+        immediate: false,
+    })
+
+    watchOnce(queryOutputChannels, () => {
+        AtlanBotBody.value = {
+            channels: queryOutputChannels.value.map((channel) => channel?.id),
+        }
+        atlanBotMutate()
+    })
+
+    const updateChannelState = () => {
+        try {
+            invoke(async () => {
+                await until(atlanBotIsLoading).toBe(true)
+                if (atlanBotError.value) {
+                    console.error(
+                        atlanBotError.value,
+                        'Error in checking atlan bot in channels'
+                    )
+                } else if (atlanBotData.value) {
+                    watch(atlanBotData, () => {
+                        if (!atlanBotData.value?.channelList) return
+                        queryOutputChannels.value =
+                            queryOutputChannels.value.map((channel) => {
+                                if (
+                                    atlanBotData.value?.channelList?.includes(
+                                        channel?.id
+                                    )
+                                ) {
+                                    return {
+                                        ...channel,
+                                        atlanBotAdded: true,
+                                    }
+                                } else {
+                                    return {
+                                        ...channel,
+                                        atlanBotAdded: false,
+                                    }
+                                }
+                            })
+                    })
+                }
+            })
+        } catch (e) {
+            console.error(e)
+        }
+    }
+    updateChannelState()
+
     watch([updateLoading, updateError], () => {
         if (updateLoading.value) {
             message.loading({
@@ -108,6 +168,26 @@
             })
         } else {
             let updatedChannelCount = channels.value.length
+            // inserting id for atlan bot check
+            updateData.value?.config?.queryOutputChannels?.forEach(
+                (_channel, index) => {
+                    queryOutputChannels.value[index] = {
+                        id: _channel.id,
+                        ...queryOutputChannels.value[index],
+                        atlanBotAdded: true,
+                    }
+                }
+            )
+
+            AtlanBotBody.value = {
+                channels: queryOutputChannels.value
+                    .filter((channel) => channel?.id)
+                    .map((channel) => channel.id),
+            }
+            atlanBotMutate().then(() => {
+                updateChannelState()
+            })
+
             if (updateData.value?.failedChannels) {
                 const { failedChannels } = updateData.value
                 emit('handleFailedChannels', failedChannels)

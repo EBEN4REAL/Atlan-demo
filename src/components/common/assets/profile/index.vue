@@ -140,7 +140,12 @@
             }
             provide('changeActiveTab', changeActiveTab)
 
-            const handlePreviewVisibility = inject('handlePreviewVisibility')
+            const handlePreviewVisibility = inject(
+                'handlePreviewVisibility',
+                (args) => {
+                    console.log(args)
+                }
+            )
 
             watch(
                 activeKey,

@@ -68,6 +68,13 @@
                 default: false,
                 required: false,
             },
+            similarList: {
+                type: Array,
+                required: false,
+                default() {
+                    return []
+                },
+            },
         },
         emits: ['updatedDescription'],
         setup(props, { emit }) {

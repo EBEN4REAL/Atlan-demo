@@ -187,6 +187,7 @@
                                 :allow-editing="
                                     columnUpdatePermission(record.item)
                                 "
+                                :similar-list="similarListByName(record.item)"
                             />
                         </div>
                     </template>
@@ -299,10 +300,11 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { DefaultRelationAttributes } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import { useSimilarList } from '~/composables/discovery/useSimilarList'
+    import useEvaluate from '~/composables/auth/useEvaluate'
 
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
-    import useEvaluate from '~/composables/auth/useEvaluate'
 
     export default defineComponent({
         components: {
@@ -342,6 +344,7 @@
                 dataTypeCategoryImage,
                 isScrubbed,
                 columnUpdatePermission,
+                title,
             } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
@@ -574,6 +577,37 @@
                 true
             ) // true for secondaryEvaluations
 
+            // Description suggestions
+
+            const suggestionLimit = ref(0)
+            const suggestionOffset = ref(0)
+            const suggestionFacets = ref({
+                typeNames: ['Column'],
+                orExists: ['description', 'userDescription'],
+                similarities: [],
+            })
+            const suggestionAggregations = ref(['name'])
+
+            const { quickChange: quickSuggestionChange, list: suggestionList } =
+                useSimilarList({
+                    limit: suggestionLimit,
+                    offset: suggestionOffset,
+                    facets: suggestionFacets,
+                    aggregations: suggestionAggregations,
+                })
+
+            const similarListByName = (asset) => {
+                const suggestion = suggestionList.value.find(
+                    (item) => title(asset)?.toLowerCase() === item?.key
+                )
+
+                if (suggestion?.group_by_description?.buckets) {
+                    return suggestion?.group_by_description?.buckets
+                }
+
+                return []
+            }
+
             // rowClassName Antd
             const rowClassName = (record: { key: null }) =>
                 record.key === selectedRow.value ? 'bg-primary-light' : ''
@@ -671,6 +705,13 @@
                     refreshEvaluate()
 
                     actions = []
+
+                    suggestionFacets.value = {
+                        ...suggestionFacets.value,
+                        similarities: list.value.map((item) => title(item)),
+                    }
+
+                    quickSuggestionChange()
                 }
             )
 
@@ -751,6 +792,7 @@
                     },
                 ],
                 columnUpdatePermission,
+                similarListByName,
             }
         },
     })

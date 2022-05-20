@@ -105,6 +105,7 @@
                         item?.destinationEntity?.attributes?.name
                     "
                     class="flex items-center space-x-1 mt-1"
+                    style="max-width: 200px;"
                 >
                     <atlan-icon
                         v-if="selectedAsset?.typeName === 'AtlasGlossary'"

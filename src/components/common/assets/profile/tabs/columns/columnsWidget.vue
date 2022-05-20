@@ -5,7 +5,9 @@
     >
         <!-- Search and Filter -->
         <div class="flex items-center w-full px-5 py-4 gap-x-4">
-            <div class="px-4 border rounded-md border-gray-light w-72">
+            <div
+                class="px-4 border rounded-md border-gray-light w-72 min-w-max"
+            >
                 <SearchAdvanced
                     v-model:value="queryText"
                     :placeholder="`Search ${totalCount} columns`"
@@ -32,7 +34,7 @@
             <AggregationTabs
                 v-model="postFacets.dataType"
                 :list="columnDataTypeAggregationList"
-                class="mt-1"
+                class="mt-1 overflow-auto"
                 @change="handleDataTypeChange"
             ></AggregationTabs>
         </div>
@@ -103,7 +105,7 @@
 
                                 <Tooltip
                                     :tooltip-text="text"
-                                    classes="hover:text-primary"
+                                    classes="hover:text-primary font-bold text-new-gray-800"
                                     :clamp-percentage="
                                         record.is_primary ||
                                         record.is_foreign ||

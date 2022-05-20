@@ -218,18 +218,16 @@
                     if (element) {
                         treeData.value.push({
                             id: element,
-
                             value: element,
-                            isLeaf: false,
+                            isLeaf: !data.value.results?.[0]?.TABLE_SCHEM, // true when no TABLE_SCHEM is present
                             title: element,
                         })
                     }
                 })
                 data.value.results?.forEach((element) => {
-                    if (element.TABLE_CATALOG) {
+                    if (element.TABLE_CATALOG && element.TABLE_SCHEM) {
                         treeData.value.push({
                             id: `${element.TABLE_CATALOG}:${element.TABLE_SCHEM}`,
-
                             isLeaf: true,
                             pId: element.TABLE_CATALOG,
                             value: `${element.TABLE_CATALOG}:${element.TABLE_SCHEM}`,

@@ -116,7 +116,7 @@
                     if (item.includes(':')) {
                         const first = item.split(':')[0]
                         const second = item.split(':')[1]
-                        map[`^${first}$`].push(`^${second}$`)
+                        if (second) map[`^${first}$`].push(`^${second}$`)
                     }
                 })
                 modelValue.value = map

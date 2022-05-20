@@ -8,6 +8,7 @@
         placement="topLeft"
         overlayClassName="slack_popover"
         v-model:visible="visible"
+        @visibleChange="onPopoverVisibleChange"
         class="mb-4"
     >
         <template #content>
@@ -233,6 +234,12 @@
             }
         })
     }
+
+    const onPopoverVisibleChange = (_visible) => {
+        if (showSaveQueryModal.value) {
+            visible.value = true
+        }
+    }
 </script>
 
 //
@@ -244,6 +251,9 @@
     }
     .slack_popover .ant-popover-content .ant-popover-inner {
         @apply rounded-lg !important;
+    }
+    .slack_popover {
+        z-index: 1000 !important;
     }
 </style>
 <style lang="less" module>

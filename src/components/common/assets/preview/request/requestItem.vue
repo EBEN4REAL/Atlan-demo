@@ -100,12 +100,14 @@
                 </div>
                 <div
                     v-if="
-                        selectedAsset?.typeName === 'AtlasGlossary' &&
+                        (selectedAsset?.typeName === 'AtlasGlossary' ||
+                            selectedAsset?.typeName === 'Table') &&
                         item?.destinationEntity?.attributes?.name
                     "
                     class="flex items-center space-x-1 mt-1"
                 >
                     <atlan-icon
+                        v-if="selectedAsset?.typeName === 'AtlasGlossary'"
                         :icon="
                             capitalizeFirstLetter(
                                 glossaryLabel[item?.entityType]
@@ -113,6 +115,12 @@
                         "
                         class="h-4 mb-0.5"
                     />
+                    <div v-else class="flex items-center space-x-1">
+                        <atlan-icon :icon="assetIcon" />
+                        <span class="text-gray-500 uppercase">{{
+                            item?.entityType
+                        }}</span>
+                    </div>
                     <Tooltip
                         :tooltip-text="
                             item?.destinationEntity?.attributes?.name
@@ -602,6 +610,7 @@
             const isGlossary = computed(
                 () => route?.path?.includes('glossary') || null
             )
+
             return {
                 createdTime,
                 localClassification,

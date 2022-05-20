@@ -74,7 +74,7 @@
                 v-else
                 :columns="columns"
                 :data-source="columnsData.filteredList"
-                :scroll="{ x: 1500, y: 'calc(100vh - 364px)' }"
+                :scroll="{ x: 1200, y: 'calc(100vh - 364px)' }"
                 :pagination="false"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
@@ -331,7 +331,7 @@
             } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
-            const limit = ref(20)
+            const limit = ref(50)
             const offset = ref(0)
             const facets = ref({
                 typeName: 'Column',
@@ -506,7 +506,7 @@
             }))
 
             const handlePagination = (page) => {
-                offset.value = (page - 1) * 20
+                offset.value = (page - 1) * 50
                 quickChange()
             }
 
@@ -592,14 +592,56 @@
                         filterColumnsList()
                     }
 
-                    bodyEvaluation.value = {
-                        entities: list.value.map((item) => ({
-                            typeName: item.typeName,
-                            entityGuid: item.guid,
-                            action: 'ENTITY_UPDATE',
-                        })),
-                    }
+                    let actions = []
+
+                    // eslint-disable-next-line no-unused-expressions
+                    list.value.forEach((item) =>
+                        actions.push(
+                            {
+                                typeName: item.typeName,
+                                entityGuid: item.guid,
+                                action: 'ENTITY_UPDATE',
+                            },
+                            {
+                                typeName: item.typeName,
+                                entityGuid: item.guid,
+                                action: 'ENTITY_ADD_CLASSIFICATION',
+                                classification: '*',
+                            },
+                            {
+                                typeName: item.typeName,
+                                entityGuid: item.guid,
+                                action: 'ENTITY_REMOVE_CLASSIFICATION',
+                                classification: '*',
+                            },
+                            {
+                                action: 'RELATIONSHIP_ADD',
+                                relationShipTypeName:
+                                    'AtlasGlossarySemanticAssignment',
+                                entityIdEnd1: '*',
+                                entityTypeEnd1: 'AtlasGlossaryTerm',
+                                entityGuidEnd2: item.guid,
+                                entityTypeEnd2: item.typeName,
+                            },
+                            {
+                                action: 'RELATIONSHIP_REMOVE',
+                                relationShipTypeName:
+                                    'AtlasGlossarySemanticAssignment',
+                                entityIdEnd1: '*',
+                                entityTypeEnd1: 'AtlasGlossaryTerm',
+                                entityGuidEnd2: item.guid,
+                                entityTypeEnd2: item.typeName,
+                            }
+                        )
+                    ),
+                        (bodyEvaluation.value = {
+                            entities: actions,
+                        })
+
+                    console.log('hello', bodyEvaluation.value)
                     refreshEvaluate()
+
+                    actions = []
                 }
             )
 

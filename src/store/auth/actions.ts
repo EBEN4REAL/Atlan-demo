@@ -105,11 +105,11 @@ export const actions: Actions = {
                     }`
                 ) >= 0
         )
-        if (this.secondaryEvaluations.length + uniqueArray.length > 80) {
+        if (this.secondaryEvaluations.length + uniqueArray.length > 300) {
             this.secondaryEvaluations.splice(0, uniqueArray.length)
         }
         this.secondaryEvaluations.push(...uniqueArray)
-        if (this.secondaryEvaluations.length + uniqueArray.length > 80) {
+        if (this.secondaryEvaluations.length + uniqueArray.length > 300) {
             value.forEach((el) => {
                 const found = this.secondaryEvaluations.find(
                     (i) =>
@@ -122,7 +122,7 @@ export const actions: Actions = {
                             el.entityGuidEnd2
                         }_${el.action}`
                 )
-                if(!found){
+                if (!found) {
                     this.secondaryEvaluations.push(el)
                 }
             })

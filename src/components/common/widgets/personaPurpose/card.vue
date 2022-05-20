@@ -6,7 +6,7 @@
             @click.stop="$emit('overView', item)"
         >
             <div v-if="type === 'persona'" class="flex h-9">
-                <div class="p-1 bg-gray-200 rounded-tl-xl rounded-br-xl">
+                <div class="p-1 bg-gray-100 rounded-tl-xl rounded-br-xl">
                     <div
                         class="p-1.5 bg-white rounded-tl-xl rounded-br-xl drop-shadow-md"
                     >

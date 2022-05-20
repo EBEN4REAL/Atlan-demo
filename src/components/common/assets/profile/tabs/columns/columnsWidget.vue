@@ -164,6 +164,21 @@
                                         :is-indexed="record.is_indexed"
                                     />
                                 </div>
+
+                                <div
+                                    v-if="record.item?.attributes?.__hasLineage"
+                                    class="ml-2"
+                                >
+                                    <a-tooltip placement="top"
+                                        ><template #title
+                                            >This column has lineage</template
+                                        >
+                                        <AtlanIcon
+                                            icon="LineageSmall"
+                                            class="w-4 h-4 cursor-pointer mb-0.5 text-gray-500"
+                                        ></AtlanIcon>
+                                    </a-tooltip>
+                                </div>
                             </div>
 
                             <EditableDescription
@@ -358,6 +373,7 @@
                 'isForeign',
                 'isDist',
                 'order',
+                '__hasLineage',
             ])
 
             const defaultAttributes = ref([...columnAttributes.value])

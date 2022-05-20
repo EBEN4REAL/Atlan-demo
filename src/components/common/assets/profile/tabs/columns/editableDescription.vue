@@ -4,6 +4,7 @@
         width="1000px"
         :tooltip-text="localDescription"
         :classes="allowEditing ? 'cursor-text' : ''"
+        :rows="2"
         @click="handleEdit($event)"
     />
     <div
@@ -30,19 +31,6 @@
             @blur="handleUpdate"
             @press-enter="handleEnter($event)"
         />
-        <!--        <p-->
-        <!--            v-if="descriptionRef !== null"-->
-        <!--            class="mt-1 text-xs text-right text-gray-500"-->
-        <!--        >-->
-        <!--            <span class="font-bold">{{ isMac ? 'Return' : 'Enter' }}</span> to-->
-        <!--            save-->
-        <!--            <span class="ml-2">-->
-        <!--                <span class="font-bold"-->
-        <!--                    >Shift + {{ isMac ? 'Return' : 'Enter' }}</span-->
-        <!--                >-->
-        <!--                to add a new line-->
-        <!--            </span>-->
-        <!--        </p>-->
     </div>
 </template>
 

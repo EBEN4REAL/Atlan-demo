@@ -29,7 +29,7 @@
                     <div class="flex w-1/4">
                         <SearchAndFilter
                             v-model:value="searchText"
-                            :placeholder="`Search ${totalAPIKeysCount} api tokens`"
+                            :placeholder="`Search from ${totalAPIKeysCount} api tokens`"
                             class="h-8 mr-1 shadow-none"
                         />
                     </div>
@@ -175,14 +175,14 @@
                         if (isReady && !error.value && !isLoading.value) {
                             toggleAPIKeyDrawer()
                             reFetchList()
-                            message.success('API Key updated successfully.')
+                            message.success('API Token updated successfully.')
                             useAddEvent('admin', 'api_key', 'updated', {
                                 persona_count: apiKeypayload.personas.length,
                             })
                         } else if (error && error.value) {
                             toggleAPIKeyDrawer()
                             message.error(
-                                'Unable to update API Key. Please try again.'
+                                'Unable to update API Token. Please try again.'
                             )
                         }
                     },

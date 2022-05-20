@@ -9,7 +9,11 @@
                     v-if="!generatedAPIKey.attributes"
                     class="text-lg font-bold"
                 >
-                    {{ apiKeyDirty.id ? apiKey.displayName : 'Add new token' }}
+                    {{
+                        apiKeyDirty.id
+                            ? apiKey.displayName
+                            : 'Add new API Token'
+                    }}
                 </div>
                 <div v-else class="text-lg font-bold">
                     {{ generatedAPIKey.attributes.displayName }}
@@ -259,7 +263,7 @@
                 <template #content>
                     <div class="px-4 py-3">
                         <div class="mb-4 text-base font-bold">
-                            Delete API Key
+                            Delete API Token
                         </div>
                         <div class="mb-3.5">
                             Are you sure you want to delete

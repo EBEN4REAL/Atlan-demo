@@ -28,7 +28,7 @@
             <template #emptyText>
                 No api tokens found
                 <span v-if="searchText"
-                    >with <span class="italic">{{ searchText }}</span>
+                    >for <span class="italic">"{{ searchText }}"</span>
                 </span>
             </template>
             <template #name="{ text: apikey }">
@@ -148,7 +148,7 @@
                     <template #content>
                         <div class="px-4 py-3">
                             <div class="mb-4 text-base font-bold">
-                                Delete API Key
+                                Delete API Token
                             </div>
                             <div class="mb-3.5">
                                 Are you sure you want to delete

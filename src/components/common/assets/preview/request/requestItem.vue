@@ -115,12 +115,6 @@
                         "
                         class="h-4 mb-0.5"
                     />
-                    <div v-else class="flex items-center space-x-1">
-                        <atlan-icon :icon="assetIcon" />
-                        <span class="text-gray-500 uppercase">{{
-                            item?.entityType
-                        }}</span>
-                    </div>
                     <Tooltip
                         :tooltip-text="
                             item?.destinationEntity?.attributes?.name
@@ -131,6 +125,16 @@
                         :shouldOpenInNewTab="true"
                         :classes="'hover:text-primary cursor-pointer'"
                     />
+                    <div
+                        v-if="selectedAsset?.typeName !== 'AtlasGlossary'"
+                        class="flex items-center space-x-1 "
+                    >
+                        <div class="bg-gray-300 rounded-full h-1.5 w-1.5 mx-1 mb-0.5" />
+                        <atlan-icon :icon="assetIcon" class='mb-0.5 h-4'/>
+                        <span class="text-gray-500 uppercase">{{
+                            item?.entityType
+                        }}</span>
+                    </div>
                 </div>
             </div>
             <div v-if="item.requestType === 'term_link' && isGlossary">

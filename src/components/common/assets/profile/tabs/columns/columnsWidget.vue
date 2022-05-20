@@ -168,10 +168,7 @@
                                 :asset-item="record.item"
                                 :tooltip-text="record.description"
                                 :allow-editing="
-                                    selectedAssetUpdatePermission(
-                                        record.item,
-                                        true
-                                    )
+                                    columnUpdatePermission(record.item)
                                 "
                             />
                         </div>
@@ -327,7 +324,7 @@
                 certificateStatusMessage,
                 dataTypeCategoryImage,
                 isScrubbed,
-                selectedAssetUpdatePermission,
+                columnUpdatePermission,
             } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
@@ -614,18 +611,18 @@
                         actions.push(
                             {
                                 typeName: item.typeName,
-                                entityGuid: item.guid,
+                                entityId: item?.attributes?.qualifiedName,
                                 action: 'ENTITY_UPDATE',
                             },
                             {
                                 typeName: item.typeName,
-                                entityGuid: item.guid,
+                                entityId: item?.attributes?.qualifiedName,
                                 action: 'ENTITY_ADD_CLASSIFICATION',
                                 classification: '*',
                             },
                             {
                                 typeName: item.typeName,
-                                entityGuid: item.guid,
+                                entityId: item?.attributes?.qualifiedName,
                                 action: 'ENTITY_REMOVE_CLASSIFICATION',
                                 classification: '*',
                             },
@@ -635,7 +632,7 @@
                                     'AtlasGlossarySemanticAssignment',
                                 entityIdEnd1: '*',
                                 entityTypeEnd1: 'AtlasGlossaryTerm',
-                                entityGuidEnd2: item.guid,
+                                entityIdEnd2: item?.attributes?.qualifiedName,
                                 entityTypeEnd2: item.typeName,
                             },
                             {
@@ -644,7 +641,7 @@
                                     'AtlasGlossarySemanticAssignment',
                                 entityIdEnd1: '*',
                                 entityTypeEnd1: 'AtlasGlossaryTerm',
-                                entityGuidEnd2: item.guid,
+                                entityIdEnd2: item?.attributes?.qualifiedName,
                                 entityTypeEnd2: item.typeName,
                             }
                         )
@@ -735,7 +732,7 @@
                         key: 'terms',
                     },
                 ],
-                selectedAssetUpdatePermission,
+                columnUpdatePermission,
             }
         },
     })

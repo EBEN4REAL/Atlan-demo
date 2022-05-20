@@ -4,18 +4,10 @@
         :guid="asset.guid"
         :selected-asset="asset"
         :edit-permission="
-            selectedAssetUpdatePermission(
-                asset,
-                true,
-                'ENTITY_ADD_CLASSIFICATION'
-            )
+            columnUpdatePermission(asset, 'ENTITY_ADD_CLASSIFICATION')
         "
         :allow-delete="
-            selectedAssetUpdatePermission(
-                asset,
-                true,
-                'ENTITY_REMOVE_CLASSIFICATION'
-            )
+            columnUpdatePermission(asset, 'ENTITY_REMOVE_CLASSIFICATION')
         "
         @change="handleClassificationChange"
     >
@@ -40,11 +32,10 @@
             },
         },
         emits: ['updatedDescription'],
-        setup(props, { emit }) {
+        setup(props) {
             const { asset } = toRefs(props)
 
-            const { selectedAssetUpdatePermission, classifications } =
-                useAssetInfo()
+            const { columnUpdatePermission, classifications } = useAssetInfo()
             const { localClassifications, handleClassificationChange } =
                 updateAssetAttributes(asset, true)
 
@@ -55,7 +46,7 @@
             return {
                 localClassifications,
                 handleClassificationChange,
-                selectedAssetUpdatePermission,
+                columnUpdatePermission,
             }
         },
     })

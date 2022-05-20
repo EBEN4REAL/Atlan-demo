@@ -3,17 +3,15 @@
         v-model="localMeanings"
         :selected-asset="asset"
         :edit-permission="
-            selectedAssetUpdatePermission(
+            columnUpdatePermission(
                 asset,
-                true,
                 'RELATIONSHIP_ADD',
                 'AtlasGlossaryTerm'
             )
         "
         :allow-delete="
-            selectedAssetUpdatePermission(
+            columnUpdatePermission(
                 asset,
-                true,
                 'RELATIONSHIP_REMOVE',
                 'AtlasGlossaryTerm'
             )
@@ -43,7 +41,7 @@
         setup(props) {
             const { asset } = toRefs(props)
 
-            const { selectedAssetUpdatePermission, meanings } = useAssetInfo()
+            const { columnUpdatePermission, meanings } = useAssetInfo()
             const { localMeanings, handleMeaningsUpdate } =
                 updateAssetAttributes(asset, true)
 
@@ -54,7 +52,7 @@
             return {
                 localMeanings,
                 handleMeaningsUpdate,
-                selectedAssetUpdatePermission,
+                columnUpdatePermission,
             }
         },
     })

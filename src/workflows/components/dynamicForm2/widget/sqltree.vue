@@ -2,7 +2,7 @@
     <SQLTreeSelect
         :credential="credentialBody"
         :credentialID="credentialID"
-        :query="property.ui.sql"
+        :query="computedSQL"
         :schemaInclude="property.ui?.schemaIncludePattern"
         :schemaExclude="property.ui?.schemaExcludePattern"
         :dbInclude="property.ui?.databaseIncludePattern"
@@ -25,6 +25,7 @@
     import SQLTreeSelect from '@common/treeselect/sql/index.vue'
     import { useWorkflowHelper } from '~/workflows/composables/package/useWorkflowHelper'
     import { useVModels } from '@vueuse/core'
+    import { moustacheInterpolator } from '~/workflowsv2/composables/utils'
 
     export default defineComponent({
         name: 'FormBuilder',
@@ -53,6 +54,8 @@
         setup(props, { emit }) {
             const { property, baseKey, configMap, isEdit } = toRefs(props)
             const formState = inject('formState')
+            const workflowTemplate = inject('workflowTemplate')
+
             const componentProps = computed(() => property.value.ui)
 
             const { modelValue } = useVModels(props, emit)
@@ -113,7 +116,7 @@
                     if (item.includes(':')) {
                         const first = item.split(':')[0]
                         const second = item.split(':')[1]
-                        map[`^${first}$`].push(`^${second}$`)
+                        if (second) map[`^${first}$`].push(`^${second}$`)
                     }
                 })
                 modelValue.value = map
@@ -138,6 +141,13 @@
                 return formState[property.value.ui.credential]
             })
 
+            const computedSQL = computed(() =>
+                moustacheInterpolator(componentProps.value.sql, {
+                    form: formState,
+                    workflowTemplate,
+                })
+            )
+
             return {
                 property,
                 componentProps,
@@ -150,6 +160,7 @@
                 handleChange,
                 isEdit,
                 credentialID,
+                computedSQL,
             }
         },
     })

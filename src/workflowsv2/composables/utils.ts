@@ -36,3 +36,38 @@ export const getFilterText = (filters: Record<string, any>) => {
     }
     return filterStr
 }
+
+export const moustacheInterpolator = (
+    query: string,
+    variables: Record<string, any>
+) => {
+    let q = query.slice()
+    q.replaceAll(/[ ,;)(]+/gm, ' ')
+    const matches = q.match(/{{\s*[\w\.\-]+\s*}}/gm) ?? []
+    matches.map((x) => {
+        q = q.replace(x, (a) => {
+            console.log(a)
+            const temp = a.match(/[\w\.\-]+/)[0]
+            const splits = temp.split('.')
+            if (splits.length > 1) {
+                return moustacheInterpolator(
+                    `{{${splits.slice(1)}}}`,
+                    variables[splits[0]]
+                )
+            }
+            return variables[temp]
+        })
+    })
+    if (/{{\s*[\w\.]+\s*}}/gm.test(q)) {
+        return moustacheInterpolator(q, variables)
+    }
+    return q
+}
+
+// const parseVariables = {
+//     var1: { bcdf: 'hello' },
+//     var2: 'value2',
+// }
+// const q = 'textsdsd , {{var1.bcdf}}.{{var2}}'
+
+// console.log(moustacheInterpolator(q, parseVariables))

@@ -2,7 +2,7 @@ export function useWorkflowHelper() {
     const getCredentialPropertyList = (configMap) => {
         const list = []
         Object.keys(configMap.properties).forEach((key) => {
-            if (configMap.properties[key].ui.widget === 'credential') {
+            if (configMap.properties[key]?.ui?.widget === 'credential') {
                 list.push({ ...configMap.properties[key], key })
             }
         })
@@ -11,7 +11,7 @@ export function useWorkflowHelper() {
     const getConnectionPropertyList = (configMap) => {
         const list = []
         Object.keys(configMap.properties).forEach((key) => {
-            if (configMap.properties[key].ui.widget === 'connection') {
+            if (configMap.properties[key]?.ui?.widget === 'connection') {
                 list.push({ ...configMap.properties[key], key })
             }
         })

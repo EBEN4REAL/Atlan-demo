@@ -283,7 +283,7 @@
     // Components
     import ErrorView from '@common/error/discover.vue'
     import EmptyView from '@common/empty/index.vue'
-    import EditableDescription from '@common/assets/profile/tabs/columns/editableDescription.vue'
+    import EditableDescription from './editableDescription/index.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import Sorting from '@/common/select/sorting.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'

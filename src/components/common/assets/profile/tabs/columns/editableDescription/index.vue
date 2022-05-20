@@ -9,11 +9,25 @@
     />
     <div
         v-else-if="!isEditing && localDescription.length === 0"
-        class="text-gray-400"
+        class="flex items-center gap-x-2.5"
         :class="{ 'cursor-text': allowEditing }"
         @click="handleEdit($event)"
     >
-        <p>{{ allowEditing ? '+ Add a description' : '' }}</p>
+        <p style="color: #bfbfbf">
+            {{ allowEditing ? '+ Add a description' : '' }}
+        </p>
+        <transition
+            v-if="similarList?.length > 0 && !localDescription"
+            name="fade"
+        >
+            <Suggestion
+                :button-between="false"
+                :edit-permission="allowEditing"
+                :list="similarList"
+                :asset="assetItem"
+                @apply="handleApplySuggestion"
+            ></Suggestion>
+        </transition>
     </div>
     <div v-else class="inline-editable" @click.stop>
         <a-textarea
@@ -48,10 +62,11 @@
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import Suggestion from './suggestion.vue'
 
     export default defineComponent({
         name: 'EditableDescription',
-        components: { Tooltip },
+        components: { Tooltip, Suggestion },
         props: {
             assetItem: {
                 type: Object as PropType<assetInterface>,
@@ -133,6 +148,11 @@
                 }
             }
 
+            const handleApplySuggestion = (obj) => {
+                localDescription.value = obj.value
+                handleChangeDescription()
+            }
+
             /**
              * A utility function for avoiding saving on pressing Shift + Enter.
              * @param event
@@ -161,6 +181,7 @@
                 localDescription,
                 pressedEsc,
                 isMac,
+                handleApplySuggestion,
             }
         },
     })

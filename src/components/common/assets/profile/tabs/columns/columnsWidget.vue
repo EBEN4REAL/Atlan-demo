@@ -444,6 +444,20 @@
                 }
             }
 
+            const scrollToTop = () => {
+                const tableRow = document.querySelector(
+                    `tr[data-row-key="${columnsList.value[0]?.attributes?.order}"]`
+                )
+
+                if (tableRow) {
+                    tableRow.scrollIntoView({
+                        block: 'nearest',
+                        inline: 'nearest',
+                        behavior: 'smooth',
+                    })
+                }
+            }
+
             const handleCloseColumnSidebar = () => {
                 selectedRow.value = null
                 selectedRowGuid.value = ''
@@ -505,9 +519,11 @@
                 current: offset.value / limit.value + 1,
             }))
 
-            const handlePagination = (page) => {
+            const handlePagination = async (page) => {
                 offset.value = (page - 1) * 50
-                quickChange()
+                await quickChange()
+
+                scrollToTop()
             }
 
             const handleSearchChange = useDebounceFn(() => {
@@ -594,7 +610,6 @@
 
                     let actions = []
 
-                    // eslint-disable-next-line no-unused-expressions
                     list.value.forEach((item) =>
                         actions.push(
                             {
@@ -633,12 +648,11 @@
                                 entityTypeEnd2: item.typeName,
                             }
                         )
-                    ),
-                        (bodyEvaluation.value = {
-                            entities: actions,
-                        })
+                    )
+                    bodyEvaluation.value = {
+                        entities: actions,
+                    }
 
-                    console.log('hello', bodyEvaluation.value)
                     refreshEvaluate()
 
                     actions = []

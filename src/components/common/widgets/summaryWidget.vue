@@ -253,7 +253,7 @@
                 >
                     <span class="flex items-center gap-x-1">
                         <AtlanIcon icon="Key" class="h-3" />
-                        <div class="">API key</div>
+                        <div class="">API token</div>
                     </span>
                 </template>
                 <template v-else>

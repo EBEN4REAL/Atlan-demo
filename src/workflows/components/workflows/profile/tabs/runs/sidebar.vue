@@ -171,7 +171,7 @@
                                     )
                                 "
                             >
-                                <AtlanIcon icon="Key" class="h-3" /> API key
+                                <AtlanIcon icon="Key" class="h-3" /> API token
                             </template>
                             <UserWrapper
                                 v-else
@@ -213,9 +213,9 @@
                     <div class="flex w-full mb-2 gap-x-2">
                         <div class="flex flex-grow gap-x-2">
                             <a-select
-                                class="flex-grow"
                                 ref="select"
                                 v-model:value="selectedPodName"
+                                class="flex-grow"
                                 :dropdown-match-select-width="false"
                                 style="max-width: 240px"
                             >

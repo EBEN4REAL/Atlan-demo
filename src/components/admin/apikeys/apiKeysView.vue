@@ -197,7 +197,7 @@
                     await createAPIKey()
                     // toggleAPIKeyDrawer()
                     reFetchList()
-                    message.success('API Key generated successfully.')
+                    message.success('API Token generated successfully.')
                     useAddEvent('admin', 'api_key', 'created', {
                         persona_count: apiKeypayload.personas.length,
                     })
@@ -224,12 +224,12 @@
                         if (isReady && !error.value && !isLoading.value) {
                             toggleAPIKeyDrawer(false)
                             reFetchList()
-                            message.success('API Key deleted successfully.')
+                            message.success('API Token deleted successfully.')
                             useAddEvent('admin', 'api_key', 'deleted')
                         } else if (error && error.value) {
                             toggleAPIKeyDrawer(false)
                             message.error(
-                                'Unable to delete API Key. Please try again.'
+                                'Unable to delete API Token. Please try again.'
                             )
                         }
                     },

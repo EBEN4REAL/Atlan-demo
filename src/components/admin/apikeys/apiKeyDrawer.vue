@@ -221,7 +221,7 @@
                 class="flex flex-col items-center justify-center w-full h-full px-4"
             >
                 <component :is="SuccessIllustration" class="mb-5"></component>
-                <div class="mb-5 text-xl font-bold">API key generated</div>
+                <div class="mb-5 text-xl font-bold">API token generated</div>
                 <div
                     class="w-full h-24 p-4 mb-5 overflow-y-scroll bg-gray-100 border rounded"
                 >
@@ -490,7 +490,7 @@
                         'en-GB'
                     )
                     const data = generatedAPIKey.value.attributes.accessToken
-                    const filename = `${generatedAPIKey.value.attributes.displayName}_${createDate}_atlan api key.txt`
+                    const filename = `${generatedAPIKey.value.attributes.displayName}_${createDate}_atlan api token.txt`
                     const type = 'text/plain'
                     downloadFile(data, filename, type)
                 }

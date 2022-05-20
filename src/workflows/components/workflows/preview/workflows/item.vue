@@ -13,7 +13,7 @@
             :runs="runs(item.metadata.name)"
             :workflow="item.metadata.name"
         ></LastRun>
-        <div class="flex items-center text-gray-500" v-if="cronString(item)">
+        <div v-if="cronString(item)" class="flex items-center text-gray-500">
             <span>Scheduled</span>
             <span class="ml-1 text-gray-700"> {{ cronString(item) }}</span>
         </div>
@@ -27,7 +27,7 @@
                         )
                     "
                 >
-                    using <AtlanIcon icon="Key" class="h-3" /> API key
+                    using <AtlanIcon icon="Key" class="h-3" /> API token
                 </template>
                 <template v-else>
                     by

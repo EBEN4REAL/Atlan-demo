@@ -345,7 +345,7 @@
                                 class="flex items-center py-1 pl-2 pr-2 text-sm text-gray-700 bg-white border rounded-full gap-x-1"
                             >
                                 <AtlanIcon icon="Key" class="h-3" />
-                                <div class="">API key</div>
+                                <div class="">API Token</div>
                             </div>
                         </template>
                         <PopOverUser v-else :item="modifiedBy(selectedAsset)">
@@ -373,8 +373,8 @@
             </div>
 
             <div
-                class="flex flex-col text-sm"
                 v-if="lastSyncRunAt(selectedAsset, true)"
+                class="flex flex-col text-sm"
             >
                 <span class="mb-1 text-gray-500"
                     >Last synced at (on Atlan)</span
@@ -426,7 +426,7 @@
                                 class="flex items-center py-1 pl-2 pr-2 text-sm text-gray-700 bg-white border rounded-full gap-x-1"
                             >
                                 <AtlanIcon icon="Key" class="h-3" />
-                                <div class="">API key</div>
+                                <div class="">API token</div>
                             </div>
                         </template>
                         <PopOverUser v-else :item="createdBy(selectedAsset)">

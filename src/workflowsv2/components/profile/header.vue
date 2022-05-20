@@ -72,7 +72,7 @@
                             >
                                 using
                                 <AtlanIcon icon="Key" class="h-3" />
-                                API key
+                                API token
                             </template>
                             <template v-else>
                                 by
@@ -93,7 +93,7 @@
                             <a-tooltip
                                 color="#2A2F45"
                                 placement="bottom"
-                                overlayClassName="max-w-md"
+                                overlay-class-name="max-w-md"
                             >
                                 <template #title>
                                     <p class="text-sm font-semibold">
@@ -118,9 +118,9 @@
             <a-modal
                 v-model:visible="scheduleVisible"
                 title="Schedule"
-                okText="Update"
+                ok-text="Update"
                 :confirm-loading="isLoading"
-                okType="primary"
+                ok-type="primary"
                 @ok="handleScheduleUpdate"
             >
                 <div class="px-4 py-2">
@@ -132,7 +132,7 @@
                 v-if="allowSchedule(workflowObject)"
                 bold
                 color="secondary"
-                prefixIcon="Schedule"
+                prefix-icon="Schedule"
                 :label="scheduleCTAMessage"
                 @click="toggleSchedule"
             />
@@ -140,7 +140,7 @@
             <AtlanButton2
                 label="Run Workflow"
                 color="secondary"
-                prefixIcon="WorkflowsActive"
+                prefix-icon="WorkflowsActive"
                 bold
                 @click="handleRunNow"
             />
@@ -155,6 +155,7 @@
     import { useRouter } from 'vue-router'
     import { Modal, message } from 'ant-design-vue'
     import { watchOnce, until } from '@vueuse/core'
+    import { useHead } from '@vueuse/head'
     import useWorkflowSubmit from '~/workflows/composables/package/useWorkflowSubmit'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
@@ -165,7 +166,6 @@
     import Schedule from '@/common/input/schedule.vue'
     import UserWrapper from '~/workflowsv2/components/common/user.vue'
     import PackageIcon from '~/workflowsv2/components/common/packageIcon.vue'
-    import { useHead } from '@vueuse/head'
 
     export default defineComponent({
         name: 'WorkflowHeader',

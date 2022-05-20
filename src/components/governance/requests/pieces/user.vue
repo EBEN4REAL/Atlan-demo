@@ -12,10 +12,10 @@
             v-if="user?.username?.startsWith('service-account-apikey-')"
             class="text-gray-700"
         >
-            <AtlanIcon icon="Key" class="h-3" /> API key
+            <AtlanIcon icon="Key" class="h-3" /> API token
         </span>
 
-        <Tooltip :tooltipText="user?.username || defaultName" />
+        <Tooltip :tooltip-text="user?.username || defaultName" />
     </a-popover>
 </template>
 

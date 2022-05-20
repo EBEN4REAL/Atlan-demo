@@ -48,7 +48,7 @@
                                 icon="Key"
                                 class="h-5 px-1 mr-1"
                             ></AtlanIcon>
-                            <div>API Key</div>
+                            <div>API Token</div>
                         </div>
                         <div v-else class="flex items-center justify-center">
                             <AtlanIcon

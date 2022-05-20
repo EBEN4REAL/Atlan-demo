@@ -6,7 +6,7 @@
                 <template
                     v-if="updatedBy?.startsWith('service-account-apikey-')"
                 >
-                    via <AtlanIcon icon="Key" class="h-3" /> API key
+                    via <AtlanIcon icon="Key" class="h-3" /> API token
                 </template>
                 <template v-else>
                     by
@@ -43,7 +43,7 @@
                 <template
                     v-if="createdBy?.startsWith('service-account-apikey-')"
                 >
-                    via <AtlanIcon icon="Key" class="h-3" /> API key
+                    via <AtlanIcon icon="Key" class="h-3" /> API token
                 </template>
                 <template v-else>
                     by

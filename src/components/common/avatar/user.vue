@@ -6,8 +6,8 @@
             :allow-upload="false"
             :avatar-size="avatarSize"
             :avatar-shape="'circle'"
-            :isGroup="isGroup"
-            :isAtlan="isAtlan"
+            :is-group="isGroup"
+            :is-atlan="isAtlan"
             class="mr-1"
         >
         </avatar>
@@ -55,9 +55,9 @@
         components: { Avatar },
         setup(props, context) {
             const { username, styleClass } = toRefs(props)
-            const isAtlan = computed(() => {
-                return username.value === 'service-account-atlan-argo'
-            })
+            const isAtlan = computed(
+                () => username.value === 'service-account-atlan-argo'
+            )
             const avatarURL = computed(() => {
                 if (username.value === 'service-account-atlan-argo') {
                     return '~/assets/images/source/atlan-logo.jpeg'

@@ -407,7 +407,8 @@ import Vqb24 from '~/assets/images/icons/vqb_24.svg'
 import SidebarSwitch from '~/assets/images/icons/sidebar.svg'
 import InteractiveVariableIllustration from '~/assets/images/illustrations/illustration-interactive-param.svg'
 import EmptyRequest from '~/assets/images/illustrations/empty-request.svg'
-
+import IllustrationPersonaDemo from '~/assets/images/illustrations/illustration-persona-demo.svg'
+import IllustrationPurposeDemo from '~/assets/images/illustrations/illustration-purpose-demo.svg'
 import Vqb from '~/assets/images/icons/Vqb.svg'
 import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
 import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
@@ -941,4 +942,6 @@ export default {
     CommonError4,
     CSVLogo,
     PaperClip,
+    IllustrationPersonaDemo,
+    IllustrationPurposeDemo
 }

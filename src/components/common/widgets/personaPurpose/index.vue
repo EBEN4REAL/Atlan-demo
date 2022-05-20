@@ -90,13 +90,13 @@
                         : 'You are not part of any purpose yet'
                 }}
             </div>
-            <img
-                :src="
+            <AtlanIcon
+                :icon="
                     activeTab === 'persona'
-                        ? illustrationPersonaDemo
-                        : illustrationPurposeDemo
+                        ? 'IllustrationPersonaDemo'
+                        : 'IllustrationPurposeDemo'
                 "
-                class="ilustration"
+                class="ilustration-persona-purpose-demo"
             />
             <div class="mt-6 text-base font-bold">
                 {{ activeTab === 'persona' ? 'Personas' : 'Purpose' }}
@@ -162,13 +162,13 @@
                                 />
                             </div>
                         </div>
-                        <img
-                            :src="
+                        <AtlanIcon
+                            :icon="
                                 activeTab === 'persona'
-                                    ? illustrationPersonaDemo
-                                    : illustrationPurposeDemo
+                                    ? 'IllustrationPersonaDemo'
+                                    : 'IllustrationPurposeDemo'
                             "
-                            class="ilustration"
+                            class="ilustration-persona-purpose-demo"
                         />
                         <div class="mt-5 text-sm text-center">
                             {{
@@ -233,8 +233,6 @@
     import Card from './card.vue'
     import { usePersonaStore } from '~/store/persona'
     import { usePurposeStore } from '~/store/purpose'
-    import illustrationPersonaDemo from '~/assets/images/illustrations/illustration-persona-demo.png'
-    import illustrationPurposeDemo from '~/assets/images/illustrations/illustration-purpose-demo.png'
     import useUserData from '~/composables/user/useUserData'
     import DrawerWidgetPersonaPurpose from './drawer.vue'
     import { useUsers } from '~/composables/user/useUsers'
@@ -355,8 +353,6 @@
                 purposes,
                 items,
                 loadingChange,
-                illustrationPersonaDemo,
-                illustrationPurposeDemo,
                 showDemo,
                 selectedItem,
                 visible,
@@ -373,10 +369,6 @@
     .icon-cross {
         transform: scale(0.5);
     }
-    .ilustration {
-        height: 75px;
-        width: 92px;
-    }
     .persona-purpose-widget {
         box-shadow: 0px 8px 24px 0px #1920380a;
     }
@@ -385,6 +377,10 @@
     }
 </style>
 <style lang="less">
+    .ilustration-persona-purpose-demo {
+        height: 70px !important;
+        width: 92px !important;
+    }
     .get-started-container {
         &:hover {
             path {

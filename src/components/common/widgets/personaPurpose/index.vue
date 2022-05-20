@@ -8,49 +8,70 @@
             <div class="text-lg font-bold font-black">
                 Personalise your experience
             </div>
-            <div class="flex p-1 bg-gray-100 rounded-lg">
-                <div
-                    class="flex px-3 py-1 text-sm rounded cursor-pointer"
-                    :class="
+            <div class="flex items-center">
+                <a
+                    v-if="!showDemo[activeTab]"
+                    :href="
                         activeTab === 'persona'
-                            ? 'text-primary bg-white active-widget-tab font-bold'
-                            : 'text-gray-600 font-medium'
+                            ? 'https://ask.atlan.com/hc/en-us/articles/4413870860049-What-are-personas-'
+                            : 'https://ask.atlan.com/hc/en-us/articles/4418690792849-What-are-Purposes-in-Atlan-'
                     "
-                    @click="activeTab = 'persona'"
+                    target="_blank"
                 >
-                    Persona
                     <div
-                        v-if="personas.length"
-                        class="flex items-center justify-center w-5 h-5 ml-1 text-xs rounded-full"
-                        :class="`${
-                            activeTab === 'persona'
-                                ? 'bg-primary-light'
-                                : 'bg-gray-200'
-                        }`"
+                        class="flex items-center mr-3 text-sm text-gray-600 cursor-pointer hover:text-primary get-started-container"
                     >
-                        {{ personas.length || '' }}
+                        Get started
+                        <AtlanIcon
+                            icon="QuestionRound"
+                            class="w-6 h-6 icon-question-round"
+                        />
                     </div>
-                </div>
-                <div
-                    class="flex px-3 py-1 text-sm rounded cursor-pointer"
-                    :class="
-                        activeTab === 'purpose'
-                            ? 'text-primary bg-white active-widget-tab font-bold'
-                            : 'text-gray-600 font-medium'
-                    "
-                    @click="activeTab = 'purpose'"
-                >
-                    Purpose
+                </a>
+                <div class="flex p-1 bg-gray-100 rounded-lg">
                     <div
-                        v-if="purposes.length"
-                        :class="`${
-                            activeTab === 'purpose'
-                                ? 'bg-primary-light'
-                                : 'bg-gray-200'
-                        }`"
-                        class="flex items-center justify-center w-5 h-5 ml-1 text-xs rounded-full bg-primary-light"
+                        class="flex px-3 py-1 text-sm rounded cursor-pointer"
+                        :class="
+                            activeTab === 'persona'
+                                ? 'text-primary bg-white active-widget-tab font-bold'
+                                : 'text-gray-600 font-medium'
+                        "
+                        @click="activeTab = 'persona'"
                     >
-                        {{ purposes.length || '' }}
+                        Persona
+                        <div
+                            v-if="personas.length"
+                            class="flex items-center justify-center w-5 h-5 ml-1 text-xs rounded-full"
+                            :class="`${
+                                activeTab === 'persona'
+                                    ? 'bg-primary-light'
+                                    : 'bg-gray-200'
+                            }`"
+                        >
+                            {{ personas.length || '' }}
+                        </div>
+                    </div>
+                    <div
+                        class="flex px-3 py-1 text-sm rounded cursor-pointer"
+                        :class="
+                            activeTab === 'purpose'
+                                ? 'text-primary bg-white active-widget-tab font-bold'
+                                : 'text-gray-600 font-medium'
+                        "
+                        @click="activeTab = 'purpose'"
+                    >
+                        Purpose
+                        <div
+                            v-if="purposes.length"
+                            :class="`${
+                                activeTab === 'purpose'
+                                    ? 'bg-primary-light'
+                                    : 'bg-gray-200'
+                            }`"
+                            class="flex items-center justify-center w-5 h-5 ml-1 text-xs rounded-full bg-primary-light"
+                        >
+                            {{ purposes.length || '' }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -364,6 +385,19 @@
     }
 </style>
 <style lang="less">
+    .get-started-container {
+        &:hover {
+            path {
+                stroke: #3c71df;
+            }
+        }
+    }
+    .icon-question-round {
+        transform: scale(0.7);
+        path {
+            stroke: #6a7692;
+        }
+    }
     .carousel-container {
         .slick-disabled {
             display: none !important;

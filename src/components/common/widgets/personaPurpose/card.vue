@@ -84,18 +84,22 @@
             </div>
             <div class="flex items-center h-6 px-4">
                 <div v-for="(user, index) in users" :key="user.id">
-                    <Avatar
-                        v-if="user.username !== 'all-users'"
-                        :avatar-bg-class="'bg-primary-light border-white border border-2 uppercase'"
-                        :initial-name="user.username[0]"
-                        :image-url="imageUrl(user.username)"
-                        :avatar-size="30"
-                        :avatar-shape="'circle'"
-                        :style="{
-                            'z-index': `${index + 1}`,
-                            transform: `translateX(-${index * 8}px)`,
-                        }"
-                    />
+                    <a-tooltip v-if="user.username !== 'all-users'">
+                        <template #title>
+                            {{ user.username }}
+                        </template>
+                        <Avatar
+                            :avatar-bg-class="'bg-primary-light border-white border border-2 uppercase'"
+                            :initial-name="user.username[0]"
+                            :image-url="imageUrl(user.username)"
+                            :avatar-size="30"
+                            :avatar-shape="'circle'"
+                            :style="{
+                                'z-index': `${index + 1}`,
+                                transform: `translateX(-${index * 8}px)`,
+                            }"
+                        />
+                    </a-tooltip>
                     <div
                         v-else-if="user.username === 'all-users'"
                         class="flex items-center text-xs text-gray-700"
@@ -112,24 +116,38 @@
                         </div>
                     </div>
                 </div>
-                <div
+                <a-tooltip
                     v-if="
                         (type === 'persona'
                             ? item.users?.length
                             : users.length) > 3 && users.length
                     "
-                    class="flex items-center justify-center mt-1 text-xs text-gray-600 bg-gray-200 rounded-full w-7 h-7"
-                    :style="{
-                        'z-index': `4`,
-                        transform: `translateX(-24px)`,
-                    }"
                 >
-                    +{{
-                        (type === 'persona'
-                            ? item.users?.length
-                            : users.length) - 3
-                    }}
-                </div>
+                    <template #title>
+                        {{
+                            type === 'persona'
+                                ? `${item.users?.length - 3} ${
+                                      item.users?.length > 1 ? 'users' : 'user'
+                                  }`
+                                : `${users.length - 3} ${
+                                      users.length - 3 ? 'users' : 'user'
+                                  }`
+                        }}
+                    </template>
+                    <div
+                        class="flex items-center justify-center mt-1 text-xs text-gray-600 bg-gray-200 rounded-full w-7 h-7"
+                        :style="{
+                            'z-index': `4`,
+                            transform: `translateX(-24px)`,
+                        }"
+                    >
+                        +{{
+                            (type === 'persona'
+                                ? item.users?.length
+                                : users.length) - 3
+                        }}
+                    </div>
+                </a-tooltip>
             </div>
             <div
                 class="flex items-center px-4 py-3 mt-4 border-t border-gray-200"

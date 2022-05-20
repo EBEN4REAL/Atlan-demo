@@ -126,7 +126,7 @@
 
             </a-tooltip> -->
             <template v-if="user.username === currentUserUsername">
-                {{ user.role_object.name }}
+                {{ user?.role_object?.name || '' }}
             </template>
             <ChangeRole
                 v-else

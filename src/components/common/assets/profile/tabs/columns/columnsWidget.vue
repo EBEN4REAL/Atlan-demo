@@ -95,7 +95,7 @@
                         </div>
                     </template>
                     <template v-else-if="column.key === 'column_name'">
-                        <div class="flex flex-col">
+                        <div class="flex flex-col gap-y-1">
                             <div class="flex items-center">
                                 <component
                                     :is="dataTypeCategoryImage(record.item)"

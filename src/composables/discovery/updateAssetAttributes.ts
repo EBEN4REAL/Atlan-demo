@@ -219,9 +219,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             (!localOwners.value?.ownerGroups ||
                 localOwners.value?.ownerGroups.length === 0) */
             ownerUsers(selectedAsset.value)?.sort().toString() ===
-            localOwners.value?.ownerUsers?.sort().toString() &&
+                localOwners.value?.ownerUsers?.sort().toString() &&
             ownerGroups(selectedAsset.value)?.sort().toString() ===
-            localOwners.value?.ownerGroups?.sort().toString()
+                localOwners.value?.ownerGroups?.sort().toString()
         ) {
             isChanged = false
         } else {
@@ -261,9 +261,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         if (
             adminUsers(selectedAsset.value)?.sort().toString() ===
-            localAdmins.value?.adminUsers?.sort().toString() &&
+                localAdmins.value?.adminUsers?.sort().toString() &&
             adminGroups(selectedAsset.value)?.sort().toString() ===
-            localAdmins.value?.adminGroups?.sort().toString()
+                localAdmins.value?.adminGroups?.sort().toString()
         ) {
             isChanged = false
         } else {
@@ -303,9 +303,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
         if (
             viewerUsers(selectedAsset.value)?.sort().toString() ===
-            localViewers.value?.viewerUsers?.sort().toString() &&
+                localViewers.value?.viewerUsers?.sort().toString() &&
             viewerGroups(selectedAsset.value)?.sort().toString() ===
-            localViewers.value?.viewerGroups?.sort().toString()
+                localViewers.value?.viewerGroups?.sort().toString()
         ) {
             isChanged = false
         } else {
@@ -343,9 +343,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     const handleChangeCertificate = () => {
         if (
             localCertificate.value.certificateStatus !==
-            certificateStatus(selectedAsset.value) ||
+                certificateStatus(selectedAsset.value) ||
             localCertificate.value.certificateStatusMessage !==
-            certificateStatusMessage(selectedAsset.value)
+                certificateStatusMessage(selectedAsset.value)
         ) {
             if (localCertificate.value.certificateStatus === 'VERIFIED') {
                 isConfetti.value = true
@@ -536,7 +536,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
         body.value.entities = [entity.value]
         currentMessage.value = 'Categories have been updated'
-        sendMetadataTrackEvent('categories_updated',{count:localCategories.value?.length})
+        sendMetadataTrackEvent('categories_updated', {
+            count: localCategories.value?.length,
+        })
         mutate()
     }
     const handleSeeAlsoUpdate = () => {
@@ -552,7 +554,9 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
         body.value.entities = [entity.value]
         currentMessage.value = 'Related terms have been updated'
-        sendMetadataTrackEvent('related_terms_updated',{count:localSeeAlso.value?.length})
+        sendMetadataTrackEvent('related_terms_updated', {
+            count: localSeeAlso.value?.length,
+        })
         mutate()
     }
     const handleParentCategoryUpdate = () => {
@@ -727,7 +731,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         }
 
         message.error(
-            `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
+            `${error.value?.response?.data?.errorCode} ${
+                error.value?.response?.data?.errorMessage.split(':')[0]
             }` ?? 'Something went wrong'
         )
     })
@@ -804,10 +809,15 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
     whenever(isErrorClassification, () => {
         localClassifications.value = classifications(selectedAsset.value)
-        message.error(
-            `${error.value?.response?.data?.errorCode} ${error.value?.response?.data?.errorMessage.split(':')[0]
-            }` ?? 'Something went wrong'
-        )
+        if (error.value?.response?.data?.errorCode) {
+            message.error(
+                `${error.value?.response?.data?.errorCode} ${
+                    error.value?.response?.data?.errorMessage.split(':')[0]
+                }`
+            )
+        } else {
+            message.error('Something went wrong')
+        }
     })
 
     return {

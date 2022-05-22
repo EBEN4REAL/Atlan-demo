@@ -1,8 +1,8 @@
 <template>
     <div
-        class="flex items-center py-1 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  group"
+        class="flex items-center py-1 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer group"
         :data-test-id="displayName"
-        :class="noHover?'':'pl-2 pr-2 hover:text-white'"
+        :class="noHover ? '' : 'pl-2 pr-2 hover:text-white'"
         :style="`background-color: ${bgHover}!important;`"
         @mouseenter="
             () => {
@@ -23,11 +23,20 @@
             :mouse-enter="mouseEnter"
         />
 
-        <div class="ml-1 overflow-ellipsis truncate">
+        <div class="ml-1 truncate overflow-ellipsis">
             {{ displayName || name }}
         </div>
 
-        <div v-if="allowDelete" class="flex" @click="handleRemove">
+        <div
+            v-if="allowDelete"
+            class="flex"
+            @click="
+                (e) => {
+                    e.stopPropagation()
+                    handleRemove()
+                }
+            "
+        >
             <AtlanIcon
                 icon="Cross"
                 class="h-3 ml-2 text-gray-500 group-hover:text-white"

@@ -29,7 +29,16 @@
             {{ term.attributes?.name ?? term.displayText }}
         </div>
 
-        <div class="flex" @click="handleRemove" v-if="allowDelete">
+        <div
+            v-if="allowDelete"
+            class="flex"
+            @click="
+                (e) => {
+                    e.stopPropagation()
+                    handleRemove()
+                }
+            "
+        >
             <AtlanIcon
                 icon="Cross"
                 :class="

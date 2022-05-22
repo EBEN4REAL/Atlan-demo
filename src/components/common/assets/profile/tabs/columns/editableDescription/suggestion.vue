@@ -20,6 +20,7 @@
                     v-for="(item, index) in list"
                     :key="index"
                     class="flex items-center justify-between px-4 py-3 border-t hover:bg-primary-light border-new-gray-200 gap-x-3"
+                    style="min-height: 64px"
                     @mouseenter="showApplyButton = index"
                     @mouseleave="showApplyButton = -1"
                 >
@@ -27,16 +28,15 @@
                         {{ item?.key }}
                     </div>
 
-                    <div
+                    <a-button
                         v-if="editPermission && showApplyButton === index"
-                        class="px-2 py-1 bg-white border rounded cursor-pointer border-new-gray-300"
+                        class="flex items-center justify-center p-2"
                         @click="handleApply(item?.key)"
                     >
                         <AtlanIcon
                             class="w-auto h-4 approved-icon text-success"
                             icon="CheckCurrentColor"
-                        />
-                    </div>
+                    /></a-button>
                 </div>
             </div>
         </template>
@@ -114,5 +114,12 @@
 <style lang="less" scoped>
     .approved-icon {
         transform: scale(1.1);
+    }
+
+    :global(.ant-popover) {
+        @apply rounded-lg !important;
+    }
+    :global(.ant-popover-inner) {
+        @apply rounded-lg !important;
     }
 </style>

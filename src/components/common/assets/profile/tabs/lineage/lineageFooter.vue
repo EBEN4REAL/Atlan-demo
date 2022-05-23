@@ -93,6 +93,12 @@
                                 />
                             </div>
                             <div class="flex items-center justify-between">
+                                <span class="text-gray-500">Show Database</span>
+                                <a-switch
+                                    v-model:checked="preferences.showDatabase"
+                                />
+                            </div>
+                            <div class="flex items-center justify-between">
                                 <span class="text-gray-500">Show Schema</span>
                                 <a-switch
                                     v-model:checked="preferences.showSchema"

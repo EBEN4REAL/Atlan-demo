@@ -10,8 +10,8 @@ export default function useGraph({ graph }) {
 
     // controlEdgesArrow
     const controlEdgesArrow = () => {
-        const val = preferences.showArrow
-        const size = val ? 12 : 0.1
+        const { showArrow } = preferences
+        const size = showArrow ? 12 : 0.1
         graph.value.freeze('showArrow')
         graph.value.getEdges().forEach((edge) => {
             edge.attr('line/targetMarker/height', size)
@@ -22,10 +22,18 @@ export default function useGraph({ graph }) {
 
     // controlToggle
     const controlToggle = () => {
+        const { showDatabase, showSchema } = preferences
+
+        graph.value.getNodes().forEach((node) => {
+            node.updateData({ showDatabase, showSchema })
+        })
+
         const classes = [
             { pref: 'showSchema', className: '.node-schema' },
+            { pref: 'showDatabase', className: '.node-database' },
             { pref: 'showAnnouncement', className: '.node-announcement' },
         ]
+
         classes.forEach((c) => {
             const val = preferences[c.pref]
             const nodesList = document.querySelectorAll(c.className)

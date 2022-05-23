@@ -4,7 +4,8 @@
         <div
             class="flex items-center mb-4 text-base font-bold text-new-gray-700"
         >
-            Invalid Query :(
+            <AtlanIcon icon="queryInvalid" class="w-5 h-5" />
+            <span class="ml-2"> Invalid Query :( </span>
             <!-- <div
                 class="flex items-center justify-end px-3 py-1 light_creme dark_orange rounded-3xl"
             >
@@ -13,12 +14,12 @@
             <!-- <span class="ml-2 text-gray-500">Error found</span> -->
         </div>
         <div class="flex items-center w-full mb-2">
-            <AtlanIcon icon="IssuesFilled" class="w-4 h-4" />
-            <span class="flex flex-wrap w-11/12 ml-2 text-sm text-gray-700">{{
+            <!-- <AtlanIcon icon="IssuesFilled" class="w-4 h-4" /> -->
+            <span class="flex flex-wrap w-11/12 text-sm text-new-gray-700">{{
                 queryErrorObj.errorMessage
             }}</span>
         </div>
-        <div class="w-full p-2 mt-3 bg-gray-100 rounded error-lines-area">
+        <div class="w-full p-2 mt-3 bg-white rounded-lg error-lines-area">
             <template v-for="(item, i) in renderedLines" :key="i">
                 <div class="flex">
                     <span
@@ -36,13 +37,16 @@
                     }}</span>
                     <!-- :style="`color:${getTokenColor(kt)}`" -->
                     <div
-                        class="w-full"
+                        class="w-full text-new-gray-700"
                         v-html="
                             generateHTMLFromLine(item.index, item.description)
                         "
                     ></div>
                 </div>
             </template>
+        </div>
+        <div class="flex items-center mt-3 mb-4 text-sm text-new-gray-700">
+            <span>Please check your query. </span>
         </div>
     </div>
     <!-- ---------------------- -->

@@ -16,7 +16,7 @@
         >
             <div
                 v-if="isQueryRunning === 'loading'"
-                class="flex flex-col justify-center h-full"
+                class="flex flex-col justify-center h-full bg-new-gray-100"
             >
                 <Loading
                     v-if="isQueryRunning === 'loading'"

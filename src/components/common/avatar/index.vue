@@ -49,9 +49,13 @@
                     <AtlanIcon v-if="isGroup" icon="Group"></AtlanIcon>
                     <AtlanIcon v-else icon="User"></AtlanIcon>
                 </template>
-                <span v-if="initialName" class="text-xs">
+                <div
+                    v-if="initialName"
+                    class="flex items-center text-xs"
+                    :style="`height: ${avatarSize}px`"
+                >
                     {{ initialName }}
-                </span>
+                </div>
                 <!-- {{ getNameInitials(getNameInTitleCase(avatarName)) }} -->
             </a-avatar>
         </div>

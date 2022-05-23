@@ -1,14 +1,14 @@
 <template>
     <div class="pr-3">
         <div
-            class="border cursor-pointer rounded-xl hover:border-blue-200 hover:drop-shadow-md"
+            class="border cursor-pointer rounded-xl hover:border-blue-200 shadow-card"
             :class="active ? 'border-primary ' : 'border-gray-300'"
             @click.stop="$emit('overView', item)"
         >
             <div v-if="type === 'persona'" class="flex h-9">
                 <div class="p-1 bg-gray-100 rounded-tl-xl rounded-br-xl">
                     <div
-                        class="p-1.5 bg-white rounded-tl-xl rounded-br-xl drop-shadow-md"
+                        class="p-1.5 bg-white rounded-tl-xl rounded-br-xl shadow-connector"
                     >
                         <div v-if="connection.length" class="flex gap-2">
                             <div
@@ -89,10 +89,10 @@
                             {{ user.username }}
                         </template>
                         <Avatar
-                            :avatar-bg-class="'bg-primary-light border-white border border-2 uppercase'"
+                            :avatar-bg-class="'bg-primary-light border-white border border-3 uppercase'"
                             :initial-name="user.username[0]"
                             :image-url="imageUrl(user.username)"
-                            :avatar-size="30"
+                            :avatar-size="26"
                             :avatar-shape="'circle'"
                             :style="{
                                 'z-index': `${index + 1}`,
@@ -105,15 +105,13 @@
                         class="flex items-center text-xs text-gray-700"
                     >
                         <Avatar
+                            is-group
                             class="mb-1 mr-1"
-                            :avatar-bg-class="'bg-primary-light border-white border border-2 uppercase'"
-                            :image-url="logoUrl"
-                            :avatar-size="14"
+                            :avatar-bg-class="'bg-primary-light border-white border border-3 uppercase'"
+                            :avatar-size="16"
                             :avatar-shape="'circle'"
                         />
-                        <div class="truncate display-name">
-                            Everyone at {{ displayName }}
-                        </div>
+                        <div class="truncate display-name">All users</div>
                     </div>
                 </div>
                 <a-tooltip
@@ -124,7 +122,7 @@
                     "
                 >
                     <template #title>
-                        {{
+                        +{{
                             type === 'persona'
                                 ? `${item.users?.length - 3} ${
                                       item.users?.length > 1 ? 'users' : 'user'
@@ -135,7 +133,7 @@
                         }}
                     </template>
                     <div
-                        class="flex items-center justify-center mt-1 text-xs text-gray-600 bg-gray-200 rounded-full w-7 h-7"
+                        class="flex items-center justify-center w-6 h-6 mt-1 text-gray-500 bg-gray-200 rounded-full text-10"
                         :style="{
                             'z-index': `4`,
                             transform: `translateX(-24px)`,
@@ -156,7 +154,7 @@
                 <div class="text-sm text-center cursor-pointer text-primary">
                     View assets
                 </div>
-                <AtlanIcon icon="ArrowRight" class="ml-2 text-primary" />
+                <AtlanIcon icon="ArrowRight" class="ml-1 text-primary" />
             </div>
         </div>
     </div>
@@ -316,7 +314,20 @@
         },
     })
 </script>
-
+<style scoped lang="less">
+    .shadow-card {
+        transition: all ease 0.3s;
+        &:hover {
+            box-shadow: 0px 8px 24px rgba(25, 32, 56, 0.04);
+        }
+    }
+    .shadow-connector {
+        box-shadow: 1px 2px 3px 3px rgba(0, 0, 0, 0.05);
+    }
+    .text-10 {
+        font-size: 10px;
+    }
+</style>
 <style lang="less">
     .display-name {
         max-width: 131px;

@@ -1,6 +1,6 @@
 <template>
     <div class="p-5">
-        <div class="flex items-center text-sm font-bold text-gray-600">
+        <div class="flex items-center text-sm font-bold text-gray-500">
             <AtlanIcon icon="Overview" class="mb-1 mr-2" />Overview
         </div>
         <div class="flex mt-6">
@@ -27,7 +27,7 @@
                 <div
                     v-else
                     class="mt-2 text-sm font-bold cursor-pointer text-primary"
-                    @click="$emit('handleChangeTab', 'AssetList')"
+                    @click="$emit('handleChangeTab', 'AssetsView')"
                 >
                     {{ getCountString(totalAsset) }}
                 </div>
@@ -75,7 +75,7 @@
                 <div
                     v-for="connection in connections"
                     :key="connection?.connectorName"
-                    class="bg-white rounded-lg px-2.5 py-1.5 text-sm text-gray-800 flex drop-shadow-md"
+                    class="bg-white rounded-lg px-2.5 py-1.5 text-sm text-gray-800 flex shadow-connection"
                 >
                     <img class="w-4 h-4 mr-2" :src="connection?.imgPath" />
                     {{ connection?.connectorName }}
@@ -112,10 +112,6 @@
                 type: Object,
                 required: true,
             },
-            globalState: {
-                type: Array,
-                required: true,
-            },
             activeTab: {
                 type: String,
                 required: true,
@@ -124,7 +120,7 @@
         emits: ['handleChangeTab'],
         setup(props) {
             const { classificationList } = useTypedefData()
-            const { item, globalState, activeTab } = toRefs(props)
+            const { item, activeTab } = toRefs(props)
             const aggregations = ref(['typeName'])
             const limit = ref(1)
             const offset = ref(0)
@@ -137,7 +133,10 @@
                       }
                     : {}
             )
-            // const globalState = ref(['persona', item.value.id])
+            const globalState = computed(() =>
+                activeTab.value === 'persona' ? ['persona', item.value.id] : []
+            )
+
             const { fetch, isLoading, assetTypeAggregationList } =
                 useDiscoverList({
                     isCache: false,
@@ -284,4 +283,8 @@
     })
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+    .shadow-connection {
+        box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.05);
+    }
+</style>

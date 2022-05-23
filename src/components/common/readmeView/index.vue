@@ -2,7 +2,7 @@
     <div
         id="box-readme"
         ref="refBox"
-        class="relative p-4 overflow-hidden bg-gray-100 rounded-lg"
+        class="relative p-4 overflow-hidden bg-gray-100 border border-gray-200 rounded-lg"
         :style="`max-height: ${maxHeight}px`"
     >
         <AtlanEditor

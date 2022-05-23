@@ -1,6 +1,6 @@
 <template>
     <div class="p-5">
-        <div class="flex items-center text-sm font-bold text-gray-600">
+        <div class="flex items-center text-sm font-bold text-gray-500">
             <AtlanIcon icon="Property" class="mb-1 mr-2" />Properties
         </div>
         <div class="mt-3">

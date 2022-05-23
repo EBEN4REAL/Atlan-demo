@@ -19,10 +19,10 @@
                     {{ activeTab }}
                 </div>
                 <div
-                    class="flex items-center ml-auto text-base text-gray-700 border border-gray-300 rounded cursor-pointer"
+                    class="flex items-center ml-auto text-base text-gray-700 border border-gray-300 rounded-lg cursor-pointer"
                 >
                     <div
-                        class="flex items-center py-1.5 px-2.5"
+                        class="flex items-center py-1.5 px-2.5 text-sm"
                         @click="handleViewAssets"
                     >
                         <AtlanIcon icon="AssetsInactiveLight" class="mr-1" />
@@ -33,7 +33,7 @@
                         :href="item.attributes?.channelLink"
                         target="_blank"
                     >
-                        <div class="py-1.5 px-2.5 border-l border-gray-300">
+                        <div class="px-2.5 border-l border-gray-300">
                             <AtlanIcon icon="Slack" class="" />
                         </div>
                     </a>
@@ -71,14 +71,9 @@
                     </template>
                     <component
                         :is="tab.component"
-                        :filters="filterConfig"
-                        :tab="tab"
-                        aggregation-tab-class="px-5 my-1"
-                        search-bar-class="px-5 my-1"
-                        asset-item-class="px-2"
-                        :item="item"
                         :persona="item"
-                        :global-state="globalState"
+                        :tab="tab"
+                        :item="item"
                         :active-tab="activeTab"
                         @handleChangeTab="handleChangeTab"
                     />
@@ -89,21 +84,21 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, computed, toRefs, watch } from 'vue'
+    import { defineComponent, ref, toRefs, watch } from 'vue'
     import { useRouter } from 'vue-router'
     import useAssetStore from '~/store/asset'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
-    import AssetList from '@/common/assetList/assetList.vue'
     import Overview from '@/common/widgets/personaPurpose/preview/overview.vue'
     import UsersGroups from '@/common/widgets/personaPurpose/preview/usersGroups.vue'
     import Resources from '@/common/widgets/personaPurpose/preview/resources.vue'
     import Properties from '@/common/widgets/personaPurpose/preview/properties.vue'
+    import AssetsView from './preview/assetsView.vue'
 
     export default defineComponent({
         name: 'DrawerWidgetPersonaPurpose',
         components: {
             PreviewTabsIcon,
-            AssetList,
+            AssetsView,
             Overview,
             UsersGroups,
             Resources,
@@ -126,13 +121,12 @@
         setup(props) {
             const router = useRouter()
             const { item, activeTab, visible }: { item: any } = toRefs(props)
-            const globalState = ref([])
             const tabList = ref([
                 {
                     tooltip: 'assets',
                     icon: 'AssetsInactiveLight',
                     activeIcon: 'AssetsActiveLight',
-                    component: 'AssetList',
+                    component: 'AssetsView',
                 },
             ])
             const activeKey = ref(0)
@@ -148,7 +142,6 @@
                 if (visible) {
                     activeKey.value = 0
                     if (activeTab.value === 'persona') {
-                        globalState.value = ['persona', item.value.id]
                         tabList.value = [
                             {
                                 tooltip: 'Overview',
@@ -166,7 +159,7 @@
                                 tooltip: 'Assets',
                                 icon: 'AssetsInactiveLight',
                                 activeIcon: 'AssetsActiveLight',
-                                component: 'AssetList',
+                                component: 'AssetsView',
                             },
                             {
                                 tooltip: 'Resources',
@@ -182,7 +175,6 @@
                             },
                         ]
                     } else {
-                        globalState.value = []
                         tabList.value = [
                             {
                                 tooltip: 'Overview',
@@ -200,7 +192,7 @@
                                 tooltip: 'Assets',
                                 icon: 'AssetsInactiveLight',
                                 activeIcon: 'AssetsActiveLight',
-                                component: 'AssetList',
+                                component: 'AssetsView',
                             },
                             {
                                 tooltip: 'Resources',
@@ -219,21 +211,6 @@
                 }
             })
 
-            const filterConfig = computed(() => {
-                if (activeTab.value === 'persona') {
-                    return {
-                        hierarchy: {
-                            // connectorName: getConnectorName(connectionQfName.value),
-                            // connectionQualifiedName: connectionQfName.value,
-                        },
-                    }
-                }
-                return {
-                    __traitNames: {
-                        classifications: item.value.tags,
-                    },
-                }
-            })
             const assetStore = useAssetStore()
             const handleViewAssets = () => {
                 assetStore.setGlobalState([activeTab.value, item.value.id])
@@ -242,8 +219,6 @@
             return {
                 tabList,
                 activeKey,
-                filterConfig,
-                globalState,
                 handleViewAssets,
                 handleChangeTab,
             }

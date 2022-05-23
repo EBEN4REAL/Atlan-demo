@@ -105,7 +105,7 @@
                     </div>
 
                     <div v-if="!readOnly">
-                        <CardActions v-bind="props">
+                        <CardActions :actions="actions" v-bind="props">
                             <div @click="(e) => e.stopPropagation()">
                                 <AtlanIcon
                                     icon="KebabMenu"
@@ -123,7 +123,7 @@
 
 <script setup lang="ts">
     import { PropType, toRefs, computed, watch, inject } from 'vue'
-    import { useTimeAgo } from '@vueuse/core'
+    import { useTimeAgo, whenever } from '@vueuse/core'
     import { Link } from '~/types/resources.interface'
     import LinkPreview from '@/common/widgets/resources/previewCard/linkPreviewCard.vue'
     import {
@@ -138,9 +138,9 @@
     import integrationStore from '~/store/integrations/index'
     import Truncate from '@/common/ellipsis/index.vue'
     import { resourceId } from '~/composables/integrations/slack/useAskAQuestion'
-    import { whenever } from '@vueuse/core'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { getDomain } from '~/utils/url'
+
     const props = defineProps({
         link: {
             type: Object as PropType<Link>,
@@ -150,6 +150,10 @@
             type: String,
             required: false,
             default: '',
+        },
+        actions: {
+            type: Array,
+            required: false,
         },
     })
 

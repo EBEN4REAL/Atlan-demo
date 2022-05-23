@@ -1,71 +1,22 @@
 <template>
     <div class="p-5">
-        <div class="flex items-center text-sm font-bold text-gray-600">
+        <div class="flex items-center text-sm font-bold text-gray-500">
             <AtlanIcon icon="Link" class="mb-1 mr-2" />Resources
         </div>
         <div v-if="item?.resources?.links?.length > 0" class="mt-5">
             <div
                 v-for="(resource, index) in item?.resources?.links"
                 :key="index"
-                class="flex items-center p-3 mb-3 border border-gray-300 rounded-xl"
+                class="border-b last:border-0"
             >
-                <div class="p-2.5 rounded-full bg-gray-100 mr-3">
-                    <AtlanIcon
-                        v-if="resource.attributes.link === ''"
-                        icon="Link"
-                        class="w-auto h-7"
-                    />
-
-                    <img
-                        v-else
-                        :src="
-                            getDomain(resource.attributes.link) !== 'atlan.com'
-                                ? `https://www.google.com/s2/favicons?domain=${getDomain(
-                                      resource.attributes.link
-                                  )}&sz=64`
-                                : '/ico.ico'
-                        "
-                        alt=""
-                        class="w-8"
-                        style=""
-                        @error="defaultIcon = true"
-                    />
-                </div>
-                <div class="w-full">
-                    <div class="text-sm font-bold text-gray-800">
-                        {{ resource?.attributes?.name }}
-                    </div>
-                    <div
-                        class="flex justify-between mt-1 text-sm text-gray-700"
-                    >
-                        Edited
-                        {{
-                            useTimeAgo(
-                                resource?.attributes?.__modificationTimestamp ||
-                                    resource?.attributes?.__timestamp
-                            ).value
-                        }}
-                        <Avatar
-                            :avatar-bg-class="'bg-primary-light border-white border border-2 uppercase -mt-1'"
-                            :initial-name="
-                                (resource?.attributes?.__modifiedBy &&
-                                    resource?.attributes?.__modifiedBy[0]) ||
-                                (resource?.attributes?.__createdBy &&
-                                    resource?.attributes?.__createdBy[0])
-                            "
-                            :image-url="
-                                imageUrl(
-                                    (resource?.attributes?.__modifiedBy &&
-                                        resource?.attributes?.__modifiedBy) ||
-                                        (resource?.attributes?.__createdBy &&
-                                            resource?.attributes?.__createdBy)
-                                )
-                            "
-                            :avatar-size="24"
-                            :avatar-shape="'circle'"
-                        />
-                    </div>
-                </div>
+                <component
+                    :is="getPreviewComponent(resource?.attributes?.link)"
+                    :link="resource"
+                    :asset-type="resource?.attributes?.asset?.typeName || null"
+                    :asset-subtitle="true"
+                    class="border-none"
+                    :actions="['copy']"
+                />
             </div>
         </div>
         <div v-else class="mt-5">
@@ -89,15 +40,28 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, toRefs } from 'vue'
+    import { defineComponent, provide, defineAsyncComponent, ref } from 'vue'
     import { useTimeAgo } from '@vueuse/core'
     import { getDomain } from '~/utils/url'
     import Avatar from '~/components/common/avatar/index.vue'
+    import { isSlackLink } from '~/composables/integrations/slack/useSlack'
 
     export default defineComponent({
         name: 'PersonaPurposeResources',
         components: {
             Avatar,
+            SlackLinkPreview: defineAsyncComponent(
+                () =>
+                    import(
+                        '@/common/widgets/resources/previewCard/slackPreview.vue'
+                    )
+            ),
+            LinkPreview: defineAsyncComponent(
+                () =>
+                    import(
+                        '@/common/widgets/resources/previewCard/linkPreviewCard.vue'
+                    )
+            ),
         },
         props: {
             item: {
@@ -106,15 +70,32 @@
             },
         },
         setup(props) {
-            const { item } = toRefs(props)
-            console.log('iteeem', item)
+            const tab = ref({
+                activeIcon: 'Link',
+                analyticsKey: 'resources',
+                component: 'resources',
+                icon: 'Link',
+                name: 'Resources',
+                requiredInProfile: true,
+                scrubbed: true,
+                tooltip: 'Resources',
+            })
+            provide('tab', tab)
+
+            function getPreviewComponent(url) {
+                if (isSlackLink(url)) {
+                    return 'SlackLinkPreview'
+                }
+                return 'LinkPreview'
+            }
+
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
             return {
                 useTimeAgo,
                 getDomain,
                 imageUrl,
-                item,
+                getPreviewComponent,
             }
         },
     })

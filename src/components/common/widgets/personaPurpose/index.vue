@@ -68,7 +68,7 @@
                                     ? 'bg-primary-light'
                                     : 'bg-gray-200'
                             }`"
-                            class="flex items-center justify-center w-5 h-5 ml-1 text-xs rounded-full bg-primary-light"
+                            class="flex items-center justify-center w-5 h-5 ml-1 text-xs rounded-full"
                         >
                             {{ purposes.length || '' }}
                         </div>

@@ -1,0 +1,64 @@
+<template>
+    <div class="p-5">
+        <div class="flex items-center text-sm font-bold text-gray-500">
+            <AtlanIcon icon="AssetsInactiveLight" class="mb-1 mr-2" />Assets
+        </div>
+
+        <div>
+            <AssetList
+                :persona="item"
+                :global-state="globalState"
+                :filters="filterConfig"
+                aggregation-tab-class="px-1 my-1 aggreation-persona-purpose-assets"
+                search-bar-class="px-1 my-1"
+            />
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+    import { defineComponent, computed, toRefs, ref } from 'vue'
+    import AssetList from '@/common/assetList/assetList.vue'
+
+    export default defineComponent({
+        name: 'AssetsView',
+        components: { AssetList },
+        props: {
+            item: {
+                type: Object,
+                required: true,
+            },
+            activeTab: {
+                type: String,
+                required: true,
+            },
+        },
+        setup(props) {
+            const { item, activeTab } = toRefs(props)
+            const globalState = computed(() =>
+                activeTab.value === 'persona' ? ['persona', item.value.id] : []
+            )
+            const filterConfig = computed(() => {
+                if (activeTab.value === 'persona') {
+                    return {
+                        hierarchy: {},
+                    }
+                }
+                return {
+                    __traitNames: {
+                        classifications: item.value.tags,
+                    },
+                }
+            })
+            return { filterConfig, globalState }
+        },
+    })
+</script>
+<style lang="less">
+    .aggreation-persona-purpose-assets {
+        .ant-tabs-tab {
+            height: 30px !important;
+        }
+    }
+</style>
+<style lang="less" scoped></style>

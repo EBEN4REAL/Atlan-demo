@@ -64,7 +64,9 @@
                 </a-modal>
             </div> -->
         </div>
-        <div class="flex items-center h-full cursor-pointer justify-self-end">
+        <div
+            class="flex items-center h-full cursor-pointer justify-self-end gap-x-3"
+        >
             <a-dropdown placement="bottomRight">
                 <template #overlay>
                     <a-menu>
@@ -74,22 +76,30 @@
                                 v-auth="[map.CREATE_WORKFLOW]"
                                 class="menu-item"
                             >
-                                <a href="/workflows/setup">New Workflow</a>
+                                <router-link to="/workflows/marketplace">
+                                    New Workflow
+                                </router-link>
                             </div>
                             <div class="menu-item">
-                                <a href="/insights">New Query</a>
+                                <router-link to="/insights">
+                                    New Query
+                                </router-link>
                             </div>
                             <div
                                 v-auth="[map.CREATE_PERSONA]"
                                 class="menu-item"
                             >
-                                <a href="/governance/personas">New Persona</a>
+                                <router-link to="/governance/personas">
+                                    New Persona
+                                </router-link>
                             </div>
                             <div
                                 v-auth="[map.CREATE_PURPOSE]"
                                 class="menu-item"
                             >
-                                <a href="/governance/purposes">New Purpose</a>
+                                <router-link to="/governance/purposes">
+                                    New Purpose
+                                </router-link>
                             </div>
                         </div>
                     </a-menu></template
@@ -124,11 +134,20 @@
                 >
                 <AtlanButton2
                     color="secondary"
-                    class="px-2 mx-1 text-gray-700 bg-transparent border-none"
+                    class="min-w-0 px-0 text-gray-700 bg-transparent border-none"
                 >
                     <AtlanIcon icon="QuestionRound" class="h-6" />
                 </AtlanButton2>
             </a-dropdown>
+            <div class="flex announcekit-widget" @click="trackUpdateViewEvent">
+                <a-tooltip>
+                    <template #title>
+                        <span>What's New</span>
+                        <span class="text-lg"> ✨ </span>
+                    </template>
+                    <AtlanIcon icon="Gift" class="h-6" />
+                </a-tooltip>
+            </div>
             <!-- <atlan-icon icon="Search" class="h-5 mr-3" />
 
             <atlan-icon icon="Add" class="h-5 mr-3 font-bold text-primary" /> -->
@@ -142,7 +161,14 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, defineComponent, ref, watch, toRefs } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        watch,
+        toRefs,
+        onMounted,
+    } from 'vue'
 
     import { useRoute, useRouter } from 'vue-router'
     import UserPersonalAvatar from '@/common/avatar/me.vue'
@@ -159,6 +185,9 @@
     import { helpCenterList } from '~/constant/navigation/helpCentre'
     import { usePersonaStore } from '~/store/persona'
     import { usePurposeStore } from '~/store/purpose'
+    import whoami from '~/composables/user/whoami'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
+
     export default defineComponent({
         name: 'Navigation Menu',
         components: {
@@ -305,8 +334,30 @@
                         (listItem) => listItem.id === 'documentation'
                     )?.link ?? ''
             )
+            const { username, email, userId } = whoami()
+
+            onMounted(() => {
+                if (window?.announcekit)
+                    window.announcekit.push({
+                        widget: 'https://announcekit.co/widgets/v2/1JYrEk',
+                        selector: '.announcekit-widget',
+                        lang: 'en',
+                        user: {
+                            id: userId.value,
+                        },
+                        data: {
+                            domain: window.location.hostname,
+                            username: username.value,
+                        },
+                    })
+            })
+
+            const trackUpdateViewEvent = () => {
+                useAddEvent('main_header', 'updates_cta', 'clicked')
+            }
 
             return {
+                trackUpdateViewEvent,
                 page,
                 isHome,
                 logoUrl,
@@ -346,6 +397,15 @@
     .documentation-menu-item:hover {
         a {
             @apply text-primary !important;
+        }
+    }
+</style>
+<style lang="less">
+    .announcekit-widget {
+        .announcekit-widget-badge {
+            @apply absolute  !important;
+            top: -0.1rem !important;
+            right: -0.3rem !important;
         }
     }
 </style>

@@ -1,10 +1,11 @@
+import { ref, Ref } from 'vue'
+import { contextKeywordType } from './autoSuggestionUtils'
 export const mappingKeywords = {
     SELECT: 'COLUMN',
     WHERE: 'COLUMN',
     BY: 'COLUMN',
     ON: 'COLUMN',
     OR: 'COLUMN',
-    NOT: 'COLUMN',
     AND: 'COLUMN',
     SET: 'COLUMN',
     DISTINCT: 'COLUMN',
@@ -34,9 +35,36 @@ export const nextKeywords = {
     UNION: ['SELECT'],
     HAVING: ['COUNT'],
 }
+export const typesKeywordsMap = {
+    FILTER: {
+        values: ['BETWEEN', 'LIKE', 'IN', 'IS', 'IS NULL', 'NULL', 'NOT', 'IN'],
+        trigger: ['WHERE'],
+    },
+    AGGREGATE: {
+        values: ['SUM', 'COUNT', 'MAX', 'MIN', 'AVERAGE'],
+        trigger: ['SELECT'],
+    },
+}
+
+export const contextStore = ref({
+    left: [],
+    right: [],
+}) as Ref<{ left: contextKeywordType[]; right: contextKeywordType[] }>
+
+export const aliasesMap = ref({})
+export const mappingKeywordsKeys = Object.keys(mappingKeywords)
+export function getAllMappedKeywords() {
+    let arr: string[] = []
+    arr = [...Object.keys(mappingKeywords)]
+    arr = [...arr, ...Object.keys(nextKeywords)]
+    arr = [...arr, ...typesKeywordsMap.FILTER.values]
+    arr = [...arr, ...typesKeywordsMap.AGGREGATE.values]
+    return arr
+}
 export function useMapping() {
     const mappingKeywordsKeys = Object.keys(mappingKeywords)
     return {
+        typesKeywordsMap,
         mappingKeywordsKeys,
         mappingKeywords,
     }

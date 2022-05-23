@@ -40,9 +40,8 @@
                 Object.values(workflowStore.packageMeta).map((pkg) => ({
                     id: identifier(pkg),
                     icon: icon(pkg),
-                    label: `${name(pkg)} (${
-                        workflowStore.activePackageMap?.[identifier(pkg)]
-                    })`,
+                    label: name(pkg),
+                    count: workflowStore.activePackageMap?.[identifier(pkg)],
                     emoji: emoji(pkg),
                 }))
             )

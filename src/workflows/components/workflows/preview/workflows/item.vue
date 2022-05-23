@@ -67,7 +67,7 @@
             const router = useRouter()
 
             const handleClick = () => {
-                router.push(`/workflows/${item.value?.metadata?.name}`)
+                router.push(`/workflowsv1/${item.value?.metadata?.name}`)
             }
 
             const runMap = inject('runMap')

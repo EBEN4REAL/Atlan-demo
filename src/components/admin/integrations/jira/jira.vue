@@ -20,7 +20,7 @@
                         class="cursor-pointer"
                         :is-open="openKeys.includes('jira')"
                         :jira-app-installed="jiraAppInstalled"
-                        :jira-app-status-ready="countReady"
+                        :jira-app-status-loading="countLoading"
                     />
                 </template>
                 <a-menu-item>
@@ -80,6 +80,7 @@
                 count,
                 isReady: countReady,
                 mutate,
+                isLoading: countLoading,
             } = issuesCount(false, false)
 
             watch(
@@ -95,6 +96,7 @@
             )
 
             return {
+                countLoading,
                 countReady,
                 jiraAppInstalled,
                 openKeys,

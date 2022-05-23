@@ -74,6 +74,7 @@
     import useCreateGraph from './useCreateGraph'
     import useComputeGraph from './useComputeGraph'
     import useEventGraph from './useEventGraph'
+    import usePrefGraph from './usePrefGraph'
 
     export default defineComponent({
         name: 'LineageGraph',
@@ -86,7 +87,6 @@
             /** INJECTIONS */
             const lineage = inject('lineage')
             const selectedAsset = inject('selectedAsset')
-            const preferences = inject('preferences', ref({}))
             const control = inject('control')
 
             /** DATA */
@@ -138,6 +138,11 @@
                     graphHeight,
                 })
 
+                // usePrefGraph
+                const { controlPrefRetainer } = usePrefGraph({
+                    graph,
+                })
+
                 // useComputeGraph
                 const {
                     addSubGraph,
@@ -153,13 +158,13 @@
                     lineage,
                     currZoom,
                     isComputeDone,
+                    controlPrefRetainer,
                 })
 
                 // useEventGraph
                 useEventGraph({
                     graph,
                     currZoom,
-                    preferences,
                     guidToSelectOnGraph,
                     mergedLineageData,
                     sameSourceCount,
@@ -170,6 +175,7 @@
                     onCloseDrawer,
                     addSubGraph,
                     renderLayout,
+                    controlPrefRetainer,
                 })
             }
 
@@ -401,7 +407,7 @@
                 @apply opacity-0 absolute bottom-20 left-0 py-1 px-2 text-xs transition-opacity rounded-md shadow-md bg-black bg-opacity-70 text-white;
             }
 
-            & .ctaPortRight {
+            & .ctaRight {
                 @apply absolute bg-white h-8 w-8 rounded-full flex justify-center items-center;
                 border-width: 1.5px;
                 border-style: solid;
@@ -415,7 +421,7 @@
                 }
             }
 
-            & .ctaPortLeft {
+            & .ctaLeft {
                 @apply absolute bg-white h-8 w-8 rounded-full flex justify-center items-center;
                 border-width: 1.5px;
                 border-style: solid;

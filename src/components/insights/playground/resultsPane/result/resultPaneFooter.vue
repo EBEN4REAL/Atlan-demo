@@ -436,7 +436,13 @@
                     <AtlanPreviewTable
                         :dataList="dataList"
                         :columns="columnsList"
-                        :key="`hello_world${fullScreenTabActive}`"
+                        :key="`${fullScreenTabActive}.${
+                            fullScreenTabActive > -1
+                                ? insights_Store.previewTabs[
+                                      fullScreenTabActive
+                                  ].asset.guid
+                                : 'helloworld'
+                        }`"
                         class=""
                         :table-instance-i-d="'query-result-full-screen'"
                     />
@@ -479,6 +485,7 @@
     } from '~/composables/labs/labFeatureList'
     import SlackShareModal from '~/components/insights/playground/resultsPane/result/share/index.vue'
     import intStore from '~/store/integrations/index'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: {
@@ -575,7 +582,14 @@
                         )
                     }
                 }
+
+                useAddEvent('insights', 'results_panel', 'cta_clicked', {
+                    query_tab_id: activeInlineTab.value.key,
+                    action: 'copy',
+                    is_full_screen: fullScreenMode.value,
+                })
             }
+
             const useWrapperExport = () => {
                 if (fullScreenMode.value) {
                     if (fullScreenTabActive.value === -1) {
@@ -619,6 +633,12 @@
                         )
                     }
                 }
+
+                useAddEvent('insights', 'results_panel', 'cta_clicked', {
+                    query_tab_id: activeInlineTab.value.key,
+                    action: 'download',
+                    is_full_screen: fullScreenMode.value,
+                })
             }
 
             const isResultTabPopulated = computed(
@@ -647,7 +667,7 @@
                 }
             })
             const columnsList = computed(() => {
-                if (fullScreenMode.value && selectedAsset.value) {
+                if (fullScreenMode.value) {
                     if (fullScreenTabActive.value === -1) {
                         return activeInlineTab.value.playground.editor
                             .columnList
@@ -674,7 +694,7 @@
                 }
             })
             const dataList = computed(() => {
-                if (fullScreenMode.value && selectedAsset.value) {
+                if (fullScreenMode.value) {
                     if (fullScreenTabActive.value === -1) {
                         return activeInlineTab.value.playground.editor.dataList
                     } else {
@@ -714,6 +734,13 @@
             })
 
             const toggleFullScreenMode = () => {
+                if (!fullScreenMode.value) {
+                    useAddEvent('insights', 'results_panel', 'cta_clicked', {
+                        query_tab_id: activeInlineTab.value.key,
+                        action: 'full_screen',
+                    })
+                    // ADD event here
+                }
                 fullScreenMode.value = !fullScreenMode.value
             }
 
@@ -753,7 +780,13 @@
             }
 
             const changeFullScreenTabActive = (tabIndex) => {
+                const prev_index = fullScreenTabActive.value
                 fullScreenTabActive.value = tabIndex
+                useAddEvent('insights', 'results_panel', 'tab_switched', {
+                    previous_index: prev_index + 1,
+                    click_index: tabIndex + 1,
+                    is_full_screen: true,
+                })
             }
             const slackShareToggle = () => {}
             const debouncedFn = useDebounceFn(footerResizeHandler, 100)
@@ -792,7 +825,13 @@
             }
             const handleTabChange = (key: string) => {
                 const index = key.split('.')[0]
+                const prev_index = fullScreenTabActive.value
                 fullScreenTabActive.value = Number(index)
+                useAddEvent('insights', 'results_panel', 'tab_switched', {
+                    previous_index: Number(prev_index) + 1,
+                    click_index: Number(index) + 1,
+                    is_full_screen: true,
+                })
             }
 
             const toggleShareSlackModal = (visible) => {

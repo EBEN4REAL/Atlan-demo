@@ -293,7 +293,6 @@
                 table?.setDataListener(dataHere(rows))
 
                 table?.addStyleListener(() => {
-                    if (!window?.regularTable?.querySelectorAll) return
                     // style all the table column headers
                     table.querySelectorAll('thead th').forEach((th) => {
                         setRowHeaderStyle(th, columns, table)
@@ -370,14 +369,14 @@
             max-width: 200px;
             min-width: 200px;
             height: 28px !important;
-            padding: 0px 16px !important;
+            padding: 3px 12px !important;
             font-size: 14px !important;
             @apply border border-gray-light  bg-white;
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: hidden;
-            font-family: Avenir !important;
-            padding-top: 5px !important;
+            font-family: IBMPlexSans !important;
+            letter-spacing: 0.02rem;
             position: relative;
             color: #3e4359 !important;
             // text-align: right !important;
@@ -392,7 +391,7 @@
 
         th {
             border-top: 0;
-            height: 36px !important;
+            height: 28px !important;
             font-size: 14px !important;
             @apply border-r border-gray-light bg-white;
             font-weight: 700 !important;
@@ -404,7 +403,7 @@
             width: 42px;
             border-left: 0;
             height: 28px !important;
-            color: #a0a4b6 !important;
+            @apply text-new-gray-600 !important;
             font-weight: 400 !important;
             @apply bg-white border;
             padding: 0 !important;
@@ -417,14 +416,21 @@
         // & ::-webkit-scrollbar {
         //     display: none;
         // }
+        thead tr th:first-child::before {
+            content: '#';
+            font-weight: 700 !important;
+            @apply text-new-gray-800;
+        }
     }
 </style>
 
 <style lang="less" scoped>
     // regular-table
     @font-face {
-        font-family: Avenir;
-        src: url('~/assets/fonts/avenir/Avenir-Roman.woff2');
+        // font-family: Avenir;
+        // src: url('~/assets/fonts/avenir/Avenir-Roman.woff2');
+        font-family: IBMPlexSans;
+        src: url('~/assets/fonts/ibmPlexSans/IBMPlexSans-Regular.woff2');
     }
     .table_height {
         height: 100% !important;

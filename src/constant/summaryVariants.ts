@@ -373,4 +373,16 @@ export const summaryVariants = [
         ],
         includes: ['SalesforceField'],
     },
+    {
+        id: 's3Bucket',
+        label: 'Bucket',
+        components: ['S3ObjectCount', 'Connection'],
+        includes: ['S3Bucket'],
+    },
+    {
+        id: 's3Object',
+        label: 'Object',
+        components: ['ParentContext', 'Connection'],
+        includes: ['S3Object'],
+    },
 ]

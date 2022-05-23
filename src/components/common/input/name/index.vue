@@ -17,7 +17,11 @@
                 :class="$style.editable"
                 @click="handleEdit"
             >
-                <span v-if="!isEdit && localValue">{{ localValue }}</span>
+                <span
+                    v-if="!isEdit && localValue"
+                    class="break-words whitespace-pre-wrap"
+                    >{{ localValue }}</span
+                >
                 <span
                     v-else-if="!isEdit && localValue === ''"
                     class="text-gray-700"
@@ -44,7 +48,7 @@
         ref,
         toRefs,
         watchEffect,
-        watch
+        watch,
     } from 'vue'
     import {
         and,
@@ -71,22 +75,19 @@
                 default: false,
             },
             selectedAsset: {
-                type: Object ,
+                type: Object,
                 required: false,
                 default: () => {},
             },
- 
         },
         emits: ['update:modelValue', 'change'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-            const { editPermission,selectedAsset } = toRefs(props)
+            const { editPermission, selectedAsset } = toRefs(props)
             const localValue = ref(modelValue.value)
             const isEdit = ref(false)
             const nameRef: Ref<null | HTMLInputElement> = ref(null)
-            const { title} =
-                useAssetInfo()
-
+            const { title } = useAssetInfo()
 
             const handleChange = () => {
                 modelValue.value = localValue.value
@@ -140,8 +141,8 @@
                 handleEdit()
             })
 
-            watch(selectedAsset,()=>{
-                localValue.value=title(selectedAsset.value)
+            watch(selectedAsset, () => {
+                localValue.value = title(selectedAsset.value)
             })
             return {
                 localValue,
@@ -152,7 +153,7 @@
                 start,
                 handleBlur,
                 handleCancel,
-                title
+                title,
             }
         },
     })

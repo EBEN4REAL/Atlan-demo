@@ -210,9 +210,7 @@
                             v-else-if="column.key === 'memberCount'"
                             @click.stop="handleAddMembers(group)"
                         >
-                            <div
-                                class="cursor-pointer text-primary hover:underline"
-                            >
+                            <div class="cursor-pointer text-primary">
                                 {{
                                     value >= 2
                                         ? value + ' members'
@@ -224,53 +222,7 @@
                             v-else-if="column.key === 'personas'"
                             @click.stop=""
                         >
-                            <a-popover
-                                v-if="group?.personas?.length"
-                                placement="bottom"
-                                :destroy-tooltip-on-hide="true"
-                            >
-                                <template #content>
-                                    <div
-                                        class="p-3 pb-4 content-popover-group-persona"
-                                    >
-                                        <div class="flex justify-between">
-                                            Personas
-                                            <!-- <div>
-                                                <span
-                                                    class="ml-auto text-primary"
-                                                >
-                                                    Manage
-                                                </span>
-                                                <AtlanIcon
-                                                    icon="ArrowRight"
-                                                    class="ml-1 text-primary"
-                                                />
-                                            </div> -->
-                                        </div>
-                                        <div class="flex flex-wrap gap-2 mt-3">
-                                            <div
-                                                v-for="persona in group?.personas"
-                                                :key="persona.id"
-                                                class="px-2 border rounded-xl"
-                                            >
-                                                {{ persona.name }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
-                                <div
-                                    class="text-left cursor-pointer text-primary hover:underline"
-                                >
-                                    <span>{{
-                                        group?.personas?.length > 1
-                                            ? group?.personas?.length +
-                                              ' personas'
-                                            : group?.personas?.length +
-                                                  ' persona' || '-'
-                                    }}</span>
-                                </div>
-                            </a-popover>
-                            <div v-else class="text-left">-</div>
+                            <PopoverPersonaUser :personas="group?.personas" />
                         </div>
                         <div
                             v-else-if="column.key === 'createdBy'"
@@ -362,6 +314,7 @@
     import Avatar from '~/components/common/avatar/index.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import PopoverPersonaUser from '~/components/admin/common/popoverPersona.vue'
 
     export default defineComponent({
         name: 'GroupList',
@@ -375,6 +328,7 @@
             ActionButtons,
             SearchAndFilter,
             Avatar,
+            PopoverPersonaUser,
         },
         setup(props, context) {
             const defaultTab = ref('about')
@@ -412,7 +366,7 @@
                 filter: {},
                 sort: '-createdAt',
             })
-            console.log(groupListAPIParams)
+
             const {
                 groupList,
                 totalGroupsCount,

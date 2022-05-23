@@ -46,7 +46,6 @@
             </div>
         </template>
         <div
-            v-if="user.enabled"
             v-auth="map.UPDATE_USERS"
             class="flex items-center h-8 mr-auto text-center cursor-pointer"
         >

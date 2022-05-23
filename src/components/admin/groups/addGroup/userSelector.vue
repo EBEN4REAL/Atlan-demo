@@ -88,7 +88,7 @@
     import { getUserName } from '~/composables/user/useUsers'
     import UserCard from '../common/userCard.vue'
     import OwnerFacets from '~/components/common/facet/owners/index.vue'
-    import Owners from '@/insights/explorers/queries/collection/owner.vue'
+    import Owners from '~/components/common/collection/owner.vue'
     import AtlanBtn from '@/UI/button.vue'
 
     export default defineComponent({

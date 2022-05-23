@@ -44,6 +44,13 @@ interface EMBED_README_EVENT_RETURN_INTERFACE {
 }
 
 const keyMap = {
+    main_header: {
+        updates_cta: {
+            clicked: {
+                action: 'main_header_updates_cta_clicked',
+            }
+        }
+    },
     discovery: {
         filter: {
             changed: {
@@ -63,11 +70,11 @@ const keyMap = {
                 action: 'discovery_cta_action_clicked',
                 properties: (props: {
                     action:
-                        | 'open_asset'
-                        | 'vqb_query'
-                        | 'sql_query'
-                        | 'copy_link'
-                        | 'open_in_source'
+                    | 'open_asset'
+                    | 'vqb_query'
+                    | 'sql_query'
+                    | 'copy_link'
+                    | 'open_in_source'
                     asset_type: string
                 }) => ({
                     ...props,
@@ -182,6 +189,18 @@ const keyMap = {
                     asset_type: props.asset_type,
                 }),
             },
+            categories_updated: {
+                action: 'discovery_metadata_categories_updated',
+                properties: (props) => ({
+                    count: props.count,
+                }),
+            },
+            related_terms_updated: {
+                action: 'discovery_metadata_related_terms_updated',
+                properties: (props) => ({
+                    count: props.count,
+                }),
+            },
             suggestion_applied: {
                 action: 'discovery_metadata_suggestion_applied',
                 properties: (props) => ({
@@ -283,6 +302,81 @@ const keyMap = {
             },
         },
     },
+    lineage: {
+        search: {
+            changed: {
+                action: 'lineage_search_changed',
+                properties: (props) => ({
+                    result_count: props?.result_count,
+                    search_query: props?.search_query,
+                }),
+            },
+        },
+        search_result: {
+            clicked: {
+                action: 'lineage_search_result_clicked',
+                properties: (props) => ({
+                    click_index: props?.click_index,
+                    result_count: props?.result_count,
+                    asset_type: props?.asset_type,
+                    connector: props?.connector,
+                }),
+            },
+        },
+        process: {
+            clicked: {
+                action: 'lineage_process_clicked',
+                properties: (props) => ({
+                    is_group: !!props?.is_group,
+                    is_cyclic: !!props?.is_cyclic,
+                    edge_id: props?.edge_id,
+                }),
+            },
+        },
+        node: {
+            expanded: {
+                action: 'lineage_node_expanded',
+                properties: (props) => ({
+                    child_count: props?.child_count,
+                    node_id: props?.node_id,
+                }),
+            },
+            collapsed: {
+                action: 'lineage_node_collapsed',
+                properties: (props) => ({
+                    child_count: props?.child_count,
+                    node_id: props?.node_id,
+                }),
+            },
+            clicked: {
+                action: 'lineage_node_clicked',
+                properties: (props) => ({
+                    asset_type: props?.asset_type,
+                    connector: props?.connector,
+                    node_id: props?.node_id,
+                }),
+            },
+        },
+        sub_node: {
+            clicked: {
+                action: 'lineage_sub_node_clicked',
+                properties: (props) => ({
+                    asset_type: props?.asset_type,
+                    connector: props?.connector,
+                    click_index: props?.click_index,
+                    node_id: props?.node_id,
+                }),
+            },
+            show_more: {
+                action: 'lineage_sub_node_show_more',
+                properties: (props) => ({
+                    current_list_count: props?.current_list_count,
+                    load_more_size: props?.load_more_size,
+                    node_id: props?.node_id,
+                }),
+            },
+        },
+    },
     gtc: {
         term: {
             created: {
@@ -293,6 +387,9 @@ const keyMap = {
             },
             deleted: {
                 action: 'gtc_term_deleted',
+            },
+            bulk_upload_initiated: {
+                action: 'gtc_term_bulk_upload_initiated',
             },
         },
         category: {
@@ -348,8 +445,8 @@ const keyMap = {
             link_copied: {
                 action: 'insights_query_link_copied',
             },
-            panelAdd: {
-                action: 'insights_vqb_panel_added',
+            panel_add: {
+                action: 'insights_vqb_panel_add',
                 properties: (props) => ({
                     panel_type: props?.panel_type,
                     panel_source: props?.panel_source,
@@ -364,8 +461,8 @@ const keyMap = {
                 }),
             },
         },
-        schemaTree: {
-            itemClick: {
+        schema_tree: {
+            item_click: {
                 action: 'insights_schema_explorer_tree_item_clicked',
                 properties: (props) => ({
                     action: props?.action,
@@ -375,31 +472,37 @@ const keyMap = {
                 }),
             },
         },
-        previewTabs: {
-            previewTabClose: {
+        results_panel: {
+            cta_clicked: {
+                action: 'insights_results_panel_cta_clicked',
+                properties: (props) => ({
+                    action: props.action,
+                    query_tab_id: props?.query_tab_id,
+                    is_full_screen: props?.is_full_screen,
+                }),
+            },
+            tab_switched: {
+                action: 'insights_results_panel_tab_switched',
+                properties: (props) => ({
+                    click_index: props?.click_index,
+                    previous_index: props?.previous_index,
+                    is_full_screen: props?.is_full_screen,
+                }),
+            },
+        },
+        preview_tabs: {
+            closed: {
                 action: 'insights_preview_tabs_closed',
                 properties: (props) => ({
                     query_tab_id: props?.query_tab_id,
                     click_index: props?.click_index,
                 }),
             },
-            previewTabSwitched: {
-                action: 'insights_preview_tabs_switched',
-                properties: (props) => ({
-                    click_index: props?.click_index,
-                    previous_index: props?.previous_index,
-                }),
-            },
-            previewTabRightClickAction: {
+
+            right_click_action: {
                 action: 'insights_preview_tabs_right_click_action',
                 properties: (props) => ({
                     action: props?.action,
-                }),
-            },
-            resultTabSwitched: {
-                action: 'insights_result_tab_switched',
-                properties: (props) => ({
-                    previous_index: props?.previous_index,
                 }),
             },
         },

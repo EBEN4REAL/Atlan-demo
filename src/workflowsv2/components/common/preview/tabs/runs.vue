@@ -8,9 +8,9 @@
                 <span class="ml-1 font-semibold text-gray-500">Runs</span>
             </span>
         </div>
-        <div class="px-3 mt-2">
+        <!-- <div class="px-3 mt-2">
             <SearchAndFilter v-model:value="runQuery" size="minimal" />
-        </div>
+        </div> -->
         <AtlanLoader
             v-if="isLoading"
             class="h-10 mx-auto mt-auto mb-auto place-self-center"

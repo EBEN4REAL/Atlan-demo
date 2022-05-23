@@ -1,5 +1,10 @@
+/** VUE */
 import { ref, watch } from 'vue'
+
+/** COMPOSABLES */
 import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+
+/** CONSTANTS */
 import {
     SQLAttributes,
     AssetRelationAttributes,

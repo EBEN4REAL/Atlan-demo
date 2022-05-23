@@ -10,6 +10,8 @@ import Looker from '~/assets/images/source/svg/Looker.svg?url'
 import Salesforce from '~/assets/images/source/svg/Salesforce.svg?url'
 import MySQL from '~/assets/images/source/svg/MySQL.svg?url'
 import MSSQL from '~/assets/images/source/svg/MSSQL.svg?url'
+import S3 from '~/assets/images/source/svg/s3.svg?url'
+
 // FIXME: Add an SVG for glue
 import Glue from '~/assets/images/source/glue.png'
 
@@ -338,6 +340,7 @@ export const SourceList = [
             },
         ],
         dialectConfig: {
+            assetQuoteType: '`',
             // does not support abortQuery for now
             abortQuery: false,
         },
@@ -554,5 +557,22 @@ export const SourceList = [
             'SalesforceObject',
             'SalesforceField',
         ],
+    },
+    {
+        id: 's3',
+        label: 'S3',
+        image: S3,
+        connectionCount: 0,
+        hierarchy: [
+            {
+                typeName: 'S3Bucket',
+                name: 'Bucket',
+                parent: '',
+                attribute: 's3BucketQualifiedName',
+                level: 1,
+                image: 'S3Bucket',
+            },
+        ],
+        types: ['S3Bucket', 'S3Object'],
     },
 ]

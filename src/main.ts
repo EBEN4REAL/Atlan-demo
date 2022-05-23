@@ -21,12 +21,16 @@ import {
     identifyGroup,
     identifyUser,
 } from './composables/eventTracking/useAddEvent'
+import useTenant from '~/composables/tenant/useTenant'
 
 const app = createApp(App)
 app.use(createPinia())
 // vue-head
 const head = createHead()
 app.use(head)
+
+// treat 'svg:style' as custom elements
+app.config.compilerOptions.isCustomElement = (tag) => tag === 'svg:style'
 
 const routes = setupLayouts(generatedRoutes)
 const router = createRouter({ history: createWebHistory(), routes })
@@ -112,6 +116,8 @@ keycloak
             }, 6000)
             inputFocusDirective(app)
             authDirective(app)
+            const { mutate } = useTenant(false)
+            await mutate()
             app.use(router).mount('#app')
             const redirectUrl = localStorage.getItem('redirectURL')
             if (redirectUrl) {

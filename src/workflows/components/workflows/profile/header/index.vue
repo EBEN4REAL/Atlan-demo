@@ -212,9 +212,7 @@
 
             const router = useRouter()
 
-            const handleBack = () => {
-                router.push('/workflows')
-            }
+            const handleBack = router.back
 
             const scheduleVisible = ref(false)
 

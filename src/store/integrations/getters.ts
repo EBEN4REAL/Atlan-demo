@@ -148,5 +148,12 @@ const getters: _GettersTree<State> & Getters = {
             avatar: integration?.sourceMetadata?.avatar,
         }
     },
+    getTenantLevelIntegrationNames(state: State) {
+        const integrations = state.allIntegrations
+            .filter((integration) => integration.integrationLevel === 'tenant')
+            .map((integration) => integration.name)
+        // return state.allIntegrations
+        return integrations || []
+    },
 }
 export default getters

@@ -78,7 +78,7 @@ export const discoveryFilters = [
                 isMandatory: true,
             },
             {
-                name: 'description',
+                name: 'description.keyword',
                 displayName: 'Description',
                 typeName: 'string',
                 description:
@@ -86,7 +86,7 @@ export const discoveryFilters = [
                 isMandatory: false,
             },
             {
-                name: 'userDescription',
+                name: 'userDescription.keyword',
                 displayName: 'User Description',
                 typeName: 'string',
                 description: 'Description of the asset updated on Atlan.',
@@ -264,6 +264,25 @@ export const discoveryFilters = [
         isDisabled: false,
         exclude: false,
         analyticsKey: 'table',
+    },
+    {
+        id: 'process',
+        label: 'PROCESS',
+        component: 'properties',
+        includes: ['Process', 'ColumnProcess', 'BIProcess'],
+        attributes: [
+            {
+                name: 'sql',
+                displayName: 'Query',
+                description: 'SQL query of the process',
+                typeName: 'string',
+            },
+        ],
+        overallCondition: 'OR',
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        analyticsKey: 'process',
     },
 ]
 

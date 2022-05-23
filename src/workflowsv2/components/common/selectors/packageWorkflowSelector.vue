@@ -23,12 +23,7 @@
                 icon="Cancel"
                 @click="clearSelection"
             />
-            <AtlanIcon
-                v-else
-                icon="CaretRight"
-                class="ml-auto transition-transform"
-                :class="dropdownVisible ? 'transform rotate-90' : ''"
-            />
+            <AtlanIcon v-else icon="CaretDown" class="ml-auto" />
         </div>
         <template #overlay>
             <div class="overflow-hidden bg-white rounded-lg shadow-md">

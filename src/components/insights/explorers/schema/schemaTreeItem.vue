@@ -6,6 +6,7 @@
     >
         <div class="flex justify-between w-full h-full overflow-hidden">
             <!-- Popover Allowed -->
+
             <div
                 class="flex w-full m-0"
                 v-if="isPopoverAllowed(item?.typeName) && hoverActions"
@@ -14,124 +15,156 @@
                     :item="item"
                     placement="right"
                     :mouseEnterDelay="1"
-                    @previewAsset="() => actionClick('info', item)"
+                    @previewAsset="
+                        () => actionClick('info', item, 'quick_action')
+                    "
                 >
                     <div
                         class="relative flex items-center content-center w-full h-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
                         style=""
                     >
                         <!--For Column-->
-                        <div
+                        <InsightsThreeDotMenu
                             v-if="assetType(item) == 'Column'"
-                            class="relative flex items-center justify-between w-full h-8 h-full"
-                            style=""
+                            :options="dropdownColumnOptions"
+                            :item="item"
+                            class=""
+                            trigger="contextmenu"
                         >
-                            <div class="relative parent-ellipsis-container">
-                                <component
-                                    :is="dataTypeImage(item)"
-                                    class="flex-none w-auto h-4 mr-1 -mt-0.5 text-gray-500"
-                                    v-if="dataTypeImage(item)"
-                                ></component>
-                                <span
-                                    v-else
-                                    class="flex-none w-auto h-4 mr-1 -mt-0.5 text-gray-500"
-                                >
-                                    -
-                                </span>
-                                <span
-                                    class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                                    >{{ title(item) }}
-                                    <!-- <span> {{ childCount(item) }}</span> -->
-                                </span>
-
-                                <StatusBadge
-                                    v-if="certificateStatus(item)"
-                                    :key="item?.guid"
-                                    :show-no-status="false"
-                                    :status-id="certificateStatus(item)"
-                                    class="ml-1.5 mb-1 parent-ellipsis-container-extension"
-                                ></StatusBadge>
-                            </div>
-                            <div
-                                v-if="hoverActions"
-                                class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
-                                style="width: "
-                                :class="
-                                    item?.selected
-                                        ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                        : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
-                                "
-                                @click.stop="() => {}"
-                            >
+                            <template #menuTrigger>
                                 <div
-                                    :data-test-id="'insert-in-editor'"
-                                    class="pl-2 ml-20"
-                                    v-if="!showVQB"
-                                    @click="() => actionClick('add', item)"
+                                    class="relative flex items-center justify-between w-full h-8 h-full"
+                                    style=""
                                 >
-                                    <a-tooltip
-                                        color="#363636"
-                                        placement="top"
-                                        :mouseEnterDelay="
-                                            lastTooltipPresence !== undefined
-                                                ? ADJACENT_TOOLTIP_DELAY
-                                                : MOUSE_ENTER_DELAY
-                                        "
+                                    <div
+                                        class="relative parent-ellipsis-container"
                                     >
-                                        <template #title
-                                            >Place name in editor</template
+                                        <component
+                                            :is="dataTypeImage(item)"
+                                            class="flex-none w-auto h-4 mr-1 -mt-0.5 text-gray-500"
+                                            v-if="dataTypeImage(item)"
+                                        ></component>
+                                        <span
+                                            v-else
+                                            class="flex-none w-auto h-4 mr-1 -mt-0.5 text-gray-500"
                                         >
-                                        <div
-                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                            @mouseout="recordTooltipPresence"
-                                        >
-                                            <AtlanIcon
-                                                icon="AddAssetName"
-                                                class="w-4 h-4 my-auto focus:outline-none"
-                                            ></AtlanIcon>
-                                        </div>
-                                    </a-tooltip>
-                                </div>
-                                <!-- Add pr-2 for next icon -->
-                                <div
-                                    :data-test-id="'preview'"
-                                    class="pl-2"
-                                    @click="() => actionClick('info', item)"
-                                >
-                                    <a-tooltip
-                                        color="#363636"
-                                        placement="top"
-                                        :mouseEnterDelay="
-                                            lastTooltipPresence !== undefined
-                                                ? ADJACENT_TOOLTIP_DELAY
-                                                : MOUSE_ENTER_DELAY
-                                        "
-                                    >
-                                        <template #title
-                                            >Open
-                                            <span class="lowercase">{{
-                                                assetType(item)
-                                            }}</span>
-                                            sidebar</template
-                                        >
-                                        <div
-                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                            @mouseout="recordTooltipPresence"
-                                        >
-                                            <AtlanIcon
-                                                icon="SidebarSwitch"
-                                                class="w-4 h-4 my-auto outline-none"
-                                            ></AtlanIcon>
-                                        </div>
-                                    </a-tooltip>
-                                </div>
-                                <VQBThreeDotMenuForColumn
-                                    v-if="showVQB"
-                                    :item="item"
-                                    :treeData="treeData"
-                                />
+                                            -
+                                        </span>
+                                        <span
+                                            class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                                            >{{ title(item) }}
+                                            <!-- <span> {{ childCount(item) }}</span> -->
+                                        </span>
 
-                                <!-- <div
+                                        <StatusBadge
+                                            v-if="certificateStatus(item)"
+                                            :key="item?.guid"
+                                            :show-no-status="false"
+                                            :status-id="certificateStatus(item)"
+                                            class="ml-1.5 mb-1 parent-ellipsis-container-extension"
+                                        ></StatusBadge>
+                                    </div>
+                                    <div
+                                        v-if="hoverActions"
+                                        class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
+                                        style="width: "
+                                        :class="
+                                            item?.selected
+                                                ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
+                                                : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
+                                        "
+                                        @click.stop="() => {}"
+                                    >
+                                        <div
+                                            :data-test-id="'insert-in-editor'"
+                                            class="pl-2 ml-20"
+                                            v-if="!showVQB"
+                                            @click="
+                                                () =>
+                                                    actionClick(
+                                                        'add',
+                                                        item,
+                                                        'quick_action'
+                                                    )
+                                            "
+                                        >
+                                            <a-tooltip
+                                                color="#363636"
+                                                placement="top"
+                                                :mouseEnterDelay="
+                                                    lastTooltipPresence !==
+                                                    undefined
+                                                        ? ADJACENT_TOOLTIP_DELAY
+                                                        : MOUSE_ENTER_DELAY
+                                                "
+                                            >
+                                                <template #title
+                                                    >Place name in
+                                                    editor</template
+                                                >
+                                                <div
+                                                    class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                                    @mouseout="
+                                                        recordTooltipPresence
+                                                    "
+                                                >
+                                                    <AtlanIcon
+                                                        icon="AddAssetName"
+                                                        class="w-4 h-4 my-auto focus:outline-none"
+                                                    ></AtlanIcon>
+                                                </div>
+                                            </a-tooltip>
+                                        </div>
+                                        <!-- Add pr-2 for next icon -->
+                                        <div
+                                            :data-test-id="'preview'"
+                                            class="pl-2"
+                                            @click="
+                                                () =>
+                                                    actionClick(
+                                                        'info',
+                                                        item,
+                                                        'quick_action'
+                                                    )
+                                            "
+                                        >
+                                            <a-tooltip
+                                                color="#363636"
+                                                placement="top"
+                                                :mouseEnterDelay="
+                                                    lastTooltipPresence !==
+                                                    undefined
+                                                        ? ADJACENT_TOOLTIP_DELAY
+                                                        : MOUSE_ENTER_DELAY
+                                                "
+                                            >
+                                                <template #title
+                                                    >Open
+                                                    <span class="lowercase">{{
+                                                        assetType(item)
+                                                    }}</span>
+                                                    sidebar</template
+                                                >
+                                                <div
+                                                    class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                                    @mouseout="
+                                                        recordTooltipPresence
+                                                    "
+                                                >
+                                                    <AtlanIcon
+                                                        icon="SidebarSwitch"
+                                                        class="w-4 h-4 my-auto outline-none"
+                                                    ></AtlanIcon>
+                                                </div>
+                                            </a-tooltip>
+                                        </div>
+                                        <VQBThreeDotMenuForColumn
+                                            v-if="showVQB"
+                                            :item="item"
+                                            :treeData="treeData"
+                                        />
+
+                                        <!-- <div
                                     class="bg-gray-light-color"
                                     @click.stop="
                                         () => actionClick('bookmark', item)
@@ -155,11 +188,11 @@
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>-->
-                            </div>
-                            <div
-                                class="flex items-center text-xs leading-5 text-gray-500"
-                            >
-                                <!-- <div
+                                    </div>
+                                    <div
+                                        class="flex items-center text-xs leading-5 text-gray-500"
+                                    >
+                                        <!-- <div
                                     class="flex items-center"
                                     v-if="isPrimary(item)"
                                 >
@@ -174,246 +207,332 @@
                                     </div>
                                 </div> -->
 
-                                <ColumnKeys
-                                    v-if="
-                                        isPrimary(item) ||
-                                        isForeign(item) ||
-                                        isPartition(item)
-                                    "
-                                    :isPrimary="isPrimary(item)"
-                                    :isForeign="isForeign(item)"
-                                    :isPartition="isPartition(item)"
-                                />
-                                <span v-else>{{ dataType(item) ?? '-' }}</span>
-                            </div>
-                        </div>
+                                        <ColumnKeys
+                                            v-if="
+                                                isPrimary(item) ||
+                                                isForeign(item) ||
+                                                isPartition(item)
+                                            "
+                                            :isPrimary="isPrimary(item)"
+                                            :isForeign="isForeign(item)"
+                                            :isPartition="isPartition(item)"
+                                        />
+                                        <span v-else>{{
+                                            dataType(item) ?? '-'
+                                        }}</span>
+                                    </div>
+                                </div>
+                            </template>
+                        </InsightsThreeDotMenu>
+
                         <!--For Others: Table Item -->
-                        <div v-else class="flex items-center w-full h-8 m-0">
-                            <div
-                                class="flex items-center justify-between w-full h-8 h-full"
-                            >
-                                <div
-                                    class="flex items-center parent-ellipsis-container"
-                                >
-                                    <AtlanIcon
-                                        :icon="
-                                            getEntityStatusIcon(
-                                                assetType(item),
-                                                certificateStatus(item)
-                                            )
-                                        "
-                                        class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
-                                    ></AtlanIcon>
-
-                                    <span
-                                        class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                                        >{{ title(item) }}
-                                    </span>
-                                </div>
-                                <div>
-                                    <span class="z-10 count-box">
-                                        {{ childCount(item) }}</span
+                        <InsightsThreeDotMenu
+                            v-else
+                            :options="dropdownTableContextMenuOptions"
+                            :item="item"
+                            class=""
+                            trigger="contextmenu"
+                        >
+                            <template #menuTrigger>
+                                <div class="flex items-center w-full h-8 m-0">
+                                    <div
+                                        class="flex items-center justify-between w-full h-8 h-full"
                                     >
-                                </div>
-                            </div>
-
-                            <div
-                                v-if="hoverActions"
-                                class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
-                                @click.stop="() => {}"
-                                :class="
-                                    item?.selected
-                                        ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                        : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
-                                "
-                            >
-                                <div
-                                    :data-test-id="'insert-in-editor'"
-                                    class="pl-2 ml-4"
-                                    v-if="!showVQB"
-                                    @click="() => actionClick('add', item)"
-                                >
-                                    <a-tooltip
-                                        color="#363636"
-                                        placement="top"
-                                        :mouseEnterDelay="
-                                            lastTooltipPresence !== undefined
-                                                ? ADJACENT_TOOLTIP_DELAY
-                                                : MOUSE_ENTER_DELAY
-                                        "
-                                    >
-                                        <template #title
-                                            >Place name in editor</template
-                                        >
                                         <div
-                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                            @mouseout="recordTooltipPresence"
+                                            class="flex items-center parent-ellipsis-container"
                                         >
                                             <AtlanIcon
-                                                icon="AddAssetName"
-                                                class="w-4 h-4 my-auto focus:outline-none"
+                                                :icon="
+                                                    getEntityStatusIcon(
+                                                        assetType(item),
+                                                        certificateStatus(item)
+                                                    )
+                                                "
+                                                class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
                                             ></AtlanIcon>
-                                        </div>
-                                    </a-tooltip>
-                                </div>
 
-                                <div
-                                    :class="showVQB ? 'pl-2 pr-1' : 'pl-1 pr-1'"
-                                    :data-test-id="'preview'"
-                                    @click="() => actionClick('info', item)"
-                                >
-                                    <a-tooltip
-                                        color="#363636"
-                                        placement="top"
-                                        :mouseEnterDelay="
-                                            lastTooltipPresence !== undefined
-                                                ? ADJACENT_TOOLTIP_DELAY
-                                                : MOUSE_ENTER_DELAY
-                                        "
-                                    >
-                                        <template #title
-                                            >Open
-                                            <span class="lowercase">{{
-                                                assetType(item)
-                                            }}</span>
-                                            sidebar</template
-                                        >
-                                        <div
-                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                            @mouseout="recordTooltipPresence"
-                                        >
-                                            <AtlanIcon
-                                                icon="SidebarSwitch"
-                                                class="w-4 h-4 my-auto outline-none"
-                                            ></AtlanIcon>
+                                            <span
+                                                class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                                                >{{ title(item) }}
+                                            </span>
                                         </div>
-                                    </a-tooltip>
-                                </div>
-                                <div
-                                    :data-test-id="'run-table-query'"
-                                    v-if="showVQB"
-                                    :class="
-                                        (activeInlineTab.playground.resultsPane
-                                            .result.isQueryRunning === 'loading'
-                                            ? 'opacity-50 cursor-not-allowed'
-                                            : '',
-                                        '')
-                                    "
-                                    @click="() => previewVQBQuery(item)"
-                                >
-                                    <a-tooltip
-                                        color="#363636"
-                                        placement="top"
-                                        :mouseEnterDelay="
-                                            lastTooltipPresence !== undefined
-                                                ? ADJACENT_TOOLTIP_DELAY
-                                                : MOUSE_ENTER_DELAY
-                                        "
-                                    >
-                                        <template #title
-                                            >Preview this
-                                            <span class="lowercase">{{
-                                                assetType(item)
-                                            }}</span></template
-                                        >
-                                        <div
-                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                            @mouseout="recordTooltipPresence"
-                                        >
-                                            <AtlanIcon
-                                                icon="PreviewQuery"
-                                                class="w-4 h-4 my-auto outline-none"
-                                            ></AtlanIcon>
+                                        <div>
+                                            <span class="z-10 count-box">
+                                                {{ childCount(item) }}</span
+                                            >
                                         </div>
-                                    </a-tooltip>
-                                </div>
+                                    </div>
 
-                                <!-- Add pr-2 for next icon -->
-                                <div
-                                    :data-test-id="'run-table-query'"
-                                    v-if="!showVQB"
-                                    @click="() => previewData(item)"
-                                >
-                                    <a-tooltip
-                                        color="#363636"
-                                        placement="top"
-                                        :mouseEnterDelay="
-                                            lastTooltipPresence !== undefined
-                                                ? ADJACENT_TOOLTIP_DELAY
-                                                : MOUSE_ENTER_DELAY
+                                    <div
+                                        v-if="hoverActions"
+                                        class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
+                                        @click.stop="() => {}"
+                                        :class="
+                                            item?.selected
+                                                ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
+                                                : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
                                         "
                                     >
-                                        <template #title
-                                            >Preview this
-                                            <span class="lowercase">{{
-                                                assetType(item)
-                                            }}</span></template
-                                        >
                                         <div
-                                            class="flex items-center w-6 h-6 p-1 rounded text-new-gray-700 hover:bg-new-gray-300"
-                                            @mouseout="recordTooltipPresence"
+                                            class="w-8 h-full opacity-70 bg-gradient-to-l from-new-gray-200"
+                                        ></div>
+                                        <!-- <div
+                                            :data-test-id="'insert-in-editor'"
+                                            v-if="!showVQB"
+                                            class="bg-new-gray-200"
+                                            @click="
+                                                () => actionClick('add', item)
+                                            "
                                         >
-                                            <AtlanIcon
-                                                icon="PreviewQuery"
-                                                class="w-4 h-4 my-auto outline-none text-new-gray-700"
-                                            ></AtlanIcon>
-                                        </div>
-                                    </a-tooltip>
-                                </div>
-                                <div
-                                    class="pl-1"
-                                    v-if="!showVQB"
-                                    :data-test-id="'preview-table-query'"
-                                    :class="
-                                        activeInlineTab.playground.resultsPane
-                                            .result.isQueryRunning === 'loading'
-                                            ? 'opacity-50 cursor-not-allowed'
-                                            : ''
-                                    "
-                                    @click="
-                                        () =>
-                                            actionClick(
-                                                'play',
-                                                item,
-                                                (isPreview = true)
-                                            )
-                                    "
-                                >
-                                    <a-tooltip
-                                        color="#363636"
-                                        placement="top"
-                                        :mouseEnterDelay="
-                                            lastTooltipPresence !== undefined
-                                                ? ADJACENT_TOOLTIP_DELAY
-                                                : MOUSE_ENTER_DELAY
-                                        "
-                                    >
-                                        <template #title>
-                                            <span>{{ tooltipText }}</span>
-                                            <span class="lowercase">{{
-                                                assetType(item)
-                                            }}</span>
-                                        </template>
-                                        <div
-                                            class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                            @mouseout="recordTooltipPresence"
-                                        >
-                                            <AtlanIcon
-                                                icon="Play"
-                                                class="w-4 h-4 my-auto outline-none"
-                                            ></AtlanIcon>
-                                        </div>
-                                    </a-tooltip>
-                                </div>
-                                <div class="pl-1" v-else>
-                                    <VQBThreeDotMenuForTable
-                                        v-if="showVQB"
-                                        :item="item"
-                                        :treeData="treeData"
-                                    />
-                                </div>
+                                            <a-tooltip
+                                                color="#363636"
+                                                placement="top"
+                                                :mouseEnterDelay="
+                                                    lastTooltipPresence !==
+                                                    undefined
+                                                        ? ADJACENT_TOOLTIP_DELAY
+                                                        : MOUSE_ENTER_DELAY
+                                                "
+                                            >
+                                                <template #title
+                                                    >Place name in
+                                                    editor</template
+                                                >
+                                                <div
+                                                    class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                                    @mouseout="
+                                                        recordTooltipPresence
+                                                    "
+                                                >
+                                                    <AtlanIcon
+                                                        icon="AddAssetName"
+                                                        class="w-4 h-4 my-auto focus:outline-none"
+                                                    ></AtlanIcon>
+                                                </div>
+                                            </a-tooltip>
+                                        </div> -->
 
-                                <!-- <div
+                                        <div
+                                            :class="
+                                                showVQB
+                                                    ? 'pl-2 pr-1'
+                                                    : 'pl-1 pr-1'
+                                            "
+                                            :data-test-id="'preview'"
+                                            class="bg-new-gray-200"
+                                            @click="
+                                                () =>
+                                                    actionClick(
+                                                        'info',
+                                                        item,
+                                                        'quick_action'
+                                                    )
+                                            "
+                                        >
+                                            <a-tooltip
+                                                color="#363636"
+                                                placement="top"
+                                                :mouseEnterDelay="
+                                                    lastTooltipPresence !==
+                                                    undefined
+                                                        ? ADJACENT_TOOLTIP_DELAY
+                                                        : MOUSE_ENTER_DELAY
+                                                "
+                                            >
+                                                <template #title
+                                                    >Open
+                                                    <span class="lowercase">{{
+                                                        assetType(item)
+                                                    }}</span>
+                                                    sidebar</template
+                                                >
+                                                <div
+                                                    class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                                    @mouseout="
+                                                        recordTooltipPresence
+                                                    "
+                                                >
+                                                    <AtlanIcon
+                                                        icon="SidebarSwitch"
+                                                        class="w-4 h-4 my-auto outline-none"
+                                                    ></AtlanIcon>
+                                                </div>
+                                            </a-tooltip>
+                                        </div>
+                                        <div
+                                            :data-test-id="'run-table-query'"
+                                            v-if="showVQB"
+                                            :class="
+                                                (activeInlineTab.playground
+                                                    .resultsPane.result
+                                                    .isQueryRunning ===
+                                                'loading'
+                                                    ? 'opacity-50 cursor-not-allowed'
+                                                    : '',
+                                                '')
+                                            "
+                                            @click="
+                                                () =>
+                                                    previewVQBQuery(
+                                                        item,
+                                                        'quick_action'
+                                                    )
+                                            "
+                                        >
+                                            <a-tooltip
+                                                color="#363636"
+                                                placement="top"
+                                                :mouseEnterDelay="
+                                                    lastTooltipPresence !==
+                                                    undefined
+                                                        ? ADJACENT_TOOLTIP_DELAY
+                                                        : MOUSE_ENTER_DELAY
+                                                "
+                                            >
+                                                <template #title
+                                                    >Preview this
+                                                    <span class="lowercase">{{
+                                                        assetType(item)
+                                                    }}</span></template
+                                                >
+                                                <div
+                                                    class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                                    @mouseout="
+                                                        recordTooltipPresence
+                                                    "
+                                                >
+                                                    <AtlanIcon
+                                                        icon="PreviewQuery"
+                                                        class="w-4 h-4 my-auto outline-none"
+                                                    ></AtlanIcon>
+                                                </div>
+                                            </a-tooltip>
+                                        </div>
+
+                                        <!-- Add pr-2 for next icon -->
+                                        <div
+                                            :data-test-id="'run-table-query'"
+                                            v-if="!showVQB"
+                                            @click="
+                                                () =>
+                                                    previewData(
+                                                        item,
+                                                        'quick_action'
+                                                    )
+                                            "
+                                        >
+                                            <a-tooltip
+                                                color="#363636"
+                                                placement="top"
+                                                :mouseEnterDelay="
+                                                    lastTooltipPresence !==
+                                                    undefined
+                                                        ? ADJACENT_TOOLTIP_DELAY
+                                                        : MOUSE_ENTER_DELAY
+                                                "
+                                            >
+                                                <template #title
+                                                    >Preview this
+                                                    <span class="lowercase">{{
+                                                        assetType(item)
+                                                    }}</span></template
+                                                >
+                                                <div
+                                                    class="flex items-center w-6 h-6 p-1 rounded text-new-gray-700 hover:bg-new-gray-300"
+                                                    @mouseout="
+                                                        recordTooltipPresence
+                                                    "
+                                                >
+                                                    <AtlanIcon
+                                                        icon="PreviewQuery"
+                                                        class="w-4 h-4 my-auto outline-none text-new-gray-700"
+                                                    ></AtlanIcon>
+                                                </div>
+                                            </a-tooltip>
+                                        </div>
+                                        <div
+                                            class="pl-1"
+                                            v-if="!showVQB"
+                                            :data-test-id="'preview-table-query'"
+                                            :class="
+                                                activeInlineTab.playground
+                                                    .resultsPane.result
+                                                    .isQueryRunning ===
+                                                'loading'
+                                                    ? 'opacity-50 cursor-not-allowed'
+                                                    : ''
+                                            "
+                                            @click="
+                                                () =>
+                                                    actionClick(
+                                                        'play',
+                                                        item,
+                                                        'quick_action',
+                                                        (isPreview = true)
+                                                    )
+                                            "
+                                        >
+                                            <a-tooltip
+                                                color="#363636"
+                                                placement="top"
+                                                :mouseEnterDelay="
+                                                    lastTooltipPresence !==
+                                                    undefined
+                                                        ? ADJACENT_TOOLTIP_DELAY
+                                                        : MOUSE_ENTER_DELAY
+                                                "
+                                            >
+                                                <template #title>
+                                                    <span>{{
+                                                        tooltipText
+                                                    }}</span>
+                                                    <span class="lowercase">{{
+                                                        assetType(item)
+                                                    }}</span>
+                                                </template>
+                                                <div
+                                                    class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                                    @mouseout="
+                                                        recordTooltipPresence
+                                                    "
+                                                >
+                                                    <AtlanIcon
+                                                        icon="Play"
+                                                        class="w-4 h-4 my-auto outline-none"
+                                                    ></AtlanIcon>
+                                                </div>
+                                            </a-tooltip>
+                                        </div>
+                                        <div class="pl-1" v-else>
+                                            <VQBThreeDotMenuForTable
+                                                v-if="showVQB"
+                                                :item="item"
+                                                :treeData="treeData"
+                                            />
+                                        </div>
+
+                                        <div class="pl-1">
+                                            <div
+                                                class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                            >
+                                                <InsightsThreeDotMenu
+                                                    :options="
+                                                        dropdownTableOptions
+                                                    "
+                                                    :item="item"
+                                                    class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                                >
+                                                    <template #menuTrigger>
+                                                        <AtlanIcon
+                                                            icon="KebabMenuHorizontal"
+                                                            class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                                        />
+                                                    </template>
+                                                </InsightsThreeDotMenu>
+                                            </div>
+                                        </div>
+
+                                        <!-- <div
                                     class="bg-gray-light-color"
                                     @click.stop="
                                         () => actionClick('bookmark', item)
@@ -437,82 +556,96 @@
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>-->
-                            </div>
-                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </InsightsThreeDotMenu>
+
                         <!------------------------------->
                     </div>
                 </PopoverAsset>
             </div>
 
             <!-- FOR DB AND SCHMA -->
-            <div
-                v-if="!isPopoverAllowed(item?.typeName) && hoverActions"
-                class="flex w-full m-0"
+            <InsightsThreeDotMenu
+                :options="dropdownOptions('right_click')"
+                :item="item"
+                class=""
+                trigger="contextmenu"
             >
-                <div
-                    class="relative flex items-center content-center w-full h-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
-                >
-                    <!-- <div class="parent-ellipsis-container"> -->
+                <template #menuTrigger>
                     <div
-                        class="flex items-center justify-between w-full h-full"
+                        v-if="!isPopoverAllowed(item?.typeName) && hoverActions"
+                        class="flex w-full m-0"
                     >
                         <div
-                            class="flex items-center w-11/12 parent-ellipsis-container"
+                            class="relative flex items-center content-center w-full h-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
                         >
-                            <AtlanIcon
-                                :icon="
-                                    getEntityStatusIcon(
-                                        assetType(item),
-                                        certificateStatus(item)
-                                    )
-                                "
-                                class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
-                            ></AtlanIcon>
-
-                            <span
-                                class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                                >{{ title(item) }}
-                            </span>
-                        </div>
-
-                        <div>
-                            <span class="z-10 count-box">
-                                {{ childCount(item) }}</span
-                            >
-                        </div>
-                    </div>
-
-                    <div
-                        v-if="hoverActions"
-                        class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
-                        :class="
-                            item?.selected
-                                ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
-                        "
-                        @click.stop="() => {}"
-                    >
-                        <div class="pl-2 ml-4">
+                            <!-- <div class="parent-ellipsis-container"> -->
                             <div
-                                class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                class="flex items-center justify-between w-full h-full"
                             >
-                                <InsightsThreeDotMenu
-                                    :options="dropdownOptions"
-                                    :item="item"
-                                    class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                <div
+                                    class="flex items-center w-11/12 parent-ellipsis-container"
                                 >
-                                    <template #menuTrigger>
-                                        <AtlanIcon
-                                            icon="KebabMenuHorizontal"
+                                    <AtlanIcon
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                assetType(item),
+                                                certificateStatus(item)
+                                            )
+                                        "
+                                        class="w-4 h-4 mr-1 -mt-0.5 parent-ellipsis-container-extension"
+                                    ></AtlanIcon>
+
+                                    <span
+                                        class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
+                                        >{{ title(item) }}
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <span class="z-10 count-box">
+                                        {{ childCount(item) }}</span
+                                    >
+                                </div>
+                            </div>
+
+                            <div
+                                v-if="hoverActions"
+                                class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
+                                :class="
+                                    item?.selected
+                                        ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
+                                        : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
+                                "
+                                @click.stop="() => {}"
+                            >
+                                <div class="pl-2 ml-4">
+                                    <div
+                                        class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                    >
+                                        <InsightsThreeDotMenu
+                                            :options="
+                                                dropdownOptions('kebab_menu')
+                                            "
+                                            :item="item"
                                             class="w-4 h-4 my-auto -mr-1.5 outline-none"
-                                        />
-                                    </template>
-                                </InsightsThreeDotMenu>
+                                        >
+                                            <template #menuTrigger>
+                                                <AtlanIcon
+                                                    icon="KebabMenuHorizontal"
+                                                    class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                                />
+                                            </template>
+                                        </InsightsThreeDotMenu>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </template>
+            </InsightsThreeDotMenu>
             <!--  -->
 
             <!-- For others component which does not need hoverActions -->
@@ -631,6 +764,7 @@
     import { MenuItem } from 'ant-design-vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { useTooltipDelay } from '~/components/insights/common/composables/useTooltipDelay'
+    import { addTable } from './VQBThreeDotMenu/composables/usepanels'
 
     export function getLastMappedKeyword(
         token_param: string[],
@@ -832,20 +966,23 @@
                 return lastMatchedKeyword
             }
 
-            const previewData = (item) => {
+            const previewData = (
+                item,
+                triggerOrigin: 'right_click' | 'kebab_menu' | 'quick_action'
+            ) => {
                 if (
                     activeInlineTab.value.playground.resultsPane.result
                         .isQueryRunning === 'loading'
                 ) {
                     return
                 } else {
-                    actionClick('play', item)
+                    actionClick('play', item, triggerOrigin)
                 }
             }
 
             const tooltipText = computed(() => {
                 if (
-                    activeInlineTab.value.playground.resultsPane.result
+                    activeInlineTab?.value?.playground?.resultsPane?.result
                         .isQueryRunning === 'loading'
                 ) {
                     return 'Another query is running'
@@ -857,7 +994,8 @@
             const actionClick = (
                 action: string,
                 t: assetInterface,
-                isPreview?: boolean
+                triggerOrigin: 'right_click' | 'kebab_menu' | 'quick_action',
+                isPlay?: boolean
             ) => {
                 // for assetQuote Info of different sources
                 const assetQuoteType = getDialectInfo(
@@ -906,9 +1044,9 @@
                                 }
                             )
                         }
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'place_name_in_editor',
-                            trigger: 'quick_action',
+                            trigger: triggerOrigin,
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: t.typeName,
                         })
@@ -917,20 +1055,30 @@
                     }
                     // This case is used for preview & Play
                     case 'play': {
-                        if (!isPreview) {
-                            useAddEvent('insights', 'schemaTree', 'itemClick', {
-                                action: 'preview_data',
-                                trigger: 'quick_action',
-                                query_tab_id: activeInlineTab.value.key,
-                                asset_type: t.typeName,
-                            })
+                        if (!isPlay) {
+                            useAddEvent(
+                                'insights',
+                                'schema_tree',
+                                'item_click',
+                                {
+                                    action: 'preview_data',
+                                    trigger: triggerOrigin,
+                                    query_tab_id: activeInlineTab.value.key,
+                                    asset_type: t.typeName,
+                                }
+                            )
                         } else {
-                            useAddEvent('insights', 'schemaTree', 'itemClick', {
-                                action: 'query_run',
-                                trigger: 'quick_action',
-                                query_tab_id: activeInlineTab.value.key,
-                                asset_type: t.typeName,
-                            })
+                            useAddEvent(
+                                'insights',
+                                'schema_tree',
+                                'item_click',
+                                {
+                                    action: 'query_run',
+                                    trigger: triggerOrigin,
+                                    query_tab_id: activeInlineTab.value.key,
+                                    asset_type: t.typeName,
+                                }
+                            )
                         }
                         const activeInlineTabCopy: activeInlineTabInterface =
                             JSON.parse(
@@ -967,7 +1115,7 @@
                         // new text
                         let context =
                             activeInlineTabCopy.explorer.schema.connectors
-                        if (isPreview) {
+                        if (isPlay) {
                             // select context from editor
                             context =
                                 activeInlineTabCopy.playground.editor.context
@@ -994,7 +1142,7 @@
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
 
-                                    if (isPreview) {
+                                    if (isPlay) {
                                         const tabKey = handleAddNewTab(
                                             newQuery,
                                             {
@@ -1019,7 +1167,7 @@
 
                                     return
                                 } else {
-                                    if (isPreview) {
+                                    if (isPlay) {
                                         const tabIndex =
                                             inlineTabs.value.findIndex(
                                                 (tab) =>
@@ -1052,7 +1200,7 @@
 
                                     if (cqn !== queryConnectionQualifiedName) {
                                         newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                        if (isPreview) {
+                                        if (isPlay) {
                                             const tabKey = handleAddNewTab(
                                                 newQuery,
                                                 {
@@ -1081,7 +1229,7 @@
                                             dbqn !== queryDatabaseQualifiedName
                                         ) {
                                             newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                            if (isPreview) {
+                                            if (isPlay) {
                                                 const tabIndex =
                                                     inlineTabs.value.findIndex(
                                                         (tab) =>
@@ -1100,7 +1248,7 @@
                                 } else {
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                    if (isPreview) {
+                                    if (isPlay) {
                                         const tabIndex =
                                             inlineTabs.value.findIndex(
                                                 (tab) =>
@@ -1139,7 +1287,7 @@
                                         .join('/')
 
                                     if (cqn !== queryConnectionQualifiedName) {
-                                        if (isPreview) {
+                                        if (isPlay) {
                                             const tabKey = handleAddNewTab(
                                                 newQuery,
                                                 {
@@ -1169,7 +1317,7 @@
                                         ) {
                                             // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${databaseName}.${schemaName}.${tableName} LIMIT 50;\n`
                                             newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${databaseName}${assetQuoteType}.${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                            if (isPreview) {
+                                            if (isPlay) {
                                                 const tabIndex =
                                                     inlineTabs.value.findIndex(
                                                         (tab) =>
@@ -1188,7 +1336,7 @@
                                             ) {
                                                 // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${schemaName}.${tableName} LIMIT 50;\n`
                                                 newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${schemaName}${assetQuoteType}.${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                                if (isPreview) {
+                                                if (isPlay) {
                                                     const tabIndex =
                                                         inlineTabs.value.findIndex(
                                                             (tab) =>
@@ -1216,7 +1364,7 @@
                                     console.log('match here')
                                     // newQuery = `\/* ${tableName} preview *\/\nSELECT * FROM ${tableName} LIMIT 50;\n`
                                     newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
-                                    if (isPreview) {
+                                    if (isPlay) {
                                         const tabIndex =
                                             inlineTabs.value.findIndex(
                                                 (tab) =>
@@ -1236,9 +1384,9 @@
                         break
                     }
                     case 'info': {
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'open_sidebar',
-                            trigger: 'quick_action',
+                            trigger: triggerOrigin,
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: t.typeName,
                         })
@@ -1490,27 +1638,53 @@
                 return inlineTabData.key
             }
 
-            const setContextInEditor = (item) => {
+            const setContext = (item, explorerType: 'editor' | 'explorer') => {
                 const activeInlineTabCopy: activeInlineTabInterface =
                     JSON.parse(JSON.stringify(toRaw(activeInlineTab.value)))
 
-                let qualifiedName = item?.qualifiedName?.split('/')
-                if (qualifiedName?.length === 5) {
-                    activeInlineTabCopy.playground.editor.context = {
+                const qualifiedName = item?.qualifiedName?.split('/')
+
+                // Setting schemaQualifiedName - from Schemas (5) and from Tables (6)
+                // Setting context from table also sets explorer context till schemaQualifiedName only
+                if (
+                    qualifiedName?.length === 5 ||
+                    qualifiedName?.length === 6
+                ) {
+                    const newSchema = {
                         attributeName: 'schemaQualifiedName',
                         attributeValue: item?.qualifiedName,
                     }
-                } else if (qualifiedName?.length === 4) {
-                    activeInlineTabCopy.playground.editor.context = {
+                    if (explorerType === 'editor') {
+                        activeInlineTabCopy.playground.editor.context =
+                            newSchema
+                    } else if (explorerType === 'explorer') {
+                        activeInlineTabCopy.explorer.schema.connectors =
+                            newSchema
+                    }
+                }
+
+                // Setting databaseQualifiedName - from DB's
+                else if (qualifiedName?.length === 4) {
+                    const newDatabase = {
                         attributeName: 'databaseQualifiedName',
                         attributeValue: item?.qualifiedName,
+                    }
+                    if (explorerType === 'editor') {
+                        activeInlineTabCopy.playground.editor.context =
+                            newDatabase
+                    } else if (explorerType === 'explorer') {
+                        activeInlineTabCopy.explorer.schema.connectors =
+                            newDatabase
                     }
                 }
 
                 setVQBInInlineTab(activeInlineTabCopy, inlineTabs)
             }
 
-            const previewVQBQuery = (item: any) => {
+            const previewVQBQuery = (
+                item: any,
+                triggerOrigin: 'right_click' | 'kebab_menu' | 'quick_action'
+            ) => {
                 const activeInlineTabCopy = JSON.parse(
                     JSON.stringify(toRaw(activeInlineTab.value))
                 )
@@ -1553,14 +1727,20 @@
                     limitRows.value,
                     useSchemaExplorerContext
                 )
+                useAddEvent('insights', 'schema_tree', 'item_click', {
+                    action: 'preview_data',
+                    trigger: triggerOrigin,
+                    query_tab_id: activeInlineTab.value.key,
+                    asset_type: item?.entity.typeName,
+                })
 
                 playQuery(selectedText, item?.entity)
             }
 
-            const dropdownOptions = [
+            const dropdownTableOptions = [
                 {
-                    title: 'Set in editor context',
-                    key: 'Set in editor context',
+                    title: 'Set explorer context',
+                    key: 'Set explorer context',
                     class: `
                                                 ${
                                                     readOnly?.value
@@ -1570,41 +1750,281 @@
 
                                             `,
                     disabled: false,
-                    icon: 'Add',
-                    iconClass: 'w-4 h-4 my-auto mr-1.5',
+                    // icon: 'Add',
+                    // iconClass: 'w-4 h-4 my-auto mr-1.5',
                     wrapperClass: 'flex items-center ',
                     component: MenuItem,
                     handleClick: ({ item }) => {
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
-                            action: 'set_editor_context',
+                        setContext(item, 'explorer')
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
+                            action: 'set_explorer_context',
                             trigger: 'kebab_menu',
                             query_tab_id: activeInlineTab.value.key,
                             asset_type: item.typeName,
                         })
-                        setContextInEditor(item)
                     },
                 },
                 {
                     title: 'Place name in editor',
                     key: 'AddAssetName',
                     component: MenuItem,
-                    icon: 'AddAssetName',
-                    iconClass: 'w-4 h-4 my-auto mr-1.5 focus:outline-none',
+                    // icon: 'AddAssetName',
+                    // iconClass: 'w-4 h-4 my-auto mr-1.5 focus:outline-none',
                     wrapperClass: 'flex items-center ',
                     class: '',
                     hide: showVQB.value,
                     disabled: false,
                     handleClick: ({ item }) => {
-                        useAddEvent('insights', 'schemaTree', 'itemClick', {
-                            action: 'place_name_in_editor',
-                            trigger: 'kebab_menu',
-                            query_tab_id: activeInlineTab.value.key,
-                            asset_type: item.typeName,
-                        })
-                        actionClick('add', item)
+                        actionClick('add', item, 'kebab_menu')
                     },
                 },
             ]
+
+            const dropdownOptions = (
+                triggerOrigin: 'right_click' | 'kebab_menu'
+            ) => [
+                {
+                    title: 'Set editor context',
+                    key: 'Set editor context',
+                    class: `
+                                                ${
+                                                    readOnly?.value
+                                                        ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
+                                                        : 'cursor-pointer'
+                                                }
+
+                                            `,
+                    disabled: false,
+                    // icon: 'Add',
+                    // iconClass: 'w-4 h-4 my-auto mr-1.5',
+                    wrapperClass: 'flex items-center ',
+                    component: MenuItem,
+                    handleClick: ({ item }) => {
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
+                            action: 'set_editor_context',
+                            trigger: triggerOrigin,
+                            query_tab_id: activeInlineTab.value.key,
+                            asset_type: item.typeName,
+                        })
+                        setContext(item, 'editor')
+                    },
+                },
+                {
+                    title: 'Set explorer context',
+                    key: 'Set explorer context',
+                    class: `
+                                                ${
+                                                    readOnly?.value
+                                                        ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
+                                                        : 'cursor-pointer'
+                                                }
+
+                                            `,
+                    disabled: false,
+                    // icon: 'Add',
+                    // iconClass: 'w-4 h-4 my-auto mr-1.5',
+                    wrapperClass: 'flex items-center ',
+                    component: MenuItem,
+                    handleClick: ({ item }) => {
+                        setContext(item, 'explorer')
+                        useAddEvent('insights', 'schema_tree', 'item_click', {
+                            action: 'set_explorer_context',
+                            trigger: triggerOrigin,
+                            query_tab_id: activeInlineTab.value.key,
+                            asset_type: item.typeName,
+                        })
+                    },
+                },
+                {
+                    title: 'Place name in editor',
+                    key: 'AddAssetName',
+                    component: MenuItem,
+                    // icon: 'AddAssetName',
+                    // iconClass: 'w-4 h-4 my-auto mr-1.5 focus:outline-none',
+                    wrapperClass: 'flex items-center ',
+                    class: '',
+                    hide: showVQB.value,
+                    disabled: false,
+                    handleClick: ({ item }) => {
+                        actionClick('add', item, triggerOrigin)
+                    },
+                },
+            ]
+
+            // Different options depending on whether VQB is open or not
+            const dropdownTableContextMenuOptions = showVQB.value
+                ? [
+                      {
+                          title: 'Set explorer context',
+                          key: 'Set explorer context',
+                          class: `
+                                                ${
+                                                    readOnly?.value
+                                                        ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
+                                                        : 'cursor-pointer'
+                                                }
+
+                                            `,
+                          disabled: false,
+                          wrapperClass: 'flex items-center ',
+                          component: MenuItem,
+                          handleClick: ({ item }) => {
+                              setContext(item, 'explorer')
+                              useAddEvent(
+                                  'insights',
+                                  'schema_tree',
+                                  'item_click',
+                                  {
+                                      action: 'set_explorer_context',
+                                      trigger: 'right_click',
+                                      query_tab_id: activeInlineTab.value.key,
+                                      asset_type: item.typeName,
+                                  }
+                              )
+                          },
+                      },
+                      {
+                          title: `Open ${item?.value?.typeName?.toLowerCase()} sidebar`,
+                          key: 'sidebar',
+                          component: MenuItem,
+                          class: '',
+                          disabled: false,
+                          handleClick: ({ item }) => {
+                              actionClick('info', item, 'right_click')
+                          },
+                      },
+                      {
+                          title: `Preview this ${item?.value?.typeName?.toLowerCase()}`,
+                          key: 'preview',
+                          class: '',
+                          disabled: false,
+                          component: MenuItem,
+                          handleClick: ({ item }) => {
+                              previewVQBQuery(item, 'right_click')
+                          },
+                      },
+                      {
+                          title: 'Start visual query',
+                          key: 'visual_query',
+                          component: MenuItem,
+                          class: '',
+                          disabled: false,
+                          handleClick: ({ item }) => {
+                              const refItem = ref(item)
+                              addTable(activeInlineTab, refItem, inlineTabs)
+                          },
+                      },
+                  ]
+                : [
+                      {
+                          title: `Open ${item?.value?.typeName?.toLowerCase()} sidebar`,
+                          key: 'sidebar',
+                          component: MenuItem,
+                          class: '',
+                          disabled: false,
+                          handleClick: ({ item }) => {
+                              actionClick('info', item, 'right_click')
+                          },
+                      },
+                      {
+                          title: `Preview this ${item?.value?.typeName?.toLowerCase()}`,
+                          key: 'preview',
+                          class: '',
+                          disabled: false,
+                          component: MenuItem,
+                          handleClick: ({ item }) => {
+                              previewData(item, 'right_click')
+                          },
+                      },
+                      {
+                          title:
+                              tooltipText.value === 'Query this '
+                                  ? `Query this ${item?.value?.typeName?.toLowerCase()}`
+                                  : 'Another query is running',
+                          key: 'query',
+                          component: MenuItem,
+                          class: 'border-b border-gray-300',
+                          disabled: false,
+                          handleClick: ({ item }) => {
+                              actionClick('play', item, 'right_click', true)
+                          },
+                      },
+                      {
+                          title: 'Set explorer context',
+                          key: 'Set explorer context',
+                          class: `
+                                                ${
+                                                    readOnly?.value
+                                                        ? ' bg-gray-100 cursor-not-allowed pointer-events-none'
+                                                        : 'cursor-pointer'
+                                                }
+
+                                            `,
+                          disabled: false,
+                          wrapperClass: 'flex items-center ',
+                          component: MenuItem,
+                          handleClick: ({ item }) => {
+                              setContext(item, 'explorer')
+                              useAddEvent(
+                                  'insights',
+                                  'schema_tree',
+                                  'item_click',
+                                  {
+                                      action: 'set_explorer_context',
+                                      trigger: 'right_click',
+                                      query_tab_id: activeInlineTab.value.key,
+                                      asset_type: item.typeName,
+                                  }
+                              )
+                          },
+                      },
+                      {
+                          title: 'Place name in editor',
+                          key: 'place_name',
+                          class: '',
+                          disabled: false,
+                          component: MenuItem,
+                          handleClick: ({ item }) => {
+                              actionClick('add', item, 'right_click')
+                          },
+                      },
+                  ]
+
+            const dropdownColumnOptions = showVQB.value
+                ? [
+                      {
+                          title: 'Open column sidebar',
+                          key: 'sidebar',
+                          component: MenuItem,
+                          class: '',
+                          disabled: false,
+                          handleClick: ({ item }) => {
+                              actionClick('info', item, 'right_click')
+                          },
+                      },
+                  ]
+                : [
+                      {
+                          title: 'Place name in editor',
+                          key: 'place_name',
+                          class: '',
+                          disabled: false,
+                          component: MenuItem,
+                          handleClick: ({ item }) => {
+                              actionClick('add', item, 'right_click')
+                          },
+                      },
+                      {
+                          title: 'Open column sidebar',
+                          key: 'sidebar',
+                          component: MenuItem,
+                          class: '',
+                          disabled: false,
+                          handleClick: ({ item }) => {
+                              actionClick('info', item, 'right_click')
+                          },
+                      },
+                  ]
 
             return {
                 recordTooltipPresence,
@@ -1612,6 +2032,9 @@
                 ADJACENT_TOOLTIP_DELAY,
                 lastTooltipPresence,
                 dropdownOptions,
+                dropdownTableOptions,
+                dropdownTableContextMenuOptions,
+                dropdownColumnOptions,
                 // showContextModal,
                 // closeContextModal,
                 // openInCurrentTab,
@@ -1635,7 +2058,7 @@
                 item,
                 childCount,
                 openSidebar,
-                setContextInEditor,
+                setContext,
                 readOnly,
                 previewData,
                 tooltipText,

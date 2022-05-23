@@ -8,7 +8,7 @@
                         icon="Cross"
                         class="cursor-pointer"
                         style="width: 0.8rem !important"
-                        @click="setPreference('showLegend', false)"
+                        @click="preferences.showLegend = false"
                     ></AtlanIcon>
                 </div>
             </div>

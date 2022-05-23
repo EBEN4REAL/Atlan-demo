@@ -4,6 +4,9 @@ import { watch } from 'vue'
 /** COMPOSABLES */
 import useLineageStore from '~/store/lineage'
 
+/** UTILS */
+import { SQLAssets } from './util.js'
+
 export default function useGraph({ graph }) {
     const lineageStore = useLineageStore()
     const preferences = lineageStore.getPreferences()
@@ -25,6 +28,9 @@ export default function useGraph({ graph }) {
         const { showDatabase, showSchema } = preferences
 
         graph.value.getNodes().forEach((node) => {
+            const { typeName } = node.store.data
+            const isSQLNode = SQLAssets.includes(typeName)
+            if (!isSQLNode) return
             node.updateData({ showDatabase, showSchema })
         })
 

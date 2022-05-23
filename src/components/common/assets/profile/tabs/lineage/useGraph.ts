@@ -7,6 +7,7 @@ import { dataTypeCategoryList } from '~/constant/dataType'
 
 /** UTILS */
 import {
+    SQLAssets,
     getNodeSourceImage,
     getSource,
     getSchema,
@@ -132,6 +133,7 @@ export default function useGraph(graph) {
         const img = getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
         const isVpNode = typeName === 'vpNode'
+        const isSQLNode = SQLAssets.includes(typeName)
         const isNodeWithPorts = [
             'Table',
             'View',
@@ -333,7 +335,7 @@ export default function useGraph(graph) {
                                     </div>
                                     <div class="node-meta__text">
                                         ${
-                                            isNodeWithPorts &&
+                                            isSQLNode &&
                                             ((data?.showDatabase &&
                                                 databaseName) ||
                                                 (data?.showSchema &&
@@ -343,17 +345,19 @@ export default function useGraph(graph) {
                                         }
                                     </div>
                                     <div class="node-meta__text node-database text-gray  truncate 
-                                        ${isNodeWithPorts ? '' : 'hidden'}">
+                                        ${isSQLNode ? '' : 'hidden'}">
                                         ${databaseName || ''}
                                     </div>
                                     ${
-                                        (data?.showDatabase && databaseName) &&
-                                        (data?.showSchema && schemaName)
+                                        data?.showDatabase &&
+                                        databaseName &&
+                                        data?.showSchema &&
+                                        schemaName
                                             ? '<div>/</div>'
                                             : ''
                                     }
                                     <div class="node-meta__text node-schema text-gray  truncate 
-                                        ${isNodeWithPorts ? '' : 'hidden'}">
+                                        ${isSQLNode ? '' : 'hidden'}">
                                         ${schemaName || ''}
                                     </div>
                                 </div>  

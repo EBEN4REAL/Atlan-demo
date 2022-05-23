@@ -30,8 +30,9 @@ export default function useGraph({ graph }) {
         graph.value.getNodes().forEach((node) => {
             const { typeName } = node.store.data
             const isSQLNode = SQLAssets.includes(typeName)
+            node.updateData({ showAnnouncement })
             if (!isSQLNode) return
-            node.updateData({ showDatabase, showSchema, showAnnouncement })
+            node.updateData({ showDatabase, showSchema })
         })
     }
 

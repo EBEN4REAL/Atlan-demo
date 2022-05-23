@@ -1,22 +1,27 @@
 <template>
     <!-- Error on running a query -->
     <div
-        class="flex flex-col items-center justify-center w-full h-full"
+        class="flex flex-col items-center justify-center w-full h-full bg-new-gray-100"
         v-if="isQueryRunning === 'error'"
     >
-        <AtlanIcon icon="queryErorrIllus" class="w-36 h-28" />
+        <!--  error body -->
         <div
             style="width: 300px"
-            class="flex flex-col items-center justify-center mt-2"
+            class="flex flex-col items-center justify-center"
         >
             <!-- {{ queryErrorObj }} -->
+            <!-- Which error -->
             <p
-                class="mt-2 mb-0 text-base font-bold text-center text-gray-700"
+                class="mt-2 mb-0 text-base text-2xl font-bold text-center text-new-gray-700"
                 v-if="queryErrorObj?.errorCode"
             >
                 {{ errorMessage(queryErrorObj) }}
             </p>
 
+            <!-- Image -->
+            <AtlanIcon icon="queryErrorIllus" class="mt-5 w-28 h-28" />
+
+            <!-- If access error -->
             <div
                 v-if="
                     SOURCE_ACCESS_ERROR_NAMES.includes(queryErrorObj.errorName)
@@ -30,12 +35,14 @@
                     {{ queryErrorObj?.details?.asset?.table }} table
                 </div>
             </div>
+
             <div v-else-if="queryErrorObj?.errorMessage">
                 <div class="text-center text-gray-500">
                     {{ errorDescription(queryErrorObj) }}
                 </div>
             </div>
 
+            <!-- If can copy error logs -->
             <div
                 v-if="hasErrorAction(queryErrorObj) === 'copy'"
                 class="flex flex-col items-center justify-center mt-2"

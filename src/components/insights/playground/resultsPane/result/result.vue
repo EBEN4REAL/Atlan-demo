@@ -102,7 +102,7 @@
 
             <div
                 v-else-if="isQueryRunning === ''"
-                class="flex flex-col items-center justify-center w-full h-full"
+                class="flex flex-col items-center justify-center w-full h-full bg-new-gray-100"
             >
                 <!-- <img :src="ResultsImg" class="text-white" :draggable="false" /> -->
                 <AtlanIcon

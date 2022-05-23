@@ -1,13 +1,16 @@
 <template>
     <!-- Error on running a query -->
-    <div class="w-full p-4 errorPanel">
-        <div class="flex items-center mb-4 text-xs">
-            <div
+    <div class="w-full h-full p-4 errorPanel bg-new-gray-100">
+        <div
+            class="flex items-center mb-4 text-base font-bold text-new-gray-700"
+        >
+            Invalid Query :(
+            <!-- <div
                 class="flex items-center justify-end px-3 py-1 light_creme dark_orange rounded-3xl"
             >
                 Invalid query
-            </div>
-            <span class="ml-2 text-gray-500">Error found</span>
+            </div> -->
+            <!-- <span class="ml-2 text-gray-500">Error found</span> -->
         </div>
         <div class="flex items-center w-full mb-2">
             <AtlanIcon icon="IssuesFilled" class="w-4 h-4" />

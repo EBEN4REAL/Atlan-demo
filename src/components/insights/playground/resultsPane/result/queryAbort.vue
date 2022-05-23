@@ -9,12 +9,12 @@
             class="flex flex-col items-center justify-center mt-2 mb-6"
         >
             <p
-                class="mt-2 mb-0 text-base text-2xl font-bold text-center text-new-gray-700"
+                class="mb-0 text-base text-2xl font-bold text-center text-new-gray-700"
             >
                 Whoops! Query was aborted.
             </p>
         </div>
-        <AtlanIcon icon="queryAbortIllus" class="w-36 h-36" />
+        <AtlanIcon icon="queryAbortIllus" class="w-28 h-28" />
     </div>
     <!-- ---------------------- -->
 </template>

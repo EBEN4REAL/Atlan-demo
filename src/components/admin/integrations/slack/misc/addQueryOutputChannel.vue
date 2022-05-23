@@ -26,6 +26,7 @@
                 <input
                     v-model="queryOutputChannel"
                     class="w-full focus:outline-none"
+                    style="min-height: 30px"
                     placeholder="Query output share channels"
                     @keydown.enter="addQueryOutputChannel"
                     @blur="addQueryOutputChannel"

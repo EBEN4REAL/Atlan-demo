@@ -997,6 +997,7 @@ export async function useAutoSuggestions(
             return suggestionsPromise
         }
     }
+    debugger
     /* If it is a first/nth character of first word */
     if (tokens.length < 2) {
         return getLocalSQLSugggestions(currentWord)
@@ -1062,41 +1063,63 @@ export async function useAutoSuggestions(
                             })
                         })
                     } else {
-                        const filterKeywords = typesKeywordsMap['FILTER'].values
-                        let suggestions = filterKeywords.map((keyword) => {
-                            return {
-                                label: keyword,
-                                kind: monaco.languages.CompletionItemKind
-                                    .Keyword,
-                                insertText: keyword,
-                            }
-                        })
+                        const suggestionsPromise = getSuggestionsUsingType(
+                            lastMatchedKeyword.type,
+                            lastMatchedKeyword.token,
+                            currentWord,
+                            connectorsInfo,
+                            cancelTokenSource,
+                            context
+                        )
 
-                        ///////////////////////////
+                        return new Promise((resolve, reject) => {
+                            suggestionsPromise.then((value) => {
+                                const filterKeywords =
+                                    typesKeywordsMap['FILTER'].values
+                                let suggestions = filterKeywords.map(
+                                    (keyword) => {
+                                        return {
+                                            label: keyword,
+                                            kind: monaco.languages
+                                                .CompletionItemKind.Keyword,
+                                            insertText: keyword,
+                                        }
+                                    }
+                                )
 
-                        const AliasesKeys: string[] = []
-                        Object.keys(aliasesMap.value).forEach((key: any) => {
-                            AliasesKeys.push(
-                                aliasesMap.value[key].value as string
-                            )
-                        })
-                        let AliasesKeywordsMap = AliasesKeys.map((keyword) => {
-                            return {
-                                label: keyword,
-                                kind: monaco.languages.CompletionItemKind
-                                    .Keyword,
-                                insertText: keyword,
-                            }
-                        })
+                                ///////////////////////////
 
-                        let _suggestions = [
-                            ...suggestions,
-                            ...AliasesKeywordsMap,
-                        ]
+                                const AliasesKeys: string[] = []
+                                Object.keys(aliasesMap.value).forEach(
+                                    (key: any) => {
+                                        AliasesKeys.push(
+                                            aliasesMap.value[key]
+                                                .value as string
+                                        )
+                                    }
+                                )
+                                let AliasesKeywordsMap = AliasesKeys.map(
+                                    (keyword) => {
+                                        return {
+                                            label: keyword,
+                                            kind: monaco.languages
+                                                .CompletionItemKind.Keyword,
+                                            insertText: keyword,
+                                        }
+                                    }
+                                )
 
-                        return Promise.resolve({
-                            suggestions: _suggestions,
-                            incomplete: true,
+                                let _suggestions = [
+                                    ...value.suggestions,
+                                    ...suggestions,
+                                    ...AliasesKeywordsMap,
+                                ]
+
+                                resolve({
+                                    suggestions: _suggestions,
+                                    incomplete: true,
+                                })
+                            })
                         })
                     }
                 }

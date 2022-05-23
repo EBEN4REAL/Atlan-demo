@@ -495,7 +495,7 @@
                 if (!isLoadingTest.value) {
                     if (errorTest) {
                         errorMessage(
-                            `Not able to authenticate your credentials - ${errorTest.value?.response?.data?.message}`
+                            `Not able to authenticate your credentials`
                         )
                         message.error(
                             'Test authentication failed. Please check your credentials'

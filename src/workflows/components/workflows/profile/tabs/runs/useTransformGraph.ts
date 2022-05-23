@@ -16,7 +16,7 @@ export default function useTransformGraph(graph, currZoom, firstNodeId) {
         // graph.value.centerPoint(0, 400)
         // graph.value.centerCell(cell)
         // graph.value.centerPoint(null, 800)
-        // graph.value.zoom(-0.4)
+        graph.value.zoomTo(0.5)
     }
     return {
         currZoom,

@@ -38,7 +38,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue'
+    import { whenever } from '@vueuse/core'
+    import { defineComponent, ref, toRefs } from 'vue'
     import { runStatuses } from '~/workflowsv2/constants/filters'
 
     export default defineComponent({
@@ -48,7 +49,8 @@
             value: { type: String, required: false, default: () => undefined },
         },
         emits: ['update:value'],
-        setup(_, { emit }) {
+        setup(props, { emit }) {
+            const { value } = toRefs(props)
             const selected = ref<string | undefined>(undefined)
 
             const handleSelect = (sel, val) => {
@@ -60,6 +62,14 @@
                     selected.value = sel
                 }
             }
+
+            whenever(
+                // Set selected value to undefined when status is reset
+                () => !value.value,
+                () => {
+                    selected.value = undefined
+                }
+            )
 
             return { selected, runStatuses, handleSelect }
         },

@@ -8,7 +8,7 @@ dayjs.extend(isYesterday)
 export const findIntervalByDate = (gt: number, lt = Date.now()) => {
     if (gt) {
         const days = Math.round((lt - gt) / (1000 * 60 * 60 * 24)) // ms * seconds * minutes * hours
-        if (days < 2) return '1h'
+        if (days < 3) return '1h'
         if (days < 20) return '1d'
         return '1w'
     }

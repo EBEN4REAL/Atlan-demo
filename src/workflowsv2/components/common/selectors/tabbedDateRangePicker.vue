@@ -33,8 +33,9 @@
 </template>
 
 <script lang="ts">
+    import { whenever } from '@vueuse/core'
     import dayjs from 'dayjs'
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, toRefs } from 'vue'
     import { dateRanges } from '~/workflowsv2/constants/filters'
 
     export default defineComponent({
@@ -44,7 +45,8 @@
             value: { type: Object, required: false, default: () => undefined },
         },
         emits: ['update:value'],
-        setup(_, { emit }) {
+        setup(props, { emit }) {
+            const { value } = toRefs(props)
             const selected = ref(undefined)
 
             const handleSelect = (sel, val) => {
@@ -61,6 +63,14 @@
             handleSelect('Last 24H', {
                 gt: dayjs().subtract(1, 'day').valueOf(),
             })
+
+            whenever(
+                // Set selected value to undefined when range is reset
+                () => !value.value,
+                () => {
+                    selected.value = undefined
+                }
+            )
 
             return { selected, dateRanges, handleSelect }
         },

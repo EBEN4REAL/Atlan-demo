@@ -25,29 +25,13 @@ export default function useGraph({ graph }) {
 
     // controlToggle
     const controlToggle = () => {
-        const { showDatabase, showSchema } = preferences
+        const { showDatabase, showSchema, showAnnouncement } = preferences
 
         graph.value.getNodes().forEach((node) => {
             const { typeName } = node.store.data
             const isSQLNode = SQLAssets.includes(typeName)
             if (!isSQLNode) return
-            node.updateData({ showDatabase, showSchema })
-        })
-
-        const classes = [
-            { pref: 'showSchema', className: '.node-schema' },
-            { pref: 'showDatabase', className: '.node-database' },
-            { pref: 'showAnnouncement', className: '.node-announcement' },
-        ]
-
-        classes.forEach((c) => {
-            const val = preferences[c.pref]
-            const nodesList = document.querySelectorAll(c.className)
-            const nodesArr = Array.from(nodesList)
-            nodesArr.forEach((n) => {
-                if (val) n?.classList.remove('hidden')
-                else n?.classList.add('hidden')
-            })
+            node.updateData({ showDatabase, showSchema, showAnnouncement })
         })
     }
 

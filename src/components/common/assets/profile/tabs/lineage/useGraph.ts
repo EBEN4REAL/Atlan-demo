@@ -170,6 +170,7 @@ export default function useGraph(graph) {
             disableCta: false,
             showDatabase: true,
             showSchema: true,
+            showAnnouncement: true,
             ...dataObj,
         }
 
@@ -249,7 +250,7 @@ export default function useGraph(graph) {
                                                 : ''
                                         }
                                         ${
-                                            aType
+                                            aType && data?.showAnnouncement
                                                 ? `<span class="ml-2 node-announcement">
                                                     ${announcementTypeIcons[aType]}
                                                    </span>`
@@ -320,12 +321,15 @@ export default function useGraph(graph) {
                                                 ? 'w-0 hidden'
                                                 : 'flex-none ml-1'
                                         }">${status}</span>
-                                        <span class=" node-announcement ${
-                                            !flag
-                                                ? 'w-0 hidden'
-                                                : 'flex-none ml-1'
-                                        }">${flag}</span>
-
+                                        ${
+                                            data?.showAnnouncement && flag
+                                                ? `<span class=" node-announcement ${
+                                                      !flag
+                                                          ? 'w-0 hidden'
+                                                          : 'flex-none ml-1'
+                                                  }">${flag}</span>`
+                                                : ''
+                                        }                                        
                                     </div>
                                 </div>
                                 <div class="node-meta">
@@ -344,22 +348,33 @@ export default function useGraph(graph) {
                                                 : ''
                                         }
                                     </div>
-                                    <div class="node-meta__text node-database text-gray  truncate 
-                                        ${isSQLNode ? '' : 'hidden'}">
-                                        ${databaseName || ''}
-                                    </div>
+                                      ${
+                                          data?.showDatabase &&
+                                          databaseName &&
+                                          isSQLNode
+                                              ? `<div class="node-meta__text node-database text-gray truncate">
+                                                    ${databaseName || ''} 
+                                               </div>`
+                                              : ''
+                                      }
                                     ${
                                         data?.showDatabase &&
                                         databaseName &&
                                         data?.showSchema &&
-                                        schemaName
+                                        schemaName &&
+                                        isSQLNode
                                             ? '<div>/</div>'
                                             : ''
                                     }
-                                    <div class="node-meta__text node-schema text-gray  truncate 
-                                        ${isSQLNode ? '' : 'hidden'}">
-                                        ${schemaName || ''}
-                                    </div>
+                                    ${
+                                        data?.showSchema &&
+                                        schemaName &&
+                                        isSQLNode
+                                            ? `<div class="node-meta__text node-schema text-gray truncate">
+                                                  ${schemaName || ''}
+                                                </div>`
+                                            : ''
+                                    }
                                 </div>  
                             </div>
                             <div class="lineage-node__ports 

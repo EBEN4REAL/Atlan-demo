@@ -271,14 +271,20 @@
                         style="padding: 0px; max-width: 65%; width: auto"
                     >
                         <div
-                            class="relative flex items-center justify-center h-full px-2 border-t border-b border-l border-r rounded-tl rounded-bl cursor-pointer border-new-gray-300"
+                            class="relative flex items-center justify-center h-full px-2 border-t border-b border-r rounded-tl rounded-bl cursor-pointer border-new-gray-300"
                             style="max-width: 105px"
-                            v-if="isResultTabPopulated"
-                            :class="
+                            v-if="
+                                isResultTabPopulated &&
+                                insights_Store.previewTabs.length
+                            "
+                            :class="[
                                 fullScreenTabActive === -1
                                     ? 'tab-active'
-                                    : 'not-active'
-                            "
+                                    : 'not-active',
+                                insights_Store.previewTabs.length
+                                    ? 'border-l'
+                                    : '',
+                            ]"
                             @click="() => changeFullScreenTabActive(-1)"
                         >
                             <div class="flex items-center text-sm">
@@ -290,12 +296,15 @@
                             </div>
                         </div>
                         <div
-                            class="flex items-center w-full h-full text-sm border-t border-b border-r rounded-r cursor-pointer text-new-gray-700 bg-new-gray-200 border-new-gray-300"
-                            :class="
+                            class="flex items-center w-full h-full text-sm border-t border-b border-r rounded-r cursor-pointer text-new-gray-700 bg-new-gray-200"
+                            :class="[
                                 !isResultTabPopulated
                                     ? 'border-l rounded-l'
-                                    : ''
-                            "
+                                    : '',
+                                insights_Store.previewTabs.length
+                                    ? 'border-new-gray-300'
+                                    : '',
+                            ]"
                         >
                             <a-tabs
                                 :class="$style.previewtab_footer"

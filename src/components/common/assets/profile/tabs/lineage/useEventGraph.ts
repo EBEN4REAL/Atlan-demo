@@ -479,6 +479,11 @@ export default function useEventGraph({
                 : e.id !== `vpNodeProcessId/${node.id}@${modeId}`
         )
 
+        if (mode === 'vpNodeSS')
+            sameSourceCount.value[modeId].targetsHidden = filteredHiddenEntities
+        else
+            sameTargetCount.value[modeId].sourcesHidden = filteredHiddenEntities
+
         if (filteredHiddenEntities.length !== 0) {
             // add back vp node
             const entity = node?.store?.data?.entity || node.entity
@@ -1747,6 +1752,16 @@ export default function useEventGraph({
                 resetState()
 
                 if (!portsCount) {
+                    // Handle Event - lineage_sub_node_clicked
+                    isExpandedNodeEventSideEffect.value = true
+                    sendSubNodeClickedEvent(
+                        portEntity.typeName?.toLowerCase(),
+                        portEntity.attributes?.connectorName ||
+                            portEntity.attributes?.qualifiedName?.split('/')[1],
+                        portIndex,
+                        node.id
+                    )
+
                     const newAction = { selectPort: portId }
                     actions.value = { ...actions.value, ...newAction }
                     node.updateData({ highlightPorts: [] })

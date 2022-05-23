@@ -306,7 +306,7 @@
                 return monaco.editor.create(monacoRoot.value as HTMLElement, {
                     glyphMargin: false,
                     folding: true,
-                    lineDecorationsWidth: 8,
+                    lineDecorationsWidth: 24,
                     lineNumbersMinChars: 2,
                     wordBasedSuggestions: false,
                     language: 'atlansql',
@@ -861,18 +861,11 @@
 </style>
 
 <style lang="less" module>
-    // .monaco-global {
-    :global(.line-numbers) {
-        margin-left: 5px !important;
-        margin-right: 10px !important;
-    }
     :global(.monaco-scrollable-element.editor-scrollable) {
         left: 63px !important;
         width: calc(100% - 63px) !important;
     }
-    :global(.margin) {
-        width: 63px !important;
-    }
+
     :global(.line-numbers) {
         width: 47px !important;
         // padding-left: 8px !important;
@@ -891,10 +884,10 @@
         }
     }
     :global(.cldr.codicon.codicon-folding-expanded) {
-        left: 35px !important;
+        left: 28px !important;
     }
     :global(.cldr.codicon.codicon-folding-collapsed) {
-        left: 35px !important;
+        left: 28px !important;
     }
 
     :global(.editor-widget.suggest-widget.visible) {

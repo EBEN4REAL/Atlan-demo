@@ -10,10 +10,12 @@
     <div
         v-else-if="!isEditing && localDescription.length === 0"
         class="flex items-center gap-x-2.5"
-        :class="{ 'cursor-text': allowEditing }"
-        @click="handleEdit($event)"
     >
-        <p style="color: #bfbfbf">
+        <p
+            @click="handleEdit($event)"
+            style="color: #bfbfbf"
+            :class="{ 'cursor-text': allowEditing }"
+        >
             {{ allowEditing ? '+ Add a description' : '' }}
         </p>
         <transition

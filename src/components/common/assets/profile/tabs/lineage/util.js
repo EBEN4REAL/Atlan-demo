@@ -104,7 +104,7 @@ export const getSource = (entity) => {
 /**
  * Given an entity, return the schema name of the entity
  * @param entity - The entity object.
- * @returns The schema name of the table or view.
+ * @returns The schema name of the entity.
  */
 export const getSchema = (entity) => {
     // TODO:
@@ -115,6 +115,22 @@ export const getSchema = (entity) => {
         entity.uniqueAttributes?.qualifiedName?.split('/')
     if (item[0] === 'default') return item[4]
     return item[3]
+}
+
+/**
+ * Given an entity, return the database name of the entity
+ * @param entity - The entity object.
+ * @returns The database name of the entity.
+ */
+export const getDatabase = (entity) => {
+    // TODO:
+    const allowedTypes = ['Table', 'View']
+    if (!allowedTypes.includes(entity.typeName)) return null
+    const item =
+        entity.attributes?.qualifiedName?.split('/') ||
+        entity.uniqueAttributes?.qualifiedName?.split('/')
+    if (item[0] === 'default') return item[3]
+    return item[2]
 }
 
 /**

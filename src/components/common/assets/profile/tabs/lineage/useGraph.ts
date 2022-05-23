@@ -10,6 +10,7 @@ import {
     getNodeSourceImage,
     getSource,
     getSchema,
+    getDatabase,
     getNodeTypeText,
 } from './util.js'
 import {
@@ -127,6 +128,7 @@ export default function useGraph(graph) {
         const displayText = title(entity)
         const source = getSource(entity)
         const schemaName = getSchema(entity)
+        const databaseName = getDatabase(entity)
         const img = getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
         const isVpNode = typeName === 'vpNode'
@@ -164,6 +166,8 @@ export default function useGraph(graph) {
             ctaLeftId: '',
             ctaLeftLoading: false,
             disableCta: false,
+            showDatabase: true,
+            showSchema: true,
             ...dataObj,
         }
 
@@ -327,13 +331,27 @@ export default function useGraph(graph) {
                                     <div class="truncate node-meta__text isTypename">
                                         ${typeNameComputed}
                                     </div>
-                                    <div class="node-meta__text node-schema">
+                                    <div class="node-meta__text">
                                         ${
-                                            isNodeWithPorts && schemaName
+                                            isNodeWithPorts &&
+                                            ((data?.showDatabase &&
+                                                databaseName) ||
+                                                (data?.showSchema &&
+                                                    schemaName))
                                                 ? 'in'
                                                 : ''
                                         }
                                     </div>
+                                    <div class="node-meta__text node-database text-gray  truncate 
+                                        ${isNodeWithPorts ? '' : 'hidden'}">
+                                        ${databaseName || ''}
+                                    </div>
+                                    ${
+                                        (data?.showDatabase && databaseName) &&
+                                        (data?.showSchema && schemaName)
+                                            ? '<div>/</div>'
+                                            : ''
+                                    }
                                     <div class="node-meta__text node-schema text-gray  truncate 
                                         ${isNodeWithPorts ? '' : 'hidden'}">
                                         ${schemaName || ''}

@@ -48,8 +48,8 @@ const keyMap = {
         updates_cta: {
             clicked: {
                 action: 'main_header_updates_cta_clicked',
-            }
-        }
+            },
+        },
     },
     discovery: {
         filter: {
@@ -70,11 +70,11 @@ const keyMap = {
                 action: 'discovery_cta_action_clicked',
                 properties: (props: {
                     action:
-                    | 'open_asset'
-                    | 'vqb_query'
-                    | 'sql_query'
-                    | 'copy_link'
-                    | 'open_in_source'
+                        | 'open_asset'
+                        | 'vqb_query'
+                        | 'sql_query'
+                        | 'copy_link'
+                        | 'open_in_source'
                     asset_type: string
                 }) => ({
                     ...props,
@@ -475,11 +475,22 @@ const keyMap = {
         results_panel: {
             cta_clicked: {
                 action: 'insights_results_panel_cta_clicked',
-                properties: (props) => ({
-                    action: props.action,
-                    query_tab_id: props?.query_tab_id,
-                    is_full_screen: props?.is_full_screen,
-                }),
+                properties: (props) => {
+                    if (props?.description_added) {
+                        return {
+                            action: props.action,
+                            query_tab_id: props?.query_tab_id,
+                            is_full_screen: props?.is_full_screen,
+                            description_added: props?.description_added,
+                        }
+                    } else {
+                        return {
+                            action: props.action,
+                            query_tab_id: props?.query_tab_id,
+                            is_full_screen: props?.is_full_screen,
+                        }
+                    }
+                },
             },
             tab_switched: {
                 action: 'insights_results_panel_tab_switched',

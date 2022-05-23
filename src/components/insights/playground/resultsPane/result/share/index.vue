@@ -172,6 +172,7 @@
     })
 
     const open = () => {
+        if (disabled.value) return
         channel.value = channels.value[0].value
         visible.value = true
         emit('closeParent')
@@ -227,6 +228,16 @@
                     key: 'shareSlack',
                     content: 'Successfully shared.',
                     duration: 2,
+                })
+                debugger
+
+                useAddEvent('insights', 'results_panel', 'cta_clicked', {
+                    query_tab_id: activeInlineTab.value.key,
+                    action: 'slack_share',
+                    is_full_screen: false,
+                    description_added:
+                        reqConfig.value.formDataFormat.initialComment?.length >
+                        0,
                 })
             } else if (error.value) {
                 const errMsg = error.value?.response?.data?.errorMessage

@@ -86,14 +86,14 @@
                 </AtlanBtn>
             </a-tooltip>
             <SlackShareModal
-                :disabled="insights_Store.activePreviewGuid !== undefined"
+                :disabled="
+                    insights_Store.activePreviewGuid !== undefined ||
+                    !Boolean(sharableChannels.length)
+                "
                 :dataList="activeInlineTab.playground.editor.dataList"
                 :columns="activeInlineTab.playground.editor.columnList"
                 v-model:visible="slackSharePopoverVisible"
-                v-if="
-                    tenantSlackStatus?.configured &&
-                    tenantSlackStatus?.channels?.length
-                "
+                v-if="tenantSlackStatus?.configured"
             >
                 <a-tooltip
                     color="#363636"
@@ -109,12 +109,19 @@
                         !slackSharePopoverVisible
                     "
                 >
-                    <template #title> Share Results</template>
+                    <template #title>
+                        {{
+                            sharableChannels?.length > 0
+                                ? 'Share Results'
+                                : 'Channels not setted up'
+                        }}
+                    </template>
                     <AtlanBtn
                         size="sm"
                         color="secondary"
                         :disabled="
-                            insights_Store.activePreviewGuid !== undefined
+                            insights_Store.activePreviewGuid !== undefined ||
+                            !Boolean(sharableChannels.length)
                         "
                         @mouseout="recordTooltipPresence"
                         @click="
@@ -138,10 +145,28 @@
                             @click.stop="() => {}"
                             overlayClassName="border-none focus_none"
                         >
-                            <template #title
-                                >Preview data is unavailable for slack
-                                share</template
-                            >
+                            <template #title>
+                                Preview data is unavailable for slack share
+                            </template>
+
+                            <AtlanIcon
+                                icon="Slack"
+                                class="w-4 h-4 text-xs border-none text-new-gray-800 focus_none"
+                            />
+                        </a-tooltip>
+                        <a-tooltip
+                            v-else-if="!Boolean(sharableChannels.length)"
+                            color="#363636"
+                            :mouseEnterDelay="
+                                lastTooltipPresence !== undefined
+                                    ? ADJACENT_TOOLTIP_DELAY
+                                    : MOUSE_ENTER_DELAY
+                            "
+                            placement="topRight"
+                            @click.stop="() => {}"
+                            overlayClassName="border-none focus_none"
+                        >
+                            <template #title> Channels not setted up </template>
 
                             <AtlanIcon
                                 icon="Slack"
@@ -163,7 +188,10 @@
                     "
                     size="sm"
                     color="secondary"
-                    :disabled="insights_Store.activePreviewGuid !== undefined"
+                    :disabled="
+                        insights_Store.activePreviewGuid !== undefined ||
+                        !Boolean(sharableChannels.length)
+                    "
                     @mouseout="recordTooltipPresence"
                     class="py-0.5 px-2 mr-2 text-sm rounded shadow cursor-pointer border-none focus_none"
                     style="height: 24px"
@@ -245,15 +273,13 @@
                             "
                             key="slack"
                             class="px-4 py-2 text-sm"
-                            v-if="
-                                tenantSlackStatus?.configured &&
-                                tenantSlackStatus?.queryOutputChannels?.length
-                            "
+                            v-if="tenantSlackStatus?.configured"
                         >
                             <SlackShareModal
                                 :disabled="
                                     insights_Store.activePreviewGuid !==
-                                    undefined
+                                        undefined ||
+                                    !Boolean(sharableChannels.length)
                                 "
                                 :dataList="
                                     activeInlineTab.playground.editor.dataList
@@ -261,11 +287,7 @@
                                 :columns="
                                     activeInlineTab.playground.editor.columnList
                                 "
-                                v-if="
-                                    tenantSlackStatus?.configured &&
-                                    tenantSlackStatus?.queryOutputChannels
-                                        ?.length
-                                "
+                                v-if="tenantSlackStatus?.configured"
                             >
                                 <a-tooltip
                                     v-if="
@@ -281,16 +303,48 @@
                                     color="#363636"
                                     @click.stop="() => {}"
                                 >
-                                    <template #title
-                                        >Preview data is unavailable for slack
-                                        share</template
-                                    >
+                                    <template #title>
+                                        Preview data is unavailable for slack
+                                        share
+                                    </template>
 
                                     <div
                                         class="flex items-center"
                                         :class="
                                             insights_Store.activePreviewGuid !==
                                             undefined
+                                                ? 'pointer-events-none'
+                                                : ''
+                                        "
+                                    >
+                                        <AtlanIcon
+                                            icon="Slack"
+                                            class="w-4 h-4 mr-2"
+                                        />
+                                        <span>Share Results</span>
+                                    </div>
+                                </a-tooltip>
+                                <a-tooltip
+                                    v-else-if="
+                                        !Boolean(sharableChannels.length)
+                                    "
+                                    :mouseEnterDelay="
+                                        lastTooltipPresence !== undefined
+                                            ? ADJACENT_TOOLTIP_DELAY
+                                            : MOUSE_ENTER_DELAY
+                                    "
+                                    placement="topRight"
+                                    color="#363636"
+                                    @click.stop="() => {}"
+                                >
+                                    <template #title>
+                                        Channels not setted up
+                                    </template>
+
+                                    <div
+                                        class="flex items-center"
+                                        :class="
+                                            !Boolean(sharableChannels.length)
                                                 ? 'pointer-events-none'
                                                 : ''
                                         "
@@ -560,6 +614,7 @@
     import SlackShareModal from '~/components/insights/playground/resultsPane/result/share/index.vue'
     import intStore from '~/store/integrations/index'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { checkAtlanBotInChannels } from '~/composables/integrations/slack/useSlack'
 
     export default defineComponent({
         components: {
@@ -597,6 +652,37 @@
             ) as Ref<activeInlineTabInterface>
 
             const { getFormattedTimeFromMilliSeconds } = useUtils()
+
+            const AtlanBotBody = ref({
+                channels: tenantSlackStatus?.value?.queryOutputChannels.map(
+                    (channel) => channel?.id
+                ),
+            })
+
+            const {
+                data: atlanBotData,
+                isLoading: atlanBotIsLoading,
+                error: atlanBotError,
+                mutate: atlanBotMutate,
+            } = checkAtlanBotInChannels(AtlanBotBody, {
+                immediate: false,
+            })
+            atlanBotMutate()
+
+            const sharableChannels = computed(() => {
+                if (!atlanBotData.value?.channelList) return []
+
+                return tenantSlackStatus?.value?.queryOutputChannels.filter(
+                    (channel) => {
+                        if (
+                            atlanBotData.value?.channelList?.includes(
+                                channel?.id
+                            )
+                        )
+                            return channel
+                    }
+                )
+            })
 
             const isQueryRunning = computed(() => {
                 if (insights_Store.activePreviewGuid !== undefined) {
@@ -924,6 +1010,7 @@
             )
 
             return {
+                sharableChannels,
                 toggleShareSlackModal,
                 slackSharePopoverVisible,
                 tenantSlackStatus,

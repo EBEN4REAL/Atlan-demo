@@ -160,7 +160,15 @@
                     </a-tooltip>
                 </div>
                 <!-- Re-center -->
-                <div class="control-item" @click="fit(baseEntityGuid)">
+                <div
+                    class="control-item"
+                    @click="
+                        () => {
+                            fit(baseEntityGuid)
+                            sendPanelRefocusEvent()
+                        }
+                    "
+                >
                     <a-tooltip placement="top">
                         <template #title>
                             <span>Refocus to base node</span>
@@ -218,11 +226,13 @@
 <script lang="ts">
     /** VUE */
     import { defineComponent, ref, toRefs } from 'vue'
+    import { useDebounceFn } from '@vueuse/core'
     import { DataUri } from '@antv/x6'
 
     /** COMPOSABLES */
     import useTransformGraph from './useTransformGraph'
     import useLineageStore from '~/store/lineage'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     /** CONSTANTS */
     import { exportStyles } from './stylesTwo'
@@ -275,6 +285,23 @@
             const isPreferencesVisible = ref(false)
             const footerRoot = ref<HTMLElement>()
 
+            /** EVENTS DEFINITIONS */
+            const sendFullScreenToggleEvent = useDebounceFn(() => {
+                useAddEvent('lineage', 'control_panel_full_screen', 'toggled', {
+                    is_enabled: isFullscreen.value,
+                })
+            }, 600)
+
+            const sendPanelRefocusEvent = useDebounceFn(() => {
+                useAddEvent('lineage', 'control_panel_refocus', 'clicked')
+            }, 600)
+
+            const sendControlPanelToggledEvent = useDebounceFn(() => {
+                useAddEvent('lineage', 'control_panel', 'toggled', {
+                    is_hidden: !isExpanded.value,
+                })
+            }, 600)
+
             /** METHODS */
             // useTransformGraph
             const { zoom, fit, fullscreen } = useTransformGraph(graph, emit)
@@ -305,6 +332,10 @@
             // onFullscreen
             const onFullscreen = () => {
                 isFullscreen.value = !isFullscreen.value
+
+                // Handle Event - lineage_control_panel_full_screen_toggled
+                sendFullScreenToggleEvent()
+
                 if (isFullscreen.value) {
                     graph.value.resize(graphWidth.value, graphHeight.value)
                 } else {
@@ -321,6 +352,7 @@
             const onShowMinimap = () => {
                 showMinimap.value = !showMinimap.value
                 emit('on-show-minimap', showMinimap.value)
+                // console.log('Hey show mini map')
             }
 
             // toggleControlVisibility
@@ -331,6 +363,9 @@
                     if (showMinimap.value) onShowMinimap()
                     isExpanded.value = false
                 } else isExpanded.value = true
+
+                // Handle Event - lineage_control_panel_toggled
+                sendControlPanelToggledEvent()
             }
 
             // setPreference
@@ -352,6 +387,7 @@
                 onSvgExport,
                 toggleControlVisibility,
                 setPreference,
+                sendPanelRefocusEvent,
             }
         },
     })

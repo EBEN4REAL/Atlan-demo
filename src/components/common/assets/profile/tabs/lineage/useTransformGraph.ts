@@ -9,7 +9,7 @@ export default function useTransformGraph(graph, emit) {
     const zoom = (factor) => {
         graph.value.zoom(factor)
         const currZoom = `${(graph.value.zoom() * 100).toFixed(0)}%`
-        emit('on-zoom-change', currZoom)
+        emit('on-zoom-change', { currZoom, factor })
     }
 
     // Fit

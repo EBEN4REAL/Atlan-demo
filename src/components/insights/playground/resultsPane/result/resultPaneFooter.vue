@@ -86,6 +86,7 @@
                 </AtlanBtn>
             </a-tooltip>
             <SlackShareModal
+                :disabled="insights_Store.activePreviewGuid !== undefined"
                 :dataList="activeInlineTab.playground.editor.dataList"
                 :columns="activeInlineTab.playground.editor.columnList"
                 v-model:visible="slackSharePopoverVisible"
@@ -101,12 +102,12 @@
                             ? ADJACENT_TOOLTIP_DELAY
                             : MOUSE_ENTER_DELAY
                     "
+                    placement="topRight"
                     v-if="
                         columnsCount &&
                         previewTabsWidth > 0 &&
                         !slackSharePopoverVisible
                     "
-                    placement="topRight"
                 >
                     <template #title> Share Results</template>
                     <AtlanBtn
@@ -120,12 +121,37 @@
                             () =>
                                 toggleShareSlackModal(slackSharePopoverVisible)
                         "
-                        class="py-0.5 px-2 mr-2 text-sm border-none text-xs rounded shadow cursor-pointer"
+                        class="py-0.5 px-2 mr-2 text-sm text-xs rounded shadow cursor-pointer border-none focus_none"
                         style="height: 24px"
                     >
+                        <a-tooltip
+                            v-if="
+                                insights_Store.activePreviewGuid !== undefined
+                            "
+                            color="#363636"
+                            :mouseEnterDelay="
+                                lastTooltipPresence !== undefined
+                                    ? ADJACENT_TOOLTIP_DELAY
+                                    : MOUSE_ENTER_DELAY
+                            "
+                            placement="topRight"
+                            @click.stop="() => {}"
+                            overlayClassName="border-none focus_none"
+                        >
+                            <template #title
+                                >Preview data is unavailable for slack
+                                share</template
+                            >
+
+                            <AtlanIcon
+                                icon="Slack"
+                                class="w-4 h-4 text-xs border-none text-new-gray-800 focus_none"
+                            />
+                        </a-tooltip>
                         <AtlanIcon
+                            v-else
                             icon="Slack"
-                            class="w-4 h-4 text-xs text-new-gray-800"
+                            class="w-4 h-4 text-xs border-none text-new-gray-800 focus_none"
                         />
                     </AtlanBtn>
                 </a-tooltip>
@@ -139,7 +165,7 @@
                     color="secondary"
                     :disabled="insights_Store.activePreviewGuid !== undefined"
                     @mouseout="recordTooltipPresence"
-                    class="py-0.5 px-2 mr-2 text-sm border-none rounded shadow cursor-pointer"
+                    class="py-0.5 px-2 mr-2 text-sm rounded shadow cursor-pointer border-none focus_none"
                     style="height: 24px"
                     @click="
                         () => toggleShareSlackModal(slackSharePopoverVisible)
@@ -147,7 +173,7 @@
                 >
                     <AtlanIcon
                         icon="Slack"
-                        class="w-4 h-4 text-xs text-new-gray-800"
+                        class="w-4 h-4 text-xs text-new-gray-800 focus_none"
                     />
                 </AtlanBtn>
             </SlackShareModal>
@@ -225,6 +251,10 @@
                             "
                         >
                             <SlackShareModal
+                                :disabled="
+                                    insights_Store.activePreviewGuid !==
+                                    undefined
+                                "
                                 :dataList="
                                     activeInlineTab.playground.editor.dataList
                                 "
@@ -237,7 +267,42 @@
                                         ?.length
                                 "
                             >
-                                <div class="flex items-center">
+                                <a-tooltip
+                                    v-if="
+                                        insights_Store.activePreviewGuid !==
+                                        undefined
+                                    "
+                                    :mouseEnterDelay="
+                                        lastTooltipPresence !== undefined
+                                            ? ADJACENT_TOOLTIP_DELAY
+                                            : MOUSE_ENTER_DELAY
+                                    "
+                                    placement="topRight"
+                                    color="#363636"
+                                    @click.stop="() => {}"
+                                >
+                                    <template #title
+                                        >Preview data is unavailable for slack
+                                        share</template
+                                    >
+
+                                    <div
+                                        class="flex items-center"
+                                        :class="
+                                            insights_Store.activePreviewGuid !==
+                                            undefined
+                                                ? 'pointer-events-none'
+                                                : ''
+                                        "
+                                    >
+                                        <AtlanIcon
+                                            icon="Slack"
+                                            class="w-4 h-4 mr-2"
+                                        />
+                                        <span>Share Results</span>
+                                    </div>
+                                </a-tooltip>
+                                <div v-else class="flex items-center">
                                     <AtlanIcon
                                         icon="Slack"
                                         class="w-4 h-4 mr-2"
@@ -919,6 +984,9 @@
     }
     .tab-active {
         @apply bg-white;
+    }
+    .focus_none:focus {
+        outline: none !important;
     }
 </style>
 <style lang="less" module>

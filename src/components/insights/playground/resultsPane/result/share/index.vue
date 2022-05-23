@@ -2,11 +2,12 @@
     <span @click="open">
         <slot />
     </span>
-
     <a-popover
         trigger="click"
         placement="topLeft"
-        overlayClassName="slack_popover"
+        :overlayClassName="`slack_popover ${
+            disabled ? 'pointer-events-none' : ''
+        }`"
         v-model:visible="visible"
         @visibleChange="onPopoverVisibleChange"
         class="mb-4"
@@ -122,6 +123,10 @@
             type: Boolean,
             required: true,
         },
+        disabled: {
+            type: Boolean,
+            default: false,
+        },
     })
 
     const emit = defineEmits(['closeParent', 'success', 'change'])
@@ -134,7 +139,8 @@
     const store = intStore()
 
     const { tenantSlackStatus } = toRefs(store)
-    const { assetType, askQuestionModal, columns, dataList } = toRefs(props)
+    const { assetType, askQuestionModal, columns, dataList, disabled } =
+        toRefs(props)
 
     const channels = ref([])
 

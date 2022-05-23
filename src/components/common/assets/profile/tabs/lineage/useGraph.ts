@@ -352,7 +352,7 @@ export default function useGraph(graph) {
                                           data?.showDatabase &&
                                           databaseName &&
                                           isSQLNode
-                                              ? `<div class="node-meta__text node-database text-gray truncate">
+                                              ? `<div title="Database: ${databaseName}" class="node-meta__text node-database text-gray truncate">
                                                     ${databaseName || ''} 
                                                </div>`
                                               : ''
@@ -370,7 +370,7 @@ export default function useGraph(graph) {
                                         data?.showSchema &&
                                         schemaName &&
                                         isSQLNode
-                                            ? `<div class="node-meta__text node-schema text-gray truncate">
+                                            ? `<div title="Schema: ${schemaName}" class="node-meta__text node-schema text-gray truncate">
                                                   ${schemaName || ''}
                                                 </div>`
                                             : ''

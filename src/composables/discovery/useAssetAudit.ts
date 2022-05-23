@@ -31,6 +31,19 @@ const useAssetAudit = (params: any, guid: string) => {
 
         if ('attributes' in logs) {
             const { attributes } = logs
+            if (
+                Object.keys(attributes)?.length > 1 &&
+                !(
+                    'announcementType' in attributes ||
+                    'announcementTitle' in attributes ||
+                    'announcementMessage' in attributes
+                )
+            ) {
+                data.displayValue = 'Asset was updated'
+                data.value = logs
+                data.component = 'MultipleAttributes'
+                return data
+            }
 
             if ('ownerUsers' in attributes || 'ownerGroups' in attributes) {
                 data.displayValue = 'owners'

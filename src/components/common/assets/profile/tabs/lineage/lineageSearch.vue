@@ -208,6 +208,7 @@
 
             // setQuery
             const setQuery = (e) => {
+                // Handle Event - lineage_search_changed
                 query.value = e.target.value
 
                 if (e.target.value) sendSearchEvent()
@@ -215,11 +216,12 @@
 
             // setSearchItem
             const setSearchItem = (item, index) => {
+                // Handle Event - lineage_search_result_clicked
+                sendSearchResultClickEvent(item, index)
+
                 searchItem.value = item.guid
                 onSelectAsset(item, true)
                 emit('select', item.guid)
-
-                sendSearchResultClickEvent(item, index)
             }
 
             // onBlur

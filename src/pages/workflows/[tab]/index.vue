@@ -1,5 +1,8 @@
 <template>
-    <div class="flex flex-col w-full h-full">
+    <div
+        v-if="featureEnabledMap[WORKFLOW_CENTER_V2]"
+        class="flex flex-col w-full h-full"
+    >
         <a-tabs
             v-model:activeKey="activeKey"
             :class="$style.profiletab"
@@ -90,7 +93,12 @@
                 title: 'Workflow Center',
             })
 
-            return { activeKey, mainTabs }
+            return {
+                activeKey,
+                mainTabs,
+                featureEnabledMap,
+                WORKFLOW_CENTER_V2,
+            }
         },
     })
 </script>

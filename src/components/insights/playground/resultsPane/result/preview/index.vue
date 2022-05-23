@@ -540,7 +540,7 @@
                         handleClick: ({ item }) => {
                             useAddEvent(
                                 'insights',
-                                'previe_tabs',
+                                'preview_tabs',
                                 'right_click_action',
                                 {
                                     action: 'close_tab',

@@ -31,12 +31,12 @@
                         class="w-1.5 h-1.5 rounded-full mt-1.5"
                         style="background: transparent"
                     ></span>
-                    <span class="ml-1 mr-2" style="color: #a5a5a5">{{
+                    <span class="ml-1 mr-2 noselect" style="color: #a5a5a5">{{
                         item.index
                     }}</span>
                     <!-- :style="`color:${getTokenColor(kt)}`" -->
                     <div
-                        class="flex flex-wrap w-full"
+                        class="w-full"
                         v-html="
                             generateHTMLFromLine(item.index, item.description)
                         "
@@ -227,7 +227,7 @@
                         t.forEach((token) => {
                             if (token !== '') {
                                 const color = getTokenColor(token)
-                                html += `<div style="color:${color}">`
+                                html += `<div style="color:${color}" >`
                                 const chars = token.split('')
                                 chars.forEach((char, z) => {
                                     if (
@@ -237,19 +237,19 @@
                                             Number(pos.value.endColumn)
                                     ) {
                                         if (char !== ' ') {
-                                            html += `<span class="light_creme">${char}</span>`
+                                            html += `<div style="" class="light_creme text_">${char}</div>`
                                         } else {
-                                            html += `<span class="light_creme">&nbsp;</span>`
+                                            html += `<div style="" class="light_creme text_">&nbsp;</div>`
                                         }
                                     } else {
                                         if (char !== ' ') {
-                                            html += `<span >${char}</span>`
+                                            html += `<div style=""  class="text_">${char}</div>`
                                         } else {
-                                            html += `<span >&nbsp;</span>`
+                                            html += `<div style="" class="text_">&nbsp;</div>`
                                         }
                                     }
                                 })
-                                html += `<span>&nbsp;</span>`
+                                html += `<div style="" class="text_">&nbsp;</div>`
                                 html += `</div>`
                                 tokensTillNow += ' '
                             } else {
@@ -259,9 +259,9 @@
                                     tokensTillNow.length <=
                                         Number(pos.value.endColumn)
                                 ) {
-                                    html += `<span class="light_creme">&nbsp;</span>`
+                                    html += `<div style="" class="light_creme text_">&nbsp;</div>`
                                 } else {
-                                    html += `<span>&nbsp;</span>`
+                                    html += `<div style="" class="text_">&nbsp;</div>`
                                 }
                                 tokensTillNow += ' '
                             }
@@ -272,7 +272,7 @@
                         t.forEach((token, i) => {
                             if (token !== '') {
                                 const color = getTokenColor(token)
-                                html += `<div class="keep-spaces" style="color:${color}">${token}&nbsp;</div>`
+                                html += `<div class="keep-spaces text_" style="color:${color}">${token}&nbsp;</div>`
                             } else {
                                 html += '&nbsp;'
                             }
@@ -294,22 +294,22 @@
                                             tokensTillNow.length + token.length
                                     ) {
                                         if (char !== ' ') {
-                                            html += `<span class="light_creme">${char}</span>`
+                                            html += `<div style="" class="text_ light_creme">${char}</div>`
                                         } else {
-                                            html += `<span class="light_creme">&nbsp;</span>`
+                                            html += `<div style="" class="text_ light_creme">&nbsp;</div>`
                                         }
                                     } else {
                                         if (char !== ' ') {
-                                            html += `<span >${char}</span>`
+                                            html += `<div class="text_" style="" >${char}</div>`
                                         } else {
-                                            html += `<span >&nbsp;</span>`
+                                            html += `<div class="text_" style="" >&nbsp;</div>`
                                         }
                                     }
                                 })
-                                html += `<span>&nbsp;</span>`
+                                html += `<div style="" class="text_">&nbsp;</div>`
                                 tokensTillNow += ' '
                             } else {
-                                html += `<span>&nbsp;</span>`
+                                html += `<div style="" class="text_">&nbsp;</div>`
                                 tokensTillNow += ' '
                             }
                             tokensTillNow += token
@@ -318,7 +318,7 @@
                         t.forEach((token, i) => {
                             if (token !== '') {
                                 const color = getTokenColor(token)
-                                html += `<div class="keep-spaces" style="color:${color}">${token}&nbsp;</div>`
+                                html += `<div  class="keep-spaces text_" style="color:${color}">${token}&nbsp;</div>`
                             } else {
                                 html += '&nbsp;'
                             }
@@ -384,6 +384,18 @@
         height: 6px !important;
         border-radius: 100%;
         // margin-left: 3px;
+    }
+    .text_ {
+        display: inline-block;
+    }
+    .noselect {
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
     }
 </style>
 

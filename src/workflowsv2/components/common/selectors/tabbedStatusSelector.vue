@@ -2,27 +2,38 @@
     <div
         class="box-border flex items-stretch h-8 overflow-hidden border border-gray-300 divide-x divide-gray-300 rounded-lg"
     >
-        <button
+        <a-tooltip
             v-for="item in runStatuses"
             :key="item.label"
-            class="tabbed-btn"
-            :class="{ selected: selected === item.label }"
-            :style="
-                selected === item.label
-                    ? `background-color:${item.colorDot}`
-                    : ''
-            "
-            @click="handleSelect(item.label, item.value)"
+            placement="top"
+            color="#2A2F45"
+            :mouse-enter-delay="0.5"
+            :mouse-leave-delay="0"
         >
-            <div
-                v-if="item.colorDot"
-                :style="`background-color: ${
-                    selected === item.label ? '#fff' : item.colorDot
-                }`"
-                class="dot"
-            />
-            {{ item.label }}
-        </button>
+            <template v-if="selected === item.label" #title>
+                <p class="text-xs">Click to remove filter</p>
+            </template>
+
+            <button
+                class="tabbed-btn"
+                :class="{ selected: selected === item.label }"
+                :style="
+                    selected === item.label
+                        ? `background-color:${item.colorDot}`
+                        : ''
+                "
+                @click="handleSelect(item.label, item.value)"
+            >
+                <div
+                    v-if="item.colorDot"
+                    :style="`background-color: ${
+                        selected === item.label ? '#fff' : item.colorDot
+                    }`"
+                    class="dot"
+                />
+                {{ item.label }}
+            </button>
+        </a-tooltip>
     </div>
 </template>
 

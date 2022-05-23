@@ -17,6 +17,9 @@
                 <p class="text-xs mt-0.5 font-semibold">
                     {{ item.hint?.split('/')[1] }}
                 </p>
+                <p v-if="selected === item.label" class="mt-1 text-xs">
+                    Click to remove filter
+                </p>
             </template>
             <button
                 class="tabbed-btn"
@@ -55,7 +58,7 @@
             }
 
             // Select today by default
-            handleSelect('Last 24 Hours', {
+            handleSelect('Last 24H', {
                 gt: dayjs().subtract(1, 'day').valueOf(),
             })
 

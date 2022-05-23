@@ -21,8 +21,9 @@ export const getIntervalString = (gt: number, lt: number) => {
     const relative = !lt // if there is no less than date, treat it as if starts from today
     const days = Math.floor((lt || Date.now() - gt) / (1000 * 60 * 60 * 24)) // ms * seconds * minutes * hours
 
-    if (dayjs(gt).isToday()) return 'Today'
-    if (dayjs(gt).isYesterday() && dayjs(lt).isToday()) return 'Yesterday'
+    // if (dayjs(gt).isToday()) return 'Today'
+    // if (dayjs(gt).isYesterday() && dayjs(lt).isToday()) return 'Yesterday'
+    if (days === 1) return `Last 24 Hours`
     if (relative) return `Last ${days} days`
 }
 

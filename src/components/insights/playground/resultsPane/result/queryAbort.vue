@@ -6,7 +6,7 @@
     >
         <div
             style="width: 350px"
-            class="flex flex-col items-center justify-center mt-2 mb-6"
+            class="flex flex-col items-center justify-center mb-6"
         >
             <p
                 class="mb-0 text-base text-2xl font-bold text-center text-new-gray-700"

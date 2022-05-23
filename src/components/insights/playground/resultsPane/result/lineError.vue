@@ -6,15 +6,8 @@
         >
             <AtlanIcon icon="queryInvalid" class="w-5 h-5" />
             <span class="ml-2"> Invalid Query :( </span>
-            <!-- <div
-                class="flex items-center justify-end px-3 py-1 light_creme dark_orange rounded-3xl"
-            >
-                Invalid query
-            </div> -->
-            <!-- <span class="ml-2 text-gray-500">Error found</span> -->
         </div>
         <div class="flex items-center w-full mb-2">
-            <!-- <AtlanIcon icon="IssuesFilled" class="w-4 h-4" /> -->
             <span class="flex flex-wrap w-11/12 text-sm text-new-gray-700">{{
                 queryErrorObj.errorMessage
             }}</span>

@@ -6,7 +6,7 @@
     >
         <!--  error body -->
         <div
-            style="width: 300px"
+            style="width: 400px"
             class="flex flex-col items-center justify-center"
         >
             <!-- {{ queryErrorObj }} -->

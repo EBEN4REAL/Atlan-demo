@@ -17,6 +17,9 @@
                 <p class="text-xs mt-0.5 font-semibold">
                     {{ item.hint?.split('/')[1] }}
                 </p>
+                <p v-if="selected === item.label" class="mt-1 text-xs">
+                    Click to remove filter
+                </p>
             </template>
             <button
                 class="tabbed-btn"
@@ -30,8 +33,9 @@
 </template>
 
 <script lang="ts">
+    import { whenever } from '@vueuse/core'
     import dayjs from 'dayjs'
-    import { defineComponent, ref } from 'vue'
+    import { defineComponent, ref, toRefs } from 'vue'
     import { dateRanges } from '~/workflowsv2/constants/filters'
 
     export default defineComponent({
@@ -41,7 +45,8 @@
             value: { type: Object, required: false, default: () => undefined },
         },
         emits: ['update:value'],
-        setup(_, { emit }) {
+        setup(props, { emit }) {
+            const { value } = toRefs(props)
             const selected = ref(undefined)
 
             const handleSelect = (sel, val) => {
@@ -55,9 +60,17 @@
             }
 
             // Select today by default
-            handleSelect('Last 24 Hours', {
+            handleSelect('Last 24H', {
                 gt: dayjs().subtract(1, 'day').valueOf(),
             })
+
+            whenever(
+                // Set selected value to undefined when range is reset
+                () => !value.value,
+                () => {
+                    selected.value = undefined
+                }
+            )
 
             return { selected, dateRanges, handleSelect }
         },

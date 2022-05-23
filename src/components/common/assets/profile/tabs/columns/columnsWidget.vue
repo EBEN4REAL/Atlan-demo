@@ -610,7 +610,7 @@
 
             // rowClassName Antd
             const rowClassName = (record: { key: null }) =>
-                record.key === selectedRow.value ? 'bg-primary-light' : ''
+                record.key === selectedRow.value ? 'bg-primary-menu' : ''
 
             /** WATCHERS */
             watch(

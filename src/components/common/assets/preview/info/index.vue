@@ -34,6 +34,7 @@
                     isGTC(selectedAsset) ||
                     selectedAsset.typeName === 'Connection' ||
                     selectedAsset.typeName === 'Process' ||
+                    selectedAsset.typeName === 'ColumnProcess' ||
                     selectedAsset.typeName === 'Query' ||
                     selectedAsset.typeName === 'Collection'
                 "

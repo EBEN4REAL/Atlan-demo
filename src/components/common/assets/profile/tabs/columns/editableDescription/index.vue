@@ -12,9 +12,9 @@
         class="flex items-center gap-x-2.5"
     >
         <p
-            @click="handleEdit($event)"
-            style="color: #bfbfbf"
             :class="{ 'cursor-text': allowEditing }"
+            style="color: #bfbfbf"
+            @click="handleEdit($event)"
         >
             {{ allowEditing ? '+ Add a description' : '' }}
         </p>

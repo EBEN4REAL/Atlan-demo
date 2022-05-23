@@ -935,7 +935,7 @@ export default function useAssetInfo() {
         action = 'ENTITY_UPDATE',
         typeName?
     ) => {
-        const evaluations = authStore?.secondaryEvaluations
+        const evaluations = authStore?.columnEvaluations
 
         if (typeName) {
             const evaluationObject = evaluations.find(

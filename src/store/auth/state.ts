@@ -17,6 +17,7 @@ export interface State {
     permissions: string[]
     evaluations: any
     secondaryEvaluations: any
+    columnEvaluations: any
     decentralizedRoles: {
         level: string
         roleId: string
@@ -43,6 +44,7 @@ export const state: State = {
     permissions: useStorage('permissions', []),
     evaluations: [],
     secondaryEvaluations: [],
+    columnEvaluations: [],
     decentralizedRoles: [],
     personas: useStorage('personas', []),
     purposes: useStorage('purposes', []),

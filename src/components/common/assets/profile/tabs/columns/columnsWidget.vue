@@ -574,8 +574,9 @@
             const { refresh: refreshEvaluate } = useEvaluate(
                 bodyEvaluation,
                 false,
+                false,
                 true
-            ) // true for secondaryEvaluations
+            ) // true for columnEvaluations
 
             // Description suggestions
 

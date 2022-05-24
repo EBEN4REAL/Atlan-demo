@@ -106,9 +106,9 @@
                     >
                         <Avatar
                             is-group
-                            class="mb-1 mr-1"
+                            class="mb-1 mr-0.5 icon-all-users"
                             :avatar-bg-class="'bg-primary-light border-white border border-3 uppercase'"
-                            :avatar-size="16"
+                            :avatar-size="20"
                             :avatar-shape="'circle'"
                         />
                         <div class="truncate display-name">All users</div>
@@ -329,6 +329,9 @@
     }
 </style>
 <style lang="less">
+    .icon-all-users {
+        transform: scale(0.8);
+    }
     .display-name {
         max-width: 131px;
     }

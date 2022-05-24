@@ -115,9 +115,10 @@ export const isSlackLink = (link) =>
 export const getChannelAndMessageIdFromSlackLink = (link) => {
     const idPaths = link.split('/archives/')[1]
     const channelId = idPaths.split('/')[0]
-    const messageId = getTimestampFromSlackMessageId(
-        idPaths.split('/')[1].split('?')[0]
-    )
+    const arrIdPaths = idPaths.split('/')
+    const messageId = arrIdPaths.length > 1 ? getTimestampFromSlackMessageId(
+        arrIdPaths[1].split('?')[0]
+    ) : arrIdPaths[0]
     // if (idPaths.split("/")[1].includes("thread_ts")) {
     //     // eslint-disable-next-line prefer-destructuring
     //     messageId = idPaths.split("/")[1].split("thread_ts=")[1].split("&")[0]

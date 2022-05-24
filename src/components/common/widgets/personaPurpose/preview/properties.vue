@@ -5,7 +5,7 @@
         </div>
         <div class="mt-3">
             <div class="py-3">
-                <div class="text-sm text-gray-600">Last updated by</div>
+                <div class="text-sm text-gray-500">Last updated by</div>
             </div>
             <div class="flex">
                 <PopOverUser :item="item?.updatedBy || item?.createdBy">
@@ -13,7 +13,7 @@
                 </PopOverUser>
             </div>
             <div class="py-3">
-                <div class="text-sm text-gray-600">Last updated at</div>
+                <div class="text-sm text-gray-500">Last updated at</div>
                 <div class="mt-2 text-sm text-gray-800">
                     {{ formatDateTime(item?.updatedAt) }} ({{
                         useTimeAgo(item?.updatedAt).value
@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div class="py-3">
-                <div class="text-sm text-gray-600">Created at</div>
+                <div class="text-sm text-gray-500">Created at</div>
                 <div class="mt-2 text-sm text-gray-800">
                     {{ formatDateTime(item?.createdAt) }} ({{
                         useTimeAgo(item?.createdAt).value
@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div class="py-3">
-                <div class="text-sm text-gray-600">Created by</div>
+                <div class="text-sm text-gray-500">Created by</div>
                 <div class="flex">
                     <PopOverUser :item="item?.createdBy">
                         <UserPill :username="item?.createdBy" />

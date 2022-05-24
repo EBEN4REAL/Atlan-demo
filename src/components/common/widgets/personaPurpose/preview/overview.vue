@@ -3,9 +3,9 @@
         <div class="flex items-center text-sm font-bold text-gray-500">
             <AtlanIcon icon="Overview" class="mb-1 mr-2" />Overview
         </div>
-        <div class="flex mt-6">
+        <div class="flex mt-4">
             <div class="flex-1">
-                <div class="text-gray-600">User and Groups</div>
+                <div class="text-sm text-gray-500">User and Groups</div>
                 <div
                     v-if="activeTab === 'persona'"
                     class="mt-2 text-sm font-bold cursor-pointer text-primary"
@@ -22,7 +22,7 @@
                 </div>
             </div>
             <div class="flex-1">
-                <div class="text-gray-600">Assets</div>
+                <div class="text-sm text-gray-500">Assets</div>
                 <div v-if="isLoading"><AtlanLoader class="w-4 h-4" /></div>
                 <div
                     v-else
@@ -34,13 +34,13 @@
             </div>
         </div>
         <div class="mt-7">
-            <div class="text-gray-600">Description</div>
+            <div class="text-sm text-gray-500">Description</div>
             <div class="mt-2 text-sm text-gray-800">
                 {{ item.description || 'No description' }}
             </div>
         </div>
         <div v-if="activeTab === 'purpose'" class="mt-7">
-            <div class="text-gray-600">Classifications</div>
+            <div class="text-sm text-gray-500">Classifications</div>
             <div
                 v-if="!listClassifications.length"
                 class="mt-2 text-sm text-gray-800"
@@ -68,7 +68,7 @@
             </div>
         </div>
         <div v-if="item?.type === 'persona'" class="mt-7">
-            <div class="text-gray-600">Connections</div>
+            <div class="text-sm text-gray-500">Connections</div>
             <div
                 class="flex flex-col gap-2 p-2 mt-2 overflow-scroll bg-gray-100 rounded-lg max-h-44"
             >
@@ -86,7 +86,7 @@
             </div>
         </div>
         <div class="mt-7">
-            <div class="text-gray-600">Readme</div>
+            <div class="text-sm text-gray-500">Readme</div>
             <ReadmeView :max-height="170" :readme="item.readme" />
         </div>
     </div>

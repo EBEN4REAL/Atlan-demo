@@ -259,7 +259,7 @@
             :global(.ant-tabs-tab) {
                 padding: 6px 8px !important;
                 @apply justify-center;
-                @apply mt-3 !important;
+                @apply mt-2 !important;
             }
             :global(.ant-tabs-tab:first-child) {
                 padding: 6px 8px !important;

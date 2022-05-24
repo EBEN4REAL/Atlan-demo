@@ -108,6 +108,7 @@
             :readme-asset="readmeAsset"
             :selected-asset="asset"
             :edit-permission="readmeEditPermission"
+            :load-edit-mode="loadEditMode"
         />
     </a-modal>
 </template>
@@ -174,10 +175,15 @@
 
             const hoverOnCTA = ref(false)
 
+            const loadEditMode = ref(false)
+
             const showReadmeModal = () => {
                 if (!disabledCTA.value) {
                     mutateReadme()
                     readmeVisible.value = true
+                    if (!readmeGuid(asset.value)) {
+                        loadEditMode.value = true
+                    }
                 }
             }
 
@@ -194,6 +200,7 @@
                 isReadmeLoading,
                 hoverOnCTA,
                 disabledCTA,
+                loadEditMode,
             }
         },
     })

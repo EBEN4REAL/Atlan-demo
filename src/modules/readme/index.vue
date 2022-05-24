@@ -1,7 +1,11 @@
 <template>
     <div
         ref="editorDiv"
-        :class="isEditing ? 'editor-open' : 'editor-close'"
+        :class="{
+            'editor-open': isEditing,
+            'editor-close': !isEditing,
+            'max-modal-height': usedInModal,
+        }"
         @transitionend="
             () => {
                 editorDiv?.scrollIntoView({ behavior: 'smooth' })
@@ -89,7 +93,10 @@
                 >
             </div>
         </div>
-        <div class="h-full p-6 border-0">
+        <div
+            class="p-6 border-0"
+            :class="usedInModal ? 'overflow-y-auto' : 'h-full'"
+        >
             <AtlanEditor
                 ref="editor"
                 v-model="localReadmeContent"
@@ -168,6 +175,11 @@
                 required: false,
                 default: false,
             },
+            loadEditMode: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['savedChanges', 'editing', 'update:modelValue'],
         setup(props, { emit }) {
@@ -177,6 +189,7 @@
                 handleSave,
                 handleSuccess,
                 handleFailure,
+                loadEditMode,
             } = toRefs(props)
             const content = useVModel(props, 'modelValue', emit)
             const localReadmeContent = ref(
@@ -193,6 +206,10 @@
             const handleEditMode = () => {
                 isEditing.value = !isEditing.value
                 editor.value?.editor?.commands.focus('end')
+            }
+
+            if (loadEditMode.value) {
+                handleEditMode()
             }
 
             const handleUpdate = async () => {
@@ -247,5 +264,9 @@
     .editor-close {
         min-height: 0;
         transition: min-height 0.3s ease-in-out;
+    }
+
+    .max-modal-height {
+        max-height: 75vh;
     }
 </style>

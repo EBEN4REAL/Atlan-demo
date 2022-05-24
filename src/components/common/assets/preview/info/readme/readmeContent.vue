@@ -6,6 +6,7 @@
         :asset-type="readmeAsset.typeName"
         :handle-save="handleSave"
         :used-in-modal="true"
+        :load-edit-mode="loadEditMode"
     >
         <template #assetInfo>
             <div class="flex flex-col">
@@ -149,6 +150,11 @@
                 },
             },
             editPermission: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            loadEditMode: {
                 type: Boolean,
                 required: false,
                 default: false,

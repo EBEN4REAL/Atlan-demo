@@ -51,6 +51,9 @@
             @close-drawer="onCloseDrawer"
             @update="handleDrawerUpdate"
         />
+
+        <!-- GroupProcessesDrawer -->
+        <GroupProcessesDrawer :grouped-process-ids="groupedProcessIds" />
     </div>
 </template>
 
@@ -69,6 +72,7 @@
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
     import LineageFooter from './lineageFooter.vue'
+    import GroupProcessesDrawer from './GroupProcessesDrawer.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     /** COMPOSABLES */
@@ -83,6 +87,7 @@
         components: {
             LineageHeader,
             LineageFooter,
+            GroupProcessesDrawer,
             AssetDrawer,
         },
         setup() {
@@ -105,6 +110,7 @@
             const drawerActiveKey = ref('Overview')
             const guidToSelectOnGraph = ref('')
             const selectedTypeInRelationDrawer = ref('__all')
+            const groupedProcessIds = ref([])
 
             /** EVENT DEFINITION */
             const sendPanelZoomOut = useDebounceFn((percentage) => {
@@ -135,10 +141,16 @@
 
             // onSelectAsset
             const onSelectAsset = (item, selectOnGraph = false) => {
+                const { isGroupEdge, processIds } = item || {}
+
                 if (typeof control === 'function')
+                    // TODO: && !isGroupEdge
                     control('selectedAsset', item)
 
                 if (!item) return
+
+                if (isGroupEdge && processIds.length)
+                    groupedProcessIds.value = processIds
 
                 if (selectOnGraph) guidToSelectOnGraph.value = item?.guid
             }
@@ -241,6 +253,7 @@
                 onCloseDrawer,
                 handleDrawerUpdate,
                 handleZoom,
+                groupedProcessIds,
             }
         },
     })

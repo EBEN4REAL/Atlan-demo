@@ -73,14 +73,29 @@
                                 </span>
                             </div>
                             <span class="mr-1 text-sm truncate w-28">
-                                {{ name }} 
+                                {{ name }}
                             </span>
 
                             <span v-if="details" class="mr-1 text-sm">
                                 <span class="text-gray-300">&bull;</span>
                                 <span class="ml-1">
-                                    {{selectedUser.enabled ?  details : '' }} 
-                                    <button class="rounded bg-new-red-100 px-2 text-xs pb-px text-new-red-400 tracking-wider font-bold" v-if="!selectedUser.enabled" style="padding-top: 3px">DISABLED</button>
+                                    {{
+                                        previewType === 'user'
+                                            ? selectedUser?.enabled
+                                                ? details
+                                                : ''
+                                            : details
+                                    }}
+                                    <button
+                                        v-if="
+                                            !selectedUser?.enabled &&
+                                            previewType === 'user'
+                                        "
+                                        class="px-2 pb-px text-xs font-bold tracking-wider rounded bg-new-red-100 text-new-red-400"
+                                        style="padding-top: 3px"
+                                    >
+                                        DISABLED
+                                    </button>
                                 </span>
                             </span>
                             <span
@@ -94,15 +109,18 @@
                                 <span class="ml-1">Invited</span>
                             </span>
                             <span
-                                v-if="selectedUser?.last_active_time && selectedUser.enabled"
+                                v-if="
+                                    selectedUser?.last_active_time &&
+                                    ((selectedUser?.enabled &&
+                                        previewType === 'user') ||
+                                        previewType === 'group')
+                                "
                                 class="text-sm"
                             >
                                 <span class="text-gray-300">&bull;</span>
                                 <a-tooltip placement="bottom">
                                     <template #title>
-                                        {{
-                                            selectedUser.last_active_time
-                                        }}
+                                        {{ selectedUser.last_active_time }}
                                     </template>
                                     <span class="ml-1">
                                         Active

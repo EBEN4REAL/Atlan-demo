@@ -259,7 +259,7 @@
                     purposeStore.list,
                 ],
                 ([newValue, persona, purpose]) => {
-                    let payload = newValue
+                    const payload = newValue
                     if (payload[0] === 'persona') {
                         const finded = persona.find(
                             (el) => el.id === payload[1]
@@ -336,7 +336,17 @@
             )
 
             onMounted(() => {
-                initAnnounceKit('.announcekit-widget', '1JYrEk')
+                initAnnounceKit('.announcekit-widget', '1JYrEk', 'whatsnew')
+                if (window?.announcekit)
+                    window.announcekit.on('widget-init', ({ widget }) => {
+                        // Called for each widget after the widget has been successfully loaded.
+                        // Widget  object is passed to the handler.
+                        if (
+                            widget.conf.name === 'whatsnew' &&
+                            currentRoute.fullPath === '/?whatsnew'
+                        )
+                            widget.open()
+                    })
             })
 
             const trackUpdateViewEvent = () => {

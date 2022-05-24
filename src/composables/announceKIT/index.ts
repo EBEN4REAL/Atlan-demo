@@ -2,7 +2,7 @@ import whoami from '~/composables/user/whoami'
 import { signJWT } from '~/modules/jose'
 import { getEnv } from '~/modules/__env'
 
-export const initAnnounceKit = async (target: string, widgetID: string) => {
+export const initAnnounceKit = async (target: string, widgetID: string, name: string) => {
     const { username, email, userId } = whoami()
     const data = {
         id: userId.value,
@@ -18,6 +18,7 @@ export const initAnnounceKit = async (target: string, widgetID: string) => {
 
     if (window?.announcekit)
         window.announcekit.push({
+            ...(name ? { name } : {}),
             widget: `https://announcekit.co/widgets/v2/${widgetID}`,
             selector: target,
             lang: 'en',

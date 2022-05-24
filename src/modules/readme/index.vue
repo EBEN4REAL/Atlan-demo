@@ -89,7 +89,7 @@
         <div class="border-0 h-full p-6">
             <AtlanEditor
                 ref="editor"
-                v-model="localReadmeContent"
+                v-model="sanitizedReadmeContent"
                 placeholder="Type '/' for commands"
                 :asset-type="assetType"
                 :is-edit-mode="isEditing"
@@ -106,10 +106,11 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
+    import { defineComponent, watch, ref, toRefs, computed } from 'vue'
 
     import { useVModel } from '@vueuse/core'
     import Editor from '~/modules/editor/index.vue'
+    import DOMPurify from 'dompurify'
 
     export default defineComponent({
         components: {
@@ -176,6 +177,10 @@
                     ? decodeURIComponent(content.value)
                     : content.value
             )
+            const sanitizedReadmeContent = ref(
+                DOMPurify.sanitize(localReadmeContent.value)
+            )
+
             const isEditing = ref(false)
             const isSaving = ref(false)
 
@@ -190,8 +195,8 @@
             const handleUpdate = async () => {
                 isSaving.value = true
                 content.value = encodeContent.value
-                    ? encodeURIComponent(localReadmeContent.value)
-                    : localReadmeContent.value
+                    ? encodeURIComponent(sanitizedReadmeContent.value)
+                    : sanitizedReadmeContent.value
                 try {
                     await handleSave.value(content.value)
                     handleSuccess?.value()
@@ -209,14 +214,19 @@
                         ? decodeURIComponent(content.value)
                         : content.value
                 )
-                localReadmeContent.value = encodeContent.value
+                sanitizedReadmeContent.value = encodeContent.value
                     ? decodeURIComponent(content.value)
                     : content.value
                 isEditing.value = false
                 emit('savedChanges')
             }
 
-            return {
+            watch(localReadmeContent, () => {
+                sanitizedReadmeContent.value = DOMPurify.sanitize(
+                    localReadmeContent.value
+                )
+            })
+           return {
                 localReadmeContent,
                 handleUpdate,
                 isEditingAllowed,
@@ -226,6 +236,7 @@
                 editorDiv,
                 isEditing,
                 isSaving,
+                sanitizedReadmeContent,
             }
         },
     })

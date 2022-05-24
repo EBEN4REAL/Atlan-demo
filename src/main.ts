@@ -79,7 +79,7 @@ keycloak
                 router.push('/setup')
             } else if (status === 'ready') {
                 /** route to login screen */
-                const redirectURL = window.location.pathname
+                const redirectURL = window.location.pathname + window.location.search || ''
                 localStorage.setItem('redirectURL', redirectURL)
                 window.location.replace(keycloak.createLoginUrl())
             } else {

@@ -96,6 +96,26 @@ const jumpCloudDefaultConfig = {
         },
     ],
 }
+const oneLoginDefaultConfig = {
+    displayName: 'Sign in with OneLogin',
+    attributeList: [
+        {
+            userAttr: 'email',
+            idpAttr: 'email',
+            isSystem: true,
+        },
+        {
+            userAttr: 'firstName',
+            idpAttr: 'firstName',
+            isSystem: true,
+        },
+        {
+            userAttr: 'lastName',
+            idpAttr: 'lastName',
+            isSystem: true,
+        },
+    ],
+}
 
 export const customSAMLDefaultConfig = {
     displayName: 'Login with SAML',
@@ -222,6 +242,36 @@ export const topSAMLProviders = [
                 suffix: ['/broker/jumpcloud/endpoint/clients/atlan-saml'],
             },
         ],
+    },
+    {
+        title: 'OneLogin',
+        alias: 'onelogin',
+        isCustomSaml: false,
+        image: '/logo/onelogin.png',
+        ctaText: {
+            default: 'Add',
+        },
+        defaultConfig: {
+            ...oneLoginDefaultConfig,
+        },
+        samlAssertionUrlSuffix: '/broker/onelogin/endpoint/clients/atlan-saml',
+        serviceProviderMetadata: [
+            {
+                label: 'Audience (EntityID)',
+                suffix: ['/broker/onelogin/endpoint'],
+            },
+            
+            {
+                label: 'ACS (Consumer) URL Validator',
+                suffix: ['/broker/onelogin/endpoint'],
+            },
+            {
+                label: 'ACS (Consumer) URL',
+                suffix: ['/broker/onelogin/endpoint'],
+            },
+        ],
+        hideDownloadMetadataButton: true,
+        imageClass: 'w-6 h-6',
     },
 ]
 export const customSamlProvider = {

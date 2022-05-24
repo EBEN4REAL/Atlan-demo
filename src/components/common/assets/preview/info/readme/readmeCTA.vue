@@ -1,12 +1,67 @@
 <template>
     <div class="px-5">
-        <a-button
-            block
-            class="flex items-center justify-between px-2 shadow-none"
+        <div
+            class="flex items-center p-3 border rounded-md cursor-pointer hover:shadow-sm border-new-gray-300"
+            :class="!readmeGuid(asset) && !hoverOnCTA ? 'border-dashed' : ''"
             @click="showReadmeModal"
-            ><div class="flex items-center">Readme</div>
-            <AtlanIcon icon="External" />
-        </a-button>
+            @mouseenter="hoverOnCTA = true"
+            @mouseleave="hoverOnCTA = false"
+        >
+            <div
+                class="p-2 mr-2 rounded-md"
+                :class="hoverOnCTA ? 'bg-new-blue-100' : 'bg-new-gray-100'"
+            >
+                <AtlanIcon
+                    icon="Readme"
+                    class="w-5 h-5"
+                    :class="
+                        hoverOnCTA ? 'text-new-blue-500' : 'text-new-gray-800'
+                    "
+                />
+            </div>
+            <div v-if="readmeGuid(asset)" class="flex flex-col text-sm">
+                <span
+                    class="font-medium"
+                    :class="
+                        hoverOnCTA ? 'text-new-blue-500' : 'text-new-gray-800'
+                    "
+                    >View Readme</span
+                >
+                <div
+                    v-if="
+                        readme(asset)?.attributes?.__modifiedBy &&
+                        readme(asset)?.attributes?.__modificationTimestamp
+                    "
+                    class="flex items-center text-sm text-new-gray-600"
+                >
+                    Updated
+                    {{
+                        useTimeAgo(
+                            new Date(
+                                readme(
+                                    asset
+                                )?.attributes?.__modificationTimestamp
+                            )
+                        ).value
+                    }}
+                    <span class="mx-2 dot"></span
+                    >{{ readme(asset)?.attributes?.__modifiedBy }}
+                </div>
+            </div>
+
+            <div v-else class="flex flex-col text-sm">
+                <span
+                    class="font-medium"
+                    :class="
+                        hoverOnCTA ? 'text-new-blue-500' : 'text-new-gray-800'
+                    "
+                    >+ Add Readme</span
+                >
+                <span class="text-new-gray-600">
+                    Enrich your column with Readme
+                </span>
+            </div>
+        </div>
     </div>
 
     <a-modal
@@ -27,12 +82,14 @@
             v-else
             :readme-asset="readmeAsset"
             :selected-asset="asset"
+            :edit-permission="readmeEditPermission"
         />
     </a-modal>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, PropType } from 'vue'
+    import { defineComponent, ref, toRefs, PropType, computed } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useAssetAttributes } from '~/composables/discovery/useCurrentUpdate'
@@ -53,7 +110,13 @@
         setup(props) {
             const { asset } = toRefs(props)
 
-            const { title } = useAssetInfo()
+            const {
+                title,
+                assetPermission,
+                selectedAssetUpdatePermission,
+                readmeGuid,
+                readme,
+            } = useAssetInfo()
 
             const readmeAttribute = ref(['readme'])
 
@@ -74,14 +137,38 @@
                 readmeVisible.value = true
             }
 
+            const readmeEditPermission = computed(
+                () =>
+                    selectedAssetUpdatePermission(
+                        asset.value,
+                        false,
+                        'RELATIONSHIP_ADD',
+                        'Readme'
+                    ) && assetPermission('CREATE_README')
+            )
+
+            const hoverOnCTA = ref(false)
+
             return {
                 title,
                 showReadmeModal,
+                readmeGuid,
+                useTimeAgo,
+                readme,
                 readmeVisible,
                 readmeAsset,
-
+                readmeEditPermission,
                 isReadmeLoading,
+                hoverOnCTA,
             }
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .dot {
+        height: 4px;
+        width: 4px;
+        @apply text-new-gray-300 inline-block rounded-full bg-new-gray-300;
+    }
+</style>

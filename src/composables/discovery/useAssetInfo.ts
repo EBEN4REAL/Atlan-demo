@@ -728,6 +728,8 @@ export default function useAssetInfo() {
     const modifiedBy = (asset: assetInterface) =>
         attributes(asset)?.__modifiedBy
 
+    const readme = (asset: assetInterface) => attributes(asset)?.readme
+
     const readmeGuid = (asset: assetInterface) =>
         attributes(asset)?.readme?.guid
 
@@ -1394,6 +1396,7 @@ export default function useAssetInfo() {
         getConnectorLabel,
         anchorAttributes,
         readmeGuid,
+        readme,
         getConnectorsNameFromQualifiedName,
         dataTypeImage,
         dataTypeImageForColumn,

@@ -13,10 +13,10 @@
                 <slot name="assetInfo"></slot>
             </div>
             <div v-else class="flex items-center">
-                <AtlanIcon icon="Readme" class="w-auto h-8 mr-2" /><span
-                    class="text-base font-bold text-gray"
-                    >Readme</span
-                >
+                <div class="p-2 mr-2 rounded-md bg-primary-light">
+                    <AtlanIcon icon="Readme" class="w-5 h-5 text-primary" />
+                </div>
+                <span class="text-base font-bold text-gray">Readme</span>
             </div>
             <div class="ml-auto">
                 <a-tooltip

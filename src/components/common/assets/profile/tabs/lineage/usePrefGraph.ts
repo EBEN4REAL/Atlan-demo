@@ -6,6 +6,9 @@ import useAddEvent from '~/composables/eventTracking/useAddEvent'
 /** COMPOSABLES */
 import useLineageStore from '~/store/lineage'
 
+/** UTILS */
+import { SQLAssets } from './util.js'
+
 export default function useGraph({ graph }) {
     const lineageStore = useLineageStore()
     const preferences = lineageStore.getPreferences()
@@ -20,8 +23,8 @@ export default function useGraph({ graph }) {
 
     // controlEdgesArrow
     const controlEdgesArrow = () => {
-        const val = preferences.showArrow
-        const size = val ? 12 : 0.1
+        const { showArrow } = preferences
+        const size = showArrow ? 12 : 0.1
         graph.value.freeze('showArrow')
         graph.value.getEdges().forEach((edge) => {
             edge.attr('line/targetMarker/height', size)
@@ -32,18 +35,14 @@ export default function useGraph({ graph }) {
 
     // controlToggle
     const controlToggle = () => {
-        const classes = [
-            { pref: 'showSchema', className: '.node-schema' },
-            { pref: 'showAnnouncement', className: '.node-announcement' },
-        ]
-        classes.forEach((c) => {
-            const val = preferences[c.pref]
-            const nodesList = document.querySelectorAll(c.className)
-            const nodesArr = Array.from(nodesList)
-            nodesArr.forEach((n) => {
-                if (val) n?.classList.remove('hidden')
-                else n?.classList.add('hidden')
-            })
+        const { showDatabase, showSchema, showAnnouncement } = preferences
+
+        graph.value.getNodes().forEach((node) => {
+            const { typeName } = node.store.data
+            const isSQLNode = SQLAssets.includes(typeName)
+            node.updateData({ showAnnouncement })
+            if (!isSQLNode) return
+            node.updateData({ showDatabase, showSchema })
         })
     }
 

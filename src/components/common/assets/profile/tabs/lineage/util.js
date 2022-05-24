@@ -19,6 +19,9 @@ import useLineageStore from '~/store/lineage'
 
 const lineageStore = useLineageStore()
 
+/* A list of the SQL assets that we are interested in. */
+export const SQLAssets = ['Table', 'View', 'MaterialisedView']
+
 /* This is a mapping of the asset types. */
 export const getNodeTypeText = {
     // SQL
@@ -104,17 +107,29 @@ export const getSource = (entity) => {
 /**
  * Given an entity, return the schema name of the entity
  * @param entity - The entity object.
- * @returns The schema name of the table or view.
+ * @returns The schema name of the entity.
  */
 export const getSchema = (entity) => {
-    // TODO:
-    const allowedTypes = ['Table', 'View']
-    if (!allowedTypes.includes(entity.typeName)) return null
+    if (!SQLAssets.includes(entity.typeName)) return null
     const item =
         entity.attributes?.qualifiedName?.split('/') ||
         entity.uniqueAttributes?.qualifiedName?.split('/')
     if (item[0] === 'default') return item[4]
     return item[3]
+}
+
+/**
+ * Given an entity, return the database name of the entity
+ * @param entity - The entity object.
+ * @returns The database name of the entity.
+ */
+export const getDatabase = (entity) => {
+    if (!SQLAssets.includes(entity.typeName)) return null
+    const item =
+        entity.attributes?.qualifiedName?.split('/') ||
+        entity.uniqueAttributes?.qualifiedName?.split('/')
+    if (item[0] === 'default') return item[3]
+    return item[2]
 }
 
 /**

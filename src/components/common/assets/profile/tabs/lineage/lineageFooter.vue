@@ -8,7 +8,7 @@
                         icon="Cross"
                         class="cursor-pointer"
                         style="width: 0.8rem !important"
-                        @click="setPreference('showLegend', false)"
+                        @click="preferences.showLegend = false"
                     ></AtlanIcon>
                 </div>
             </div>
@@ -90,6 +90,12 @@
                                 <span class="text-gray-500">Show Arrows</span>
                                 <a-switch
                                     v-model:checked="preferences.showArrow"
+                                />
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-500">Show Database</span>
+                                <a-switch
+                                    v-model:checked="preferences.showDatabase"
                                 />
                             </div>
                             <div class="flex items-center justify-between">

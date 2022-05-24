@@ -670,6 +670,8 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             whenever(isReady, () => {
                 message.success('Readme has been updated')
                 sendTrackEvent('readme', 'updated')
+                guid.value = selectedAsset.value.guid
+                mutateUpdate()
             })
 
             whenever(error, () => {

@@ -521,11 +521,22 @@ const keyMap = {
         results_panel: {
             cta_clicked: {
                 action: 'insights_results_panel_cta_clicked',
-                properties: (props) => ({
-                    action: props.action,
-                    query_tab_id: props?.query_tab_id,
-                    is_full_screen: props?.is_full_screen,
-                }),
+                properties: (props) => {
+                    if (props?.description_added) {
+                        return {
+                            action: props.action,
+                            query_tab_id: props?.query_tab_id,
+                            is_full_screen: props?.is_full_screen,
+                            description_added: props?.description_added,
+                        }
+                    } else {
+                        return {
+                            action: props.action,
+                            query_tab_id: props?.query_tab_id,
+                            is_full_screen: props?.is_full_screen,
+                        }
+                    }
+                },
             },
             tab_switched: {
                 action: 'insights_results_panel_tab_switched',

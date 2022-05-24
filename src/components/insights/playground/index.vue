@@ -252,6 +252,7 @@
         Ref,
         inject,
         ref,
+        provide,
     } from 'vue'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
@@ -301,11 +302,15 @@
             const saveCloseTabKey = ref()
             const saveQueryLoading = ref(false)
             const saveModalRef = ref()
+            const slackSharePopoverVisible = ref(false)
             const saveQueryData = ref()
             const limitRows = inject('limitRows') as Ref<{
                 checked: boolean
                 rowsCount: number
             }>
+
+            provide('showSaveQueryModal', showSaveQueryModal)
+            provide('slackSharePopoverVisible', slackSharePopoverVisible)
 
             const { getFirstQueryConnection } = useUtils()
             const { horizontalPaneResize, horizontalPaneAnimation } =
@@ -469,7 +474,11 @@
                 assetClassification: any
             ) => {
                 saveQueryData.value = saveQueryDataParam
-                const key = saveCloseTabKey.value
+                let key = saveCloseTabKey.value
+                if (!key) {
+                    key = activeInlineTab.value.key
+                }
+
                 let tabData: activeInlineTabInterface | undefined
                 tabs.value.forEach((tab) => {
                     if (tab.key === key) {

@@ -1041,7 +1041,10 @@
             >
             </CustomMetadataPreview>
 
-            <ReadmeCTA :asset="selectedAsset" />
+            <div class="flex flex-col px-5">
+                <p class="mb-1 text-sm text-gray-500">Readme</p>
+                <ReadmeCTA :asset="selectedAsset" />
+            </div>
 
             <div
                 v-if="isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)"

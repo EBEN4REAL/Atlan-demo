@@ -1,21 +1,40 @@
 <template>
-    <div class="px-5">
+    <a-tooltip
+        placement="left"
+        :title="
+            disabledCTA
+                ? 'You don’t have access to edit Readme for this asset'
+                : ''
+        "
+        :mouse-enter-delay="0.5"
+        color="#2A2F45"
+    >
         <div
             class="flex items-center p-3 border rounded-md cursor-pointer hover:shadow-sm border-new-gray-300"
-            :class="!readmeGuid(asset) && !hoverOnCTA ? 'border-dashed' : ''"
+            :class="{
+                'border-dashed': !readmeGuid(asset) && !hoverOnCTA,
+                'cursor-not-allowed opacity-70 bg-gray-100 border-new-gray-500':
+                    disabledCTA,
+            }"
             @click="showReadmeModal"
             @mouseenter="hoverOnCTA = true"
             @mouseleave="hoverOnCTA = false"
         >
             <div
                 class="p-2 mr-2 rounded-md"
-                :class="hoverOnCTA ? 'bg-new-blue-100' : 'bg-new-gray-100'"
+                :class="
+                    hoverOnCTA && !disabledCTA
+                        ? 'bg-new-blue-100'
+                        : 'bg-new-gray-100'
+                "
             >
                 <AtlanIcon
                     icon="Readme"
                     class="w-5 h-5"
                     :class="
-                        hoverOnCTA ? 'text-new-blue-500' : 'text-new-gray-800'
+                        hoverOnCTA && !disabledCTA
+                            ? 'text-new-blue-500'
+                            : 'text-new-gray-800'
                     "
                 />
             </div>
@@ -23,7 +42,9 @@
                 <span
                     class="font-medium"
                     :class="
-                        hoverOnCTA ? 'text-new-blue-500' : 'text-new-gray-800'
+                        hoverOnCTA && !disabledCTA
+                            ? 'text-new-blue-500'
+                            : 'text-new-gray-800'
                     "
                     >View Readme</span
                 >
@@ -53,16 +74,20 @@
                 <span
                     class="font-medium"
                     :class="
-                        hoverOnCTA ? 'text-new-blue-500' : 'text-new-gray-800'
+                        hoverOnCTA && !disabledCTA
+                            ? 'text-new-blue-500'
+                            : 'text-new-gray-800'
                     "
                     >+ Add Readme</span
                 >
                 <span class="text-new-gray-600">
-                    Enrich your column with Readme
+                    Enrich your
+                    {{ assetTypeLabel(asset) || asset.typeName }}
+                    with Readme
                 </span>
             </div>
-        </div>
-    </div>
+        </div></a-tooltip
+    >
 
     <a-modal
         v-model:visible="readmeVisible"
@@ -116,6 +141,7 @@
                 selectedAssetUpdatePermission,
                 readmeGuid,
                 readme,
+                assetTypeLabel,
             } = useAssetInfo()
 
             const readmeAttribute = ref(['readme'])
@@ -132,11 +158,6 @@
 
             const readmeVisible = ref<boolean>(false)
 
-            const showReadmeModal = () => {
-                mutateReadme()
-                readmeVisible.value = true
-            }
-
             const readmeEditPermission = computed(
                 () =>
                     selectedAssetUpdatePermission(
@@ -147,7 +168,18 @@
                     ) && assetPermission('CREATE_README')
             )
 
+            const disabledCTA = computed(
+                () => !readmeEditPermission.value && !readmeGuid(asset.value)
+            )
+
             const hoverOnCTA = ref(false)
+
+            const showReadmeModal = () => {
+                if (!disabledCTA.value) {
+                    mutateReadme()
+                    readmeVisible.value = true
+                }
+            }
 
             return {
                 title,
@@ -155,11 +187,13 @@
                 readmeGuid,
                 useTimeAgo,
                 readme,
+                assetTypeLabel,
                 readmeVisible,
                 readmeAsset,
                 readmeEditPermission,
                 isReadmeLoading,
                 hoverOnCTA,
+                disabledCTA,
             }
         },
     })

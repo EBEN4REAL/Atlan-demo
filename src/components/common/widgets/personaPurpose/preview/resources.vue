@@ -5,16 +5,17 @@
         </div>
         <div v-if="item?.resources?.links?.length > 0" class="mt-5">
             <div
-                v-for="(resource, index) in item?.resources?.links"
+                v-for="(resource, index) in sortResources(
+                    item?.resources?.links
+                )"
                 :key="index"
-                class="border-b last:border-0"
+                class="flex-grow mb-3"
             >
                 <component
                     :is="getPreviewComponent(resource?.attributes?.link)"
                     :link="resource"
                     :asset-type="resource?.attributes?.asset?.typeName || null"
                     :asset-subtitle="true"
-                    class="border-none"
                     :actions="['copy']"
                 />
             </div>
@@ -82,6 +83,17 @@
             })
             provide('tab', tab)
 
+            /* eslint-disable no-underscore-dangle */
+            const sortResources = (_resources) =>
+                _resources?.sort((a, b) =>
+                    (a.attributes.__modificationTimestamp ??
+                        a.attributes.__timestamp) >
+                    (b.attributes.__modificationTimestamp ??
+                        b.attributes.__timestamp)
+                        ? -1
+                        : 1
+                )
+
             function getPreviewComponent(url) {
                 if (isSlackLink(url)) {
                     return 'SlackLinkPreview'
@@ -96,6 +108,7 @@
                 getDomain,
                 imageUrl,
                 getPreviewComponent,
+                sortResources,
             }
         },
     })

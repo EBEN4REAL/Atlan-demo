@@ -4,7 +4,7 @@
             block
             class="flex items-center justify-between px-2 shadow-none"
             @click="showReadmeModal"
-            ><div class="flex items-center">Readme of {{ title(asset) }}</div>
+            ><div class="flex items-center">Readme</div>
             <AtlanIcon icon="External" />
         </a-button>
     </div>
@@ -23,7 +23,11 @@
         >
             <AtlanLoader class="h-9" />
         </div>
-        <ReadmeContent v-else :readme-asset="readmeAsset" />
+        <ReadmeContent
+            v-else
+            :readme-asset="readmeAsset"
+            :selected-asset="asset"
+        />
     </a-modal>
 </template>
 

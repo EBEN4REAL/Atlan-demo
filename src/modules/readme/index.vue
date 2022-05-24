@@ -9,7 +9,10 @@
         "
     >
         <div class="flex p-4 border-b border-gray-200">
-            <div class="flex items-center">
+            <div v-if="usedInModal">
+                <slot name="assetInfo"></slot>
+            </div>
+            <div v-else class="flex items-center">
                 <AtlanIcon icon="Readme" class="w-auto h-8 mr-2" /><span
                     class="text-base font-bold text-gray"
                     >Readme</span
@@ -28,7 +31,7 @@
                     <a-button
                         v-if="!localReadmeContent && !isEditing"
                         :disabled="!isEditingAllowed"
-                        class="flex items-center text-primary border-0 shadow-none"
+                        class="flex items-center border-0 shadow-none text-primary"
                         type="minimal"
                         @click="handleEditMode"
                         @transitionend.stop="() => {}"
@@ -52,7 +55,7 @@
                     >
 
                     <a-button
-                        class="flex w-28 justify-center items-center"
+                        class="flex items-center justify-center w-28"
                         type="primary"
                         :loading="isSaving"
                         @click="handleUpdate"
@@ -73,7 +76,7 @@
                     <a-button
                         v-if="localReadmeContent && !isEditing"
                         :disabled="!isEditingAllowed"
-                        class="flex items-center text-primary border-0 shadow-none"
+                        class="flex items-center border-0 shadow-none text-primary"
                         type="minimal"
                         @click="handleEditMode"
                         @transitionend.stop="() => {}"
@@ -86,7 +89,7 @@
                 >
             </div>
         </div>
-        <div class="border-0 h-full p-6">
+        <div class="h-full p-6 border-0">
             <AtlanEditor
                 ref="editor"
                 v-model="localReadmeContent"
@@ -159,6 +162,11 @@
                 type: String,
                 default: 'DISCOVERY',
                 required: false,
+            },
+            usedInModal: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         emits: ['savedChanges', 'editing', 'update:modelValue'],

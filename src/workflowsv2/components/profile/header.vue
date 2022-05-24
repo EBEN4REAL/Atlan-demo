@@ -115,13 +115,18 @@
         </div>
 
         <div class="flex ml-auto gap-2 mt-1.5">
-            <a-modal v-model:visible="scheduleVisible" title="Schedule">
+            <a-modal
+                v-model:visible="scheduleVisible"
+                title="Schedule"
+                destroyOnClose
+            >
                 <div class="px-4 py-2">
                     <Schedule v-model="cronModel" />
                 </div>
                 <template #footer>
                     <div class="flex items-center mt-3 gap-x-2">
                         <AtlanButton2
+                            v-if="isCronWorkflow(workflowObject)"
                             color="secondary"
                             label="Remove schedule"
                             prefixIcon="Unscheduled"

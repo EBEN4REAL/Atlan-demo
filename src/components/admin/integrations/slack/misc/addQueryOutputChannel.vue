@@ -151,7 +151,7 @@
             v-if="atlanBotNotAddedToChannels.length"
         >
             <AtlanIcon icon="Error" class="text-new-red-500 -mt-0.5 mr-1" />
-            Error! Atlan bot is not added to
+            Error! Atlan bot is not added to the
             <b>
                 {{
                     atlanBotNotAddedToChannels
@@ -160,7 +160,7 @@
                 }}
             </b>
 
-            channel
+            by admin
         </div>
     </div>
 </template>

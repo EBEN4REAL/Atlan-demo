@@ -90,6 +90,7 @@
                     insights_Store.activePreviewGuid !== undefined ||
                     !Boolean(sharableChannels.length)
                 "
+                :sharableChannels="sharableChannels"
                 :dataList="activeInlineTab.playground.editor.dataList"
                 :columns="activeInlineTab.playground.editor.columnList"
                 v-model:visible="slackSharePopoverVisible"
@@ -113,7 +114,7 @@
                         {{
                             sharableChannels?.length > 0
                                 ? 'Share Results'
-                                : 'Channels not setted up'
+                                : 'Slack channel is not setup by admin'
                         }}
                     </template>
                     <AtlanBtn
@@ -166,7 +167,9 @@
                             @click.stop="() => {}"
                             overlayClassName="border-none focus_none"
                         >
-                            <template #title> Channels not setted up </template>
+                            <template #title>
+                                Slack channel is not setup by admin
+                            </template>
 
                             <AtlanIcon
                                 icon="Slack"
@@ -281,6 +284,7 @@
                                         undefined ||
                                     !Boolean(sharableChannels.length)
                                 "
+                                :sharableChannels="sharableChannels"
                                 :dataList="
                                     activeInlineTab.playground.editor.dataList
                                 "
@@ -338,7 +342,7 @@
                                     @click.stop="() => {}"
                                 >
                                     <template #title>
-                                        Channels not setted up
+                                        Slack channel is not setup by admin
                                     </template>
 
                                     <div

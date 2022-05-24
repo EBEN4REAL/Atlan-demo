@@ -115,6 +115,10 @@
             type: Object as PropType<any[]>,
             required: true,
         },
+        sharableChannels: {
+            type: Object as PropType<any[]>,
+            required: true,
+        },
         dataList: {
             type: Object as PropType<any[]>,
             required: true,
@@ -139,14 +143,20 @@
     const store = intStore()
 
     const { tenantSlackStatus } = toRefs(store)
-    const { assetType, askQuestionModal, columns, dataList, disabled } =
-        toRefs(props)
+    const {
+        assetType,
+        askQuestionModal,
+        columns,
+        dataList,
+        disabled,
+        sharableChannels,
+    } = toRefs(props)
 
     const channels = ref([])
 
     const getChannels = () => {
         channels.value =
-            tenantSlackStatus.value.queryOutputChannels.map((channel) => ({
+            sharableChannels.value.map((channel) => ({
                 value: channel.id,
                 label: `# ${channel.name}`,
             })) ?? []

@@ -61,9 +61,12 @@
                             :icon="tab.icon"
                             :active-icon="tab.activeIcon"
                             :is-active="activeKey === index"
+                            height="h-5"
                         >
                             <template #label
-                                ><div class="label-drawer-persona-purpose">
+                                ><div
+                                    class="label-drawer-persona-purpose text-gray-500 leading-none mt-0.5"
+                                >
                                     {{ tab.tooltip }}
                                 </div></template
                             >
@@ -254,15 +257,14 @@
                 @apply bg-primary-light;
             }
             :global(.ant-tabs-tab) {
-                padding: 3px 8px !important;
+                padding: 6px 8px !important;
                 @apply justify-center;
-                @apply py-3 !important;
-                @apply mt-0 !important;
+                @apply mt-3 !important;
             }
             :global(.ant-tabs-tab:first-child) {
-                padding: 3px 8px !important;
+                padding: 6px 8px !important;
                 @apply justify-center;
-                @apply py-3 !important;
+                @apply mt-0 !important;
             }
 
             :global(.ant-tabs-content) {

@@ -7,10 +7,21 @@ export function useRequest(
     qfName,
     pagination: Ref,
     type,
-    filterStatus = { value: {} },
+    filterStatus = { value: {} }
 ) {
     let payloadFilter = {}
-    if (type === 'AtlasGlossary') {
+    if (type === 'Table') {
+        payloadFilter = {
+            $or: [
+                { destinationGuid: guid },
+                {
+                    destinationQualifiedName: {
+                        $like: `${qfName}%`,
+                    },
+                },
+            ],
+        }
+    } else if (type === 'AtlasGlossary') {
         payloadFilter = {
             $or: [
                 { sourceGuid: guid },
@@ -31,7 +42,7 @@ export function useRequest(
             destinationGuid: guid,
         }
     }
-   const filterType =
+    const filterType =
         type === 'AtlasGlossaryTerm' ? 'sourceGuid' : 'destinationGuid'
     const params = computed(() => {
         const temp = {

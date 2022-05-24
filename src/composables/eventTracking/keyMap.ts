@@ -48,8 +48,8 @@ const keyMap = {
         updates_cta: {
             clicked: {
                 action: 'main_header_updates_cta_clicked',
-            }
-        }
+            },
+        },
     },
     discovery: {
         filter: {
@@ -70,11 +70,11 @@ const keyMap = {
                 action: 'discovery_cta_action_clicked',
                 properties: (props: {
                     action:
-                    | 'open_asset'
-                    | 'vqb_query'
-                    | 'sql_query'
-                    | 'copy_link'
-                    | 'open_in_source'
+                        | 'open_asset'
+                        | 'vqb_query'
+                        | 'sql_query'
+                        | 'copy_link'
+                        | 'open_in_source'
                     asset_type: string
                 }) => ({
                     ...props,
@@ -373,6 +373,52 @@ const keyMap = {
                     current_list_count: props?.current_list_count,
                     load_more_size: props?.load_more_size,
                     node_id: props?.node_id,
+                }),
+            },
+        },
+        control_panel_display_preference: {
+            updated: {
+                action: 'lineage_control_panel_display_preference_updated',
+                properties: (props) => ({
+                    option: props?.option,
+                    is_enabled: !!props?.is_enabled,
+                }),
+            },
+        },
+        control_panel_full_screen: {
+            toggled: {
+                action: 'lineage_control_panel_full_screen_toggled',
+                properties: (props) => ({
+                    is_enabled: !!props?.is_enabled,
+                }),
+            },
+        },
+        control_panel_zoom_out: {
+            clicked: {
+                action: 'lineage_control_panel_zoom_out_clicked',
+                properties: (props) => ({
+                    percentage: props?.percentage,
+                }),
+            },
+        },
+        control_panel_zoom_in: {
+            clicked: {
+                action: 'lineage_control_panel_zoom_in_clicked',
+                properties: (props) => ({
+                    percentage: props?.percentage,
+                }),
+            },
+        },
+        control_panel_refocus: {
+            clicked: {
+                action: 'lineage_control_panel_refocus_clicked',
+            },
+        },
+        control_panel: {
+            toggled: {
+                action: 'lineage_control_panel_toggled',
+                properties: (props) => ({
+                    is_hidden: !!props?.is_hidden,
                 }),
             },
         },

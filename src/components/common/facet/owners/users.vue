@@ -49,18 +49,18 @@
                                 />
                                 <a-tooltip>
                                     <template #title>
-                                        {{ `${fullName(item)} ` }}
+                                       {{toolTipTitle(item)}}
                                     </template>
                                     <div class="flex items-center">
                                         <div
                                             class="text-sm leading-none capitalize truncate text-gray"
                                             :class="
-                                                item.emailVerified === false
+                                                [item.emailVerified === false
                                                     ? 'user-name-facet-owner'
-                                                    : 'user-name-facet-owner-verified'
+                                                    : 'user-name-facet-owner-verified', !item.enabled && !fullName(item).includes('me') ? 'line-through' : '']
                                             "
                                         >
-                                            {{ `${fullName(item)} ` }}
+                                            {{fullName(item)}}
                                         </div>
                                         <div
                                             v-if="item.emailVerified === false"
@@ -144,6 +144,7 @@
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import Avatar from '~/components/common/avatar/avatar.vue'
     import whoami from '~/composables/user/whoami'
+    import { truncateString } from '~/utils/truncateString'
 
     export default defineComponent({
         name: 'UsersFilter',
@@ -369,6 +370,16 @@
                 })
             })
 
+            
+
+            const toolTipTitle = (item) => {
+                if(item.enabled || fullName(item).includes('me')) {
+                    return `${fullName(item)}`
+                }else {
+                   return  `${fullName(item)} (Disabled)`
+                }
+            }
+
             return {
                 users,
                 loadMore,
@@ -386,6 +397,7 @@
                 imageUrl,
                 username,
                 totalActiveUsers,
+                toolTipTitle,
             }
         },
     })

@@ -7,9 +7,11 @@ import { dataTypeCategoryList } from '~/constant/dataType'
 
 /** UTILS */
 import {
+    SQLAssets,
     getNodeSourceImage,
     getSource,
     getSchema,
+    getDatabase,
     getNodeTypeText,
 } from './util.js'
 import {
@@ -127,9 +129,11 @@ export default function useGraph(graph) {
         const displayText = title(entity)
         const source = getSource(entity)
         const schemaName = getSchema(entity)
+        const databaseName = getDatabase(entity)
         const img = getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
         const isVpNode = typeName === 'vpNode'
+        const isSQLNode = SQLAssets.includes(typeName)
         const isNodeWithPorts = [
             'Table',
             'View',
@@ -164,6 +168,9 @@ export default function useGraph(graph) {
             ctaLeftId: '',
             ctaLeftLoading: false,
             disableCta: false,
+            showDatabase: true,
+            showSchema: true,
+            showAnnouncement: true,
             ...dataObj,
         }
 
@@ -243,7 +250,7 @@ export default function useGraph(graph) {
                                                 : ''
                                         }
                                         ${
-                                            aType
+                                            aType && data?.showAnnouncement
                                                 ? `<span class="ml-2 node-announcement">
                                                     ${announcementTypeIcons[aType]}
                                                    </span>`
@@ -314,12 +321,15 @@ export default function useGraph(graph) {
                                                 ? 'w-0 hidden'
                                                 : 'flex-none ml-1'
                                         }">${status}</span>
-                                        <span class=" node-announcement ${
-                                            !flag
-                                                ? 'w-0 hidden'
-                                                : 'flex-none ml-1'
-                                        }">${flag}</span>
-
+                                        ${
+                                            data?.showAnnouncement && flag
+                                                ? `<span class=" node-announcement ${
+                                                      !flag
+                                                          ? 'w-0 hidden'
+                                                          : 'flex-none ml-1'
+                                                  }">${flag}</span>`
+                                                : ''
+                                        }                                        
                                     </div>
                                 </div>
                                 <div class="node-meta">
@@ -327,17 +337,44 @@ export default function useGraph(graph) {
                                     <div class="truncate node-meta__text isTypename">
                                         ${typeNameComputed}
                                     </div>
-                                    <div class="node-meta__text node-schema">
+                                    <div class="node-meta__text">
                                         ${
-                                            isNodeWithPorts && schemaName
+                                            isSQLNode &&
+                                            ((data?.showDatabase &&
+                                                databaseName) ||
+                                                (data?.showSchema &&
+                                                    schemaName))
                                                 ? 'in'
                                                 : ''
                                         }
                                     </div>
-                                    <div class="node-meta__text node-schema text-gray  truncate 
-                                        ${isNodeWithPorts ? '' : 'hidden'}">
-                                        ${schemaName || ''}
-                                    </div>
+                                      ${
+                                          data?.showDatabase &&
+                                          databaseName &&
+                                          isSQLNode
+                                              ? `<div title="Database: ${databaseName}" class="node-meta__text node-database text-gray truncate">
+                                                    ${databaseName || ''} 
+                                               </div>`
+                                              : ''
+                                      }
+                                    ${
+                                        data?.showDatabase &&
+                                        databaseName &&
+                                        data?.showSchema &&
+                                        schemaName &&
+                                        isSQLNode
+                                            ? '<div>/</div>'
+                                            : ''
+                                    }
+                                    ${
+                                        data?.showSchema &&
+                                        schemaName &&
+                                        isSQLNode
+                                            ? `<div title="Schema: ${schemaName}" class="node-meta__text node-schema text-gray truncate">
+                                                  ${schemaName || ''}
+                                                </div>`
+                                            : ''
+                                    }
                                 </div>  
                             </div>
                             <div class="lineage-node__ports 

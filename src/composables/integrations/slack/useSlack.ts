@@ -232,6 +232,11 @@ export const UnfurlSlackMessage = (body, asyncOptions) => {
         Integrations.UnfurlSlackMessage(body, { asyncOptions })
     return { data, isLoading, error, mutate, isReady }
 }
+export const checkAtlanBotInChannels = (body, asyncOptions) => {
+    const { data, isLoading, error, isReady, mutate } =
+        Integrations.AtlanBotCheckInChannels(body, { asyncOptions })
+    return { data, isLoading, error, mutate, isReady }
+}
 
 export const archiveSlack = (pV) => {
     const intStore = integrationStore()
@@ -331,4 +336,3 @@ export const UpdateSlackConfig = (pV, body, asyncOptions) => {
         Integrations.UpdateSlackConfig(pV, body, { asyncOptions })
     return { data, isLoading, error, mutate }
 }
-

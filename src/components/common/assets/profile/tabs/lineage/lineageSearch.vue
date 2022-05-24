@@ -8,7 +8,7 @@
     />
     <div class="flex flex-col">
         <div class="flex items-center">
-            <div class="flex items-center px-4x control-itemx">
+            <div class="flex items-center h-9">
                 <div
                     class="mx-4 cursor-pointer"
                     @click="showSearch = !showSearch"
@@ -23,8 +23,8 @@
                         ></AtlanIcon>
                     </a-tooltip>
                 </div>
-                <div class="w-px bg-new-gray-200 h-9"></div>
-                <div
+                <!-- <div class="w-px bg-new-gray-200 h-9"></div> -->
+                <!-- <div
                     class="mx-4"
                     :class="
                         hasImpactedAssets
@@ -51,7 +51,7 @@
                             class="outline-none"
                         ></AtlanIcon>
                     </a-tooltip>
-                </div>
+                </div> -->
             </div>
 
             <div v-if="showSearch" class="search">
@@ -186,6 +186,8 @@
             })
 
             /** METHODS */
+
+            /** EVENT DEFINITION */
             // searchEvent
             const sendSearchEvent = useDebounceFn(() => {
                 useAddEvent('lineage', 'search', 'changed', {

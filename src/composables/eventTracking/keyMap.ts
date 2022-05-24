@@ -48,8 +48,8 @@ const keyMap = {
         updates_cta: {
             clicked: {
                 action: 'main_header_updates_cta_clicked',
-            }
-        }
+            },
+        },
     },
     discovery: {
         filter: {
@@ -70,11 +70,11 @@ const keyMap = {
                 action: 'discovery_cta_action_clicked',
                 properties: (props: {
                     action:
-                    | 'open_asset'
-                    | 'vqb_query'
-                    | 'sql_query'
-                    | 'copy_link'
-                    | 'open_in_source'
+                        | 'open_asset'
+                        | 'vqb_query'
+                        | 'sql_query'
+                        | 'copy_link'
+                        | 'open_in_source'
                     asset_type: string
                 }) => ({
                     ...props,
@@ -376,6 +376,52 @@ const keyMap = {
                 }),
             },
         },
+        control_panel_display_preference: {
+            updated: {
+                action: 'lineage_control_panel_display_preference_updated',
+                properties: (props) => ({
+                    option: props?.option,
+                    is_enabled: !!props?.is_enabled,
+                }),
+            },
+        },
+        control_panel_full_screen: {
+            toggled: {
+                action: 'lineage_control_panel_full_screen_toggled',
+                properties: (props) => ({
+                    is_enabled: !!props?.is_enabled,
+                }),
+            },
+        },
+        control_panel_zoom_out: {
+            clicked: {
+                action: 'lineage_control_panel_zoom_out_clicked',
+                properties: (props) => ({
+                    percentage: props?.percentage,
+                }),
+            },
+        },
+        control_panel_zoom_in: {
+            clicked: {
+                action: 'lineage_control_panel_zoom_in_clicked',
+                properties: (props) => ({
+                    percentage: props?.percentage,
+                }),
+            },
+        },
+        control_panel_refocus: {
+            clicked: {
+                action: 'lineage_control_panel_refocus_clicked',
+            },
+        },
+        control_panel: {
+            toggled: {
+                action: 'lineage_control_panel_toggled',
+                properties: (props) => ({
+                    is_hidden: !!props?.is_hidden,
+                }),
+            },
+        },
     },
     gtc: {
         term: {
@@ -475,11 +521,22 @@ const keyMap = {
         results_panel: {
             cta_clicked: {
                 action: 'insights_results_panel_cta_clicked',
-                properties: (props) => ({
-                    action: props.action,
-                    query_tab_id: props?.query_tab_id,
-                    is_full_screen: props?.is_full_screen,
-                }),
+                properties: (props) => {
+                    if (props?.description_added) {
+                        return {
+                            action: props.action,
+                            query_tab_id: props?.query_tab_id,
+                            is_full_screen: props?.is_full_screen,
+                            description_added: props?.description_added,
+                        }
+                    } else {
+                        return {
+                            action: props.action,
+                            query_tab_id: props?.query_tab_id,
+                            is_full_screen: props?.is_full_screen,
+                        }
+                    }
+                },
             },
             tab_switched: {
                 action: 'insights_results_panel_tab_switched',

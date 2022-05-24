@@ -148,6 +148,7 @@
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import Avatar from '~/components/common/avatar/avatar.vue'
     import whoami from '~/composables/user/whoami'
+    import { truncateString } from '~/utils/truncateString'
 
     export default defineComponent({
         name: 'UsersFilter',

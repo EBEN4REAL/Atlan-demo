@@ -35,7 +35,7 @@
                                         <div
                                             class="flex text-sm font-semibold capitalize"
                                         >
-                                            <span class="mr-2">{{
+                                            <span>{{
                                                 selectedUser?.name 
                                             }} 
                                             </span>
@@ -54,18 +54,16 @@
                                             <span class="mx-1 text-gray-400"
                                                 >•</span
                                             >
-                                            {{selectedUser.enabled ? selectedUser?.workspaceRole : '' }}
-                                            <button class="rounded bg-new-red-100 px-2 text-xs pb-px text-new-red-400 tracking-wider font-bold" v-if="!selectedUser.enabled" style="padding-top: 3px">DISABLED</button>
+
+                                            {{selectedUser?.enabled ? selectedUser?.workspaceRole : '' }}
+                                            <button class="rounded bg-new-red-100 px-2 text-xs pb-px text-new-red-400 tracking-wider font-bold" v-if="!selectedUser?.enabled" style="padding-top: 3px">DISABLED</button>
                                         </div>
                                         <span
                                             v-if="
-                                                selectedUser?.last_active_time && selectedUser.enabled
+                                                selectedUser?.last_active_time && selectedUser?.enabled
                                             "
                                             class="text-sm text-gray-600"
                                         >
-                                            <!-- <span class="mx-1 text-gray-400"
-                                                >•</span
-                                            > -->
                                             <a-tooltip placement="bottom">
                                                 <template #title>
                                                     {{

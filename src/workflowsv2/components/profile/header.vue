@@ -279,7 +279,7 @@
             } = useWorkflowUpdate(path, body, false)
 
             watch(data, () => {
-                if (data.value) {
+                if (Object.keys(data.value || {}).length) {
                     message.success('Workflow schedule updated')
                     toggleSchedule()
                 }

@@ -8,7 +8,7 @@ dayjs.extend(isYesterday)
 export const findIntervalByDate = (gt: number, lt = Date.now()) => {
     if (gt) {
         const days = Math.round((lt - gt) / (1000 * 60 * 60 * 24)) // ms * seconds * minutes * hours
-        if (days < 2) return '1h'
+        if (days < 3) return '1h'
         if (days < 20) return '1d'
         return '1w'
     }
@@ -21,8 +21,9 @@ export const getIntervalString = (gt: number, lt: number) => {
     const relative = !lt // if there is no less than date, treat it as if starts from today
     const days = Math.floor((lt || Date.now() - gt) / (1000 * 60 * 60 * 24)) // ms * seconds * minutes * hours
 
-    if (dayjs(gt).isToday()) return 'Today'
-    if (dayjs(gt).isYesterday() && dayjs(lt).isToday()) return 'Yesterday'
+    // if (dayjs(gt).isToday()) return 'Today'
+    // if (dayjs(gt).isYesterday() && dayjs(lt).isToday()) return 'Yesterday'
+    if (days === 1) return `Last 24 Hours`
     if (relative) return `Last ${days} days`
 }
 

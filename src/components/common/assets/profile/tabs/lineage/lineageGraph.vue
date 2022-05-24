@@ -30,7 +30,7 @@
             :graph-height="graphHeight"
             :graph-width="graphWidth"
             :base-entity-guid="lineage.baseEntityGuid"
-            @on-zoom-change="currZoom = $event"
+            @on-zoom-change="handleZoom($event)"
             @on-show-minimap="showMinimap = $event"
         >
             <!-- Minimap Container -->
@@ -51,6 +51,9 @@
             @close-drawer="onCloseDrawer"
             @update="handleDrawerUpdate"
         />
+
+        <!-- GroupProcessesDrawer -->
+        <GroupProcessesDrawer :grouped-process-ids="groupedProcessIds" />
     </div>
 </template>
 
@@ -64,10 +67,12 @@
         provide,
         inject,
     } from 'vue'
+    import { useDebounceFn } from '@vueuse/core'
 
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
     import LineageFooter from './lineageFooter.vue'
+    import GroupProcessesDrawer from './GroupProcessesDrawer.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     /** COMPOSABLES */
@@ -75,12 +80,14 @@
     import useComputeGraph from './useComputeGraph'
     import useEventGraph from './useEventGraph'
     import usePrefGraph from './usePrefGraph'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'LineageGraph',
         components: {
             LineageHeader,
             LineageFooter,
+            GroupProcessesDrawer,
             AssetDrawer,
         },
         setup() {
@@ -103,14 +110,47 @@
             const drawerActiveKey = ref('Overview')
             const guidToSelectOnGraph = ref('')
             const selectedTypeInRelationDrawer = ref('__all')
+            const groupedProcessIds = ref([])
+
+            /** EVENT DEFINITION */
+            const sendPanelZoomOut = useDebounceFn((percentage) => {
+                useAddEvent('lineage', 'control_panel_zoom_out', 'clicked', {
+                    percentage,
+                })
+            }, 600)
+
+            const sendPanelZoomIn = useDebounceFn((percentage) => {
+                useAddEvent('lineage', 'control_panel_zoom_in', 'clicked', {
+                    percentage,
+                })
+            }, 600)
 
             /** METHODS */
+            // onZoomChange
+            const handleZoom = (e) => {
+                currZoom.value = e.currZoom
+
+                if (Math.sign(e.factor) === -1) {
+                    // Handle Event - lineage_control_panel_zoom_out_clicked
+                    sendPanelZoomOut(e.currZoom)
+                } else {
+                    // Handle Event - lineage_control_panel_zoom_in_clicked
+                    sendPanelZoomIn(e.currZoom)
+                }
+            }
+
             // onSelectAsset
             const onSelectAsset = (item, selectOnGraph = false) => {
+                const { isGroupEdge, processIds } = item || {}
+
                 if (typeof control === 'function')
+                    // TODO: && !isGroupEdge
                     control('selectedAsset', item)
 
                 if (!item) return
+
+                if (isGroupEdge && processIds.length)
+                    groupedProcessIds.value = processIds
 
                 if (selectOnGraph) guidToSelectOnGraph.value = item?.guid
             }
@@ -212,6 +252,8 @@
                 minimapContainer,
                 onCloseDrawer,
                 handleDrawerUpdate,
+                handleZoom,
+                groupedProcessIds,
             }
         },
     })

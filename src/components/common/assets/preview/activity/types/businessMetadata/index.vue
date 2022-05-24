@@ -62,7 +62,7 @@
             })
 
             const getAttribute = (foundCM, name) => {
-                return foundCM.attributeDefs.find((attr) => attr.name === name)
+                return foundCM?.attributeDefs?.find((attr) => attr?.name === name)
             }
 
             return { data, customMetadataList, found, getAttribute }

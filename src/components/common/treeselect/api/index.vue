@@ -177,8 +177,8 @@
             }
 
             const transformData = (data) => {
-                console.log('data', data.value)
                 const queue = data.value.results
+                treeData.value = []
                 while (queue.length > 0) {
                     const item = queue.pop()
                     treeData.value.push({

@@ -8,22 +8,26 @@
                 v-if="!property.ui?.hidden"
             >
                 <Component
-                    v-if="
-                        componentName(property) === 'credential' ||
-                        componentName(property) === 'nested' ||
-                        componentName(property) === 'connection'
-                    "
+                    v-if="compoundWidgets.includes(componentName(property))"
                     :is="componentName(property)"
                     v-model="formState[property.id]"
                     :property="property"
                     :isEdit="isEdit"
-                ></Component>
+                />
+
+                <Component
+                    v-else-if="staticWidgets.includes(property.ui?.widget)"
+                    :is="componentName(property)"
+                    :class="property.ui?.class"
+                    :style="property.ui?.style"
+                    >{{ property.ui?.label }}</Component
+                >
 
                 <a-form-item
+                    v-else
                     :name="property.name"
                     :required="property.required"
                     :rules="property.ui.rules"
-                    v-else
                 >
                     <template #label>
                         <AtlanIcon
@@ -152,6 +156,9 @@
 
             const formState = inject('formState')
 
+            const staticWidgets = ['header', 'divider']
+            const compoundWidgets = ['credential', 'nested', 'connection']
+
             const componentName = (property) => {
                 if (!property.ui?.widget) {
                     switch (property.type) {
@@ -169,7 +176,14 @@
                             return 'Input'
                     }
                 } else {
-                    return property.ui.widget
+                    switch (property.ui?.widget) {
+                        case 'divider':
+                            return 'a-divider'
+                        case 'header':
+                            return 'h5'
+                        default:
+                            return property.ui.widget
+                    }
                 }
             }
 
@@ -282,6 +296,28 @@
             }
 
             const list = ref([])
+
+            const getPropertyfromConfigMap = (key) => {
+                const property = configMap.value?.properties[key]
+
+                let baseObj = {
+                    id: `${getName(key)}`,
+                    name: `${getName(key)}`,
+                }
+
+                if (property.type === 'conditional') {
+                    const { conditions, ...rest } = property
+                    const firstFind = property.conditions?.find(
+                        (p) => formState[p.property] === p.value
+                    )
+                    baseObj = { ...baseObj, ...rest, ...firstFind }
+                } else {
+                    baseObj = { ...baseObj, ...property }
+                }
+
+                return baseObj
+            }
+
             const calculateList = () => {
                 isImplied()
                 const temp = []
@@ -295,11 +331,7 @@
                                 if (
                                     !configMap.value?.properties[key].ui?.hidden
                                 ) {
-                                    temp.push({
-                                        id: `${getName(key)}`,
-                                        name: `${getName(key)}`,
-                                        ...configMap.value?.properties[key],
-                                    })
+                                    temp.push(getPropertyfromConfigMap(key))
                                 }
                             }
                         })
@@ -309,11 +341,7 @@
                                 if (
                                     !configMap.value?.properties[key].ui?.hidden
                                 ) {
-                                    temp.push({
-                                        id: `${getName(key)}`,
-                                        name: `${getName(key)}`,
-                                        ...configMap.value?.properties[key],
-                                    })
+                                    temp.push(getPropertyfromConfigMap(key))
                                 }
                             }
                         )
@@ -337,6 +365,8 @@
                 getCol,
                 isEdit,
                 isUsername,
+                staticWidgets,
+                compoundWidgets,
             }
         },
     })

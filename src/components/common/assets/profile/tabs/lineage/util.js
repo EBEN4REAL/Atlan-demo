@@ -186,7 +186,7 @@ export const getGroupedRelations = (relations) => {
     })
 
     Object.entries(res).forEach(([k, v]) => {
-        if (v < 2) delete res[k]
+        if (v.length < 2) delete res[k]
     })
     return res
 }
@@ -250,7 +250,7 @@ export const controlGroupedEdges = (graph, relations, mode = 'node') => {
         edge.setLabels({
             attrs: {
                 label: {
-                    // text: `grouped process (${count})`,
+                    // text: `grouped-processes (${count})`,
                     text: `grouped-processes`,
                 },
             },

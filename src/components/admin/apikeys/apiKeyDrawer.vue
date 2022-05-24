@@ -320,7 +320,7 @@
             <div class="flex p-2 rounded-md bg-warning-light">
                 <AtlanIcon icon="Info" class="h-6 mr-2" />
                 <div>
-                    Please copy or download this api key as it will be only
+                    Please copy or download this api token as it will be only
                     visible this one time
                 </div>
             </div>
@@ -500,7 +500,7 @@
                     copyToClipboard(
                         generatedAPIKey.value.attributes.accessToken
                     )
-                    message.success('API Key Copied')
+                    message.success('API Token Copied')
                 }
             }
             const handleClose = () => {

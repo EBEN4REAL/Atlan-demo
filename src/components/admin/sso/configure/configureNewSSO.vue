@@ -158,7 +158,10 @@
                                     />
                                 </span>
                             </a-form-item>
-                            <a-form-item class="-mt-2.5" v-if="ssoForm.alias==='azure'">
+                            <a-form-item
+                                v-if="ssoForm.alias === 'azure'"
+                                class="-mt-2.5"
+                            >
                                 <template #label>
                                     <div class="">
                                         <div class="mb-2">
@@ -258,8 +261,8 @@
                         <AtlanButton2
                             label="Cancel"
                             color="secondary"
-                            @click="showSSOScreen"
                             class="mr-5"
+                            @click="showSSOScreen"
                         />
                         <AtlanButton2
                             :loading="isLoading"
@@ -518,7 +521,7 @@
                             router.push('/admin/sso')
                         } else if (error && error.value) {
                             console.error(
-                                'Unable to update API Key. Please try again.'
+                                'Unable to update API Token. Please try again.'
                             )
                         }
                     },

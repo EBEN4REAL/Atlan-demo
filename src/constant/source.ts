@@ -13,7 +13,7 @@ import MSSQL from '~/assets/images/source/svg/MSSQL.svg?url'
 import S3 from '~/assets/images/source/svg/s3.svg?url'
 
 // FIXME: Add an SVG for glue
-import Glue from '~/assets/images/source/glue.png'
+import Glue from '~/assets/images/source/svg/glue.svg?url'
 
 export const SourceList = [
     {

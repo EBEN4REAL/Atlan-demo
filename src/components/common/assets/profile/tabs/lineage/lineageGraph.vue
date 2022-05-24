@@ -30,7 +30,7 @@
             :graph-height="graphHeight"
             :graph-width="graphWidth"
             :base-entity-guid="lineage.baseEntityGuid"
-            @on-zoom-change="currZoom = $event"
+            @on-zoom-change="handleZoom($event)"
             @on-show-minimap="showMinimap = $event"
         >
             <!-- Minimap Container -->
@@ -64,6 +64,7 @@
         provide,
         inject,
     } from 'vue'
+    import { useDebounceFn } from '@vueuse/core'
 
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
@@ -75,6 +76,7 @@
     import useComputeGraph from './useComputeGraph'
     import useEventGraph from './useEventGraph'
     import usePrefGraph from './usePrefGraph'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'LineageGraph',
@@ -104,7 +106,33 @@
             const guidToSelectOnGraph = ref('')
             const selectedTypeInRelationDrawer = ref('__all')
 
+            /** EVENT DEFINITION */
+            const sendPanelZoomOut = useDebounceFn((percentage) => {
+                useAddEvent('lineage', 'control_panel_zoom_out', 'clicked', {
+                    percentage,
+                })
+            }, 600)
+
+            const sendPanelZoomIn = useDebounceFn((percentage) => {
+                useAddEvent('lineage', 'control_panel_zoom_in', 'clicked', {
+                    percentage,
+                })
+            }, 600)
+
             /** METHODS */
+            // onZoomChange
+            const handleZoom = (e) => {
+                currZoom.value = e.currZoom
+
+                if (Math.sign(e.factor) === -1) {
+                    // Handle Event - lineage_control_panel_zoom_out_clicked
+                    sendPanelZoomOut(e.currZoom)
+                } else {
+                    // Handle Event - lineage_control_panel_zoom_in_clicked
+                    sendPanelZoomIn(e.currZoom)
+                }
+            }
+
             // onSelectAsset
             const onSelectAsset = (item, selectOnGraph = false) => {
                 if (typeof control === 'function')
@@ -212,6 +240,7 @@
                 minimapContainer,
                 onCloseDrawer,
                 handleDrawerUpdate,
+                handleZoom,
             }
         },
     })

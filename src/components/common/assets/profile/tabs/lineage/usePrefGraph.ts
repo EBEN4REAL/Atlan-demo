@@ -1,5 +1,7 @@
 /** VUE */
 import { watch } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
+import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 /** COMPOSABLES */
 import useLineageStore from '~/store/lineage'
@@ -10,6 +12,14 @@ import { SQLAssets } from './util.js'
 export default function useGraph({ graph }) {
     const lineageStore = useLineageStore()
     const preferences = lineageStore.getPreferences()
+
+    /** EVENT DEFINITIONS */
+    const sendDisplayPreferenceEvent = useDebounceFn((option, is_enabled) => {
+        useAddEvent('lineage', 'control_panel_display_preference', 'updated', {
+            option,
+            is_enabled,
+        })
+    }, 600)
 
     // controlEdgesArrow
     const controlEdgesArrow = () => {
@@ -43,11 +53,23 @@ export default function useGraph({ graph }) {
     }
 
     watch(
-        preferences,
-        () => {
+        () => ({ ...preferences }),
+        (newVal, oldVal) => {
             controlPrefRetainer()
-        },
-        { deep: true }
+
+            // Handle Event - lineage_control_panel_full_screen_toggled
+            // eslint-disable-next-line no-restricted-syntax
+            for (const key in newVal) {
+                if (newVal[key] !== oldVal[key]) {
+                    sendDisplayPreferenceEvent(
+                        key.replace('show', '').toLowerCase(),
+                        newVal[key]
+                    )
+
+                    break
+                }
+            }
+        }
     )
 
     return {

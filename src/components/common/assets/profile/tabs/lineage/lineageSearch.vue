@@ -186,6 +186,8 @@
             })
 
             /** METHODS */
+
+            /** EVENT DEFINITION */
             // searchEvent
             const sendSearchEvent = useDebounceFn(() => {
                 useAddEvent('lineage', 'search', 'changed', {

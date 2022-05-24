@@ -61,17 +61,22 @@
                 </div>
             </div>
         </div>
-        <div class="flex items-center justify-end py-3">
-            <span class="mr-auto text-new-gray-600"
-                >Showing {{ offset + 1 }} - {{ offset + runs?.length || 0 }} out
-                of {{ totalRuns }} runs</span
-            >
+        <div class="flex items-center justify-end py-3 h-14">
+            <span class="mr-auto text-new-gray-600">{{
+                isLoading
+                    ? 'Loading'
+                    : totalRuns
+                    ? `Showing ${offset + 1} - ${
+                          offset + runs?.length || 0
+                      } out of ${totalRuns} runs`
+                    : 'No runs found'
+            }}</span>
             <Pagination
                 v-model:offset="offset"
-                :total-pages="Math.ceil(totalRuns / limit)"
+                :total="totalRuns"
                 :loading="isLoading"
-                :page-size="limit"
-                @mutate="fetchRuns"
+                :limit="limit"
+                @update:offset="fetchRuns(false)"
             />
         </div>
     </div>
@@ -81,7 +86,7 @@
     import { computed, defineComponent, ref, toRefs, watch } from 'vue'
     import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
 
-    import Pagination from '@/common/list/pagination.vue'
+    import Pagination from '~/workflowsv2/components/common/pagination.vue'
     import RunListItem from './runListItem.vue'
 
     import TabbedStatusSelector from '~/workflowsv2/components/common/selectors/tabbedStatusSelector.vue'

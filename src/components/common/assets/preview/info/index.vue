@@ -759,6 +759,18 @@
                     >No SQL data available</span
                 >
             </div>
+
+            <div
+                v-if="
+                    selectedAsset.typeName === 'Column' ||
+                    readmeGuid(selectedAsset)
+                "
+                class="flex flex-col px-5"
+            >
+                <p class="mb-1 text-sm text-gray-500">Readme</p>
+                <ReadmeCTA :asset="selectedAsset" />
+            </div>
+
             <div v-if="selectedAsset?.typeName === 'LookerQuery'">
                 <SQLSnippet
                     class="mx-4 rounded-lg"
@@ -1041,11 +1053,6 @@
             >
             </CustomMetadataPreview>
 
-            <div class="flex flex-col px-5">
-                <p class="mb-1 text-sm text-gray-500">Readme</p>
-                <ReadmeCTA :asset="selectedAsset" />
-            </div>
-
             <div
                 v-if="isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)"
                 class="flex flex-col px-5 gap-y-4"
@@ -1243,6 +1250,7 @@
                 s3ObjectSize,
                 s3ObjectCount,
                 s3ObjectContentType,
+                readmeGuid,
             } = useAssetInfo()
 
             const {
@@ -1451,6 +1459,7 @@
                 similarList,
                 aggregationMap,
                 handleApplySuggestion,
+                readmeGuid,
             }
         },
     })

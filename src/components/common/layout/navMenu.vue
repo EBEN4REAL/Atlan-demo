@@ -187,6 +187,7 @@
     import { usePurposeStore } from '~/store/purpose'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { initAnnounceKit } from '~/composables/announceKIT/index'
+    import WIDGETS from '~/constant/integrations/announceKIT.constant'
 
     export default defineComponent({
         name: 'Navigation Menu',
@@ -336,13 +337,18 @@
             )
 
             onMounted(() => {
-                initAnnounceKit('.announcekit-widget', '1JYrEk', 'whatsnew')
+                const { WHATS_NEW } = WIDGETS
+                initAnnounceKit(
+                    '.announcekit-widget',
+                    WHATS_NEW.widgetId,
+                    WHATS_NEW.name
+                )
                 if (window?.announcekit)
                     window.announcekit.on('widget-init', ({ widget }) => {
                         // Called for each widget after the widget has been successfully loaded.
                         // Widget  object is passed to the handler.
                         if (
-                            widget.conf.name === 'whatsnew' &&
+                            widget.conf.name === WHATS_NEW.name &&
                             currentRoute.fullPath === '/?whatsnew'
                         )
                             widget.open()

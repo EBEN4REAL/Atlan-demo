@@ -1377,6 +1377,17 @@
                                     } else playQuery(newQuery, item.value)
                                     return
                                 }
+                                newQuery = `-- ${assetQuoteType}${tableName}${assetQuoteType} preview \nSELECT * FROM ${assetQuoteType}${tableName}${assetQuoteType} LIMIT 50;\n`
+                                if (isPlay) {
+                                    const tabIndex = inlineTabs.value.findIndex(
+                                        (tab) =>
+                                            tab.key === activeInlineTabKey.value
+                                    )
+                                    const newText = `${newQuery}${prevText}`
+                                    previewQuery(newText, tabIndex)
+                                    //REMAINS
+                                } else playQuery(newQuery, item.value)
+                                return
                                 break
                             }
                         }

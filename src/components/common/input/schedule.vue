@@ -164,7 +164,7 @@
                 }
                 if (
                     interval.fields.dayOfMonth.length === 31 &&
-                    interval.fields.dayOfWeek.join(',') === [0, 6].join(',') &&
+                    interval.fields.dayOfWeek.join(',') === [6, 0].join(',') &&
                     interval.fields.month.length === 12
                 ) {
                     return 'weekend'
@@ -235,7 +235,7 @@
                         fields.minute = [0]
                     }
                 } else if (schedule.frequency === 'weekends') {
-                    fields.dayOfWeek = [6, 7]
+                    fields.dayOfWeek = [6, 0]
 
                     if (fields.hour.length === 24) {
                         fields.hour = [0]

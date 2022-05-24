@@ -1041,6 +1041,8 @@
             >
             </CustomMetadataPreview>
 
+            <ReadmeCTA :asset="selectedAsset" />
+
             <div
                 v-if="isBiAsset(selectedAsset) || isSaasAsset(selectedAsset)"
                 class="flex flex-col px-5 gap-y-4"
@@ -1091,6 +1093,7 @@
     import RelatedTerms from '@/common/input/relatedTerms/relatedTerms.vue'
     import Connection from './connection.vue'
     import Suggestion from './suggestion.vue'
+    import ReadmeCTA from './readmeCTA.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
@@ -1130,6 +1133,7 @@
             Categories,
             Categories2,
             RelatedTerms,
+            ReadmeCTA,
             SourceCreated,
             SourceUpdated,
             Admins,

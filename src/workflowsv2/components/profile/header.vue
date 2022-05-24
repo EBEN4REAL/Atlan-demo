@@ -115,17 +115,31 @@
         </div>
 
         <div class="flex ml-auto gap-2 mt-1.5">
-            <a-modal
-                v-model:visible="scheduleVisible"
-                title="Schedule"
-                okText="Update"
-                :confirm-loading="isLoading"
-                okType="primary"
-                @ok="handleScheduleUpdate"
-            >
+            <a-modal v-model:visible="scheduleVisible" title="Schedule">
                 <div class="px-4 py-2">
                     <Schedule v-model="cronModel" />
                 </div>
+                <template #footer>
+                    <div class="flex items-center mt-3 gap-x-2">
+                        <AtlanButton2
+                            color="secondary"
+                            label="Remove schedule"
+                            prefixIcon="Unscheduled"
+                            @click="removeWorkflowSchedule"
+                        />
+                        <AtlanButton2
+                            class="ml-auto"
+                            color="secondary"
+                            label="Cancel"
+                            @click="scheduleVisible = false"
+                        />
+                        <AtlanButton2
+                            label="Save"
+                            :loading="isLoading"
+                            @click="handleScheduleUpdate"
+                        />
+                    </div>
+                </template>
             </a-modal>
 
             <AtlanButton2
@@ -321,10 +335,7 @@
             const removeWorkflowSchedule = () => {
                 Modal.confirm({
                     title: 'Remove Schedule',
-                    content: () =>
-                        h('span', [
-                            'Are you sure you want to remove the schedule?',
-                        ]),
+                    content: 'Are you sure you want to remove the schedule?',
                     okType: 'danger',
                     autoFocusButton: null,
                     okButtonProps: {
@@ -423,6 +434,7 @@
                 nextRunRelativeTime,
                 archiveWorkflow,
                 dropdownOptions,
+                removeWorkflowSchedule,
             }
         },
     })

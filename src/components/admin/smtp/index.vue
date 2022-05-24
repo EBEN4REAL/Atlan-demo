@@ -216,7 +216,6 @@
                 errorMessage,
                 saveSmtpConfig,
                 triggerBlur,
-                body,
                 disabledSave,
                 saveSmtpConfigSave,
                 handleChangePassword,

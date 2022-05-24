@@ -1093,7 +1093,7 @@
     import RelatedTerms from '@/common/input/relatedTerms/relatedTerms.vue'
     import Connection from './connection.vue'
     import Suggestion from './suggestion.vue'
-    import ReadmeCTA from './readmeCTA.vue'
+    import ReadmeCTA from './readme/readmeCTA.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'

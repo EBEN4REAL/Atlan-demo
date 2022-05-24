@@ -23,27 +23,19 @@
         >
             <AtlanLoader class="h-9" />
         </div>
-        <AtlanReadme
-            v-else
-            v-model="localReadmeContent"
-            class="flex flex-col bg-white border border-gray-200 rounded-lg"
-            :is-editing-allowed="readmeEditPermission"
-            :asset-type="asset.typeName"
-            :handle-save="handleSave"
-        />
+        <ReadmeContent v-else :readme-asset="readmeAsset" />
     </a-modal>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, PropType, computed } from 'vue'
-    import { until } from '@vueuse/core'
+    import { defineComponent, ref, toRefs, PropType } from 'vue'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import { useAssetAttributes } from '~/composables/discovery/useCurrentUpdate'
+    import ReadmeContent from './readmeContent.vue'
 
     export default defineComponent({
-        components: {},
+        components: { ReadmeContent },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -57,8 +49,7 @@
         setup(props) {
             const { asset } = toRefs(props)
 
-            const { title, assetPermission, selectedAssetUpdatePermission } =
-                useAssetInfo()
+            const { title } = useAssetInfo()
 
             const readmeAttribute = ref(['readme'])
 
@@ -72,24 +63,6 @@
                 attributes: readmeAttribute,
             })
 
-            const { localReadmeContent, handleUpdateReadme, isLoading } =
-                updateAssetAttributes(readmeAsset)
-
-            const handleSave = (editorContent: string) => {
-                handleUpdateReadme()
-                return until(isLoading).toBe(false)
-            }
-
-            const readmeEditPermission = computed(
-                () =>
-                    selectedAssetUpdatePermission(
-                        asset.value,
-                        false,
-                        'RELATIONSHIP_ADD',
-                        'Readme'
-                    ) && assetPermission('CREATE_README')
-            )
-
             const readmeVisible = ref<boolean>(false)
 
             const showReadmeModal = () => {
@@ -101,9 +74,8 @@
                 title,
                 showReadmeModal,
                 readmeVisible,
-                localReadmeContent,
-                handleSave,
-                readmeEditPermission,
+                readmeAsset,
+
                 isReadmeLoading,
             }
         },

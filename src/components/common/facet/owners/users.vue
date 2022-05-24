@@ -49,18 +49,22 @@
                                 />
                                 <a-tooltip>
                                     <template #title>
-                                       {{toolTipTitle(item)}}
+                                        {{ toolTipTitle(item) }}
                                     </template>
                                     <div class="flex items-center">
                                         <div
                                             class="text-sm leading-none capitalize truncate text-gray"
-                                            :class="
-                                                [item.emailVerified === false
+                                            :class="[
+                                                item.emailVerified === false
                                                     ? 'user-name-facet-owner'
-                                                    : 'user-name-facet-owner-verified', !item.enabled && !fullName(item).includes('me') ? 'line-through' : '']
-                                            "
+                                                    : 'user-name-facet-owner-verified',
+                                                !item?.enabled &&
+                                                !fullName(item).includes('me')
+                                                    ? 'line-through'
+                                                    : '',
+                                            ]"
                                         >
-                                            {{fullName(item)}}
+                                            {{ fullName(item) }}
                                         </div>
                                         <div
                                             v-if="item.emailVerified === false"
@@ -144,7 +148,6 @@
     import useFacetUsers from '~/composables/user/useFacetUsers'
     import Avatar from '~/components/common/avatar/avatar.vue'
     import whoami from '~/composables/user/whoami'
-    import { truncateString } from '~/utils/truncateString'
 
     export default defineComponent({
         name: 'UsersFilter',
@@ -370,13 +373,11 @@
                 })
             })
 
-            
-
             const toolTipTitle = (item) => {
-                if(item.enabled || fullName(item).includes('me')) {
+                if (item?.enabled || fullName(item).includes('me')) {
                     return `${fullName(item)}`
-                }else {
-                   return  `${fullName(item)} (Disabled)`
+                } else {
+                    return `${fullName(item)} (Disabled)`
                 }
             }
 

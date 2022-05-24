@@ -246,7 +246,7 @@ export const controlGroupedEdges = (graph, relations, mode = 'node') => {
         if (!edge) return
         const count = processIds.length
 
-        edge.updateData({ isGroupEdge: true, groupCount: count })
+        edge.updateData({ isGroupEdge: true, groupCount: count, processIds })
         edge.setLabels({
             attrs: {
                 label: {

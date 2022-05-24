@@ -351,25 +351,20 @@ export default function useEventGraph({
     }
 
     // selectNodeEdge
-    const selectNodeEdge = (edgeId, edge) => {
-        const cell = graph.value.getCellById(edgeId)
-        const isCyclicEdge = cell.store.data.data?.isCyclicEdge
+    const selectNodeEdge = (edge) => {
+        const { isCyclicEdge, isGroupEdge, processIds } = edge.getData()
 
         if (isCyclicEdge) {
-            sendProcessClickedEvent(
-                !!edge.data?.isGroupEdge,
-                !!isCyclicEdge,
-                edgeId
-            )
+            sendProcessClickedEvent(!!isGroupEdge, !!isCyclicEdge, edge.id)
             return
         }
 
-        const processId = edgeId.split('/')[0]
-        onSelectAsset({ guid: processId })
+        const processId = edge.id.split('/')[0]
+        onSelectAsset({ guid: processId, isGroupEdge, processIds })
 
-        if (edgeId) selectedNodeEdgeId.value = edgeId
+        if (edge.id) selectedNodeEdgeId.value = edge.id
 
-        const [source, target] = edgeId.split('/')[1].split('@')
+        const [source, target] = edge.id.split('/')[1].split('@')
 
         const cyclicRelations = lineageStore.getCyclicRelations()
         const isCyclicRelation = cyclicRelations.find((x) => {
@@ -379,11 +374,7 @@ export default function useEventGraph({
             return false
         })
 
-        sendProcessClickedEvent(
-            !!edge.data?.isGroupEdge,
-            !!isCyclicRelation,
-            edgeId
-        )
+        sendProcessClickedEvent(!!isGroupEdge, !!isCyclicRelation, edge.id)
 
         if (isCyclicRelation) return
 
@@ -602,7 +593,7 @@ export default function useEventGraph({
                     if (k === 'selectNodeEdge') {
                         const edge = getX6Edge(v)
                         controlEdgeAnimation(edge)
-                        selectNodeEdge(v, edge)
+                        selectNodeEdge(edge)
                         delete actions.value[k]
                     }
                     if (k === 'selectPort') {
@@ -690,7 +681,7 @@ export default function useEventGraph({
                     if (k === 'selectNodeEdge') {
                         const edge = getX6Edge(v)
                         controlEdgeAnimation(edge)
-                        selectNodeEdge(v, edge)
+                        selectNodeEdge(edge)
                         delete actions.value[k]
                     }
                     if (k === 'selectPort') {
@@ -1132,18 +1123,16 @@ export default function useEventGraph({
     }
 
     // selectPortEdge
-    const selectPortEdge = (edgeId, edge) => {
-        // Handle Event - lineage_process_clicked
-        sendProcessClickedEvent(
-            !!edge?.data?.isGroupEdge,
-            !!edge?.data?.isCyclicEdge,
-            edgeId
-        )
+    const selectPortEdge = (edge) => {
+        const { isCyclicEdge, isGroupEdge } = edge.getData()
 
-        const processId = edgeId.split('/')[1]
+        // Handle Event - lineage_process_clicked
+        sendProcessClickedEvent(!!isGroupEdge, !!isCyclicEdge, edge.id)
+
+        const processId = edge.id.split('/')[1]
         onSelectAsset({ guid: processId })
 
-        if (edgeId) selectedPortEdgeId.value = edgeId
+        if (edge.id) selectedPortEdgeId.value = edge.id
     }
 
     // getAllNodesQN
@@ -1555,7 +1544,7 @@ export default function useEventGraph({
             resetState(true)
             const edge = getX6Edge(_selectedNodeEdgeId)
             controlEdgeAnimation(edge)
-            selectNodeEdge(_selectedNodeEdgeId, edge)
+            selectNodeEdge(edge)
         } else {
             const newAction = { selectNodeEdge: _selectedNodeEdgeId }
             actions.value = { ...actions.value, ...newAction }
@@ -1852,8 +1841,8 @@ export default function useEventGraph({
             return
         } else resetState()
 
-        if (edge.id.includes('port')) selectPortEdge(edge.id, edge)
-        else selectNodeEdge(edge.id, edge)
+        if (edge.id.includes('port')) selectPortEdge(edge)
+        else selectNodeEdge(edge)
     })
 
     // Edge - Mouseenter

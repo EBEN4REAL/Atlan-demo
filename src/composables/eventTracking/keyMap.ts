@@ -135,6 +135,12 @@ const keyMap = {
                     tab_name: props.tab_name,
                 }),
             },
+            readme_previewed: {
+                action: 'discovery_asset_sidebar_readme_previewed',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                }),
+            },
         },
         metadata: {
             name_updated: {
@@ -794,6 +800,12 @@ const keyMap = {
                     action: props.action,
                     request_type: props.request_type,
                     widget_type: props.widget_type,
+                }),
+            },
+            filter_changed: {
+                action: 'governance_requests_filter_changed',
+                properties: (props) => ({
+                    filter_type: props.filter_type,
                 }),
             },
         },

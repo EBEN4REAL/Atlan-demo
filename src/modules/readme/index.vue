@@ -172,13 +172,14 @@
                 handleFailure,
             } = toRefs(props)
             const content = useVModel(props, 'modelValue', emit)
+            const allowedTags=['iframe','img', 'table', 'th','tr','td','code', 'pre']
             const localReadmeContent = ref(
                 encodeContent.value
                     ? decodeURIComponent(content.value)
                     : content.value
             )
             const sanitizedReadmeContent = ref(
-                DOMPurify.sanitize(localReadmeContent.value)
+                DOMPurify.sanitize(localReadmeContent.value, {ADD_TAGS: [...allowedTags]})
             )
 
             const isEditing = ref(false)
@@ -209,24 +210,22 @@
             }
 
             const handleCancel = () => {
-                editor.value?.editor?.commands.setContent(
-                    encodeContent.value
-                        ? decodeURIComponent(content.value)
-                        : content.value
-                )
                 sanitizedReadmeContent.value = encodeContent.value
-                    ? decodeURIComponent(content.value)
-                    : content.value
+                    ? DOMPurify.sanitize(decodeURIComponent(content.value), {ADD_TAGS: [...allowedTags]})
+                    : DOMPurify.sanitize(content.value)
+                editor.value?.editor?.commands.setContent(
+                    sanitizedReadmeContent.value
+                )
                 isEditing.value = false
                 emit('savedChanges')
             }
 
             watch(localReadmeContent, () => {
                 sanitizedReadmeContent.value = DOMPurify.sanitize(
-                    localReadmeContent.value
+                    localReadmeContent.value,  {ADD_TAGS: [...allowedTags]}
                 )
             })
-           return {
+            return {
                 localReadmeContent,
                 handleUpdate,
                 isEditingAllowed,

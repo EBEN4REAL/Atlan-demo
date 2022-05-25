@@ -308,6 +308,12 @@
                 })
             }, 600)
 
+            const sendMiniMapClickedEvent = useDebounceFn(() => {
+                useAddEvent('lineage', 'mini_map', 'clicked', {
+                    is_hidden: !showMinimap.value,
+                })
+            }, 600)
+
             /** METHODS */
             // useTransformGraph
             const { zoom, fit, fullscreen } = useTransformGraph(graph, emit)
@@ -358,7 +364,9 @@
             const onShowMinimap = () => {
                 showMinimap.value = !showMinimap.value
                 emit('on-show-minimap', showMinimap.value)
-                // console.log('Hey show mini map')
+
+                // Handle Event - lineage_mini_map_clicked
+                sendMiniMapClickedEvent()
             }
 
             // toggleControlVisibility

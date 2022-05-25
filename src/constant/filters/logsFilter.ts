@@ -187,7 +187,7 @@ export const requestFilter = [
     },
     {
         id: 'statusRequest',
-        label: 'STATUS',
+        label: 'Status',
         component: 'CheckBoxOption',
         overallCondition: 'OR',
         attributes: [],

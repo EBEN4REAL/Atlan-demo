@@ -230,6 +230,7 @@
     import { useRequestList } from '~/composables/requests/useRequests'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
     import { destinationAttributeMapping } from '~/components/governance/requests/requestType'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     import DefaultLayout from '@/admin/layout.vue'
     import AssetFilters from '@/common/assets/filters/index.vue'
@@ -419,7 +420,11 @@
                 },
                 { deep: true }
             )
-            const handleFilterChange = () => {
+            const handleFilterChange = (item) => {
+                console.log(item)
+                useAddEvent('governance', 'requests', 'filter_changed', {
+                    filter_type : item?.label,
+                })
                 filters.value = {}
                 pagination.value.offset = 0
                 showPagination.value = false

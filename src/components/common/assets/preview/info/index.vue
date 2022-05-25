@@ -768,7 +768,17 @@
                 class="flex flex-col px-5"
             >
                 <p class="mb-1 text-sm text-gray-500">Readme</p>
-                <ReadmeCTA :asset="selectedAsset" />
+                <ReadmeCTA
+                    :asset="selectedAsset"
+                    :edit-permission="
+                        selectedAssetUpdatePermission(
+                            selectedAsset,
+                            isDrawer,
+                            'RELATIONSHIP_ADD',
+                            'Readme'
+                        ) && assetPermission('CREATE_README')
+                    "
+                />
             </div>
 
             <div v-if="selectedAsset?.typeName === 'LookerQuery'">
@@ -1225,6 +1235,7 @@
                 isGTC,
                 isUserDescription,
                 selectedAssetUpdatePermission,
+                assetPermission,
                 tableName,
                 viewName,
                 attributes,
@@ -1421,6 +1432,7 @@
                 localViewers,
                 handleChangeViewers,
                 selectedAssetUpdatePermission,
+                assetPermission,
                 localSQLQuery,
                 handleSQLQueryUpdate,
                 tableName,

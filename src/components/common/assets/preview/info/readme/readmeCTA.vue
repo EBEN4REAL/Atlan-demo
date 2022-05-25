@@ -107,7 +107,7 @@
             v-else
             :readme-asset="readmeAsset"
             :selected-asset="asset"
-            :edit-permission="readmeEditPermission"
+            :edit-permission="editPermission"
             :load-edit-mode="loadEditMode"
         />
     </a-modal>
@@ -131,19 +131,17 @@
                     return {}
                 },
             },
+            editPermission: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
 
         setup(props) {
-            const { asset } = toRefs(props)
+            const { asset, editPermission } = toRefs(props)
 
-            const {
-                title,
-                assetPermission,
-                selectedAssetUpdatePermission,
-                readmeGuid,
-                readme,
-                assetTypeLabel,
-            } = useAssetInfo()
+            const { title, readmeGuid, readme, assetTypeLabel } = useAssetInfo()
 
             const readmeAttribute = ref(['readme'])
 
@@ -159,18 +157,8 @@
 
             const readmeVisible = ref<boolean>(false)
 
-            const readmeEditPermission = computed(
-                () =>
-                    selectedAssetUpdatePermission(
-                        asset.value,
-                        false,
-                        'RELATIONSHIP_ADD',
-                        'Readme'
-                    ) && assetPermission('CREATE_README')
-            )
-
             const disabledCTA = computed(
-                () => !readmeEditPermission.value && !readmeGuid(asset.value)
+                () => !editPermission.value && !readmeGuid(asset.value)
             )
 
             const hoverOnCTA = ref(false)
@@ -196,7 +184,6 @@
                 assetTypeLabel,
                 readmeVisible,
                 readmeAsset,
-                readmeEditPermission,
                 isReadmeLoading,
                 hoverOnCTA,
                 disabledCTA,

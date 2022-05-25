@@ -171,13 +171,6 @@
                     mutateReadme()
                     readmeVisible.value = true
 
-                    if (!readmeGuid(asset.value)) {
-                        loadEditMode.value = true
-                        setTimeout(() => {
-                            loadEditMode.value = false
-                        }, 5000)
-                    }
-
                     const properties = {
                         asset_type: asset.value?.typeName,
                     }
@@ -188,6 +181,13 @@
                         'readme_previewed',
                         properties
                     )
+
+                    if (!readmeGuid(asset.value)) {
+                        loadEditMode.value = true
+                        setTimeout(() => {
+                            loadEditMode.value = false
+                        }, 5000)
+                    }
                 }
             }
 

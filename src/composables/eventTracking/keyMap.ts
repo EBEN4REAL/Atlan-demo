@@ -48,8 +48,8 @@ const keyMap = {
         updates_cta: {
             clicked: {
                 action: 'main_header_updates_cta_clicked',
-            }
-        }
+            },
+        },
     },
     discovery: {
         filter: {
@@ -70,11 +70,11 @@ const keyMap = {
                 action: 'discovery_cta_action_clicked',
                 properties: (props: {
                     action:
-                    | 'open_asset'
-                    | 'vqb_query'
-                    | 'sql_query'
-                    | 'copy_link'
-                    | 'open_in_source'
+                        | 'open_asset'
+                        | 'vqb_query'
+                        | 'sql_query'
+                        | 'copy_link'
+                        | 'open_in_source'
                     asset_type: string
                 }) => ({
                     ...props,
@@ -133,6 +133,12 @@ const keyMap = {
                 properties: (props) => ({
                     asset_type: props.asset_type,
                     tab_name: props.tab_name,
+                }),
+            },
+            readme_previewed: {
+                action: 'discovery_asset_sidebar_readme_previewed',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
                 }),
             },
         },

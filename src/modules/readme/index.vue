@@ -12,7 +12,10 @@
             }
         "
     >
-        <div class="flex p-4 border-b border-gray-200">
+        <div
+            class="flex border-b border-gray-200"
+            :class="usedInModal ? 'p-5' : 'p-4'"
+        >
             <div v-if="usedInModal">
                 <slot name="assetInfo"></slot>
             </div>

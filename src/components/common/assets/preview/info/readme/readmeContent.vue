@@ -9,115 +9,125 @@
         :load-edit-mode="loadEditMode"
     >
         <template #assetInfo>
-            <div class="flex flex-col">
-                <span class="text-lg font-bold text-gray-700">Readme</span>
-                <div class="flex items-center">
-                    <a-tooltip
-                        v-if="connectorName(selectedAsset)"
-                        placement="left"
-                    >
-                        <template #title>
-                            <span>{{ connectorName(selectedAsset) }} </span>
-                            <span v-if="connectionName(selectedAsset)">{{
-                                `/${connectionName(selectedAsset)}`
-                            }}</span>
-                        </template>
-                        <img
-                            :src="getConnectorImage(selectedAsset)"
-                            class="h-4 mr-1 mb-0.5"
-                        />
-                    </a-tooltip>
-                    <div
-                        v-if="
-                            ['column'].includes(
-                                selectedAsset.typeName?.toLowerCase()
-                            )
-                        "
-                        class="flex items-center mr-1"
-                    >
-                        <component
-                            :is="dataTypeCategoryImage(selectedAsset)"
-                            class="h-4 mb-1 text-gray-500"
-                        />
-                    </div>
-
-                    <div class="truncate max-w-300px text-new-gray-800">
-                        {{ title(selectedAsset) }}
-                    </div>
-
-                    <div class="mx-2 dot"></div>
-
-                    <div class="flex items-center mr-2">
-                        <AtlanIcon
+            <div class="flex items-start gap-x-3">
+                <div
+                    class="px-2 py-1.5 bg-white border rounded-md border-new-gray-300"
+                >
+                    <AtlanIcon
+                        icon="Readme"
+                        class="w-4 h-4 text-new-gray-600"
+                    />
+                </div>
+                <div class="flex flex-col gap-y-2">
+                    <span class="text-lg font-bold text-gray-700">Readme</span>
+                    <div class="flex items-center">
+                        <a-tooltip
+                            v-if="connectorName(selectedAsset)"
+                            placement="left"
+                        >
+                            <template #title>
+                                <span>{{ connectorName(selectedAsset) }} </span>
+                                <span v-if="connectionName(selectedAsset)">{{
+                                    `/${connectionName(selectedAsset)}`
+                                }}</span>
+                            </template>
+                            <img
+                                :src="getConnectorImage(selectedAsset)"
+                                class="h-4 mr-1 mb-0.5"
+                            />
+                        </a-tooltip>
+                        <div
                             v-if="
-                                ['s3object', 's3bucket'].includes(
+                                ['column'].includes(
                                     selectedAsset.typeName?.toLowerCase()
                                 )
                             "
-                            :icon="selectedAsset?.typeName"
-                            class="self-center mr-1 text-gray-500 mb-0.5"
-                        ></AtlanIcon>
+                            class="flex items-center mr-1"
+                        >
+                            <component
+                                :is="dataTypeCategoryImage(selectedAsset)"
+                                class="h-4 mb-1 text-gray-500"
+                            />
+                        </div>
 
-                        <AtlanIcon
-                            v-if="
-                                ['atlasglossarycategory'].includes(
-                                    selectedAsset.typeName?.toLowerCase()
-                                )
-                            "
-                            icon="Category"
-                            class="h-4 mr-1"
-                        ></AtlanIcon>
-                        <AtlanIcon
-                            v-if="
-                                ['atlasglossaryterm'].includes(
-                                    selectedAsset.typeName?.toLowerCase()
-                                )
-                            "
-                            icon="Term"
-                            class="h-4 mr-1"
-                        ></AtlanIcon>
-                        <AtlanIcon
-                            v-if="
-                                [
-                                    'table',
-                                    'view',
-                                    'tablepartition',
-                                    'materialisedview',
-                                    'column',
-                                    'schema',
-                                    'query',
-                                ].includes(
-                                    selectedAsset.typeName?.toLowerCase()
-                                )
-                            "
-                            :icon="
-                                assetTypeImage(selectedAsset) ||
-                                selectedAsset?.typeName
-                            "
-                            class="self-center mr-1 text-gray-500 mb-0.5"
-                        ></AtlanIcon>
+                        <div class="truncate max-w-300px text-new-gray-800">
+                            {{ title(selectedAsset) }}
+                        </div>
 
-                        <div class="text-sm text-new-gray-800">
-                            {{
-                                assetTypeLabel(selectedAsset) ||
-                                selectedAsset.typeName
-                            }}
-                            <span
+                        <div class="mx-2 dot"></div>
+
+                        <div class="flex items-center mr-2">
+                            <AtlanIcon
                                 v-if="
-                                    ['SalesforceObject'].includes(
-                                        selectedAsset.typeName
-                                    ) && isCustom(selectedAsset)
+                                    ['s3object', 's3bucket'].includes(
+                                        selectedAsset.typeName?.toLowerCase()
+                                    )
                                 "
-                                >(custom)</span
-                            >
-                            <span
+                                :icon="selectedAsset?.typeName"
+                                class="self-center mr-1 text-gray-500 mb-0.5"
+                            ></AtlanIcon>
+
+                            <AtlanIcon
                                 v-if="
-                                    ['TableauDatasource'].includes(
-                                        selectedAsset.typeName
-                                    ) && isPublished(selectedAsset)
+                                    ['atlasglossarycategory'].includes(
+                                        selectedAsset.typeName?.toLowerCase()
+                                    )
                                 "
-                                >(Published)</span
-                            >
+                                icon="Category"
+                                class="h-4 mr-1"
+                            ></AtlanIcon>
+                            <AtlanIcon
+                                v-if="
+                                    ['atlasglossaryterm'].includes(
+                                        selectedAsset.typeName?.toLowerCase()
+                                    )
+                                "
+                                icon="Term"
+                                class="h-4 mr-1"
+                            ></AtlanIcon>
+                            <AtlanIcon
+                                v-if="
+                                    [
+                                        'table',
+                                        'view',
+                                        'tablepartition',
+                                        'materialisedview',
+                                        'column',
+                                        'schema',
+                                        'query',
+                                    ].includes(
+                                        selectedAsset.typeName?.toLowerCase()
+                                    )
+                                "
+                                :icon="
+                                    assetTypeImage(selectedAsset) ||
+                                    selectedAsset?.typeName
+                                "
+                                class="self-center mr-1 text-gray-500 mb-0.5"
+                            ></AtlanIcon>
+
+                            <div class="text-sm text-new-gray-800">
+                                {{
+                                    assetTypeLabel(selectedAsset) ||
+                                    selectedAsset.typeName
+                                }}
+                                <span
+                                    v-if="
+                                        ['SalesforceObject'].includes(
+                                            selectedAsset.typeName
+                                        ) && isCustom(selectedAsset)
+                                    "
+                                    >(custom)</span
+                                >
+                                <span
+                                    v-if="
+                                        ['TableauDatasource'].includes(
+                                            selectedAsset.typeName
+                                        ) && isPublished(selectedAsset)
+                                    "
+                                    >(Published)</span
+                                >
+                            </div>
                         </div>
                     </div>
                 </div>

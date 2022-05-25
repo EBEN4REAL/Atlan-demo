@@ -796,6 +796,12 @@ const keyMap = {
                     widget_type: props.widget_type,
                 }),
             },
+            filter_changed: {
+                action: 'governance_requests_filter_changed',
+                properties: (props) => ({
+                    filter_type: props.filter_type,
+                }),
+            },
         },
 
         options: {

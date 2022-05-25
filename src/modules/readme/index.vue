@@ -14,7 +14,7 @@
     >
         <div
             class="flex border-b border-gray-200"
-            :class="usedInModal ? 'p-5' : 'p-4'"
+            :class="usedInModal ? 'p-5' : 'p-6'"
         >
             <div v-if="usedInModal">
                 <slot name="assetInfo"></slot>

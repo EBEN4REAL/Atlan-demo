@@ -129,6 +129,100 @@
                                 >
                             </div>
                         </div>
+
+                        <div
+                            v-if="
+                                ['column'].includes(
+                                    selectedAsset.typeName?.toLowerCase()
+                                )
+                            "
+                            class="flex mr-2 text-sm text-gray-500 gap-x-2"
+                        >
+                            <a-tooltip
+                                v-if="tableName(selectedAsset)"
+                                placement="bottomLeft"
+                            >
+                                <div
+                                    v-if="tableName(selectedAsset)"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    in
+                                    <AtlanIcon
+                                        v-if="
+                                            parentTable(selectedAsset)
+                                                ?.attributes?.certificateStatus
+                                        "
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                'Table',
+                                                parentTable(selectedAsset)
+                                                    ?.attributes
+                                                    ?.certificateStatus
+                                            )
+                                        "
+                                        class="mr-1 ml-2 mb-0.5"
+                                    />
+                                    <AtlanIcon
+                                        v-else
+                                        icon="TableGray"
+                                        class="mr-1 ml-2 mb-0.5"
+                                    />
+                                    <div
+                                        class="tracking-tight truncate text-new-gray-800 max-w-300px"
+                                    >
+                                        {{ tableName(selectedAsset) }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >Table -
+                                        {{ tableName(selectedAsset) }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                            <a-tooltip
+                                v-if="viewName(selectedAsset)"
+                                placement="bottomLeft"
+                            >
+                                <div
+                                    v-if="viewName(selectedAsset)"
+                                    class="flex items-center text-gray-500"
+                                >
+                                    in
+                                    <AtlanIcon
+                                        v-if="
+                                            parentView(selectedAsset)
+                                                ?.attributes?.certificateStatus
+                                        "
+                                        :icon="
+                                            getEntityStatusIcon(
+                                                'View',
+                                                parentView(selectedAsset)
+                                                    ?.attributes
+                                                    ?.certificateStatus
+                                            )
+                                        "
+                                        class="mr-1 ml-2 mb-0.5"
+                                    />
+                                    <AtlanIcon
+                                        v-else
+                                        icon="ViewGray"
+                                        class="mr-1 ml-2 mb-0.5"
+                                    />
+                                    <div
+                                        class="tracking-tight truncate text-new-gray-800 max-w-300px"
+                                    >
+                                        {{ viewName(selectedAsset) }}
+                                    </div>
+                                </div>
+                                <template #title>
+                                    <span
+                                        >View -
+                                        {{ viewName(selectedAsset) }}</span
+                                    >
+                                </template>
+                            </a-tooltip>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -142,6 +236,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
 
     export default defineComponent({
         props: {
@@ -184,6 +279,10 @@
                 isPublished,
                 assetTypeImage,
                 assetTypeLabel,
+                tableName,
+                viewName,
+                parentTable,
+                parentView,
             } = useAssetInfo()
 
             const isDrawer = inject('isDrawer')
@@ -208,9 +307,14 @@
                 isPublished,
                 assetTypeImage,
                 assetTypeLabel,
+                tableName,
+                viewName,
+                parentTable,
+                parentView,
                 readmeVisible,
                 localReadmeContent,
                 handleSave,
+                getEntityStatusIcon,
             }
         },
     })

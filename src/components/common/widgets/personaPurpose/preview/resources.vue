@@ -1,7 +1,7 @@
 <template>
     <div class="p-5">
         <div class="flex items-center text-sm font-bold text-gray-500">
-            <AtlanIcon icon="Link" class="mb-1 mr-2" />Resources
+            <AtlanIcon icon="Link" class="mr-2" />Resources
         </div>
         <div v-if="item?.resources?.links?.length > 0" class="mt-5">
             <div

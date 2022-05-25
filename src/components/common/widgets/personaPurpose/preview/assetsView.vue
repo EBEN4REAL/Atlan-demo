@@ -1,7 +1,7 @@
 <template>
     <div class="p-5">
         <div class="flex items-center text-sm font-bold text-gray-500">
-            <AtlanIcon icon="AssetsInactiveLight" class="mb-1 mr-2" />Assets
+            <AtlanIcon icon="AssetsInactiveLight" class="mr-2" />Assets
         </div>
 
         <div>
@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, toRefs, ref } from 'vue'
+    import { defineComponent, computed, toRefs } from 'vue'
     import AssetList from '@/common/assetList/assetList.vue'
 
     export default defineComponent({
@@ -56,6 +56,9 @@
 </script>
 <style lang="less">
     .aggreation-persona-purpose-assets {
+        .ant-tabs-tab:first-child {
+            transform: translateY(8px);
+        }
         .ant-tabs-tab {
             height: 30px !important;
         }

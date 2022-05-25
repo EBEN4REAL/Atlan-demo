@@ -28,13 +28,22 @@
                         <AtlanIcon icon="AssetsInactiveLight" class="mr-1" />
                         View assets
                     </div>
+                    <div v-auth="[map.LIST_PERSONA, map.LIST_PURPOSE]">
+                        <router-link
+                            :to="`/governance/${activeTab}s/${item.id}`"
+                        >
+                            <div class="px-2.5 border-l border-gray-300">
+                                <AtlanIcon icon="Edit" />
+                            </div>
+                        </router-link>
+                    </div>
                     <a
                         v-if="item.attributes?.channelLink"
                         :href="item.attributes?.channelLink"
                         target="_blank"
                     >
                         <div class="px-2.5 border-l border-gray-300">
-                            <AtlanIcon icon="Slack" class="" />
+                            <AtlanIcon icon="Slack" />
                         </div>
                     </a>
                 </div>
@@ -89,6 +98,7 @@
 <script lang="ts">
     import { defineComponent, ref, toRefs, watch } from 'vue'
     import { useRouter } from 'vue-router'
+    import map from '~/constant/accessControl/map'
     import useAssetStore from '~/store/asset'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import Overview from '@/common/widgets/personaPurpose/preview/overview.vue'
@@ -113,7 +123,7 @@
                 required: true,
             },
             item: {
-                type: Boolean,
+                type: Object,
                 required: true,
             },
             activeTab: {
@@ -224,6 +234,7 @@
                 activeKey,
                 handleViewAssets,
                 handleChangeTab,
+                map,
             }
         },
     })

@@ -250,8 +250,8 @@ export const controlGroupedEdges = (graph, relations, mode = 'node') => {
         edge.setLabels({
             attrs: {
                 label: {
-                    // text: `grouped-processes (${count})`,
-                    text: `grouped-processes`,
+                    text: `grouped-processes (${count})`,
+                    // text: `grouped-processes`,
                 },
             },
         })

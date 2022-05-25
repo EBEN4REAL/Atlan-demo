@@ -135,6 +135,12 @@ const keyMap = {
                     tab_name: props.tab_name,
                 }),
             },
+            readme_previewed: {
+                action: 'discovery_asset_sidebar_readme_previewed',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                }),
+            },
         },
         metadata: {
             name_updated: {

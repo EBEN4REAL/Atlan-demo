@@ -120,6 +120,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useAssetAttributes } from '~/composables/discovery/useCurrentUpdate'
     import ReadmeContent from './readmeContent.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         components: { ReadmeContent },
@@ -169,9 +170,24 @@
                 if (!disabledCTA.value) {
                     mutateReadme()
                     readmeVisible.value = true
+
                     if (!readmeGuid(asset.value)) {
                         loadEditMode.value = true
+                        setTimeout(() => {
+                            loadEditMode.value = false
+                        }, 5000)
                     }
+
+                    const properties = {
+                        asset_type: asset.value?.typeName,
+                    }
+
+                    useAddEvent(
+                        'discovery',
+                        'asset_sidebar',
+                        'readme_previewed',
+                        properties
+                    )
                 }
             }
 

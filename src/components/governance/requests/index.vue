@@ -452,7 +452,10 @@
                             )
                         )
                             requestTypeAttributes.push(el)
-                        else requestTypes.push(el)
+                        else if (el === 'owners') {
+                            requestTypeAttributes.push('ownerUsers')
+                            requestTypeAttributes.push('ownerGroups')
+                        } else requestTypes.push(el)
                     })
                     if (requestTypeAttributes?.length && requestTypes?.length) {
                         if (filterMerge?.requestType)

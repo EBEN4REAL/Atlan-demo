@@ -21,8 +21,8 @@ export const statusRequest = [
 export const requestType = [
     {
         id: 'userDescription',
-        label: 'User Description',
-        description: 'User Description',
+        label: 'Description',
+        description: 'Description',
     },
     {
         id: 'attach_classification',
@@ -39,40 +39,30 @@ export const requestType = [
         label: 'Link Term',
         description: 'Link Term',
     },
-    {
-        id: 'ownerUsers',
-        label: 'Owner Users',
-        description: 'Owner Users',
-    },
-    {
-        id: 'ownerGroups',
-        label: 'Owner Groups',
-        description: 'Owner Groups',
+   {
+        id: 'owners',
+        label: 'Owners',
+        description: 'Owners',
     },
     {
         id: 'create_term',
-        label: 'Create term',
+        label: 'Create Term',
         description: 'Create term',
     },
-    {
-        id: 'create_glossary',
-        label: 'Create glossary',
-        description: 'Create glossary',
-    },
-    {
+   {
         id: 'create_category',
-        label: 'Create category',
-        description: 'Create category',
+        label: 'Create Category',
+        description: 'Create Category',
     },
     {
         id: 'name',
         label: 'Name',
-        description: 'Update name',
+        description: 'Update Name',
     },
     {
         id: 'bm_attribute',
-        label: 'Custom metadata',
-        description: 'Custom metadata',
+        label: 'Custom Metadata',
+        description: 'Custom Metadata',
     },
 ]
 export const assetTypes = [

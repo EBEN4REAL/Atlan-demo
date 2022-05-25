@@ -12,7 +12,10 @@
             <span class="pb-1 pr-2 text-gray-500">{{ attrLabel }}</span>
             <span class="text-ellipsis text-gray">
                 <div
-                    v-if="name === 'ownerUsers' && valueArray?.length"
+                    v-if="
+                        (name === 'ownerUsers' || name === 'ownerGroups') &&
+                        valueArray?.length
+                    "
                     class="flex items-center"
                 >
                     <template v-for="el in valueArray.slice(0, 1)" :key="el">
@@ -39,8 +42,8 @@
                         <span
                             v-if="valueArray?.length > 1"
                             class="text-primary flex items-center cursor-pointer ml-1"
-                            >+ {{ valueArray?.length - 1 }} </span
-                        >
+                            >+ {{ valueArray?.length - 1 }}
+                        </span>
                     </a-popover>
                 </div>
                 <Truncate v-else :tooltip-text="value" />

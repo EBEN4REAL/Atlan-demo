@@ -143,8 +143,7 @@
             const onSelectAsset = (item, selectOnGraph = false) => {
                 const { isGroupEdge, processIds } = item || {}
 
-                if (typeof control === 'function')
-                    // TODO: && !isGroupEdge
+                if (typeof control === 'function' && !isGroupEdge)
                     control('selectedAsset', item)
 
                 if (!item) return

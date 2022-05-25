@@ -22,10 +22,19 @@
                     class="flex items-center ml-auto text-base text-gray-700 border border-gray-300 rounded-lg cursor-pointer"
                 >
                     <div
-                        class="flex items-center py-1.5 px-2.5 text-sm"
+                        class="flex items-center py-1.5 px-2.5 text-sm hover:text-primary"
                         @click="handleViewAssets"
+                        @mouseover="isHover = true"
+                        @mouseleave="isHover = false"
                     >
-                        <AtlanIcon icon="AssetsInactiveLight" class="mr-1" />
+                        <AtlanIcon
+                            :icon="
+                                isHover
+                                    ? 'AssetsActiveLight'
+                                    : 'AssetsInactiveLight'
+                            "
+                            class="mr-1"
+                        />
                         View assets
                     </div>
                     <div v-auth="[map.LIST_PERSONA, map.LIST_PURPOSE]">
@@ -229,12 +238,15 @@
                 assetStore.setGlobalState([activeTab.value, item.value.id])
                 router.push('/assets')
             }
+            const isHover = ref(false)
+
             return {
                 tabList,
                 activeKey,
                 handleViewAssets,
                 handleChangeTab,
                 map,
+                isHover,
             }
         },
     })

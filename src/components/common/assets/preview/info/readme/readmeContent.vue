@@ -127,7 +127,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, PropType } from 'vue'
+    import { defineComponent, ref, toRefs, PropType, inject } from 'vue'
     import { until } from '@vueuse/core'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -176,8 +176,10 @@
                 assetTypeLabel,
             } = useAssetInfo()
 
+            const isDrawer = inject('isDrawer')
+
             const { localReadmeContent, handleUpdateReadme, isLoading } =
-                updateAssetAttributes(readmeAsset)
+                updateAssetAttributes(readmeAsset, isDrawer.value)
 
             const handleSave = (editorContent: string) => {
                 handleUpdateReadme()

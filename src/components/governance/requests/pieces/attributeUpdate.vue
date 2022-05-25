@@ -19,7 +19,8 @@
                     class="flex items-center"
                 >
                     <template v-for="el in valueArray.slice(0, 1)" :key="el">
-                        <UserPill :username="el" />
+                        <UserPill v-if="name==='ownerUsers'" :username="el" />
+                        <GroupPill v-else :name="el" />
                     </template>
                     <a-popover>
                         <template #content>
@@ -57,6 +58,7 @@
     import StatusBadge from '@common/badge/status/index.vue'
     import Truncate from '@/common/ellipsis/index.vue'
     import UserPill from '@common/pills/user.vue'
+    import GroupPill from '@/common/pills/group.vue'
 
     export default defineComponent({
         props: {
@@ -64,14 +66,14 @@
             value: { type: String, required: true },
             valueArray: { type: Array, required: true },
         },
-        components: { StatusBadge, Truncate, UserPill },
+        components: { StatusBadge, Truncate, UserPill , GroupPill },
         setup(props) {
             const { name } = toRefs(props)
             const labelMap = {
                 userDescription: 'Update description',
                 certificateStatus: 'Update certificate',
                 ownerUsers: 'Update Owners',
-                ownerGroups: 'Update Groups',
+                ownerGroups: 'Update Owners',
                 name: 'Update Name',
             }
 

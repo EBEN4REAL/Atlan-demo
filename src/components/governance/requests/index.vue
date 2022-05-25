@@ -420,8 +420,10 @@
                 { deep: true }
             )
             const handleFilterChange = () => {
+                filters.value = {}
                 pagination.value.offset = 0
                 showPagination.value = false
+
                 setTimeout(() => {
                     showPagination.value = true
                 }, 200)
@@ -480,9 +482,9 @@
                         filterMerge.requestType = requestTypes
                 } else {
                     if (filterMerge.destinationAttribute)
-                        filterMerge.destinationAttribute = requestTypeAttributes
+                        delete filterMerge.destinationAttribute
                     else if (filterMerge.requestType)
-                        filterMerge.requestType = requestTypes
+                        delete filterMerge.requestType
                 }
                 if (!status?.length) {
                     delete filterMerge.status

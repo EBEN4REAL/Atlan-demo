@@ -141,6 +141,7 @@
                         <AtlanButton2
                             label="Save"
                             :loading="isLoading"
+                            :disabled="!isScheduleUpdated"
                             @click="handleScheduleUpdate"
                         />
                     </div>
@@ -149,9 +150,9 @@
 
             <AtlanButton2
                 v-if="allowSchedule(workflowObject)"
-                bold
+                class="font-medium"
                 color="secondary"
-                prefixIcon="Schedule"
+                prefix-icon="Schedule"
                 :label="scheduleCTAMessage"
                 @click="toggleSchedule"
             />
@@ -159,8 +160,8 @@
             <AtlanButton2
                 label="Run Workflow"
                 color="secondary"
-                prefixIcon="WorkflowsActive"
-                bold
+                prefix-icon="WorkflowsActive"
+                class="font-medium"
                 @click="handleRunNow"
             />
 
@@ -254,6 +255,14 @@
                     return ''
                 }
                 return nextRuns(workflowObject.value).join('\n')
+            })
+
+            const isScheduleUpdated = computed(() => {
+                const current = cronObject(workflowObject.value)
+                return (
+                    current.cron !== cronModel.value.cron ||
+                    current.timezone !== cronModel.value.timezone
+                )
             })
 
             const handleRunNow = () => {
@@ -387,18 +396,19 @@
 
             const dropdownOptions = computed(() => [
                 {
+                    title: 'Remove Schedule',
+                    icon: 'Unscheduled',
+                    hide: !cron(workflowObject.value),
+                    class: 'border-b',
+                    wrapperClass: 'text-new-gray-800',
+                    handleClick: removeWorkflowSchedule,
+                },
+                {
                     title: 'Delete Workflow',
                     icon: 'Delete',
                     wrapperClass: 'text-red-500',
                     handleClick: () =>
                         archiveWorkflow(workflowObject.value?.metadata?.name),
-                },
-                {
-                    title: 'Remove Schedule',
-                    icon: 'Unscheduled',
-                    hide: !cron(workflowObject.value),
-                    wrapperClass: 'text-new-gray-800',
-                    handleClick: removeWorkflowSchedule,
                 },
             ])
 
@@ -440,6 +450,7 @@
                 archiveWorkflow,
                 dropdownOptions,
                 removeWorkflowSchedule,
+                isScheduleUpdated,
             }
         },
     })

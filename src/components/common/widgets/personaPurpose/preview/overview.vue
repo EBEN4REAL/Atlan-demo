@@ -1,7 +1,8 @@
 <template>
     <div class="p-5">
         <div class="flex items-center text-sm font-bold text-gray-500">
-            <AtlanIcon icon="Overview" class="mr-2" />Overview
+            <AtlanIcon icon="Overview" class="h-4 mr-2 -mt-1" />
+            Overview
         </div>
         <div class="flex mt-4">
             <div class="flex-1">

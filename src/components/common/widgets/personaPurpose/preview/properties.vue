@@ -1,7 +1,7 @@
 <template>
     <div class="p-5">
         <div class="flex items-center text-sm font-bold text-gray-500">
-            <AtlanIcon icon="Property" class="mr-2" />Properties
+            <AtlanIcon icon="Property" class="h-4 mr-2" />Properties
         </div>
         <div class="mt-3">
             <div class="py-3">

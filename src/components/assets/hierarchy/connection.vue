@@ -10,7 +10,7 @@
         class="w-full connection-select"
         @search="handleSearch"
         @change="handleChange"
-        :dropdown-style="{ maxHeight: '400px', overflow: 'auto', minWidth: '300px' }"
+        :dropdownMatchSelectWidth="false"
     >
         <template #suffixIcon>
             <AtlanIcon icon="CaretDown" class="mb-0" />

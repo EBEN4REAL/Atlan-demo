@@ -8,7 +8,7 @@
         notFoundContent="No connector found"
         :get-popup-container="(target) => target.parentNode"
         class="connector-select"
-        :dropdown-style="{ maxHeight: '400px', overflow: 'auto', minWidth: '300px' }"
+        :dropdownMatchSelectWidth="false"
     >
         <template #suffixIcon>
             <AtlanIcon icon="CaretDown" class="" />

@@ -22,6 +22,72 @@
                     :loading="isLoading"
                     bordered
                 >
+                    <template #headerCell="{ column }">
+                        <template v-if="column.isCm">
+                            <span class="flex items-center">
+                                {{ column.cmNameDN }}
+
+                                <svg
+                                    width="2"
+                                    height="2"
+                                    viewBox="0 0 2 2"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="mx-1"
+                                >
+                                    <circle
+                                        opacity="0.5"
+                                        cx="1"
+                                        cy="1"
+                                        r="1"
+                                        fill="#6F7590"
+                                    />
+                                </svg>
+
+                                {{ column.cmAttributeDN }}
+
+                                <span
+                                    v-if="!column.cmIconValue"
+                                    class="mb-1 ml-2"
+                                >
+                                    <svg
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 16 16"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="w-auto h-auto"
+                                    >
+                                        <g opacity="0.4">
+                                            <path
+                                                fill-rule="evenodd"
+                                                clip-rule="evenodd"
+                                                d="M2.16667 1C1.52233 1 1 1.52233 1 2.16667V11.5V13.8333C1 14.4777 1.52233 15 2.16667 15H13.8333C14.4777 15 15 14.4777 15 13.8333V2.16667C15 1.52233 14.4777 1 13.8333 1H2.16667ZM13.8333 8.92506L11.7416 6.83335C11.5228 6.61456 11.2261 6.49164 10.9167 6.49164C10.6072 6.49164 10.3105 6.61456 10.0917 6.83335L6.83333 10.0917L5.32495 8.58335C5.10616 8.36456 4.80942 8.24164 4.5 8.24164C4.19058 8.24164 3.89383 8.36456 3.67504 8.58335L2.16667 10.0917V2.16667H13.8333V8.92506Z"
+                                                fill="#6F7590"
+                                            ></path>
+                                            <path
+                                                d="M5.5 6C5.91421 6 6.25 5.66421 6.25 5.25C6.25 4.83579 5.91421 4.5 5.5 4.5C5.08579 4.5 4.75 4.83579 4.75 5.25C4.75 5.66421 5.08579 6 5.5 6Z"
+                                                fill="#6F7590"
+                                            ></path>
+                                        </g>
+                                    </svg>
+                                </span>
+
+                                <span v-if="column.isEmojiIcon" class="ml-2">{{
+                                    column.cmIconValue
+                                }}</span>
+
+                                <span v-if="column.isImageIcon" class="ml-2">
+                                    <img
+                                        :src="column.cmIconValue"
+                                        alt=""
+                                        class="object-contain w-full"
+                                        :style="{ height: '13px' }"
+                                    />
+                                </span>
+                            </span>
+                        </template>
+                    </template>
                     <template #bodyCell="{ text, column }">
                         <!-- Asset Details -->
                         <template v-if="column.key === 'details'">
@@ -381,14 +447,37 @@
                 })
 
                 Object.values(cmColumns).forEach((cmColumn) => {
-                    const { cmNameDN, cmAttributeDN, cmIcon, isEmojiIcon } =
-                        cmColumn
+                    const {
+                        cmNameDN,
+                        cmAttributeDN,
+                        cmIcon,
+                        isEmojiIcon,
+                        isImageIcon,
+                    } = cmColumn
                     const id = `${cmNameDN}.${cmAttributeDN}`
+
+                    let cmEmojiHexa = ''
+                    if (isEmojiIcon) {
+                        const cmIconHex = cmIcon.codePointAt(0).toString(16)
+                        cmEmojiHexa = String.fromCodePoint(`0x${cmIconHex}`)
+                    }
+
+                    let cmImageURL = ''
+                    if (isImageIcon) {
+                        cmImageURL = `${window.location.origin}/api/service/images/${cmIcon}?ContentDisposition=inline&name=${cmIcon}`
+                    }
+
                     const obj = {
                         width: 250,
-                        title: `${id} ${isEmojiIcon ? cmIcon : ''}`,
+                        title: id,
                         dataIndex: id,
                         key: id,
+                        cmNameDN,
+                        cmAttributeDN,
+                        isEmojiIcon,
+                        isImageIcon,
+                        cmIconValue: isEmojiIcon ? cmEmojiHexa : cmImageURL,
+                        isCm: true,
                     }
                     columns.value.push(obj)
                 })

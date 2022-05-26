@@ -46,6 +46,7 @@ export default function useCustomMetadata(assets) {
             const isMultiValue =
                 cmAttributeData.options.multiValueSelect === 'true'
             const isEmojiIcon = cmData.options.logoType === 'emoji'
+            const isImageIcon = cmData.options.logoType === 'image'
             const cmIcon = isEmojiIcon
                 ? cmData.options.emoji
                 : cmData.options.imageId || ''
@@ -58,6 +59,7 @@ export default function useCustomMetadata(assets) {
                 cmAttributeDN,
                 cmValueDN,
                 isEmojiIcon,
+                isImageIcon,
                 isMultiValue,
             }
             res.push(datObj)

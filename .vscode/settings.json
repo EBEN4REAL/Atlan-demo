@@ -7,5 +7,6 @@
     "editor.tabSize": 4,
     "[vue]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    "workbench.sideBar.location": "left"
 }

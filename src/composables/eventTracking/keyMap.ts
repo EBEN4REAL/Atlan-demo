@@ -44,6 +44,13 @@ interface EMBED_README_EVENT_RETURN_INTERFACE {
 }
 
 const keyMap = {
+    main_header: {
+        updates_cta: {
+            clicked: {
+                action: 'main_header_updates_cta_clicked',
+            },
+        },
+    },
     discovery: {
         filter: {
             changed: {
@@ -126,6 +133,12 @@ const keyMap = {
                 properties: (props) => ({
                     asset_type: props.asset_type,
                     tab_name: props.tab_name,
+                }),
+            },
+            readme_previewed: {
+                action: 'discovery_asset_sidebar_readme_previewed',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
                 }),
             },
         },
@@ -369,6 +382,52 @@ const keyMap = {
                 }),
             },
         },
+        control_panel_display_preference: {
+            updated: {
+                action: 'lineage_control_panel_display_preference_updated',
+                properties: (props) => ({
+                    option: props?.option,
+                    is_enabled: !!props?.is_enabled,
+                }),
+            },
+        },
+        control_panel_full_screen: {
+            toggled: {
+                action: 'lineage_control_panel_full_screen_toggled',
+                properties: (props) => ({
+                    is_enabled: !!props?.is_enabled,
+                }),
+            },
+        },
+        control_panel_zoom_out: {
+            clicked: {
+                action: 'lineage_control_panel_zoom_out_clicked',
+                properties: (props) => ({
+                    percentage: props?.percentage,
+                }),
+            },
+        },
+        control_panel_zoom_in: {
+            clicked: {
+                action: 'lineage_control_panel_zoom_in_clicked',
+                properties: (props) => ({
+                    percentage: props?.percentage,
+                }),
+            },
+        },
+        control_panel_refocus: {
+            clicked: {
+                action: 'lineage_control_panel_refocus_clicked',
+            },
+        },
+        control_panel: {
+            toggled: {
+                action: 'lineage_control_panel_toggled',
+                properties: (props) => ({
+                    is_hidden: !!props?.is_hidden,
+                }),
+            },
+        },
     },
     gtc: {
         term: {
@@ -468,11 +527,22 @@ const keyMap = {
         results_panel: {
             cta_clicked: {
                 action: 'insights_results_panel_cta_clicked',
-                properties: (props) => ({
-                    action: props.action,
-                    query_tab_id: props?.query_tab_id,
-                    is_full_screen: props?.is_full_screen,
-                }),
+                properties: (props) => {
+                    if (props?.description_added) {
+                        return {
+                            action: props.action,
+                            query_tab_id: props?.query_tab_id,
+                            is_full_screen: props?.is_full_screen,
+                            description_added: props?.description_added,
+                        }
+                    } else {
+                        return {
+                            action: props.action,
+                            query_tab_id: props?.query_tab_id,
+                            is_full_screen: props?.is_full_screen,
+                        }
+                    }
+                },
             },
             tab_switched: {
                 action: 'insights_results_panel_tab_switched',
@@ -730,6 +800,12 @@ const keyMap = {
                     action: props.action,
                     request_type: props.request_type,
                     widget_type: props.widget_type,
+                }),
+            },
+            filter_changed: {
+                action: 'governance_requests_filter_changed',
+                properties: (props) => ({
+                    filter_type: props.filter_type,
                 }),
             },
         },

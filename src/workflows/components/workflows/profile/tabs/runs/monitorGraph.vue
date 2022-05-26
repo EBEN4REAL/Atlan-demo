@@ -310,6 +310,7 @@
             })
 
             const handleRefresh = () => {
+                handleRecenter()
                 emit('refresh')
             }
 

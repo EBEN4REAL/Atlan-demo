@@ -440,7 +440,7 @@
                     if (stepForm.value) {
                         const err = await stepForm.value.validateForm()
                         if (err) {
-                            message.error('Please review the entered details')
+                            // message.error('Please review the entered details')
                         } else {
                             currentStep.value += 1
                         }
@@ -598,6 +598,13 @@
             }
 
             const handleSubmit = async () => {
+                if (stepForm.value) {
+                    const err = await stepForm.value.validateForm()
+                    if (err) {
+                        // message.error('Please review the entered details')
+                        return
+                    }
+                }
                 if (isEdit.value) {
                     body.value.metadata = workflowObject.value.metadata
                 } else {

@@ -16,7 +16,8 @@
                         v-model="localModel.timezone"
                         placeholder=""
                         @change="buildCron"
-                    ></Timezone>
+                        :allow-clear="false"
+                    />
                 </a-form-item>
             </div>
         </div>
@@ -110,7 +111,7 @@
     import { useVModels } from '@vueuse/core'
 
     export default defineComponent({
-        name: 'WorkflowSetupTab',
+        name: 'ScheduleForm',
         components: { Timezone, Frequency, Day, Date },
         props: {
             modelValue: {
@@ -164,7 +165,7 @@
                 }
                 if (
                     interval.fields.dayOfMonth.length === 31 &&
-                    interval.fields.dayOfWeek.join(',') === [0, 6].join(',') &&
+                    interval.fields.dayOfWeek.join(',') === [6, 0].join(',') &&
                     interval.fields.month.length === 12
                 ) {
                     return 'weekend'
@@ -204,51 +205,13 @@
                 dayOfWeek,
             })
 
-            const handleChangeFrequency = () => {
-                if (schedule.frequency === 'hourly') {
-                    schedule.time = ''
-
-                    schedule.date = ''
-                    schedule.dayOfWeek = ''
-                }
-                if (schedule.frequency === 'daily') {
-                    if (!schedule.time) {
-                        schedule.time = '00:30'
-                    }
-                    schedule.date = ''
-                    schedule.dayOfWeek = ''
-                }
-                if (schedule.frequency === 'weekdays') {
-                    if (!schedule.time) {
-                        schedule.time = '00:30'
-                    }
-                    schedule.date = ''
-                    schedule.dayOfWeek = ''
-                }
-                if (schedule.frequency === 'weekends') {
-                    schedule.time = '00:30'
-                    schedule.date = ''
-                    schedule.dayOfWeek = ''
-                }
-                if (schedule.frequency === 'weekly') {
-                    schedule.time = '00:30'
-                    schedule.date = ''
-                    if (!schedule.dayOfWeek) {
-                        schedule.dayOfWeek = '1'
-                    }
-                }
-                if (schedule.frequency === 'monthly') {
-                    schedule.time = '00:30'
-                    if (!schedule.date) {
-                        schedule.date = '1'
-                    }
-                    schedule.dayOfWeek = ''
-                }
-                buildCron()
-            }
-
-            // const graphRef = inject('graphRef')
             const buildCron = () => {
+                if (!schedule.frequency) {
+                    localModel.cron = undefined
+                    cronStringReadable.value = 'Schedule not set'
+                    return
+                }
+
                 const interval = parser.parseExpression('* * * * *')
                 const fields = JSON.parse(JSON.stringify(interval.fields))
 
@@ -273,7 +236,7 @@
                         fields.minute = [0]
                     }
                 } else if (schedule.frequency === 'weekends') {
-                    fields.dayOfWeek = [6, 7]
+                    fields.dayOfWeek = [6, 0]
 
                     if (fields.hour.length === 24) {
                         fields.hour = [0]
@@ -292,6 +255,53 @@
                 let modifiedInterval = parser.fieldsToExpression(fields)
                 localModel.cron = modifiedInterval.stringify()
                 cronStringReadable.value = cronstrue.toString(localModel.cron)
+            }
+
+            const handleChangeFrequency = () => {
+                switch (schedule.frequency) {
+                    case 'hourly':
+                        schedule.time = ''
+                        schedule.date = ''
+                        schedule.dayOfWeek = ''
+                        break
+
+                    case 'daily':
+                        if (!schedule.time) schedule.time = '00:30'
+                        schedule.date = ''
+                        schedule.dayOfWeek = ''
+                        break
+
+                    case 'weekdays':
+                        if (!schedule.time) schedule.time = '00:30'
+                        schedule.date = ''
+                        schedule.dayOfWeek = ''
+                        break
+
+                    case 'weekends':
+                        schedule.time = '00:30'
+                        schedule.date = ''
+                        schedule.dayOfWeek = ''
+                        break
+
+                    case 'weekly':
+                        schedule.time = '00:30'
+                        schedule.date = ''
+                        if (!schedule.dayOfWeek) schedule.dayOfWeek = '1'
+                        break
+
+                    case 'monthly':
+                        schedule.time = '00:30'
+                        if (!schedule.date) schedule.date = '1'
+                        schedule.dayOfWeek = ''
+                        break
+
+                    default:
+                        schedule.time = ''
+                        schedule.date = ''
+                        schedule.dayOfWeek = ''
+                        break
+                }
+                buildCron()
             }
 
             // watch(schedule, () => {

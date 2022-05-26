@@ -42,11 +42,11 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
     } = useAssetInfo()
 
     const entity = ref({
-        guid: selectedAsset.value.guid,
-        typeName: selectedAsset.value.typeName,
+        guid: selectedAsset.value?.guid,
+        typeName: selectedAsset.value?.typeName,
         attributes: {
-            name: selectedAsset.value.attributes?.name,
-            qualifiedName: selectedAsset.value.attributes?.qualifiedName,
+            name: selectedAsset.value?.attributes?.name,
+            qualifiedName: selectedAsset.value?.attributes?.qualifiedName,
             tenantId: 'default',
         },
     })
@@ -659,11 +659,30 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             },
         })
         if (readmeContent(selectedAsset.value) !== localReadmeContent.value) {
-            body.value.entities = [readmeEntity.value]
+            const readmeBody = ref({
+                entities: [readmeEntity.value],
+            })
+            const { mutate, isLoading, isReady, error } =
+                updateAsset(readmeBody)
 
-            currentMessage.value = 'Readme has been updated'
             mutate()
-            sendTrackEvent('readme', 'updated')
+
+            whenever(isReady, () => {
+                message.success('Readme has been updated')
+                sendTrackEvent('readme', 'updated')
+                guid.value = selectedAsset.value.guid
+                mutateUpdate()
+            })
+
+            whenever(error, () => {
+                localReadmeContent.value = readmeContent(selectedAsset.value)
+
+                message.error(
+                    `${error.value?.response?.data?.errorCode} ${
+                        error.value?.response?.data?.errorMessage.split(':')[0]
+                    }` ?? 'Something went wrong'
+                )
+            })
         }
     }
 
@@ -730,11 +749,15 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             localSeeAlso.value = seeAlso(selectedAsset.value)
         }
 
-        message.error(
-            `${error.value?.response?.data?.errorCode} ${
-                error.value?.response?.data?.errorMessage.split(':')[0]
-            }` ?? 'Something went wrong'
-        )
+        if (error.value?.response?.data?.errorCode) {
+            message.error(
+                `${error.value?.response?.data?.errorCode} ${
+                    error.value?.response?.data?.errorMessage.split(':')[0]
+                }`
+            )
+        } else {
+            message.error('Something went wrong')
+        }
     })
 
     whenever(isReady, () => {
@@ -761,7 +784,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
     const classificationBody = ref({
         guidHeaderMap: {
-            [selectedAsset.value.guid]: {
+            [selectedAsset.value?.guid]: {
                 classifications: localClassifications.value,
             },
         },

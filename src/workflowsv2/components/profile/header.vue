@@ -118,21 +118,41 @@
             <a-modal
                 v-model:visible="scheduleVisible"
                 title="Schedule"
-                okText="Update"
-                :confirm-loading="isLoading"
-                okType="primary"
-                @ok="handleScheduleUpdate"
+                destroyOnClose
             >
                 <div class="px-4 py-2">
                     <Schedule v-model="cronModel" />
                 </div>
+                <template #footer>
+                    <div class="flex items-center mt-3 gap-x-2">
+                        <AtlanButton2
+                            v-if="isCronWorkflow(workflowObject)"
+                            color="secondary"
+                            label="Remove schedule"
+                            prefixIcon="Unscheduled"
+                            @click="removeWorkflowSchedule"
+                        />
+                        <AtlanButton2
+                            class="ml-auto"
+                            color="secondary"
+                            label="Cancel"
+                            @click="scheduleVisible = false"
+                        />
+                        <AtlanButton2
+                            label="Save"
+                            :loading="isLoading"
+                            :disabled="!isScheduleUpdated"
+                            @click="handleScheduleUpdate"
+                        />
+                    </div>
+                </template>
             </a-modal>
 
             <AtlanButton2
                 v-if="allowSchedule(workflowObject)"
-                bold
+                class="font-medium"
                 color="secondary"
-                prefixIcon="Schedule"
+                prefix-icon="Schedule"
                 :label="scheduleCTAMessage"
                 @click="toggleSchedule"
             />
@@ -140,12 +160,16 @@
             <AtlanButton2
                 label="Run Workflow"
                 color="secondary"
-                prefixIcon="WorkflowsActive"
-                bold
+                prefix-icon="WorkflowsActive"
+                class="font-medium"
                 @click="handleRunNow"
             />
 
-            <Dropdown :options="dropdownOptions" />
+            <Dropdown :options="dropdownOptions">
+                <template #menuTrigger>
+                    <IconButton icon="KebabMenu" />
+                </template>
+            </Dropdown>
         </div>
     </div>
 </template>
@@ -161,7 +185,7 @@
     import useWorkflowUpdate from '~/workflows/composables/package/useWorkflowUpdate'
     import { deleteWorkflowByName } from '~/workflowsv2/composables/useWorkflowList'
 
-    import Dropdown from '@/UI/dropdown.vue'
+    import Dropdown from '~/workflowsv2/components/common/dropdown.vue'
     import Schedule from '@/common/input/schedule.vue'
     import UserWrapper from '~/workflowsv2/components/common/user.vue'
     import PackageIcon from '~/workflowsv2/components/common/packageIcon.vue'
@@ -233,6 +257,14 @@
                 return nextRuns(workflowObject.value).join('\n')
             })
 
+            const isScheduleUpdated = computed(() => {
+                const current = cronObject(workflowObject.value)
+                return (
+                    current.cron !== cronModel.value.cron ||
+                    current.timezone !== cronModel.value.timezone
+                )
+            })
+
             const handleRunNow = () => {
                 Modal.confirm({
                     title: 'Are you sure you want to run this workflow?',
@@ -279,16 +311,20 @@
             } = useWorkflowUpdate(path, body, false)
 
             watch(data, () => {
-                if (data.value) {
-                    message.success('Workflow schedule updated')
-                    toggleSchedule()
+                if (Object.keys(data.value || {}).length) {
+                    message.success(
+                        cronModel.value?.cron
+                            ? 'Workflow schedule updated'
+                            : 'Workflow schedule removed'
+                    )
+                    scheduleVisible.value = false
                 }
             })
 
             watch(error, () => {
                 if (error.value) {
                     message.error('Workflow schedule failed. Please try again')
-                    toggleSchedule()
+                    scheduleVisible.value = false
                 }
             })
 
@@ -308,6 +344,24 @@
                     ] = cronModel.value.timezone
                 }
                 updateWorkflow()
+            }
+
+            const removeWorkflowSchedule = () => {
+                Modal.confirm({
+                    title: 'Remove Schedule',
+                    content: 'Are you sure you want to remove the schedule?',
+                    okType: 'danger',
+                    autoFocusButton: null,
+                    okButtonProps: {
+                        type: 'primary',
+                    },
+                    okText: 'Confirm',
+                    cancelText: 'Cancel',
+                    async onOk() {
+                        cronModel.value.cron = undefined
+                        handleScheduleUpdate()
+                    },
+                })
             }
 
             const archiveWorkflow = (workflowName: string) => {
@@ -340,15 +394,23 @@
                 })
             }
 
-            const dropdownOptions = [
+            const dropdownOptions = computed(() => [
                 {
-                    title: 'Delete',
+                    title: 'Remove Schedule',
+                    icon: 'Unscheduled',
+                    hide: !cron(workflowObject.value),
+                    class: 'border-b',
+                    wrapperClass: 'text-new-gray-800',
+                    handleClick: removeWorkflowSchedule,
+                },
+                {
+                    title: 'Delete Workflow',
                     icon: 'Delete',
-                    class: 'text-red-500',
+                    wrapperClass: 'text-red-500',
                     handleClick: () =>
                         archiveWorkflow(workflowObject.value?.metadata?.name),
                 },
-            ]
+            ])
 
             useHead({
                 title: displayName(
@@ -387,6 +449,8 @@
                 nextRunRelativeTime,
                 archiveWorkflow,
                 dropdownOptions,
+                removeWorkflowSchedule,
+                isScheduleUpdated,
             }
         },
     })

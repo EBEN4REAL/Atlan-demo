@@ -253,6 +253,7 @@ import Flash from '~/assets/images/icons/flash.svg'
 import FlashColor from '~/assets/images/icons/flash-color.svg'
 import DisableUser from '~/assets/images/icons/disabled-user.svg'
 import ImpactedAssets from '~/assets/images/icons/impacted-assets.svg'
+import Gift from '~/assets/images/admin/integrations/gift.svg'
 
 import Code from '~/assets/images/readme/code.svg'
 import Underline from '~/assets/images/readme/text-underline.svg'
@@ -439,6 +440,7 @@ import Atlan from '~/assets/images/icons/atlan.svg'
 import Gear from '~/assets/images/icons/gear.svg'
 import SafariLock from '~/assets/images/icons/safari-lock.svg'
 import SlackToken from '~/assets/images/admin/integrations/slackToken.svg'
+import SlackAddApp from '~/assets/images/admin/integrations/SlackAddApp.svg'
 import Integrations from '~/assets/images/icons/integrations.svg'
 import IntegrationsActive from '~/assets/images/icons/integrations-active.svg'
 import QueryTime from '~/assets/images/icons/query_time.svg'
@@ -486,6 +488,7 @@ import CSVLogo from '~/assets/images/icons/csv-logo.svg'
 import PaperClip from '~/assets/images/icons/paper-clip.svg'
 
 export default {
+    Gift,
     NoSearchResultsQuery,
     SlackTabEmpty,
     PreviewQuery,
@@ -515,6 +518,7 @@ export default {
     Integrations,
     Jira,
     SlackToken,
+    SlackAddApp,
     SafariLock,
     Gear,
     Atlan,

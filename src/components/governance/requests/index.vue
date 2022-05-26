@@ -37,33 +37,6 @@
                     @change="handleFilterChange"
                     @reset="handleResetEvent"
                 >
-                    <!-- <div class="px-2 mt-4 mb-4 wrapper-filter">
-                        <Connector
-                            v-model:data="connectorsData"
-                            class=""
-                            :filter-source-ids="BItypes"
-                            :is-leaf-node-selectable="false"
-                            :item="{
-                                id: 'connector',
-                                label: 'Connector',
-                                component: 'connector',
-                                overallCondition: 'OR',
-                                filters: [
-                                    {
-                                        attributeName: 'connector',
-                                        condition: 'OR',
-                                        isMultiple: false,
-                                        operator: 'eq',
-                                    },
-                                ],
-                                isDeleted: false,
-                                isDisabled: false,
-                                exclude: false,
-                            }"
-                            @change="handleChangeConnector"
-                            @update:data="setConnector"
-                        />
-                    </div> -->
                 </AssetFilters>
             </div>
         </div>
@@ -256,6 +229,8 @@
     import { message } from 'ant-design-vue'
     import { useRequestList } from '~/composables/requests/useRequests'
     import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
+    import { destinationAttributeMapping } from '~/components/governance/requests/requestType'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     import DefaultLayout from '@/admin/layout.vue'
     import AssetFilters from '@/common/assets/filters/index.vue'
@@ -263,18 +238,11 @@
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
     import RequestTypeTabs from './requestTypeTabs.vue'
     import RequestListItem from '~/components/governance/requests/requestListItem.vue'
-    // import RequestFilters from './filters/requestFilters.vue'
     import RequestModal from './modal/requestDetailsBase.vue'
-    // import NoAcces from '@/admin/common/noAccessPage.vue'
 
     import { RequestAttributes, RequestStatus } from '~/types/atlas/requests'
     import { requestFilter } from '~/constant/filters/logsFilter'
     import Connector from '~/components/insights/common/connector/connector.vue'
-    // import { useAccessStore } from '~/services/access/accessStore'
-    // import {
-    //     approveRequest,
-    //     declineRequest,
-    // } from '~/composables/requests/useRequests'
     import Pagination from '@/common/list/pagination.vue'
 
     export default defineComponent({
@@ -366,8 +334,8 @@
             }
 
             /** *********************************************************************************
-                    /////////// DO NOT REMOVE ANY COMMENTED CODE - They are for bulk select ////////////
-                    ********************************************************************************** */
+                            /////////// DO NOT REMOVE ANY COMMENTED CODE - They are for bulk select ////////////
+                            ********************************************************************************** */
             const handleClickFilter = () => {
                 drawerFilter.value = !drawerFilter.value
             }
@@ -452,9 +420,15 @@
                 },
                 { deep: true }
             )
-            const handleFilterChange = () => {
+            const handleFilterChange = (item) => {
+                console.log(item)
+                useAddEvent('governance', 'requests', 'filter_changed', {
+                    filter_type : item?.label,
+                })
+                filters.value = {}
                 pagination.value.offset = 0
                 showPagination.value = false
+
                 setTimeout(() => {
                     showPagination.value = true
                 }, 200)
@@ -465,6 +439,7 @@
                     : []
                 const createdBy = facetsValue?.owners?.ownerUsers || []
                 // const typeName = facetsValue.__traitNames.classifications || []
+
                 const filterMerge = {
                     ...filters.value,
                     // status: status.length > 0 ? status : 'active',
@@ -472,7 +447,51 @@
                     createdBy,
                     // typeName,
                 }
-                if(!status?.length){
+
+                // request type filter
+                if (facetsValue?.requestType?.length) {
+                    const requestTypeAttributes = []
+                    const requestTypes = []
+                    facetsValue?.requestType?.forEach((el) => {
+                        if (
+                            Object.keys(destinationAttributeMapping).includes(
+                                el
+                            )
+                        )
+                            requestTypeAttributes.push(el)
+                        else if (el === 'owners') {
+                            requestTypeAttributes.push('ownerUsers')
+                            requestTypeAttributes.push('ownerGroups')
+                        } else requestTypes.push(el)
+                    })
+                    if (requestTypeAttributes?.length && requestTypes?.length) {
+                        if (filterMerge?.requestType)
+                            delete filterMerge.requestType
+                        if (filterMerge?.destinationAttribute)
+                            delete filterMerge.destinationAttribute
+                        filterMerge.$or = [
+                            {
+                                destinationAttribute: {
+                                    $in: requestTypeAttributes,
+                                },
+                            },
+                            {
+                                requestType: {
+                                    $in: requestTypes,
+                                },
+                            },
+                        ]
+                    } else if (requestTypeAttributes?.length)
+                        filterMerge.destinationAttribute = requestTypeAttributes
+                    else if (requestTypes?.length)
+                        filterMerge.requestType = requestTypes
+                } else {
+                    if (filterMerge.destinationAttribute)
+                        delete filterMerge.destinationAttribute
+                    else if (filterMerge.requestType)
+                        delete filterMerge.requestType
+                }
+                if (!status?.length) {
                     delete filterMerge.status
                 }
                 delete filterMerge.destinationQualifiedName
@@ -502,6 +521,7 @@
                     })
                     filterMerge.$or = filterClasification
                 }
+
                 filters.value = filterMerge
             }
             const handleResetEvent = () => {
@@ -555,7 +575,7 @@
                 const el = document.getElementsByClassName(
                     'refresh-icon-request'
                 )
-           })
+            })
             return {
                 isFilterApplied,
                 mutate,

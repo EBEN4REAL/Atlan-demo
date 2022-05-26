@@ -494,6 +494,7 @@
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
             provide('sidebarPage', page)
+            provide('isDrawer', isDrawer)
 
             const {
                 collectionInfo,

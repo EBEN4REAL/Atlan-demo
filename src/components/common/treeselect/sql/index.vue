@@ -110,10 +110,16 @@
                 type: Object,
                 required: false,
             },
-            exclude: {
+            schemaExclude: {
                 required: false,
             },
-            include: {
+            schemaInclude: {
+                required: false,
+            },
+            dbExclude: {
+                required: false,
+            },
+            dbInclude: {
                 required: false,
             },
             credentialID: {
@@ -124,8 +130,15 @@
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
-            const { credential, query, exclude, include, credentialID } =
-                toRefs(props)
+            const {
+                credential,
+                query,
+                schemaExclude,
+                schemaInclude,
+                credentialID,
+                dbExclude,
+                dbInclude,
+            } = toRefs(props)
 
             const path = computed(() => {
                 return {
@@ -136,25 +149,28 @@
             const body = computed(() => ({
                 ...credential?.value,
                 query: query?.value,
-                schemaExcludePattern: exclude?.value,
-                schemaIncludePattern: include.value,
+                schemaExcludePattern: schemaExclude.value,
+                schemaIncludePattern: schemaInclude.value,
+                databaseExcludePattern: dbExclude.value,
+                databaseIncludePattern: dbInclude.value,
             }))
+
             const { data, refresh, isLoading, error } = useQueryCredential(body)
+
+            const bodyById = computed(() => ({
+                query: query?.value,
+                schemaExcludePattern: schemaExclude?.value,
+                schemaIncludePattern: schemaInclude.value,
+                databaseExcludePattern: dbExclude.value,
+                databaseIncludePattern: dbInclude.value,
+            }))
 
             const {
                 data: credByID,
                 refresh: refreshCredByID,
                 isLoading: isLoadingByID,
                 error: errorByID,
-            } = useQueryCredentialByID(
-                path,
-                {
-                    query: query?.value,
-                    schemaExcludePattern: exclude?.value,
-                    schemaIncludePattern: include.value,
-                },
-                false
-            )
+            } = useQueryCredentialByID(path, bodyById.value, false)
 
             onMounted(() => {
                 if (credentialID.value) {
@@ -202,18 +218,16 @@
                     if (element) {
                         treeData.value.push({
                             id: element,
-
                             value: element,
-                            isLeaf: false,
+                            isLeaf: !data.value.results?.[0]?.TABLE_SCHEM, // true when no TABLE_SCHEM is present
                             title: element,
                         })
                     }
                 })
                 data.value.results?.forEach((element) => {
-                    if (element.TABLE_CATALOG) {
+                    if (element.TABLE_CATALOG && element.TABLE_SCHEM) {
                         treeData.value.push({
                             id: `${element.TABLE_CATALOG}:${element.TABLE_SCHEM}`,
-
                             isLeaf: true,
                             pId: element.TABLE_CATALOG,
                             value: `${element.TABLE_CATALOG}:${element.TABLE_SCHEM}`,
@@ -287,8 +301,8 @@
                 isLoading,
                 credential,
                 query,
-                exclude,
-                include,
+                schemaExclude,
+                schemaInclude,
                 error,
                 handleDropdownVisibleChange,
                 isLoading,

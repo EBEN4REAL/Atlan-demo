@@ -7,7 +7,7 @@
             <!-- header -->
             <div class="flex">
                 <span
-                    class="mb-0 font-bold cursor-pointer ant-typography ant-typography-ellipsis ant-typography-single-line text-md text-primary hover:underline"
+                    class="mb-0 font-bold truncate cursor-pointer text-md text-primary hover:underline"
                     >{{ persona?.displayName }}</span
                 >
             </div>
@@ -110,9 +110,10 @@
 
 <script lang="ts">
     import { defineComponent, computed, toRefs } from 'vue'
+    import { useTimeAgo } from '@vueuse/core'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import { useTimeAgo } from '@vueuse/core'
+
     export default defineComponent({
         name: 'PersonaCard',
         components: { AtlanIcon },
@@ -127,11 +128,12 @@
         setup(props) {
             const { persona } = toRefs(props)
             const { getConnectorImageMap } = useAssetInfo()
-            const lastUpdate = computed(() => {
-                return useTimeAgo(
-                    persona.value.updatedAt || persona.value.createdAt
-                ).value
-            })
+            const lastUpdate = computed(
+                () =>
+                    useTimeAgo(
+                        persona.value.updatedAt || persona.value.createdAt
+                    ).value
+            )
 
             const getUniqueTypeIcons = () => {
                 const displayImages = {

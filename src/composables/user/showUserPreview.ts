@@ -1,7 +1,8 @@
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, toRefs } from 'vue'
 import { useRoute } from 'vue-router'
 import { allTabs } from '~/constant/users'
 import { useAuthStore } from '~/store/auth'
+import integrationStore from '~/store/integrations/index'
 
 const showPreview = ref(false)
 const userId = ref('')
@@ -10,17 +11,31 @@ const uniqueAttribute = ref('')
 const defaultTab = ref('about')
 const blacklistedTabs = ref<string[]>([])
 const allowedTabs = ref([])
+
+
+// ? TODO - refactor for a scalability
+const atleastOneIntegrationConfigured = computed(() => {
+    const store = integrationStore()
+    const { tenantSlackStatus, tenantJiraStatus } = toRefs(store)
+    return tenantSlackStatus.value.configured || tenantJiraStatus.value.configured
+})
+
 const finalTabs = computed(() => {
+
+    let allTabsCopy = JSON.parse(JSON.stringify(allTabs))
+    if (!atleastOneIntegrationConfigured.value)
+        allTabsCopy = allTabsCopy.filter(tab => tab.key !== "Integrations")
+
     if (allowedTabs.value && allowedTabs.value.length) {
         if (blacklistedTabs.value.length)
-            return allTabs.filter(
+            return allTabsCopy.filter(
                 (tab) =>
                     allowedTabs.value.includes(tab.key) &&
                     !blacklistedTabs.value.includes(tab.key)
             )
-        return allTabs.filter((tab) => allowedTabs.value.includes(tab.key))
+        return allTabsCopy.filter((tab) => allowedTabs.value.includes(tab.key))
     }
-    return allTabs.filter((tab) => !blacklistedTabs.value.includes(tab.key))
+    return allTabsCopy.filter((tab) => !blacklistedTabs.value.includes(tab.key))
 })
 const userUpdated = ref(false)
 

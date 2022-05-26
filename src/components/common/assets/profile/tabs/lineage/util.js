@@ -11,12 +11,16 @@ import {
     mysql,
     mssql,
     glue,
+    salesforce,
 } from './icons'
 
 /** STORE */
 import useLineageStore from '~/store/lineage'
 
 const lineageStore = useLineageStore()
+
+/* A list of the SQL assets that we are interested in. */
+export const SQLAssets = ['Table', 'View', 'MaterialisedView']
 
 /* This is a mapping of the asset types. */
 export const getNodeTypeText = {
@@ -59,6 +63,12 @@ export const getNodeTypeText = {
     TableauSite: 'Site',
     TableauFlow: 'Flow',
     TableauMetric: 'Metric',
+    // Salesforce
+    SalesforceOrganization: 'Organization',
+    SalesforceDashboard: 'Dashboard',
+    SalesforceReport: 'Report',
+    SalesforceObject: 'Object',
+    SalesforceField: 'Field',
 }
 
 /* This is a mapping of the source of the asset to the image. */
@@ -75,6 +85,7 @@ export const getNodeSourceImage = {
     mysql,
     mssql,
     glue,
+    salesforce,
 }
 
 /**
@@ -96,17 +107,29 @@ export const getSource = (entity) => {
 /**
  * Given an entity, return the schema name of the entity
  * @param entity - The entity object.
- * @returns The schema name of the table or view.
+ * @returns The schema name of the entity.
  */
 export const getSchema = (entity) => {
-    // TODO:
-    const allowedTypes = ['Table', 'View']
-    if (!allowedTypes.includes(entity.typeName)) return null
+    if (!SQLAssets.includes(entity.typeName)) return null
     const item =
         entity.attributes?.qualifiedName?.split('/') ||
         entity.uniqueAttributes?.qualifiedName?.split('/')
     if (item[0] === 'default') return item[4]
     return item[3]
+}
+
+/**
+ * Given an entity, return the database name of the entity
+ * @param entity - The entity object.
+ * @returns The database name of the entity.
+ */
+export const getDatabase = (entity) => {
+    if (!SQLAssets.includes(entity.typeName)) return null
+    const item =
+        entity.attributes?.qualifiedName?.split('/') ||
+        entity.uniqueAttributes?.qualifiedName?.split('/')
+    if (item[0] === 'default') return item[3]
+    return item[2]
 }
 
 /**
@@ -156,14 +179,14 @@ export const getCyclicRelations = (relations) => {
 export const getGroupedRelations = (relations) => {
     let res = {}
     relations.forEach((rel) => {
-        const { fromEntityId, toEntityId } = rel
+        const { processId, fromEntityId, toEntityId } = rel
         const entry = `${fromEntityId}@${toEntityId}`
-        if (res[entry]) res[entry] += 1
-        else res = { ...res, [entry]: 1 }
+        if (res[entry]) res[entry].push(processId)
+        else res = { ...res, [entry]: [processId] }
     })
 
     Object.entries(res).forEach(([k, v]) => {
-        if (v < 2) delete res[k]
+        if (v.length < 2) delete res[k]
     })
     return res
 }
@@ -210,8 +233,8 @@ export const controlCyclicEdges = (graph, relations, mode = 'node') => {
  * @param relations - the relations object from the graph data
  */
 export const controlGroupedEdges = (graph, relations, mode = 'node') => {
-    const groupedRelations = Object.keys(getGroupedRelations(relations))
-    groupedRelations.forEach((rel) => {
+    const groupedRelations = Object.entries(getGroupedRelations(relations))
+    groupedRelations.forEach(([rel, processIds]) => {
         const [sourceId, targetId] = rel.split('@')
 
         const edge = graph.value.getEdges().find((e) => {
@@ -221,11 +244,14 @@ export const controlGroupedEdges = (graph, relations, mode = 'node') => {
             return sourceId === from && targetId === to
         })
         if (!edge) return
-        edge.updateData({ isGroupEdge: true })
+        const count = processIds.length
+
+        edge.updateData({ isGroupEdge: true, groupCount: count, processIds })
         edge.setLabels({
             attrs: {
                 label: {
-                    text: 'grouped-processes',
+                    // text: `grouped-processes (${count})`,
+                    text: `grouped-processes`,
                 },
             },
         })

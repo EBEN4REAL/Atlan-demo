@@ -36,7 +36,7 @@
     import {
         defineComponent,
         PropType,
-        defineAsyncComponent,
+        // defineAsyncComponent,
         ref,
         Ref,
     } from 'vue'
@@ -46,6 +46,8 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RaisedTab from '@/UI/raisedTab.vue'
+    import OverviewColumns from './columnsPreview.vue'
+    import SampleDataTable from './sampleData.vue'
 
     export default defineComponent({
         name: 'NonBiOverview',
@@ -53,12 +55,8 @@
             AnnouncementWidget,
             Summary,
             RaisedTab,
-            OverviewColumns: defineAsyncComponent(
-                () => import('./columnsPreview.vue')
-            ),
-            SampleDataTable: defineAsyncComponent(
-                () => import('./sampleData.vue')
-            ),
+            OverviewColumns,
+            SampleDataTable,
         },
         props: {
             selectedAsset: {

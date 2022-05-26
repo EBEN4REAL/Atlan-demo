@@ -76,6 +76,17 @@ export function useSimilarBody(
                 }
                 break
             }
+            case 'userDescription': {
+                if (mkey) {
+                    base.aggregation(
+                        'terms',
+                        'userDescription.keyword',
+                        {},
+                        `${agg_prefix}_${mkey}`
+                    )
+                }
+                break
+            }
             case 'name': {
                 if (mkey) {
                     base.aggregation(

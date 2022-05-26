@@ -732,7 +732,7 @@
 
                 <transition
                     v-if="
-                        similarList('description').length > 0 &&
+                        descriptionSimilarList('description').length > 0 &&
                         !localDescription
                     "
                     name="fade"
@@ -743,7 +743,7 @@
                         :button-between="false"
                         :asset="selectedAsset"
                         :edit-permission="editPermission"
-                        :list="similarList('description')"
+                        :list="descriptionSimilarList('description')"
                     ></Suggestion>
                 </transition>
             </div>
@@ -1302,16 +1302,15 @@
                 similarity: title(selectedAsset.value),
                 orExists: ['description', 'userDescription'],
             })
-            const aggregations = ref(['description'])
+            const aggregations = ref(['description', 'userDescription'])
 
-            const { quickChange, similarList, aggregationMap } = useSimilarList(
-                {
+            const { quickChange, descriptionSimilarList, aggregationMap } =
+                useSimilarList({
                     limit,
                     offset,
                     facets,
                     aggregations,
-                }
-            )
+                })
             if (!localDescription.value) {
                 quickChange()
             }
@@ -1468,7 +1467,7 @@
                 title,
                 offset,
                 aggregations,
-                similarList,
+                descriptionSimilarList,
                 aggregationMap,
                 handleApplySuggestion,
                 readmeGuid,

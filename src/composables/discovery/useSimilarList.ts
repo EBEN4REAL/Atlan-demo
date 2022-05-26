@@ -78,6 +78,11 @@ export function useSimilarList({
 
     const similarList = (key) => aggregationMap(`group_by_${key}`)
 
+    const descriptionSimilarList = () =>
+        aggregationMap(`group_by_userDescription`).concat(
+            aggregationMap('group_by_description')
+        )
+
     const quickChange = () => {
         generateBody()
         cancelRequest()
@@ -105,6 +110,7 @@ export function useSimilarList({
         cancelRequest,
         isLoadMore,
         similarList,
+        descriptionSimilarList,
         error,
     }
 }

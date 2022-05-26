@@ -180,14 +180,7 @@
 
 <script lang="ts">
     /** VUE */
-    import {
-        defineComponent,
-        onMounted,
-        toRefs,
-        watch,
-        computed,
-        ref,
-    } from 'vue'
+    import { defineComponent, toRefs, watch, computed, ref } from 'vue'
 
     /** MODULES */
     import { message } from 'ant-design-vue'
@@ -199,6 +192,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import useLineageService from '~/services/meta/lineage/lineage_service'
     import { AssetAttributes } from '~/constant/projection'
+    import useCustomMetadata from './useCustomMetadata'
 
     /** COMPONENTS */
     import TermPill from '@/common/pills/term.vue'
@@ -206,14 +200,15 @@
     import ClassificationPopover from '@/common/popover/classification/index.vue'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
-    import AtlanButton from '@/UI/button.vue'
     import { downloadFile } from '~/utils/library/download'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
-    import GlossaryPopover from '@common/popover/glossary/index.vue'
+    import GlossaryPopover from '@/common/popover/glossary/index.vue'
 
-    /** LINEAGE PARAMETERS */
-    const depth = 21
-    const direction = 'OUTPUT'
+    /** UTILS */
+    import {
+        getSource,
+        getSchema,
+    } from '@/common/assets/profile/tabs/lineage/util.js'
 
     export default defineComponent({
         name: 'LineageImpactModal',
@@ -223,7 +218,6 @@
             ClassificationPill,
             CertificateBadge,
             Tooltip,
-            AtlanButton,
             ClassificationPopover,
         },
         props: {
@@ -246,8 +240,8 @@
                 getConnectorImage,
                 assetTypeLabel,
             } = useAssetInfo()
-
-            const { classificationList } = useTypedefData()
+            const { classificationList, customMetadataProjections } =
+                useTypedefData()
 
             /** This is a flag. We check if the guid has changed and
              * only then fetch the impacted assets. */
@@ -265,22 +259,10 @@
                 return guid.value !== classification.entityGuid
             }
 
-            const getSource = (entity) => {
-                const item = entity.attributes.qualifiedName.split('/')
-                if (item[0] === 'default') return item[1]
-                return item[0]
-            }
-
             const getTable = (entity) => {
                 const item = entity.attributes.qualifiedName.split('/')
                 if (item[0] === 'default') return item[3]
                 return item[2]
-            }
-
-            const getSchema = (entity) => {
-                const item = entity.attributes.qualifiedName.split('/')
-                if (item[0] === 'default') return item[4]
-                return item[3]
             }
 
             const {
@@ -291,12 +273,15 @@
                 error,
             } = useFetchLineage(
                 computed(() => ({
-                    depth,
-                    direction,
+                    depth: 21,
+                    direction: 'OUTPUT',
                     guid: guid.value,
                     hideProcess: true,
                     allowDeletedProcess: false,
-                    attributes: AssetAttributes,
+                    attributes: [
+                        ...AssetAttributes,
+                        ...customMetadataProjections,
+                    ],
                 }))
             )
 
@@ -306,31 +291,112 @@
                 )
             )
 
-            const columnsData = computed(() =>
-                downstreamAssets.value.map((entity, idx) => ({
-                    key: idx,
-                    details: {
-                        name: entity.displayText || entity.attributes.name,
-                        typeName: assetTypeLabel(entity) || entity.typeName,
-                        source: getSource(entity),
-                        sourceImg: getConnectorImage(entity),
-                        qfPath: entity.attributes?.qualifiedName
-                            ?.split('/')
-                            .slice(3, -1)
-                            .join('/'),
-                        certificateStatus: entity.attributes?.certificateStatus,
-                        certificateUpdatedBy:
-                            entity.attributes?.certificateUpdatedBy,
-                        certificateUpdatedAt: certificateUpdatedAt(entity),
-                    },
-                    db: getTable(entity),
-                    schema: getSchema(entity),
+            const assets = ref([])
 
-                    owners: [...ownerUsers(entity), ...ownerGroups(entity)],
-                    classifications: entity.classificationNames,
-                    terms: entity.meanings,
-                }))
+            const columnsData = computed(() =>
+                assets.value.map((entity, idx) => {
+                    const hasCm = !!entity?.cm
+                    const cm = {}
+                    if (hasCm) {
+                        entity.cm.forEach((cmDataObj) => {
+                            const { cmNameDN, cmAttributeDN, cmValueDN } =
+                                cmDataObj
+                            const id = `${cmNameDN}.${cmAttributeDN}`
+                            cm[id] = cmValueDN
+                        })
+                    }
+                    return {
+                        key: idx,
+                        details: {
+                            name: entity.displayText || entity.attributes.name,
+                            typeName: assetTypeLabel(entity) || entity.typeName,
+                            source: getSource(entity),
+                            sourceImg: getConnectorImage(entity),
+                            qfPath: entity.attributes?.qualifiedName
+                                ?.split('/')
+                                .slice(3, -1)
+                                .join('/'),
+                            certificateStatus:
+                                entity.attributes?.certificateStatus,
+                            certificateUpdatedBy:
+                                entity.attributes?.certificateUpdatedBy,
+                            certificateUpdatedAt: certificateUpdatedAt(entity),
+                        },
+                        db: getTable(entity),
+                        schema: getSchema(entity),
+
+                        owners: [...ownerUsers(entity), ...ownerGroups(entity)],
+                        classifications: entity.classificationNames,
+                        terms: entity.meanings,
+                        ...cm,
+                    }
+                })
             )
+
+            const columns = ref([
+                {
+                    width: 300,
+                    title: 'Name',
+                    dataIndex: 'details',
+                    key: 'details',
+                    fixed: 'left',
+                },
+                {
+                    width: 250,
+                    title: 'Owners',
+                    dataIndex: 'owners',
+                    key: 'owners',
+                },
+                {
+                    width: 400,
+                    title: 'Classifications',
+                    dataIndex: 'classifications',
+                    key: 'classifications',
+                },
+                {
+                    width: 400,
+                    title: 'Terms',
+                    dataIndex: 'terms',
+                    key: 'terms',
+                },
+            ])
+
+            watch(isReady, () => {
+                assets.value = [...downstreamAssets.value]
+
+                const { assetGuidCMMap } = useCustomMetadata(
+                    downstreamAssets.value
+                )
+                const cmColumns = {}
+
+                const assetsWithCM = Object.keys(assetGuidCMMap)
+
+                Object.values(assetGuidCMMap).forEach((cm) => {
+                    cm.forEach((cmData) => {
+                        const { cmAttributeDN } = cmData
+                        if (!cmColumns[cmAttributeDN])
+                            cmColumns[cmAttributeDN] = cmData
+                    })
+                })
+
+                Object.values(cmColumns).forEach((cmColumn) => {
+                    const { cmNameDN, cmAttributeDN, cmIcon, isEmojiIcon } =
+                        cmColumn
+                    const id = `${cmNameDN}.${cmAttributeDN}`
+                    const obj = {
+                        width: 250,
+                        title: `${id} ${isEmojiIcon ? cmIcon : ''}`,
+                        dataIndex: id,
+                        key: id,
+                    }
+                    columns.value.push(obj)
+                })
+
+                assets.value = assets.value.map((asset) => {
+                    if (!assetsWithCM.includes(asset.guid)) return asset
+                    return { ...asset, cm: assetGuidCMMap[asset.guid] }
+                })
+            })
 
             const getImpactedAssets = () => {
                 if (!guid.value || !updateNeeded.value) return
@@ -406,33 +472,7 @@
                 isLoading,
                 isReady,
                 columnsData,
-                columns: [
-                    {
-                        width: 300,
-                        title: 'Name',
-                        dataIndex: 'details',
-                        key: 'details',
-                        fixed: 'left',
-                    },
-                    {
-                        width: 250,
-                        title: 'Owners',
-                        dataIndex: 'owners',
-                        key: 'owners',
-                    },
-                    {
-                        width: 400,
-                        title: 'Classifications',
-                        dataIndex: 'classifications',
-                        key: 'classifications',
-                    },
-                    {
-                        width: 400,
-                        title: 'Terms',
-                        dataIndex: 'terms',
-                        key: 'terms',
-                    },
-                ],
+                columns,
                 classificationPopoverMouseEnterDelay,
                 termMouseEnterDelay,
                 termEnteredPill,

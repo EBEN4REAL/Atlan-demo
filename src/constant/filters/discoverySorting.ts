@@ -10,24 +10,24 @@ export const discoverySorting = [
     {
         id: 'name.keyword-asc',
         label: 'Name',
-        suffix: '(a-z)'
+        suffix: '(a-z)',
     },
     {
         id: 'name.keyword-desc',
         label: 'Name',
-        suffix: '(z-a)'
+        suffix: '(z-a)',
     },
     {
         id: '__modificationTimestamp-desc',
         label: 'Last updated at Atlan',
-        suffix: '(Newest)'
+        suffix: '(Newest)',
     },
     {
         id: '__modificationTimestamp-asc',
         label: 'Last updated at Atlan',
-        suffix: '(Oldest)'
+        suffix: '(Oldest)',
     },
-    {
+    /*  {
         id: 'sourceUpdatedAt-desc',
         label: 'Last updated at source',
         suffix: '(Newest)'
@@ -36,9 +36,8 @@ export const discoverySorting = [
         id: 'sourceUpdatedAt-asc',
         label: 'Last updated at source',
         suffix: '(Oldest)'
-    },
-    
-    
+    }, */
+
     // {
     //     id: '__modificationTimestamp-asc',
     //     label: 'Last updated ()',

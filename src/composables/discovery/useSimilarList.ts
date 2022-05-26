@@ -78,10 +78,43 @@ export function useSimilarList({
 
     const similarList = (key) => aggregationMap(`group_by_${key}`)
 
-    const descriptionSimilarList = () =>
-        aggregationMap(`group_by_userDescription`).concat(
-            aggregationMap('group_by_description')
-        )
+    const descriptionSimilarList = () => {
+        let list = aggregationMap(`group_by_userDescription`)
+            .map((i) => {
+                if (i.group_by_userDescription?.hits?.hits?.length > 0) {
+                    return {
+                        key: i.group_by_userDescription?.hits?.hits[0]._source
+                            .userDescription,
+                        doc_count: i.doc_count,
+                    }
+                }
+                return {
+                    key: i.key,
+                    doc_count: i.doc_count,
+                }
+            })
+            .concat(
+                aggregationMap(`group_by_description`).map((i) => {
+                    if (i.group_by_description?.hits?.hits?.length > 0) {
+                        return {
+                            key: i.group_by_description?.hits?.hits[0]._source
+                                .description,
+                            doc_count: i.doc_count,
+                        }
+                    }
+                    return {
+                        key: i.key,
+                        doc_count: i.doc_count,
+                    }
+                })
+            )
+
+        return list.filter((i) => i.key !== '')
+    }
+
+    // aggregationMap(`group_by_userDescription`).concat(
+    //     aggregationMap('group_by_description')
+    // )
 
     const quickChange = () => {
         generateBody()

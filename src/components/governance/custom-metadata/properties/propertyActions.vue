@@ -1,6 +1,6 @@
 <template>
     <a-button
-        class="px-1 py-0 border-0"
+        class="px-1 py-0 border-0 shadow-none"
         style="background: inherit"
         @click="copyAPI(name, 'Name Copied!')"
     >
@@ -12,7 +12,7 @@
         placement="bottomLeft"
     >
         <a-button
-            class="border-0 rounded"
+            class="border-0 rounded shadow-none"
             size="small"
             style="background: inherit"
             @click="dropdownVisible = true"

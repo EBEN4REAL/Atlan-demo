@@ -53,7 +53,7 @@
                         >
                             <div class="flex items-center">
                                 <Truncate
-                                    :tooltipText="property.displayName"
+                                    :tooltip-text="property.displayName"
                                     classes="text-primary"
                                     :rows="2"
                                 />
@@ -140,6 +140,7 @@
     import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
+        components: { Truncate, PropertyActions },
         props: {
             metadata: {
                 type: Object,
@@ -155,7 +156,6 @@
                 default: () => {},
             },
         },
-        components: { Truncate, PropertyActions },
         emits: ['openEditDrawer', 'archiveProperty'],
         setup(props, { emit }) {
             const store = useTypedefStore()

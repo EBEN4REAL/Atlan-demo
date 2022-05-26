@@ -26,6 +26,7 @@ once property is created"
                             overlayClassName="text-xs"
                         >
                             <div
+                                v-if="editing"
                                 class="px-2 py-1 text-xs rounded text-new-yellow-700 bg-new-yellow-100"
                             >
                                 Editing restricted
@@ -36,7 +37,7 @@ once property is created"
                 <a-switch
                     :id="`${form.name}-isFacet`"
                     v-model:checked="form.options.multiValueSelect"
-                    :disabled="editing"
+                    :disabled="editing || readOnly"
                     :class="
                         form.options.multiValueSelect
                             ? 'bg-primary'
@@ -72,6 +73,7 @@ once property is created"
                 </label>
 
                 <a-switch
+                    :disabled="readOnly"
                     :id="`${form.name}-isBadge`"
                     v-model:checked="form.options.allowFiltering"
                     class=""
@@ -111,6 +113,7 @@ once property is created"
                 </label>
 
                 <a-switch
+                    :disabled="readOnly"
                     :id="`${form.name}-isPresent`"
                     v-model:checked="form.options.showInOverview"
                     class=""
@@ -136,6 +139,7 @@ once property is created"
         form: { type: Object, required: true },
         internal: { type: Boolean, default: false },
         editing: { type: Boolean, required: true },
+        readOnly: { type: Boolean, default: false },
     })
 
     const emit = defineEmits([''])

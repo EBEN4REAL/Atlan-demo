@@ -76,11 +76,33 @@
     .ant-table-container table > thead > tr:first-child th:first-child {
         @apply border-r border-gray-light text-gray-500 !important;
     }
-    .ant-table-tbody tr:not(.ant-table-measure-row) {
+    .ant-table-tbody {
         max-height: 32px !important;
         height: 32px !important;
     }
     .ant-table-cell-row-hover {
         @apply bg-new-gray-100 !important;
+    }
+}
+
+.columns-widget {
+    .ant-table-header th {
+        overflow-wrap: normal !important;
+    }
+    .ant-table-thead tr th {
+        @apply text-gray-700 !important;
+    }
+    .ant-table td {
+        @apply cursor-pointer !important;
+    }
+    .ant-table-container table > thead > tr:first-child th:first-child {
+        @apply border-r border-gray-light text-gray-500 !important;
+    }
+    .ant-table-cell-row-hover {
+        @apply bg-new-gray-100 !important;
+    }
+
+    .ant-table-tbody > tr:not(.ant-table-measure-row) > td {
+        @apply py-3 px-5 !important;
     }
 }

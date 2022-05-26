@@ -80,6 +80,7 @@
             tooltipColor: {
                 type: String,
                 required: false,
+                default: '#2A2F45',
             },
             shouldOpenInNewTab: {
                 type: Boolean,

@@ -80,7 +80,7 @@
                 :pagination="false"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
-                class="self-start column-table"
+                class="self-start columns-widget"
                 :class="{ 'opacity-60': isValidating }"
             >
                 <template #bodyCell="{ column, record, text }">
@@ -99,13 +99,14 @@
                             <div class="flex items-center">
                                 <component
                                     :is="dataTypeCategoryImage(record.item)"
-                                    class="h-4 mr-2 text-gray-500 mb-0.5"
+                                    class="h-4 mr-1 text-gray-500 mb-0.5"
                                     style="min-width: 16px"
                                 ></component>
 
                                 <Tooltip
                                     :tooltip-text="text"
                                     classes="hover:text-primary font-bold text-new-gray-800"
+                                    width="1000px"
                                     :clamp-percentage="
                                         record.is_primary ||
                                         record.is_foreign ||

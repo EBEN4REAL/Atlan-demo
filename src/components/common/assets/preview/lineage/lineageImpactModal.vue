@@ -321,6 +321,7 @@
                             certificateUpdatedBy:
                                 entity.attributes?.certificateUpdatedBy,
                             certificateUpdatedAt: certificateUpdatedAt(entity),
+                            cm,
                         },
                         db: getTable(entity),
                         schema: getSchema(entity),
@@ -418,6 +419,7 @@
                         Owners: y.owners,
                         Classifications: y.classifications,
                         Terms: y.terms.map((t) => t.termGuid),
+                        ...y.details.cm,
                     }
                 })
 

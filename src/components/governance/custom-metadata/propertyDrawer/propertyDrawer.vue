@@ -195,12 +195,13 @@
                 emit('openIndex', i + 1)
             }
 
-            onKeyStroke(['ArrowUp', 'ArrowDown'], (e) => {
-                if (!visible.value) return
-                if (e.key === 'ArrowUp') openPrev(propertyIndex.value)
+            // FIXME remove indexing logic
+            // onKeyStroke(['ArrowUp', 'ArrowDown'], (e) => {
+            //     if (!visible.value) return
+            //     if (e.key === 'ArrowUp') openPrev(form.value.name)
 
-                if (e.key === 'ArrowDown') openNext(propertyIndex.value)
-            })
+            //     if (e.key === 'ArrowDown') openNext(form.value.name)
+            // })
 
             const handleUpdateError = (error) => {
                 const errorCode = error.response?.data.errorCode

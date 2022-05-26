@@ -49,7 +49,7 @@
                             >
                                 <a-input
                                     v-model:value="attrsearchText"
-                                    class="h-8 px-2 pl-2 border border-gray-300 rounded-lg w-80"
+                                    class="h-8 px-2 pl-2 border border-gray-300 rounded-lg shadow-none w-80"
                                     :placeholder="`Search from ${finalAttributeList.length} properties`"
                                 >
                                     <template #prefix>
@@ -113,7 +113,7 @@
                         :metadata="localBm"
                         :properties="searchedAttributeList"
                         :selected="selected"
-                        @remove-property="handleRemoveAttribute"
+                        @archive-property="archiveAttribute"
                         @open-edit-drawer="openEdit"
                     />
                 </div>
@@ -142,31 +142,6 @@
                         @click="addPropertyDrawer.open(undefined, false)"
                     />
                 </div>
-                <!-- <a-empty
-                    :image="noPropertyImage"
-                    :image-style="{
-                        height: '115px',
-                        display: 'flex',
-                        justifyContent: 'center',
-                    }"
-                >
-                    <template #description>
-                        <p
-                            v-if="checkAccess(map.UPDATE_BUSINESS_METADATA)"
-                            class="font-bold"
-                        >
-                            Start adding properties
-                        </p>
-                        <p v-else>This custom metadata has no properties</p>
-                    </template>
-
-                    <a-button
-                        v-auth="map.UPDATE_BUSINESS_METADATA"
-                        type="primary"
-                        @click="addPropertyDrawer.open(undefined, false)"
-                        ><AtlanIcon icon="Add" class="inline" /> Add property
-                    </a-button>
-                </a-empty> -->
             </div>
         </div>
     </div>
@@ -185,11 +160,12 @@
     import MetadataHeaderButton from './metadataHeaderButton.vue'
     import AddPropertyDrawer from './propertyDrawer/propertyDrawer.vue'
     import noPropertyImage from '~/assets/images/admin/no-property.png'
-    import PropertyList from './propertyList.vue'
+    import PropertyList from '@/governance/custom-metadata/properties/propertyList.vue'
     import AvatarUpdate from './avatarUpdate.vue'
 
     import getAssetCount from '@/governance/custom-metadata/composables/getAssetCount'
     import InternalCMBanner from '@/common/customMetadata/internalCMBanner.vue'
+    import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
 
     // ? Store
     import { useTypedefStore } from '~/store/typedef'
@@ -227,7 +203,7 @@
             // ? attribute list that is not- deprecated,
             const finalAttributeList = computed(() =>
                 (localBm.value.attributeDefs ?? []).filter(
-                    (a) => a.options.isDeprecated !== 'true'
+                    (a) => !['true', true].includes(a.options.isArchived)
                 )
             )
 
@@ -239,25 +215,17 @@
             const error = ref('')
             const addPropertyDrawer = ref(null)
 
-            const onUpdate = () => {
-                isUpdated.value = true
-                context.emit(
-                    'update',
-                    JSON.parse(JSON.stringify(localBm.value))
-                )
-            }
-
             /**
              * @param {Number} index - index of the newly added attribute
              * @desc removes newly added attribute if not saved
              */
-            const handleRemoveAttribute = (index: number) => {
+            // TODO this function to remove attribute locally and also store
+            const archiveAttribute = (index: number, attr: CMA) => {
                 const tempAttributes = JSON.parse(
                     JSON.stringify(localBm.value.attributeDefs)
                 )
-                tempAttributes.splice(index, 1)
+                tempAttributes[index] = attr
                 localBm.value.attributeDefs = tempAttributes
-                onUpdate()
             }
 
             // * Computed
@@ -336,20 +304,21 @@
                     : ''
             )
 
-            const openEdit = ({ property, index }) => {
-                addPropertyDrawer.value.open(
-                    cleanLocalBm.value.attributeDefs.find(
-                        (x) => x.name === property.name
-                    ),
+            const openEdit = ({ property }) => {
+                const index = cleanLocalBm.value.attributeDefs.findIndex(
+                    (x) => x.name === property.name
+                )
+                addPropertyDrawer.value?.open(
+                    cleanLocalBm.value.attributeDefs[index],
                     true,
                     index
                 )
             }
-
+            // FIXME indexes are no longer true index, as properties are filtered
             const openIndex = (i) => {
-                if (i < 0 || i > addPropertyDrawer.value.length) return
+                if (i < 0 || i > searchedAttributeList.value.length - 1) return
                 console.log('openIndex', i)
-                addPropertyDrawer.value.open(
+                addPropertyDrawer.value?.open(
                     cleanLocalBm.value.attributeDefs[i],
                     true,
                     i
@@ -363,11 +332,10 @@
                 assetCount,
                 attrsearchText,
                 error,
-                handleRemoveAttribute,
+                archiveAttribute,
                 isUpdated,
                 loading,
                 localBm,
-                onUpdate,
                 cleanLocalBm,
                 panelModel,
                 searchedAttributes,

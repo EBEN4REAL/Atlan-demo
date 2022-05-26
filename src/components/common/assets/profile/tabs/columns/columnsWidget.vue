@@ -170,7 +170,7 @@
                                     v-if="record.item?.attributes?.__hasLineage"
                                     class="ml-2"
                                 >
-                                    <a-tooltip placement="top"
+                                    <a-tooltip placement="top" color="#2A2F45"
                                         ><template #title
                                             >This column has lineage</template
                                         >

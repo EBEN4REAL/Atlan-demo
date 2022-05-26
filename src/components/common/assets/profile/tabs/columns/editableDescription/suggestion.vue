@@ -9,18 +9,28 @@
                     ></AtlanIcon>
                     <span class="mr-1 font-bold text-new-gray-600">
                         {{
-                            list.length > 1 ? 'Suggestions' : 'Suggestion'
+                            list.length > 1
+                                ? 'Description Suggestions'
+                                : 'Description Suggestion'
                         }}</span
-                    ><AtlanIcon
-                        icon="Info"
-                        class="text-sm text-new-gray-600 mb-0.5"
-                    ></AtlanIcon>
+                    >
+                    <a-tooltip color="#2A2F45"
+                        ><template #title
+                            >These suggestions are powered by previously
+                            documented assets with the
+                            <span class="font-bold">same name</span></template
+                        >
+                        <AtlanIcon
+                            icon="Info"
+                            class="text-sm text-new-gray-600 mb-0.5 cursor-pointer"
+                        ></AtlanIcon
+                    ></a-tooltip>
                 </div>
                 <div
                     v-for="(item, index) in list"
                     :key="index"
-                    class="flex items-center justify-between px-4 py-3 border-t hover:bg-primary-light border-new-gray-200 gap-x-3"
-                    style="min-height: 64px"
+                    class="flex items-center justify-between py-2 pl-4 pr-2 border-t hover:bg-primary-light border-new-gray-200 gap-x-2.5"
+                    style="min-height: 49px"
                     @mouseenter="showApplyButton = index"
                     @mouseleave="showApplyButton = -1"
                 >

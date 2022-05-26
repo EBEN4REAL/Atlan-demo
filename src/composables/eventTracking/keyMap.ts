@@ -238,21 +238,21 @@ const keyMap = {
             created: {
                 action: 'discovery_resource_created',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                     asset_type: props.asset_type,
                 }),
             },
             updated: {
                 action: 'discovery_resource_updated',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                     asset_type: props.asset_type,
                 }),
             },
             clicked: {
                 action: 'discovery_resource_clicked',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                     asset_type: props.asset_type,
                 }),
             },
@@ -638,13 +638,13 @@ const keyMap = {
             resource_created: {
                 action: 'persona_resource_created',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                 }),
             },
             resource_updated: {
                 action: 'persona_resource_updated',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                 }),
             },
             resource_deleted: {
@@ -707,13 +707,13 @@ const keyMap = {
             resource_created: {
                 action: 'purpose_resource_created',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                 }),
             },
             resource_updated: {
                 action: 'purpose_resource_updated',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                 }),
             },
             resource_deleted: {

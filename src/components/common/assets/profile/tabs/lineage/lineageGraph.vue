@@ -47,7 +47,7 @@
             :guid="selectedAsset?.guid || ''"
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
-            :show-close-btn="false"
+            :show-collapse-button="true"
             @close-drawer="onCloseDrawer"
             @update="handleDrawerUpdate"
         />

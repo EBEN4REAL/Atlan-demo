@@ -287,8 +287,13 @@
                     <template #tab>
                         <a-badge
                             :count="getCount(tab.name)"
-                            :offset="[-5, 0]"
+                            :offset="[-8, 5]"
                             class="small"
+                            :number-style="{
+                                background:
+                                    'linear-gradient(132.26deg, #0575E6 7.86%, #0029C4 89.25%)',
+                                color: '#fff',
+                            }"
                         >
                             <div class="flex flex-col" style="width: 45px">
                                 <PreviewTabsIcon
@@ -829,6 +834,7 @@
                 getCount,
                 links,
                 slackResourceCount,
+                switchTab,
             }
         },
     })

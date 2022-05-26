@@ -428,6 +428,19 @@ const keyMap = {
                 }),
             },
         },
+        mini_map: {
+            clicked: {
+                action: 'lineage_mini_map_clicked',
+                properties: (props) => ({
+                    is_hidden: !!props?.is_hidden,
+                }),
+            },
+        },
+        control_panel_mini_map: {
+            changed: {
+                action: 'lineage_control_panel_mini_map_changed',
+            },
+        },
     },
     gtc: {
         term: {

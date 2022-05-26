@@ -30,6 +30,7 @@
                     GUID</a-menu-item
                 >
                 <DeleteProperty
+                    v-if="!internal"
                     ref="deletePropertyRef"
                     :name="name"
                     @confirm="handleDelete"
@@ -53,7 +54,7 @@
     import DeleteProperty from '@/governance/custom-metadata/properties/deleteProperty.vue'
 
     const emit = defineEmits(['delete'])
-    const props = defineProps(['guid', 'name'])
+    const props = defineProps(['guid', 'name', 'internal'])
     const dropdownVisible = ref(false)
     const deletePropertyRef = ref()
 

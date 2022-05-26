@@ -102,6 +102,7 @@
                         <PropertyActions
                             :name="property.displayName"
                             :guid="property.name"
+                            :internal="metadata.options?.isLocked === 'true'"
                             @delete="handleArchiveProperty(property.name)"
                         />
                     </div>

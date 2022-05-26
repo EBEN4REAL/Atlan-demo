@@ -160,6 +160,7 @@
                                                 <a-button
                                                     shape="circle"
                                                     type="dashed"
+                                                    v-if="page === 'assets'"
                                                     @click="
                                                         handleSwitchTabLineage(
                                                             item

@@ -16,8 +16,8 @@
                 >
                     <div class="flex items-center justify-between">
                         <span>
-                            {{ item.label }} 
-                            <span class="text-gray-500"> {{item.suffix}}</span>
+                            {{ item?.label }} 
+                            <span class="text-gray-500"> {{item?.suffix}}</span>
                         </span>
                         <AtlanIcon
                             icon="RunSuccess"

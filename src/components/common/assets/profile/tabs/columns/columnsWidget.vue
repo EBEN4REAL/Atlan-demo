@@ -105,7 +105,7 @@
 
                                 <Tooltip
                                     :tooltip-text="text"
-                                    classes="hover:text-primary font-bold text-new-gray-800"
+                                    classes="hover:text-primary font-bold text-new-gray-800 hover:underline"
                                     width="1000px"
                                     :clamp-percentage="
                                         record.is_primary ||

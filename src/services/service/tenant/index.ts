@@ -13,18 +13,23 @@ const UpdateTenant = (
     options?: useOptions
 ) => {
     // Removing XSS vulnerability - slack ref: https://atlanhq.slack.com/archives/C02R5TGJX0R/p1642001739135100
-    const requestPayload = isRef(body) ? body.value : body
-    let modifiedBody = { ...requestPayload }
-    if (requestPayload && requestPayload.hasOwnProperty('displayNameHtml')) {
-        const { displayNameHtml, ...modifiedRequestPayload } = requestPayload
-        modifiedBody = {
-            ...modifiedRequestPayload,
+
+    const finalBody = computed(() => {
+        const requestPayload = isRef(body) ? body.value : body
+        let modifiedBody = { ...requestPayload }
+        if (requestPayload && requestPayload.hasOwnProperty('displayNameHtml')) {
+            const { displayNameHtml, ...modifiedRequestPayload } = requestPayload
+            modifiedBody = {
+                ...modifiedRequestPayload,
+            }
         }
-    }
+        return modifiedBody
+    })
+
     return useAPI(
         map.POST_TENANT,
         'POST',
-        { body: modifiedBody },
+        { body: finalBody },
         options || {}
     )
 }

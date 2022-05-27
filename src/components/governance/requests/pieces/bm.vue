@@ -32,7 +32,9 @@
                 </div>
             </template>
 
-            <div class="py-1 rounded-full cursor-pointer w-40 flex items-center">
+            <div
+                class="py-1 rounded-full cursor-pointer w-40 flex items-center"
+            >
                 <PreviewTabsIcon
                     :icon="iconInfo?.icon"
                     :image="iconInfo?.image"
@@ -124,6 +126,9 @@
                 const list = cmList(props.data?.entityType).filter(
                     (el) => el?.id === props.data?.destinationAttribute
                 )
+                if (!list[0]) {
+                    return
+                }
                 console.log(list[0])
                 if (list[0]?.label) {
                     label.value = list[0].label
@@ -137,6 +142,7 @@
                     iconInfo.value.emoji = list[0]?.options?.emoji
                 }
 
+                console.log(list[0], props.data?.entityType)
                 applicableList.value = getApplicableAttributes(
                     list[0],
                     props.data?.entityType
@@ -156,7 +162,7 @@
                 checkAccess,
                 page,
                 guid,
-                iconInfo
+                iconInfo,
             }
         },
     })

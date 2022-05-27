@@ -62,6 +62,7 @@ specifiers:
   cron-parser: ^4.2.1
   cronstrue: ^1.123.0
   dayjs: ^1.10.7
+  dompurify: ^2.3.8
   dotenv: ^16.0.0
   emoji-picker-element: ^1.11.2
   eslint: ^8.8.0
@@ -175,6 +176,7 @@ dependencies:
   cron-parser: 4.2.1
   cronstrue: 1.123.0
   dayjs: 1.10.7
+  dompurify: 2.3.8
   emoji-picker-element: 1.11.3
   event-source-polyfill: github.com/atlanhq/EventSource/f12e560428065c00f61c7eb2a8ae773115e6e7c7
   highlight.js: 11.4.0
@@ -2697,7 +2699,7 @@ packages:
       '@volar/source-map': 0.31.2
       '@vue/compiler-core': 3.2.30
       '@vue/compiler-dom': 3.2.30
-      '@vue/shared': 3.2.33
+      '@vue/shared': 3.2.36
       upath: 2.0.1
     dev: true
 
@@ -2776,10 +2778,10 @@ packages:
     dependencies:
       '@vue/shared': 3.2.30
 
-  /@vue/reactivity/3.2.34:
-    resolution: {integrity: sha512-xbRIOPqxdNOr0zS47moRS6zf4BKd0z+55R85UJlo4r5ezqCktk6fYy1atY4tGzo7Maqh6QoKw3LtIKvpz8d7WA==}
+  /@vue/reactivity/3.2.36:
+    resolution: {integrity: sha512-c2qvopo0crh9A4GXi2/2kfGYMxsJW4tVILrqRPydVGZHhq0fnzy6qmclWOhBFckEhmyxmpHpdJtIRYGeKcuhnA==}
     dependencies:
-      '@vue/shared': 3.2.34
+      '@vue/shared': 3.2.36
     dev: false
 
   /@vue/runtime-core/3.2.30:
@@ -2789,11 +2791,11 @@ packages:
       '@vue/shared': 3.2.30
     dev: false
 
-  /@vue/runtime-core/3.2.34:
-    resolution: {integrity: sha512-GtaHqYiuEb56OA0cbMh20UPpDiXGRX+NS1buKif4OL341JJ3NtmNOIchCzknaN76oN6KqrLiO82/+TEZXl2Xtw==}
+  /@vue/runtime-core/3.2.36:
+    resolution: {integrity: sha512-PTWBD+Lub+1U3/KhbCExrfxyS14hstLX+cBboxVHaz+kXoiDLNDEYAovPtxeTutbqtClIXtft+wcGdC+FUQ9qQ==}
     dependencies:
-      '@vue/reactivity': 3.2.34
-      '@vue/shared': 3.2.34
+      '@vue/reactivity': 3.2.36
+      '@vue/shared': 3.2.36
     dev: false
 
   /@vue/runtime-dom/3.2.30:
@@ -2804,11 +2806,11 @@ packages:
       csstype: 2.6.19
     dev: false
 
-  /@vue/runtime-dom/3.2.34:
-    resolution: {integrity: sha512-uqizbaJqmNH3O4TRr+8cM1tid5ODWHyQYZ3CLWcjn3dLkf0N7wvNuhUELQUZU/wQLvVMhJUQNrmOqckHLm6Xpw==}
+  /@vue/runtime-dom/3.2.36:
+    resolution: {integrity: sha512-gYPYblm7QXHVuBohqNRRT7Wez0f2Mx2D40rb4fleehrJU9CnkjG0phhcGEZFfGwCmHZRqBCRgbFWE98bPULqkg==}
     dependencies:
-      '@vue/runtime-core': 3.2.34
-      '@vue/shared': 3.2.34
+      '@vue/runtime-core': 3.2.36
+      '@vue/shared': 3.2.36
       csstype: 2.6.20
     dev: false
 
@@ -2824,13 +2826,8 @@ packages:
   /@vue/shared/3.2.30:
     resolution: {integrity: sha512-B3HouBtUxcfu2w2d+VhdLcVBXKYYhXiFMAfQ+hoe8NUhKkPRkWDIqhpuehCZxVQ3S2dN1P1WfKGlxGC+pfmxGg==}
 
-  /@vue/shared/3.2.33:
-    resolution: {integrity: sha512-UBc1Pg1T3yZ97vsA2ueER0F6GbJebLHYlEi4ou1H5YL4KWvMOOWwpYo9/QpWq93wxKG6Wo13IY74Hcn/f7c7Bg==}
-    dev: true
-
-  /@vue/shared/3.2.34:
-    resolution: {integrity: sha512-zhEeB8TrFmTXmTXmu/wcjEhgrjO4xqdDQrCdPhjX7NxfoLqoBVKguOm8qyihWNLbP+41svYY4za9mqXyqFLzNg==}
-    dev: false
+  /@vue/shared/3.2.36:
+    resolution: {integrity: sha512-JtB41wXl7Au3+Nl3gD16Cfpj7k/6aCroZ6BbOiCMFCMvrOpkg/qQUXTso2XowaNqBbnkuGHurLAqkLBxNGc1hQ==}
 
   /@vueuse/core/8.2.5_vue@3.2.30:
     resolution: {integrity: sha512-5prZAA1Ji2ltwNUnzreu6WIXYqHYP/9U2BiY5mD/650VYLpVcwVlYznJDFcLCmEWI3o3Vd34oS1FUf+6Mh68GQ==}
@@ -3923,6 +3920,10 @@ packages:
 
   /domino/2.1.6:
     resolution: {integrity: sha512-3VdM/SXBZX2omc9JF9nOPCtDaYQ67BGp5CoLpIQlO2KCAPETs8TcDHacF26jXadGbvUteZzRTeos2fhID5+ucQ==}
+    dev: false
+
+  /dompurify/2.3.8:
+    resolution: {integrity: sha512-eVhaWoVibIzqdGYjwsBWodIQIaXFSB+cKDf4cfxLMsK0xiud6SE+/WCVx/Xw/UwQsa4cS3T2eITcdtmTg2UKcw==}
     dev: false
 
   /domutils/2.8.0:
@@ -8360,8 +8361,8 @@ packages:
       chart.js: '=> ^3.1.0'
       vue: '>= 3'
     dependencies:
-      '@vue/runtime-core': 3.2.34
-      '@vue/runtime-dom': 3.2.34
+      '@vue/runtime-core': 3.2.36
+      '@vue/runtime-dom': 3.2.36
       chart.js: 3.7.0
       csstype: 3.0.10
       lodash: 4.17.21

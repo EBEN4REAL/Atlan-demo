@@ -12,6 +12,7 @@ interface SlackStatus {
     createdBy: string
     memberID?: string
     alertsWorkflowChannel?: string
+    queryOutputChannels?: [{ name: string; id: string }]
 }
 interface JiraStatus {
     created: boolean
@@ -59,6 +60,7 @@ const getters: _GettersTree<State> & Getters = {
             created: !!integration,
             configured: integration?.isConfigured,
             channels: integration?.config?.channels ?? [],
+            queryOutputChannels: integration?.config?.queryOutputChannels ?? [],
             teamName: integration?.sourceMetadata?.teamName,
             alertsWorkflowChannel:
                 integration?.config?.alertsWorkflowChannel || null,
@@ -150,7 +152,6 @@ const getters: _GettersTree<State> & Getters = {
         const integrations = state.allIntegrations
             .filter((integration) => integration.integrationLevel === 'tenant')
             .map((integration) => integration.name)
-        // return state.allIntegrations
         return integrations || []
     },
 }

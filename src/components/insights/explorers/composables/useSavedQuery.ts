@@ -135,7 +135,7 @@ export function useSavedQuery(
             savedQueryParentFolderTitle: savedQuery?.parentTitle,
             collectionQualifiedName:
                 savedQuery?.attributes?.collectionQualifiedName,
-            classifications: savedQuery?.classifications,    
+            classifications: savedQuery?.classifications,
             explorer: {
                 schema: {
                     connectors: connectors,
@@ -662,7 +662,6 @@ export function useSavedQuery(
                                 })
                             }
                         }
-                        if (Callback) Callback()
                     })
                 } else {
                     if (

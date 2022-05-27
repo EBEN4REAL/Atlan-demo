@@ -50,6 +50,7 @@
     import { computed, defineComponent, ref, toRefs } from 'vue'
     import whoami from '~/composables/user/whoami'
     import UserSelector from '@/common/facet/owners/index.vue'
+    import { whenever } from '@vueuse/core'
 
     export default defineComponent({
         name: 'CreatorSelector',
@@ -94,6 +95,14 @@
                     selected.value = sel
                 }
             }
+
+            whenever(
+                // Set selected value to undefined when creator is reset
+                () => !value.value?.ownerUsers?.length,
+                () => {
+                    selected.value = undefined
+                }
+            )
 
             return {
                 selected,

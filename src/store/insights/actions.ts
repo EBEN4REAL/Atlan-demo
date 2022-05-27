@@ -37,7 +37,6 @@ const actions: Actions = {
             buttonDisable: false,
             isQueryAborted: false,
             tabQueryState: false,
-            buttonDisable: false,
         }
         this.isNewTabAdded = Math.abs(Number(this.isNewTabAdded))
         if (this.previewTabs.length === MAX_PREVIEW_TAB_QUEUE) {

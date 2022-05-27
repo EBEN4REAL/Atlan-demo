@@ -351,25 +351,20 @@ export default function useEventGraph({
     }
 
     // selectNodeEdge
-    const selectNodeEdge = (edgeId, edge) => {
-        const cell = graph.value.getCellById(edgeId)
-        const isCyclicEdge = cell.store.data.data?.isCyclicEdge
+    const selectNodeEdge = (edge) => {
+        const { isCyclicEdge, isGroupEdge, processIds } = edge.getData()
 
         if (isCyclicEdge) {
-            sendProcessClickedEvent(
-                !!edge.data?.isGroupEdge,
-                !!isCyclicEdge,
-                edgeId
-            )
+            sendProcessClickedEvent(!!isGroupEdge, !!isCyclicEdge, edge.id)
             return
         }
 
-        const processId = edgeId.split('/')[0]
-        onSelectAsset({ guid: processId })
+        const processId = edge.id.split('/')[0]
+        onSelectAsset({ guid: processId, isGroupEdge, processIds })
 
-        if (edgeId) selectedNodeEdgeId.value = edgeId
+        if (edge.id) selectedNodeEdgeId.value = edge.id
 
-        const [source, target] = edgeId.split('/')[1].split('@')
+        const [source, target] = edge.id.split('/')[1].split('@')
 
         const cyclicRelations = lineageStore.getCyclicRelations()
         const isCyclicRelation = cyclicRelations.find((x) => {
@@ -379,11 +374,7 @@ export default function useEventGraph({
             return false
         })
 
-        sendProcessClickedEvent(
-            !!edge.data?.isGroupEdge,
-            !!isCyclicRelation,
-            edgeId
-        )
+        sendProcessClickedEvent(!!isGroupEdge, !!isCyclicRelation, edge.id)
 
         if (isCyclicRelation) return
 
@@ -478,6 +469,11 @@ export default function useEventGraph({
                 ? e.id !== `vpNodeProcessId/${modeId}@${node.id}`
                 : e.id !== `vpNodeProcessId/${node.id}@${modeId}`
         )
+
+        if (mode === 'vpNodeSS')
+            sameSourceCount.value[modeId].targetsHidden = filteredHiddenEntities
+        else
+            sameTargetCount.value[modeId].sourcesHidden = filteredHiddenEntities
 
         if (filteredHiddenEntities.length !== 0) {
             // add back vp node
@@ -597,7 +593,7 @@ export default function useEventGraph({
                     if (k === 'selectNodeEdge') {
                         const edge = getX6Edge(v)
                         controlEdgeAnimation(edge)
-                        selectNodeEdge(v, edge)
+                        selectNodeEdge(edge)
                         delete actions.value[k]
                     }
                     if (k === 'selectPort') {
@@ -685,7 +681,7 @@ export default function useEventGraph({
                     if (k === 'selectNodeEdge') {
                         const edge = getX6Edge(v)
                         controlEdgeAnimation(edge)
-                        selectNodeEdge(v, edge)
+                        selectNodeEdge(edge)
                         delete actions.value[k]
                     }
                     if (k === 'selectPort') {
@@ -926,22 +922,26 @@ export default function useEventGraph({
                 selectVpNode(vpNode, v)
 
                 if (i === a.length - 1) {
-                    const _node = graph.value
-                        .getNodes()
-                        .find((x) => x.id === node.id)
-                    if (lineageStore.hasPortsList(_node.id)) {
+                    const cell = graph.value.getCellById(node.id)
+                    const cachedData = node.getData()
+                    cell.updateData({ ...cachedData })
+                    cell.updateData({
+                        portItemLoading: false,
+                    })
+
+                    if (lineageStore.hasPortsList(cell.id)) {
                         const { ports: p, total: t } =
-                            lineageStore.getNodesPortList(_node.id)
-                        removePorts(_node)
-                        addPorts(_node, p)
-                        removeShowMorePort(_node)
-                        if (p.length < t) addShowMorePort(_node)
+                            lineageStore.getNodesPortList(cell.id)
+                        removePorts(cell)
+                        addPorts(cell, p)
+                        removeShowMorePort(cell)
+                        if (p.length < t) addShowMorePort(cell)
                     } else {
                         const port = portLineage.guidEntityMap[portId]
-                        addPorts(_node, [port])
+                        addPorts(cell, [port])
                     }
-                    translateSubsequentNodes(_node)
-                    selectPort(_node, portId, false)
+                    translateSubsequentNodes(cell)
+                    selectPort(cell, portId, false)
                     addLineagePorts(nodesForPortLineage, portLineage)
                 }
             })
@@ -1010,11 +1010,10 @@ export default function useEventGraph({
                 node.updateData({
                     portItemLoading: show,
                 })
-            if (type === 'showMore') {
+            if (type === 'showMore')
                 node.updateData({
                     portShowMoreLoading: show,
                 })
-            }
         }
     }
 
@@ -1109,7 +1108,6 @@ export default function useEventGraph({
     const selectPort = (node, portId, fetchLineage = true) => {
         const { ports } = node.getData()
         const portEntity = ports.find((x) => x.guid === portId)
-        const portIndex = ports.indexOf(portEntity)
 
         node.updateData({ selectedPortId: portId })
 
@@ -1125,18 +1123,16 @@ export default function useEventGraph({
     }
 
     // selectPortEdge
-    const selectPortEdge = (edgeId, edge) => {
-        // Handle Event - lineage_process_clicked
-        sendProcessClickedEvent(
-            !!edge?.data?.isGroupEdge,
-            !!edge?.data?.isCyclicEdge,
-            edgeId
-        )
+    const selectPortEdge = (edge) => {
+        const { isCyclicEdge, isGroupEdge } = edge.getData()
 
-        const processId = edgeId.split('/')[1]
+        // Handle Event - lineage_process_clicked
+        sendProcessClickedEvent(!!isGroupEdge, !!isCyclicEdge, edge.id)
+
+        const processId = edge.id.split('/')[1]
         onSelectAsset({ guid: processId })
 
-        if (edgeId) selectedPortEdgeId.value = edgeId
+        if (edge.id) selectedPortEdgeId.value = edge.id
     }
 
     // getAllNodesQN
@@ -1548,7 +1544,7 @@ export default function useEventGraph({
             resetState(true)
             const edge = getX6Edge(_selectedNodeEdgeId)
             controlEdgeAnimation(edge)
-            selectNodeEdge(_selectedNodeEdgeId, edge)
+            selectNodeEdge(edge)
         } else {
             const newAction = { selectNodeEdge: _selectedNodeEdgeId }
             actions.value = { ...actions.value, ...newAction }
@@ -1734,10 +1730,8 @@ export default function useEventGraph({
         if (controlPortClickEvent(e, 'isportitem')) {
             const ele = controlPortClickEvent(e, 'isportitem')
             const portId = ele.getAttribute('isportitem')
-
-            if (portId === selectedPortId.value) {
-                resetState()
-            } else {
+            if (portId === selectedPortId.value) resetState()
+            else {
                 const { ports, portsCount } = node.getData()
                 const portEntity = ports.find((x) => x.guid === portId)
                 const portIndex = ports.findIndex((x) => x.guid === portId)
@@ -1747,6 +1741,16 @@ export default function useEventGraph({
                 resetState()
 
                 if (!portsCount) {
+                    // Handle Event - lineage_sub_node_clicked
+                    isExpandedNodeEventSideEffect.value = true
+                    sendSubNodeClickedEvent(
+                        portEntity.typeName?.toLowerCase(),
+                        portEntity.attributes?.connectorName ||
+                            portEntity.attributes?.qualifiedName?.split('/')[1],
+                        portIndex,
+                        node.id
+                    )
+
                     const newAction = { selectPort: portId }
                     actions.value = { ...actions.value, ...newAction }
                     node.updateData({ highlightPorts: [] })
@@ -1762,7 +1766,6 @@ export default function useEventGraph({
                     portIndex,
                     node.id
                 )
-
                 selectPort(node, portId, true)
             }
             return
@@ -1838,8 +1841,8 @@ export default function useEventGraph({
             return
         } else resetState()
 
-        if (edge.id.includes('port')) selectPortEdge(edge.id, edge)
-        else selectNodeEdge(edge.id, edge)
+        if (edge.id.includes('port')) selectPortEdge(edge)
+        else selectNodeEdge(edge)
     })
 
     // Edge - Mouseenter

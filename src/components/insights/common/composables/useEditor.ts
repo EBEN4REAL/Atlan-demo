@@ -199,14 +199,18 @@ export function useEditor(
                         ?.findMatches(`${q.replace(/^\s+|\s+$/g, '')}`)
                     // removing the commented ones
                     if (query.replace(/^\s+|\s+$/g, '').length > 0) {
-                        if (
-                            query.includes('-- ') &&
-                            query.includes('\nSELECT')
-                        ) {
-                            queryPositions.push({
-                                match: match,
-                                token: query.replace(/^\s+|\s+$/g, ''),
-                                rawQuery: query,
+                        if (query.includes('-- ')) {
+                            const _splits = query
+                                .split('\n')
+                                .filter((_x) => _x !== '')
+                            _splits.forEach((_z) => {
+                                if (!_z.includes('--')) {
+                                    queryPositions.push({
+                                        match: match,
+                                        token: query.replace(/^\s+|\s+$/g, ''),
+                                        rawQuery: query,
+                                    })
+                                }
                             })
                         } else if (!query.includes('-- ')) {
                             queryPositions.push({
@@ -230,7 +234,6 @@ export function useEditor(
                     }
                 })
             }
-
             // console.log('position match: ', queryPositions)
 
             let semiColonMatchs = toRaw(editorInstance)
@@ -238,10 +241,10 @@ export function useEditor(
                 ?.findMatches(';')
             // console.log('position match semi: ', semiColonMatchs)
 
-            let independentQueryMatches = semiColonMatchs.map(
-                (match, index) => {
-                    let data = []
-                    queryPositions[index]?.match?.forEach((m) => {
+            let data = []
+            semiColonMatchs.forEach((match, index) => {
+                queryPositions.forEach((position, _i) => {
+                    position?.match?.forEach((m) => {
                         if (
                             m.range.endLineNumber ===
                                 match.range.endLineNumber &&
@@ -249,20 +252,16 @@ export function useEditor(
                         ) {
                             data.push({
                                 range: m.range,
-                                rawQuery: queryPositions[index].rawQuery,
+                                rawQuery: position.rawQuery,
                             })
                         }
                     })
-                    for (var i = 0; i < data.length; i++) {
-                        if (data[i] !== undefined) {
-                            return data[i]
-                        }
-                    }
-                }
-            )
+                })
+            })
+            let independentQueryMatches = data
             // for clearing up any unnecessary blank queries
             independentQueryMatches = independentQueryMatches.filter(
-                (el) => el !== undefined || null
+                (el) => el?.range !== undefined || null
             )
 
             // console.log('position match final: ', independentQueryMatches)

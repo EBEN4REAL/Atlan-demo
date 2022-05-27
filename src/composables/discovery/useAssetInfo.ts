@@ -159,14 +159,16 @@ export default function useAssetInfo() {
         attributes(asset)?.connectionQualifiedName ?? ''
 
     const classifications = (asset: assetInterface) =>
-        asset.classifications ?? []
+        asset?.classifications ?? []
 
     const meanings = (asset: assetInterface) =>
         attributes(asset)?.meanings ?? []
 
-    const assignedEntities = (asset: Term) => asset.attributes?.assignedEntities
+    const assignedEntities = (asset: Term) =>
+        asset?.attributes?.assignedEntities
 
-    const meaningRelationships = (asset: assetInterface) => asset.meanings ?? []
+    const meaningRelationships = (asset: assetInterface) =>
+        asset?.meanings ?? []
 
     const connectorName = (asset: assetInterface) =>
         attributes(asset)?.connectorName ?? ''
@@ -725,6 +727,8 @@ export default function useAssetInfo() {
 
     const modifiedBy = (asset: assetInterface) =>
         attributes(asset)?.__modifiedBy
+
+    const readme = (asset: assetInterface) => attributes(asset)?.readme
 
     const readmeGuid = (asset: assetInterface) =>
         attributes(asset)?.readme?.guid
@@ -1392,6 +1396,7 @@ export default function useAssetInfo() {
         getConnectorLabel,
         anchorAttributes,
         readmeGuid,
+        readme,
         getConnectorsNameFromQualifiedName,
         dataTypeImage,
         dataTypeImageForColumn,

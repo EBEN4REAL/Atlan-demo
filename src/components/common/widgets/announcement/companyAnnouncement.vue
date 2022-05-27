@@ -30,38 +30,40 @@
                 {{ announcementUpdatedAtFormatted }}
             </div>
         </div>
-        <a-dropdown
-            v-auth="[map.UPDATE_WORKSPACE]"
-            :trigger="['click']"
-            placement="bottomRight"
-        >
-            <IconButton icon="KebabMenu" />
-            <template #overlay>
-                <a-menu>
-                    <a-menu-item @click="$emit('editAnnouncement')">
-                        <div class="flex items-center">
-                            <AtlanIcon
-                                icon="Pencil"
-                                class="self-center mr-2"
-                            ></AtlanIcon>
-                            <span>Edit</span>
-                        </div>
-                    </a-menu-item>
-                    <a-menu-item
-                        class="text-error"
-                        @click="$emit('deleteAnnouncement')"
-                    >
-                        <div class="flex items-center">
-                            <AtlanIcon
-                                icon="Delete"
-                                class="self-center mr-2"
-                            ></AtlanIcon>
-                            <span>Delete</span>
-                        </div>
-                    </a-menu-item>
-                </a-menu>
-            </template>
-        </a-dropdown>
+        <div v-auth="[map.UPDATE_WORKSPACE]">
+            <a-dropdown
+                v-auth="[map.UPDATE_WORKSPACE]"
+                :trigger="['click']"
+                placement="bottomRight"
+            >
+                <IconButton icon="KebabMenu" />
+                <template #overlay>
+                    <a-menu>
+                        <a-menu-item @click="$emit('editAnnouncement')">
+                            <div class="flex items-center">
+                                <AtlanIcon
+                                    icon="Pencil"
+                                    class="self-center mr-2"
+                                ></AtlanIcon>
+                                <span>Edit</span>
+                            </div>
+                        </a-menu-item>
+                        <a-menu-item
+                            class="text-error"
+                            @click="$emit('deleteAnnouncement')"
+                        >
+                            <div class="flex items-center">
+                                <AtlanIcon
+                                    icon="Delete"
+                                    class="self-center mr-2"
+                                ></AtlanIcon>
+                                <span>Delete</span>
+                            </div>
+                        </a-menu-item>
+                    </a-menu>
+                </template>
+            </a-dropdown>
+        </div>
     </div>
 </template>
 

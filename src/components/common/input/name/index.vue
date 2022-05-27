@@ -1,4 +1,6 @@
 <template>
+    <div :class="{ 'freeze-clicks-outside-popover': isEdit }"></div>
+
     <Shortcut
         shortcut-key="n"
         action="set name"
@@ -163,6 +165,7 @@
     .editable {
         :global(.ant-input) {
             @apply border-none bg-transparent shadow-none px-0 py-0 rounded-none  !important;
+            z-index: 800 !important;
         }
         :global(.ant-input:focus) {
             @apply border-none bg-transparent shadow-none px-0 py-0 rounded-none !important;

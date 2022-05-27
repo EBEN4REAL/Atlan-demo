@@ -6,6 +6,7 @@
 
         <div>
             <AssetList
+                asset-list-class="overflow-scroll asset-list-persona-purpose"
                 :persona="item"
                 :global-state="globalState"
                 :filters="filterConfig"
@@ -55,6 +56,9 @@
     })
 </script>
 <style lang="less">
+    .asset-list-persona-purpose {
+        height: calc(100vh - 250px);
+    }
     .aggreation-persona-purpose-assets {
         .ant-tabs-tab:first-child {
             transform: translateY(8px);

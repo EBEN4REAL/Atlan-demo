@@ -28,7 +28,7 @@
             </div>
         </div>
         <a-modal v-model:visible="expandReadme" :footer="null" :width="692">
-            <div class="p-4">
+            <div class="p-4 overflow-scroll container-view-all-readme">
                 <AtlanEditor
                     ref="editor"
                     v-model="localReadmeContent"
@@ -95,6 +95,9 @@
     })
 </script>
 <style lang="less">
+    .container-view-all-readme {
+        max-height: 70vh;
+    }
     .icon-expand-readme {
         path {
             stroke: white;

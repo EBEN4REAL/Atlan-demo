@@ -29,7 +29,7 @@
                     <!-- name -->
                     <div
                         class="leading-none cursor-pointer align-center"
-                        style="flex-basis: 36%"
+                        style="flex-basis: 36%; min-width: 0"
                         @click="
                             $emit('openEditDrawer', {
                                 property,

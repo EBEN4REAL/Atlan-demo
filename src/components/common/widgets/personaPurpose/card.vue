@@ -33,7 +33,7 @@
                 </div>
                 <div
                     :class="`w-40 h-8 mb-8 mt-2 ${
-                        item.description ? 'text-gray-600' : 'text-gray-400'
+                        item.description ? 'text-gray-500' : 'text-gray-400'
                     } text-xs line-clamp-2`"
                 >
                     {{ item.description || 'No description available' }}

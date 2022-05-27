@@ -41,7 +41,7 @@
                         <router-link
                             :to="`/governance/${activeTab}s/${item.id}`"
                         >
-                            <div class="px-2.5 border-l border-gray-300">
+                            <div class="px-2.5 border-l border-gray-300 py-1.5">
                                 <AtlanIcon icon="Edit" />
                             </div>
                         </router-link>
@@ -51,7 +51,7 @@
                         :href="item.attributes?.channelLink"
                         target="_blank"
                     >
-                        <div class="px-2.5 border-l border-gray-300">
+                        <div class="px-2.5 border-l border-gray-300 py-1.5">
                             <AtlanIcon icon="Slack" />
                         </div>
                     </a>

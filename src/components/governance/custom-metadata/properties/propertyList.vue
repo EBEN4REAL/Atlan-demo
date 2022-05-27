@@ -208,7 +208,7 @@
                     property.typeName
                 )
             }
-            const { userId, username } = whoami()
+            const { username } = whoami()
             // residue code to delete
             const handleArchiveProperty = (guid) => {
                 const timestamp = new Date().getTime()
@@ -375,7 +375,6 @@
             })
 
             return {
-                userId,
                 handleArchiveProperty,
                 isSorting,
                 sortedProperties,

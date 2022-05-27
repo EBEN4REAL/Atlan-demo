@@ -1,4 +1,6 @@
 <template>
+    <div v-if="isEditing" class="freeze-clicks-outside-popover"></div>
+
     <Tooltip
         v-if="!isEditing && localDescription.length > 0"
         width="1000px"
@@ -190,10 +192,10 @@
 </script>
 
 <style lang="less" scoped>
-    :global(div.ant-typography, .ant-typography p) {
-        margin-bottom: 0 !important;
-    }
     :global(.tooltip-black .ant-tooltip-inner) {
         @apply p-3 text-gray-700 whitespace-pre-line;
+    }
+    :global(.ant-input) {
+        z-index: 800 !important;
     }
 </style>

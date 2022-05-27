@@ -7,9 +7,7 @@
         >
             <div v-if="type === 'persona'" class="flex h-9">
                 <div class="p-1 bg-gray-100 rounded-tl-xl rounded-br-xl">
-                    <div
-                        class="p-1.5 bg-white rounded-tl-xl rounded-br-xl shadow-connector"
-                    >
+                    <div class="p-1.5 bg-white rounded-tl-xl rounded-br-xl">
                         <div v-if="connection.length" class="flex gap-2">
                             <div
                                 v-for="imgPath in connection.slice(0, 3)"

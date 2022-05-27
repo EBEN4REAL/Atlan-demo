@@ -4,14 +4,14 @@ import { computed } from 'vue'
 import useTypedefData from '../typedefs/useTypedefData'
 
 export default function useCustomMetadataFacet() {
-    const { customMetadataList } = useTypedefData()
+    const { activeCustomMetadataList } = useTypedefData()
 
     /**
      * @desc mapped BM object that has filter support
      * */
     const list = computed(() => {
-        if (customMetadataList.value?.length > 0) {
-            return customMetadataList.value
+        if (activeCustomMetadataList.value?.length > 0) {
+            return activeCustomMetadataList.value
                 .filter((bm) =>
                     bm.attributeDefs.some((a) => a.options?.isFacet === 'true')
                 )
@@ -69,7 +69,7 @@ export default function useCustomMetadataFacet() {
      */
     const getList = (typeName, facet = false, overview = false, denyCustomMetadata = []) => {
         const finalList: any = []
-        customMetadataList.value.forEach((bm) => {
+        activeCustomMetadataList.value.forEach((bm) => {
             const attributeList = typeNameFiltering(
                 bm.attributeDefs.filter(
                     (a) =>
@@ -103,6 +103,6 @@ export default function useCustomMetadataFacet() {
     return {
         list,
         getList,
-        customMetadataList,
+        activeCustomMetadataList,
     }
 }

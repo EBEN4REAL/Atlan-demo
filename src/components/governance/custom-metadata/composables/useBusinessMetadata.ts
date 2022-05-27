@@ -77,14 +77,6 @@ export default function useBusinessMetadata() {
     selectedBm.value = item
   }
 
-  /**
-   * @desc if an existing bm is being updated, set updated bm to
-   */
-  const onUpdate = (bm: { guid: string } | null) => {
-  }
-
-
-
   const handleAfterArchive = () => {
     console.log('handleAfterArchive')
   }
@@ -205,7 +197,6 @@ export default function useBusinessMetadata() {
     getDefaultAttributeTemplate,
     handleAfterArchive,
     handleSelectBm,
-    onUpdate,
     searchText,
     searchedBusinessMetadataList,
     selectedBm,

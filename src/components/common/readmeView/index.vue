@@ -30,7 +30,6 @@
         <a-modal v-model:visible="expandReadme" :footer="null" :width="692">
             <div class="p-4 overflow-scroll container-view-all-readme">
                 <AtlanEditor
-                    ref="editor"
                     v-model="localReadmeContent"
                     placeholder="Type '/' for commands"
                     :is-edit-mode="false"

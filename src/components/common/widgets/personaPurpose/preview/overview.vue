@@ -87,7 +87,7 @@
             </div>
         </div>
         <div class="mt-7">
-            <div class="text-sm text-gray-500">Readme</div>
+            <div class="mb-2 text-sm text-gray-500">Readme</div>
             <ReadmeView :max-height="170" :readme="item.readme" />
         </div>
     </div>
@@ -104,6 +104,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import ClassificationPill from '@/common/pills/classification.vue'
     import Popover from '@/common/popover/classification/index.vue'
+    import { useConnectionStore } from '~/store/connection'
 
     export default defineComponent({
         name: 'PersonaPurposeOverview',
@@ -211,6 +212,7 @@
                     groups ? `${groups} ${groups > 1 ? 'groups' : 'group'}` : ''
                 }`
             })
+            const connStore = useConnectionStore()
             const getUniqueTypeIcons = () => {
                 const result = []
                 const unique = []
@@ -219,19 +221,28 @@
                 const policies = [...metadataPolicies, ...dataPolicies]
                 if (policies.length > 0) {
                     policies
-                        .map((policy) => policy.assets[0])
-                        .forEach((asset) => {
+                        .map((policy) => ({
+                            connectionId: policy.connectionId,
+                            asset: policy.assets[0],
+                        }))
+                        .forEach(({ asset, connectionId }) => {
                             if (asset.startsWith('default')) {
                                 const connectorName = asset.split('/')[1]
                                 const imgPath =
                                     getConnectorImageMap.value[connectorName]
                                 if (!unique.includes(imgPath)) {
+                                    const found = connStore.getList.find(
+                                        (conn) => conn.guid === connectionId
+                                    )
+
                                     result.push({
                                         imgPath,
-                                        connectorName: asset
-                                            .split('/')
-                                            .slice(1, 3)
-                                            .join('/'),
+                                        connectorName: `${
+                                            asset.split('/').slice(1, 2)[0]
+                                        }${
+                                            found?.attributes?.name &&
+                                            `/${found?.attributes?.name}`
+                                        }`,
                                     })
                                     unique.push(imgPath)
                                 }
@@ -271,6 +282,7 @@
 
                 return matchingIdsResult
             })
+
             return {
                 userGroup,
                 connections,

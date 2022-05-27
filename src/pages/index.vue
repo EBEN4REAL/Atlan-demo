@@ -12,9 +12,7 @@
                     <SearchAndStats />
                     <Announcements class="mt-6" />
                 </div>
-                <div class="mt-6">
-                    <PersonaPurpose />
-                </div>
+
                 <!-- 
                 <div class="mt-6">
                     <Persona></Persona>
@@ -24,6 +22,9 @@
                 </div> -->
                 <div class="mt-6">
                     <Relevant />
+                </div>
+                <div class="mt-6">
+                    <PersonaPurpose />
                 </div>
                 <div class="mt-6">
                     <PopularQueries />

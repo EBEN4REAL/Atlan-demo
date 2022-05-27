@@ -14,16 +14,13 @@
         </div>
         <div class="px-4 py-5 border-b border-gray-200">
             <div class="text-lg font-bold">{{ item.name }}</div>
-            <div class="flex items-center">
-                <div class="text-gray-700 mt-3.5 flex items-center uppercase">
+            <div class="flex items-center mt-1">
+                <div class="flex items-center text-gray-700 uppercase">
                     {{ activeTab }}
                 </div>
-                <div
-                    class="flex items-center ml-auto text-base text-gray-700 border border-gray-300 rounded-lg cursor-pointer"
-                >
-                    <div
-                        class="flex items-center py-1.5 px-2.5 text-sm hover:text-primary"
-                        @click="handleViewAssets"
+                <a-button-group class="ml-auto">
+                    <a-button
+                        class="flex items-center p-2"
                         @mouseover="isHover = true"
                         @mouseleave="isHover = false"
                     >
@@ -36,26 +33,26 @@
                             class="mr-1"
                         />
                         View assets
-                    </div>
-                    <div v-auth="[map.LIST_PERSONA, map.LIST_PURPOSE]">
+                    </a-button>
+                    <a-button
+                        v-if="item.attributes?.channelLink"
+                        class="flex items-center p-2"
+                    >
+                        <a :href="item.attributes?.channelLink" target="_blank">
+                            <AtlanIcon icon="Slack" />
+                        </a>
+                    </a-button>
+                    <a-button
+                        v-auth="[map.LIST_PERSONA, map.LIST_PURPOSE]"
+                        class="flex items-center p-2"
+                    >
                         <router-link
                             :to="`/governance/${activeTab}s/${item.id}`"
                         >
-                            <div class="px-2.5 border-l border-gray-300 py-1.5">
-                                <AtlanIcon icon="Edit" />
-                            </div>
+                            <AtlanIcon icon="Edit" />
                         </router-link>
-                    </div>
-                    <a
-                        v-if="item.attributes?.channelLink"
-                        :href="item.attributes?.channelLink"
-                        target="_blank"
-                    >
-                        <div class="px-2.5 border-l border-gray-300 py-1.5">
-                            <AtlanIcon icon="Slack" />
-                        </div>
-                    </a>
-                </div>
+                    </a-button>
+                </a-button-group>
             </div>
         </div>
         <div class="content">

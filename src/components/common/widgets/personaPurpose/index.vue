@@ -9,7 +9,7 @@
                 Personalise your experience
             </div>
             <div class="flex items-center">
-                <a
+                <!-- <a
                     v-if="!showDemo[activeTab]"
                     :href="
                         activeTab === 'persona'
@@ -27,7 +27,7 @@
                             class="w-6 h-6 icon-question-round"
                         />
                     </div>
-                </a>
+                </a> -->
                 <div class="flex p-1 bg-gray-100 rounded-lg">
                     <div
                         class="flex px-3 py-1 text-sm rounded cursor-pointer"
@@ -102,11 +102,7 @@
                 {{ activeTab === 'persona' ? 'Personas' : 'Purpose' }}
             </div>
             <div class="w-40 mt-1 text-sm text-center text-gray-600">
-                {{
-                    activeTab === 'persona'
-                        ? 'Some description about personas goes here'
-                        : 'Some description about purpose goes here'
-                }}
+                {{ `Please ask your admin to assign you a ${activeTab}` }}
             </div>
             <a
                 :href="
@@ -147,7 +143,8 @@
                         <AtlanIcon icon="ChevronRight" class="w-4 h-4" />
                     </div>
                 </template>
-                <div v-if="showDemo[activeTab]" class="pr-3">
+                <!-- <div v-if="showDemo[activeTab]" class="pr-3"> -->
+                <div v-if="false" class="pr-3">
                     <div
                         class="relative flex flex-col items-center p-4 bg-gray-100 border border-gray-200 rounded-lg"
                     >

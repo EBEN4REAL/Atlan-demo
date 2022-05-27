@@ -250,7 +250,7 @@
                                             )
                                         "
                                         icon="Category"
-                                        class="h-4 mr-1"
+                                        class="h-4 mr-1 mb-0.5"
                                     ></AtlanIcon>
                                     <AtlanIcon
                                         v-if="
@@ -259,7 +259,7 @@
                                             )
                                         "
                                         icon="Term"
-                                        class="h-4 mr-1"
+                                        class="h-4 mr-1 mb-0.5"
                                     ></AtlanIcon>
                                     <AtlanIcon
                                         v-if="
@@ -339,7 +339,7 @@
                                     >
                                         <AtlanIcon
                                             icon="Glossary"
-                                            class="h-4 mr-1"
+                                            class="h-4 mr-1 mb-0.5"
                                         ></AtlanIcon>
                                         {{ getAnchorName(item) }}
                                     </div>

@@ -223,22 +223,6 @@
                 tempBM.attributeDefs[index].options.archivedBy = userId.value
                 tempBM.attributeDefs[index].options.isArchived = true
 
-                /** TODO  some weird bug where customApplicableEntityTypes is array,
-                 * find and remove this forEach
-                 */
-                tempBM.attributeDefs.forEach((x, idx) => {
-                    if (
-                        typeof x.options.customApplicableEntityTypes ===
-                        'object'
-                    ) {
-                        tempBM.attributeDefs[
-                            idx
-                        ].options.customApplicableEntityTypes = JSON.stringify(
-                            x.options.customApplicableEntityTypes
-                        )
-                    }
-                })
-
                 const { data, error, isReady } = Types.updateCustomMetadata({
                     businessMetadataDefs: [tempBM],
                 })

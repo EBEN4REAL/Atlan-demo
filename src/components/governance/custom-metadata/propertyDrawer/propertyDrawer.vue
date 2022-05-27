@@ -185,26 +185,54 @@
             )
 
             // methods
-            const open = (theProperty, makeEdit) => {
+            const open = (property, makeEdit) => {
                 // when open we send the property value and if is undefined, means we creating new prioperty
-                if (theProperty) {
-                    const { customApplicableEntityTypes } = theProperty.options
-                    if (customApplicableEntityTypes) {
-                        if (typeof customApplicableEntityTypes === 'string') {
-                            // eslint-disable-next-line no-param-reassign
-                            theProperty.options.customApplicableEntityTypes =
-                                JSON.parse(customApplicableEntityTypes)
-                        }
-                    }
-                    form.value = { ...theProperty }
-                } else {
+                if (!property) {
                     form.value = initializeForm()
+                } else {
+                    const localProperty = JSON.parse(JSON.stringify(property))
+                    if (localProperty) {
+                        // ? parse customApplicableEntityTypes string
+                        const { customApplicableEntityTypes } =
+                            localProperty.options
+                        if (customApplicableEntityTypes) {
+                            if (
+                                typeof customApplicableEntityTypes === 'string'
+                            ) {
+                                // eslint-disable-next-line no-param-reassign
+                                localProperty.options.customApplicableEntityTypes =
+                                    JSON.parse(customApplicableEntityTypes)
+                            }
+                        }
+
+                        // ? check for isArchived
+                        isArchived.value = ['true', true].includes(
+                            localProperty?.options?.isArchived
+                        )
+
+                        // ? parse configuraton options
+                        localProperty.options.allowFiltering = [
+                            true,
+                            'true',
+                        ].includes(localProperty.options.allowFiltering)
+                        localProperty.options.allowSearch = [
+                            true,
+                            'true',
+                        ].includes(localProperty.options.allowSearch)
+                        localProperty.options.showInOverview = [
+                            true,
+                            'true',
+                        ].includes(localProperty.options.showInOverview)
+                        localProperty.options.multiValueSelect = [
+                            true,
+                            'true',
+                        ].includes(localProperty.options.multiValueSelect)
+
+                        form.value = localProperty
+                    }
                 }
 
                 isEdit.value = makeEdit
-                isArchived.value = ['true', true].includes(
-                    theProperty?.options?.isArchived
-                )
                 visible.value = true
             }
 

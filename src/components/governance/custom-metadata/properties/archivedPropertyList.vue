@@ -12,7 +12,7 @@
             </div>
             <div
                 class="overflow-y-auto bg-white rounded-b-lg"
-                style="max-height: calc(100vh - 18.6rem)"
+                style="max-height: calc(100vh - 19.6rem)"
             >
                 <div
                     v-for="(property, index) in properties"

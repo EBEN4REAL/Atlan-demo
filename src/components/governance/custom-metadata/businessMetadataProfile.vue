@@ -37,15 +37,13 @@
             </div>
         </div>
 
-        <div class="p-6 space-y-5" style="height: calc(100vh - 9.5rem)">
-            <template v-if="localBm.attributeDefs.length">
-                <div
-                    v-if="finalAttributeList.length"
-                    class="pt-4 space-y-4 bg-white rounded-lg"
-                >
-                    <div
-                        class="sticky top-0 z-10 flex items-center justify-between px-4"
-                    >
+        <div
+            class="p-6 space-y-5 overflow-y-auto"
+            style="height: calc(100vh - 9.5rem)"
+        >
+            <template v-if="finalAttributeList.length">
+                <div class="pt-4 space-y-4 bg-white rounded-lg">
+                    <div class="z-10 flex items-center justify-between px-4">
                         <div class="mr-4">
                             <div
                                 class="relative flex items-stretch w-full overflow-hidden"
@@ -71,7 +69,6 @@
                                 </a-input>
                             </div>
                         </div>
-                        <!-- TODO dont allow delete for internal -->
                         <template
                             v-if="
                                 ['true', true].includes(

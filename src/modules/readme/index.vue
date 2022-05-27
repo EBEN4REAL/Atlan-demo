@@ -102,7 +102,7 @@
         >
             <AtlanEditor
                 ref="editor"
-                v-model="localReadmeContent"
+                v-model="sanitizedReadmeContent"
                 placeholder="Type '/' for commands"
                 :asset-type="assetType"
                 :is-edit-mode="isEditing"
@@ -119,10 +119,11 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
+    import { defineComponent, watch, ref, toRefs, computed } from 'vue'
 
     import { useVModel } from '@vueuse/core'
     import Editor from '~/modules/editor/index.vue'
+    import DOMPurify from 'dompurify'
 
     export default defineComponent({
         components: {
@@ -195,11 +196,16 @@
                 loadEditMode,
             } = toRefs(props)
             const content = useVModel(props, 'modelValue', emit)
+            const allowedTags=['iframe','img', 'table', 'th','tr','td','code', 'pre']
             const localReadmeContent = ref(
                 encodeContent.value
                     ? decodeURIComponent(content.value)
                     : content.value
             )
+            const sanitizedReadmeContent = ref(
+                DOMPurify.sanitize(localReadmeContent.value, {ADD_TAGS: [...allowedTags]})
+            )
+
             const isEditing = ref(false)
             const isSaving = ref(false)
 
@@ -218,8 +224,8 @@
             const handleUpdate = async () => {
                 isSaving.value = true
                 content.value = encodeContent.value
-                    ? encodeURIComponent(localReadmeContent.value)
-                    : localReadmeContent.value
+                    ? encodeURIComponent(sanitizedReadmeContent.value)
+                    : sanitizedReadmeContent.value
                 try {
                     await handleSave.value(content.value)
                     handleSuccess?.value()
@@ -232,18 +238,21 @@
             }
 
             const handleCancel = () => {
+                sanitizedReadmeContent.value = encodeContent.value
+                    ? DOMPurify.sanitize(decodeURIComponent(content.value), {ADD_TAGS: [...allowedTags]})
+                    : DOMPurify.sanitize(content.value)
                 editor.value?.editor?.commands.setContent(
-                    encodeContent.value
-                        ? decodeURIComponent(content.value)
-                        : content.value
+                    sanitizedReadmeContent.value
                 )
-                localReadmeContent.value = encodeContent.value
-                    ? decodeURIComponent(content.value)
-                    : content.value
                 isEditing.value = false
                 emit('savedChanges')
             }
 
+            watch(localReadmeContent, () => {
+                sanitizedReadmeContent.value = DOMPurify.sanitize(
+                    localReadmeContent.value,  {ADD_TAGS: [...allowedTags]}
+                )
+            })
             return {
                 localReadmeContent,
                 handleUpdate,
@@ -254,6 +263,7 @@
                 editorDiv,
                 isEditing,
                 isSaving,
+                sanitizedReadmeContent,
             }
         },
     })

@@ -238,21 +238,21 @@ const keyMap = {
             created: {
                 action: 'discovery_resource_created',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                     asset_type: props.asset_type,
                 }),
             },
             updated: {
                 action: 'discovery_resource_updated',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                     asset_type: props.asset_type,
                 }),
             },
             clicked: {
                 action: 'discovery_resource_clicked',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                     asset_type: props.asset_type,
                 }),
             },
@@ -426,6 +426,19 @@ const keyMap = {
                 properties: (props) => ({
                     is_hidden: !!props?.is_hidden,
                 }),
+            },
+        },
+        mini_map: {
+            clicked: {
+                action: 'lineage_mini_map_clicked',
+                properties: (props) => ({
+                    is_hidden: !!props?.is_hidden,
+                }),
+            },
+        },
+        control_panel_mini_map: {
+            changed: {
+                action: 'lineage_control_panel_mini_map_changed',
             },
         },
     },
@@ -638,13 +651,13 @@ const keyMap = {
             resource_created: {
                 action: 'persona_resource_created',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                 }),
             },
             resource_updated: {
                 action: 'persona_resource_updated',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                 }),
             },
             resource_deleted: {
@@ -707,13 +720,13 @@ const keyMap = {
             resource_created: {
                 action: 'purpose_resource_created',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                 }),
             },
             resource_updated: {
                 action: 'purpose_resource_updated',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                 }),
             },
             resource_deleted: {

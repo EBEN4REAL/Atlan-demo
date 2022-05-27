@@ -1,5 +1,6 @@
 <template>
     <div data-test-id="owners-popover">
+        <div :class="{ 'freeze-clicks-outside-popover': isEdit }"></div>
         <a-popover
             v-if="showPopover"
             v-model:visible="isEdit"

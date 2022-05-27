@@ -786,11 +786,16 @@
                         title: 'CLASSIFICATIONS',
                         dataIndex: 'classifications',
                         key: 'classifications',
+                        width: 275,
                     },
                     {
                         title: 'TERMS',
                         dataIndex: 'terms',
                         key: 'terms',
+                        width: 275,
+                    },
+                    {
+                        width: 200,
                     },
                 ],
                 columnUpdatePermission,

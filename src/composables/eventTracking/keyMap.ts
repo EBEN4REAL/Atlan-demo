@@ -70,11 +70,11 @@ const keyMap = {
                 action: 'discovery_cta_action_clicked',
                 properties: (props: {
                     action:
-                        | 'open_asset'
-                        | 'vqb_query'
-                        | 'sql_query'
-                        | 'copy_link'
-                        | 'open_in_source'
+                    | 'open_asset'
+                    | 'vqb_query'
+                    | 'sql_query'
+                    | 'copy_link'
+                    | 'open_in_source'
                     asset_type: string
                 }) => ({
                     ...props,
@@ -760,6 +760,20 @@ const keyMap = {
                 action: 'governance_custom_metadata_property_added',
                 properties: (props) => ({
                     title: props.title,
+                    cm_title: props.cm_title,
+                    description: props.description,
+                    data_type: props.data_type,
+                    multi_value: !!props.multi_value,
+                    allow_filtering: !!props.allow_filtering,
+                    show_in_overview: !!props.show_in_overview,
+                }),
+            },
+            property_deleted: {
+                action: 'governance_custom_metadata_property_deleted',
+                properties: (props) => ({
+                    title: props.title,
+                    cm_title: props.cm_title,
+                    description: props.description,
                     data_type: props.data_type,
                     multi_value: !!props.multi_value,
                     allow_filtering: !!props.allow_filtering,
@@ -770,6 +784,8 @@ const keyMap = {
                 action: 'governance_custom_metadata_property_updated',
                 properties: (props) => ({
                     title: props.title,
+                    cm_title: props.cm_title,
+                    description: props.description,
                     data_type: props.data_type,
                     multi_value: !!props.multi_value,
                     allow_filtering: !!props.allow_filtering,

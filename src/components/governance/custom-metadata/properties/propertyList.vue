@@ -13,10 +13,15 @@
                 </div>
                 <div style="width: 130px"></div>
             </div>
+            <!-- TODO height based on hasArchived  - learn a better way to do this -->
             <div
                 id="drag-container"
                 class="overflow-y-auto bg-white rounded-b-lg"
-                style="max-height: calc(100vh - 25rem)"
+                :style="
+                    hasArchived
+                        ? 'max-height: calc(100vh - 25rem)'
+                        : 'max-height: calc(100vh - 19rem)'
+                "
             >
                 <div
                     v-for="(property, index) in properties"
@@ -139,6 +144,7 @@
     import Truncate from '@/common/ellipsis/index.vue'
     import PropertyActions from '@/governance/custom-metadata/properties/propertyActions.vue'
     import whoami from '~/composables/user/whoami'
+    import { getAnalyticsProperties } from '@/governance/custom-metadata/properties/properties.utils'
 
     export default defineComponent({
         components: { Truncate, PropertyActions },
@@ -155,6 +161,10 @@
             properties: {
                 type: Object,
                 default: () => {},
+            },
+            hasArchived: {
+                type: Boolean,
+                default: false,
             },
         },
         emits: ['openEditDrawer', 'archiveProperty'],
@@ -230,6 +240,15 @@
                             'archiveProperty',
                             index,
                             tempBM.attributeDefs[index]
+                        )
+                        useAddEvent(
+                            'governance',
+                            'custom_metadata',
+                            'property_deleted',
+                            getAnalyticsProperties(
+                                tempBM.attributeDefs[index],
+                                tempBM.displayName
+                            )
                         )
                     } else if (error && error.value) {
                         message.error({

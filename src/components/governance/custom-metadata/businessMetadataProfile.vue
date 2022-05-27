@@ -114,6 +114,7 @@
                         :metadata="localBm"
                         :properties="searchedAttributeList"
                         :selected="selected"
+                        :has-archived="!!archivedAttributeList.length"
                         @archive-property="archiveAttribute"
                         @open-edit-drawer="openEdit"
                     />

@@ -127,6 +127,7 @@
     import Options from '@/governance/custom-metadata/propertyDrawer/options/options.vue'
     import ApplicableTypes from '@/governance/custom-metadata/propertyDrawer/applicableTypes/applicableTypes.vue'
     import Configurations from '@/governance/custom-metadata/propertyDrawer/configurations/configurations.vue'
+    import { getAnalyticsProperties } from '@/governance/custom-metadata/properties/properties.utils'
 
     import {
         executeCreateEnum,
@@ -242,23 +243,6 @@
                 return null
             }
 
-            const getAnalyticsProperties = (tempForm) => {
-                let dataType = tempForm?.typeName
-                if (tempForm?.options.isEnum) {
-                    dataType = 'enum'
-                } else if (tempForm?.options.customType) {
-                    dataType = tempForm?.options.customType
-                }
-                const properties = {
-                    title: tempForm.displayName,
-                    data_type: dataType,
-                    multi_value: tempForm?.options.multiValueSelect,
-                    allow_filtering: tempForm?.options.allowFiltering,
-                    show_in_overview: tempForm?.options.showInOverview,
-                }
-                return properties
-            }
-
             const handleUpdateProperty = async () => {
                 // before create or update, check if is in createEnum, first create enum then enum will continue property flow if successful
                 // validate first
@@ -334,7 +318,10 @@
                                 'governance',
                                 'custom_metadata',
                                 'property_updated',
-                                getAnalyticsProperties(tempForm)
+                                getAnalyticsProperties(
+                                    tempForm,
+                                    metadata.value.displayName
+                                )
                             )
                         }
                         if (newError) {
@@ -359,7 +346,6 @@
                         if (newValue) {
                             message.success('Attribute added')
                             loading.value = false
-
                             emit(
                                 'addedProperty',
                                 data.value.businessMetadataDefs[0].attributeDefs
@@ -371,7 +357,10 @@
                                 'governance',
                                 'custom_metadata',
                                 'property_added',
-                                getAnalyticsProperties(tempForm)
+                                getAnalyticsProperties(
+                                    tempForm,
+                                    metadata.value.displayName
+                                )
                             )
                         }
                         if (newError) {

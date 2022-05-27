@@ -26,7 +26,7 @@ once property is created"
                             overlayClassName="text-xs"
                         >
                             <div
-                                v-if="editing"
+                                v-if="editing && !readOnly"
                                 class="px-2 py-1 text-xs rounded text-new-yellow-700 bg-new-yellow-100"
                             >
                                 Editing restricted

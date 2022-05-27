@@ -3,7 +3,7 @@
         <div
             class="border cursor-pointer rounded-xl hover:border-blue-200 shadow-card"
             :class="active ? 'border-primary ' : 'border-gray-300'"
-            @click.stop="$emit('overView', item)"
+            @click.stop="$emit('overView', { ...item, i })"
         >
             <div v-if="type === 'persona'" class="flex h-9">
                 <div class="p-1 bg-gray-100 rounded-tl-xl rounded-br-xl">
@@ -147,7 +147,7 @@
             </div>
             <div
                 class="flex items-center px-4 py-3 mt-4 border-t border-gray-200"
-                @click.stop="$emit('viewAssets', item)"
+                @click.stop="$emit('viewAssets', { ...item, i })"
             >
                 <div class="text-sm text-center cursor-pointer text-primary">
                     View assets
@@ -185,6 +185,10 @@
             },
             userList: {
                 type: Array,
+                required: true,
+            },
+            i: {
+                type: Number,
                 required: true,
             },
         },

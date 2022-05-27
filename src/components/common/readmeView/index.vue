@@ -5,7 +5,7 @@
         class="relative p-4 overflow-hidden bg-gray-100 border border-gray-200 rounded-lg"
         :style="`max-height: ${maxHeight}px`"
     >
-        <AtlanEditor
+        <!-- <AtlanEditor
             v-if="readme"
             ref="editor"
             v-model="localReadmeContent"
@@ -13,7 +13,12 @@
             :is-edit-mode="false"
             class="bg-transparent"
             @transitionend.stop="() => {}"
-        />
+        /> -->
+        <div
+            v-if="readme"
+            class="ProseMirror"
+            v-html="localReadmeContent"
+        ></div>
         <div v-else-if="!readme" class="text-sm text-gray-600">No readme</div>
         <div
             v-if="expandShow"
@@ -21,7 +26,7 @@
         >
             <div
                 class="flex items-center px-3 py-1 text-sm text-white bg-gray-500 rounded-full cursor-pointer"
-                @click="expandReadme = true"
+                @click="handleExpandReadme"
             >
                 <AtlanIcon icon="FullScreen" class="mr-1 icon-expand-readme" />
                 Expand to view
@@ -57,7 +62,8 @@
                 required: true,
             },
         },
-        setup(props) {
+        emits: ['expandedReadme'],
+        setup(props, { emit }) {
             const editor = ref()
             const expandReadme = ref(false)
             const refBox = ref()
@@ -83,12 +89,17 @@
                     calculateHeightBox()
                 }, 200)
             })
+            const handleExpandReadme = () => {
+                emit('expandedReadme')
+                expandReadme.value = true
+            }
             return {
                 editor,
                 localReadmeContent,
                 refBox,
                 expandShow,
                 expandReadme,
+                handleExpandReadme,
             }
         },
     })

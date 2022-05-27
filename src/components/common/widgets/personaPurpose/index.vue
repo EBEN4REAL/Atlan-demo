@@ -199,12 +199,13 @@
                     </div>
                 </div>
                 <Card
-                    v-for="item in items"
+                    v-for="(item, i) in items"
                     :key="item.id"
                     :item="item"
                     :type="activeTab"
                     :active="item.id === selectedItem.id"
                     :user-list="userList"
+                    :i="i"
                     @viewAssets="handleViewAssets"
                     @overView="handleOverView"
                 />
@@ -234,6 +235,7 @@
     import DrawerWidgetPersonaPurpose from './drawer.vue'
     import { useUsers } from '~/composables/user/useUsers'
     import useAssetStore from '~/store/asset'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'WidgetPersonaPurpose',
@@ -331,9 +333,18 @@
             const assetStore = useAssetStore()
             const handleViewAssets = (item) => {
                 assetStore.setGlobalState([activeTab.value, item.id])
+                useAddEvent('governance', activeTab.value, 'home_card_asset', {
+                    title: item.name,
+                    index: item.i,
+                })
+
                 router.push('/assets')
             }
             const handleOverView = (item) => {
+                useAddEvent('governance', activeTab.value, 'home_card', {
+                    title: item.name,
+                    index: item.i,
+                })
                 selectedItem.value = item
                 visible.value = true
             }

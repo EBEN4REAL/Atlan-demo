@@ -88,7 +88,11 @@
         </div>
         <div class="mt-7">
             <div class="mb-2 text-sm text-gray-500">Readme</div>
-            <ReadmeView :max-height="170" :readme="item.readme" />
+            <ReadmeView
+                :max-height="170"
+                :readme="item.readme"
+                @expandedReadme="expandedReadme"
+            />
         </div>
     </div>
 </template>
@@ -105,6 +109,7 @@
     import ClassificationPill from '@/common/pills/classification.vue'
     import Popover from '@/common/popover/classification/index.vue'
     import { useConnectionStore } from '~/store/connection'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'PersonaPurposeOverview',
@@ -282,7 +287,12 @@
 
                 return matchingIdsResult
             })
-
+            const expandedReadme = () => {
+                useAddEvent('governance', activeTab.value, 'readme_expanded', {
+                    title: item.value.name,
+                    index: item.value.i,
+                })
+            }
             return {
                 userGroup,
                 connections,
@@ -291,6 +301,7 @@
                 isLoading,
                 userGroupPurpose,
                 listClassifications,
+                expandedReadme,
             }
         },
     })

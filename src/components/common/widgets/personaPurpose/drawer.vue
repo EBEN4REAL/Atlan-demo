@@ -112,6 +112,7 @@
     import Resources from '@/common/widgets/personaPurpose/preview/resources.vue'
     import Properties from '@/common/widgets/personaPurpose/preview/properties.vue'
     import AssetsView from './preview/assetsView.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'DrawerWidgetPersonaPurpose',
@@ -149,6 +150,15 @@
                 },
             ])
             const activeKey = ref(0)
+            watch(activeKey, () => {
+                const menu = tabList.value.find(
+                    (el, i) => i === activeKey.value
+                )
+                useAddEvent('governance', activeTab.value, 'home_tab', {
+                    title: item.value.name,
+                    tab_name: menu.component,
+                })
+            })
             const handleChangeTab = (section) => {
                 const index = tabList.value.findIndex(
                     (el) => el.component === section

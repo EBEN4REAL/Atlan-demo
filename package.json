@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "2.69.0",
+  "version": "2.71.3",
   "scripts": {
     "dev": "vite --port 3333 --open",
     "build-dev": "vite build --mode development",
@@ -52,6 +52,7 @@
     "cron-parser": "^4.2.1",
     "cronstrue": "^1.123.0",
     "dayjs": "^1.10.7",
+    "dompurify": "^2.3.8",
     "emoji-picker-element": "^1.11.2",
     "event-source-polyfill": "git://github.com/atlanhq/EventSource.git",
     "highlight.js": "^11.4.0",
@@ -184,6 +185,7 @@
         "dayjs/plugin/relativeTime",
         "dayjs/plugin/timezone",
         "dayjs/plugin/utc",
+        "dompurify",
         "emoji-picker-element",
         "event-source-polyfill",
         "json-2-csv",

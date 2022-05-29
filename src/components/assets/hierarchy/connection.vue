@@ -10,6 +10,7 @@
         class="w-full connection-select"
         @search="handleSearch"
         @change="handleChange"
+        :dropdownMatchSelectWidth="false"
     >
         <template #suffixIcon>
             <AtlanIcon icon="CaretDown" class="mb-0" />

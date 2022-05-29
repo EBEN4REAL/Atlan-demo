@@ -63,15 +63,14 @@
                     <div class="flex items-center">
                         <a-button
                             variant="sm"
-                            class="mr-3 rounded-md ant-btn test-config-button h-9"
+                            class="flex items-center mr-3 rounded-md ant-btn test-config-button h-9"
                             :loading="testing"
                             @click="test"
                         >
                             <span v-if="testing">Testing Config...</span>
-                            <div v-else class="flex items-center">
-                                <AtlanIcon icon="Plug" class="mr-1" />
+                            <span v-else class="flex items-center">
                                 Test SMTP Config
-                            </div>
+                            </span>
                         </a-button>
                         <span
                             v-if="testError"

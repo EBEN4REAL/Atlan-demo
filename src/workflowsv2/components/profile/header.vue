@@ -98,12 +98,13 @@
         </div>
 
         <div class="flex ml-auto gap-2 mt-1.5">
+            <!-- Delete Modal -->
             <a-modal
                 v-model:visible="deleteModalVisible"
                 destroyOnClose
                 :maskClosable="false"
                 :closable="false"
-                class="text-new-gray-700"
+                class="text-new-gray-800"
             >
                 <template #title>
                     <div class="flex items-center gap-x-3">
@@ -111,11 +112,30 @@
                         <span class="text-base">Delete Workflow?</span>
                     </div>
                 </template>
-                <div class="p-4 border-t border-b">
-                    <p>Are you sure you want to delete the workflow</p>
-                    <div
-                        class="flex items-center mt-1 font-bold truncate gap-x-2"
+                <div
+                    v-if="!isConfirmDelete"
+                    class="w-full px-5 py-3 space-y-2 text-sm bg-new-gray-100"
+                >
+                    <p>
+                        <b>Note:</b> In case you wish to delete the assets
+                        fetched by this connection, Atlan recommends deleting
+                        the connection, instead of the workflow.
+                    </p>
+                    <p
+                        @click="navigateToConnectionDelete"
+                        class="font-bold cursor-pointer text-new-blue-500 hover:text-new-blue-400"
                     >
+                        Take me to Delete Connection instead
+                        <AtlanIcon icon="External" />
+                    </p>
+                </div>
+
+                <div class="px-5 py-4 text-sm border-t border-b">
+                    <p>
+                        Are you sure you want to delete the workflow that
+                        updates the
+                    </p>
+                    <div class="flex items-center mt-1 truncate gap-x-2">
                         <img
                             v-if="icon(packageObject)"
                             :src="icon(packageObject)"
@@ -126,12 +146,25 @@
                             class="text-xs"
                             >{{ emoji(packageObject) }}</span
                         >
-                        {{ pkgName(packageObject) }}
-                        <AtlanIcon
-                            icon="CaretRight"
-                            class="-ml-1 -mr-0.5 mb-0.5"
-                        />
-                        {{ displayName }}
+                        <b>
+                            {{ pkgName(packageObject) }}
+                            <AtlanIcon
+                                icon="CaretRight"
+                                class="-ml-1 -mr-0.5 mb-0.5"
+                            />
+                            {{ displayName }}
+                        </b>
+                        connection?
+                        <a-tooltip
+                            color="#2A2F45"
+                            placement="top"
+                            title="Workflows in Atlan run to update a connection (manually or at scheduled intervals)"
+                        >
+                            <AtlanIcon
+                                icon="QuestionRoundSmall"
+                                class="mb-0.5 cursor-help"
+                            />
+                        </a-tooltip>
                     </div>
 
                     <template v-if="type(workflowObject) === 'connector'">
@@ -140,13 +173,15 @@
                                 >Warning:
                             </span>
                             By deleting the workflow, Atlan will no longer be
-                            able to update assets in this connection. Are you
-                            sure you want to do this?
+                            able to update assets in this connection. Contact
+                            <b>Atlan support</b> for any questions.
                         </p>
                         <div
-                            class="flex items-center w-full p-2 mt-4 bg-red-100 rounded-md gap-x-1"
+                            class="flex items-center w-full p-2 mt-4 rounded-md bg-new-red-100 gap-x-1"
                         >
-                            <a-checkbox v-model:checked="isConfirmDelete"
+                            <a-checkbox
+                                :class="$style.danger"
+                                v-model:checked="isConfirmDelete"
                                 >I understand the risks, delete the
                                 workflow.</a-checkbox
                             >
@@ -154,19 +189,32 @@
 
                         <div v-if="isConfirmDelete" class="mt-3 border-t">
                             <div
-                                class="w-full p-2 mt-3 rounded-md bg-primary-light"
+                                class="w-full p-4 mt-3 rounded-md bg-primary-light"
                             >
-                                <p class="mb-1">
-                                    To delete
-                                    <b>{{ displayName }}</b> connection and the
-                                    assets fetched by it, run the
-                                    <b>Connection Delete</b> workflow.
-                                </p>
-                                <a-checkbox v-model:checked="isConnectionDelete"
-                                    >Proceed to delete connection after deleting
-                                    workflow.</a-checkbox
-                                >
+                                To avoid stale metadata, Atlan recommends you
+                                also delete the connection and assets created by
+                                this workflow.
                             </div>
+                            <a-checkbox
+                                class="mt-4"
+                                v-model:checked="isConnectionDelete"
+                            >
+                                Proceed to
+                                <a-tooltip
+                                    color="#2A2F45"
+                                    placement="bottom"
+                                    title="The delete connection package helps delete or archive the assets fetched by a connection."
+                                >
+                                    <!-- prettier-ignore -->
+                                    <span
+                                        class="font-medium cursor-help"
+                                        style="text-decoration: underline dotted #e0e4eb"
+                                    >
+                                        delete connection
+                                    </span>
+                                </a-tooltip>
+                                after deleting workflow.
+                            </a-checkbox>
                         </div>
                     </template>
                     <div
@@ -180,7 +228,7 @@
                     </div>
                 </div>
                 <template #footer>
-                    <div class="flex items-center mt-1 gap-x-2">
+                    <div class="flex items-center my-1.5 gap-x-2">
                         <AtlanButton2
                             class="ml-auto"
                             color="secondary"
@@ -198,6 +246,7 @@
                 </template>
             </a-modal>
 
+            <!-- Schedule Modal -->
             <a-modal
                 v-model:visible="scheduleVisible"
                 title="Schedule"
@@ -457,6 +506,18 @@
                 mutate: deleteWorkflow,
             } = deleteWorkflowByName(name(workflowObject.value), false)
 
+            const navigateToConnectionDelete = () => {
+                const qfName = name(workflowObject.value)
+                    ?.split(`${name(packageObject.value)}-`)
+                    .pop()
+                    ?.replaceAll('-', '/')
+
+                router.push({
+                    path: '/workflows/setup/atlan-connection-delete',
+                    query: { 'connection-qualified-name': qfName },
+                })
+            }
+
             const archiveWorkflow = async () => {
                 deleteWorkflow()
                 await until(isDeleteLoading).toBe(false)
@@ -465,15 +526,7 @@
                 else {
                     message.success('Workflow deleted')
                     if (isConnectionDelete.value) {
-                        const qfName = name(workflowObject.value)
-                            ?.split(`${name(packageObject.value)}-`)
-                            .pop()
-                            ?.replaceAll('-', '/')
-
-                        router.push({
-                            path: '/workflows/setup/atlan-connection-delete',
-                            query: { 'connection-qualified-name': qfName },
-                        })
+                        navigateToConnectionDelete()
                     } else handleBack()
                 }
             }
@@ -547,6 +600,7 @@
                 isDeleteLoading,
                 icon,
                 emoji,
+                navigateToConnectionDelete,
             }
         },
     })
@@ -557,5 +611,23 @@
         @apply flex items-center justify-center;
         @apply h-5 rounded uppercase px-2 mx-1;
         @apply text-xs tracking-wider bg-gray-200 text-gray;
+    }
+</style>
+
+<style lang="less" module>
+    .danger {
+        :global(.ant-checkbox-input:hover + .ant-checkbox-inner) {
+            @apply border-new-red-400;
+        }
+        :global(.ant-checkbox-input:focus + .ant-checkbox-inner) {
+            @apply border-new-red-400;
+        }
+        :global(.ant-checkbox-checked::after) {
+            @apply border-new-red-400;
+        }
+        :global(.ant-checkbox-checked .ant-checkbox-inner) {
+            @apply bg-new-red-400;
+            @apply border-new-red-400;
+        }
     }
 </style>

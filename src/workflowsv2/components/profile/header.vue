@@ -539,7 +539,8 @@
                 else {
                     message.success('Workflow deleted')
                     if (isConnectionDelete.value) {
-                        navigateToConnectionDelete()
+                        message.loading('Taking you to delete connection page')
+                        setTimeout(navigateToConnectionDelete, 1500)
                     } else handleBack()
                 }
             }

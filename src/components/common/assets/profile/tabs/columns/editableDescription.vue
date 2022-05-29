@@ -143,7 +143,7 @@
              * @param event
              */
             const handleEnter = (event: KeyboardEvent) => {
-                if (!event.getModifierState?.('Shift')) {
+                if (!event?.getModifierState?.('Shift')) {
                     isEditing.value = false
                 }
             }

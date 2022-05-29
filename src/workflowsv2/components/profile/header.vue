@@ -112,28 +112,37 @@
                         <span class="text-base">Delete Workflow?</span>
                     </div>
                 </template>
-                <div
-                    v-if="!isConfirmDelete"
-                    class="w-full px-5 py-3 space-y-2 text-sm bg-new-gray-100"
-                >
-                    <p>
-                        <b>Note:</b> In case you wish to delete the assets
-                        fetched by this connection, Atlan recommends deleting
-                        the connection, instead of the workflow.
-                    </p>
-                    <p
-                        @click="navigateToConnectionDelete"
-                        class="font-bold cursor-pointer text-new-blue-500 hover:text-new-blue-400"
+                <Transition>
+                    <div
+                        v-if="
+                            !isConfirmDelete &&
+                            type(workflowObject) === 'connector'
+                        "
+                        class="w-full px-5 py-3 space-y-2 text-sm bg-new-gray-100"
                     >
-                        Take me to Delete Connection instead
-                        <AtlanIcon icon="External" />
-                    </p>
-                </div>
+                        <p>
+                            <b>Note:</b> In case you wish to delete the assets
+                            fetched by this connection, Atlan recommends
+                            deleting the connection, instead of the workflow.
+                        </p>
+                        <p
+                            @click="navigateToConnectionDelete"
+                            class="font-bold cursor-pointer text-new-blue-500 hover:text-new-blue-400"
+                        >
+                            Take me to Delete Connection instead
+                            <AtlanIcon icon="External" />
+                        </p>
+                    </div>
+                </Transition>
 
                 <div class="px-5 py-4 text-sm border-t border-b">
                     <p>
-                        Are you sure you want to delete the workflow that
-                        updates the
+                        Are you sure you want to delete the workflow
+                        {{
+                            type(workflowObject) === 'connector'
+                                ? 'that updates the'
+                                : ''
+                        }}
                     </p>
                     <div class="flex items-center mt-1 truncate gap-x-2">
                         <img
@@ -154,17 +163,19 @@
                             />
                             {{ displayName }}
                         </b>
-                        connection?
-                        <a-tooltip
-                            color="#2A2F45"
-                            placement="top"
-                            title="Workflows in Atlan run to update a connection (manually or at scheduled intervals)"
-                        >
-                            <AtlanIcon
-                                icon="QuestionRoundSmall"
-                                class="mb-0.5 cursor-help"
-                            />
-                        </a-tooltip>
+                        <template v-if="type(workflowObject) === 'connector'">
+                            connection?
+                            <a-tooltip
+                                color="#2A2F45"
+                                placement="top"
+                                title="Workflows in Atlan run to update a connection (manually or at scheduled intervals)"
+                            >
+                                <AtlanIcon
+                                    icon="QuestionRoundSmall"
+                                    class="mb-0.5 cursor-help"
+                                />
+                            </a-tooltip>
+                        </template>
                     </div>
 
                     <template v-if="type(workflowObject) === 'connector'">
@@ -187,35 +198,37 @@
                             >
                         </div>
 
-                        <div v-if="isConfirmDelete" class="mt-3 border-t">
-                            <div
-                                class="w-full p-4 mt-3 rounded-md bg-primary-light"
-                            >
-                                To avoid stale metadata, Atlan recommends you
-                                also delete the connection and assets created by
-                                this workflow.
-                            </div>
-                            <a-checkbox
-                                class="mt-4"
-                                v-model:checked="isConnectionDelete"
-                            >
-                                Proceed to
-                                <a-tooltip
-                                    color="#2A2F45"
-                                    placement="bottom"
-                                    title="The delete connection package helps delete or archive the assets fetched by a connection."
+                        <Transition>
+                            <div v-if="isConfirmDelete" class="mt-3 border-t">
+                                <div
+                                    class="w-full p-4 mt-3 rounded-md bg-primary-light"
                                 >
-                                    <!-- prettier-ignore -->
-                                    <span
+                                    To avoid stale metadata, Atlan recommends
+                                    you also delete the connection and assets
+                                    created by this workflow.
+                                </div>
+                                <a-checkbox
+                                    class="mt-4"
+                                    v-model:checked="isConnectionDelete"
+                                >
+                                    Proceed to
+                                    <a-tooltip
+                                        color="#2A2F45"
+                                        placement="bottom"
+                                        title="The delete connection package helps delete or archive the assets fetched by a connection."
+                                    >
+                                        <!-- prettier-ignore -->
+                                        <span
                                         class="font-medium cursor-help"
                                         style="text-decoration: underline dotted #e0e4eb"
                                     >
                                         delete connection
                                     </span>
-                                </a-tooltip>
-                                after deleting workflow.
-                            </a-checkbox>
-                        </div>
+                                    </a-tooltip>
+                                    after deleting workflow.
+                                </a-checkbox>
+                            </div>
+                        </Transition>
                     </template>
                     <div
                         v-else
@@ -611,6 +624,16 @@
         @apply flex items-center justify-center;
         @apply h-5 rounded uppercase px-2 mx-1;
         @apply text-xs tracking-wider bg-gray-200 text-gray;
+    }
+
+    .v-enter-active,
+    .v-leave-active {
+        transition: opacity 0.3s ease;
+    }
+
+    .v-enter-from,
+    .v-leave-to {
+        opacity: 0;
     }
 </style>
 

@@ -127,6 +127,7 @@ export const previewTabs = [
     {
         name: 'Request',
         component: 'request',
+        excludes: ['Connection'],
         icon: 'Request',
         activeIcon: 'RequestActive',
         tooltip: 'Request',

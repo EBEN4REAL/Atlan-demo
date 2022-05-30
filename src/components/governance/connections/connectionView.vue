@@ -11,6 +11,14 @@
             >
             </SearchAndFilter>
         </div>
+        <div class="grid grid-cols-4 gap-4 gap-y-6 mt-7 pb-7">
+            <ConnectorCard
+                v-for="item in list"
+                :key="item.guid"
+                :item="item"
+                :selected-guid="selectedAsset.guid"
+            ></ConnectorCard>
+        </div>
     </div>
 </template>
 
@@ -25,10 +33,12 @@
     } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
+    import ConnectorCard from './connectorCard.vue'
 
     export default defineComponent({
         components: {
             SearchAndFilter,
+            ConnectorCard,
         },
         setup() {
             const limit = ref(100)
@@ -101,6 +111,8 @@
             return {
                 handleSearchChange,
                 queryText,
+                list,
+                selectedAsset,
             }
         },
     })

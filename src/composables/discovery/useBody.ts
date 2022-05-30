@@ -756,6 +756,17 @@ export function useBody(
                     }
                     break
                 }
+                case 'connectorName': {
+                    if (mkey) {
+                        base.aggregation(
+                            'terms',
+                            'connectorName',
+                            { size: 100 },
+                            `${agg_prefix}_${mkey}`
+                        )
+                    }
+                    break
+                }
             }
         })
     }

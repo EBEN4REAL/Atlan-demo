@@ -11,6 +11,17 @@
             >
             </SearchAndFilter>
         </div>
+        <div class="my-3">
+            <AggregationTabs
+                v-model="facets.connectorName"
+                class="overflow-auto"
+                :list="connectorAggregateList"
+                :shortcut-enabled="false"
+                :useImagePath="true"
+                @change="handleConnectorTypeChange"
+            >
+            </AggregationTabs>
+        </div>
         <div class="grid grid-cols-4 gap-4 gap-y-6 mt-7 pb-7">
             <ConnectorCard
                 v-for="item in list"
@@ -34,21 +45,25 @@
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ConnectorCard from './connectorCard.vue'
+    import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
 
     export default defineComponent({
         components: {
             SearchAndFilter,
             ConnectorCard,
+            AggregationTabs,
         },
         setup() {
             const limit = ref(100)
             const offset = ref(0)
             const queryText = ref('')
-            const facets = ref({})
+            const facets = ref({
+                typeName: 'Connection',
+            })
             const globalState = ref([])
             const selectedAssetId = ref('')
 
-            const aggregations = ref(['typeName'])
+            const aggregations = ref(['connectorName'])
             const postFacets = ref({
                 typeName: 'Connection',
             })
@@ -75,6 +90,7 @@
                 list,
                 isLoading,
                 assetTypeAggregationList,
+                connectorAggregateList,
                 isLoadMore,
                 isValidating,
                 fetch,
@@ -103,6 +119,12 @@
                 offset.value = 0
                 quickChange()
             }
+            const handleConnectorTypeChange = (tabName) => {
+                offset.value = 0
+                quickChange()
+                // if (page.value !== 'admin')
+                //     discoveryStore.setActivePostFacet(postFacets.value)
+            }
 
             watch(queryText, () => {
                 handleSearchChange()
@@ -113,6 +135,11 @@
                 queryText,
                 list,
                 selectedAsset,
+                postFacets,
+                assetTypeAggregationList,
+                connectorAggregateList,
+                handleConnectorTypeChange,
+                facets,
             }
         },
     })

@@ -244,7 +244,7 @@
             const assetStore = useAssetStore()
             const handleViewAssets = () => {
                 useAddEvent('discovery', 'cta_action', 'clicked', {
-                    action: 'view_asset',
+                    action: 'view_assets',
                     [`${activeTab.value}_name`]: item.value.name,
                 })
                 assetStore.setGlobalState([activeTab.value, item.value.id])

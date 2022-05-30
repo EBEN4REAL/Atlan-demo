@@ -116,7 +116,6 @@
                                 />
 
                                 <CertificateBadge
-                                    v-if="certificateStatus(record.item)"
                                     :status="certificateStatus(record.item)"
                                     :username="
                                         certificateUpdatedBy(record.item)
@@ -371,6 +370,7 @@
                 'userDescription',
                 'certificateStatus',
                 'certificateUpdatedBy',
+                'certificateUpdatedAt',
                 'meanings',
                 'category',
                 'dataType',

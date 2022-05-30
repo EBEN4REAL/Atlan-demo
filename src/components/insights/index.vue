@@ -501,6 +501,7 @@
                 setUserPreferenceToLocalStorage(editorConfig.value)
             })
             const _keyListener = (e) => {
+                // debugger
                 if (e.key === 'b') {
                     if (e.metaKey || e.ctrlKey) {
                         e.preventDefault()
@@ -524,6 +525,9 @@
                         }
                     }
                     // prevent the default action
+                }
+                if (e.key === 'ArrowDown') {
+                    console.log('ARROW DOWNNNNNNN')
                 }
             }
 

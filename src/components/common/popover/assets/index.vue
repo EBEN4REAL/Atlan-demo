@@ -17,7 +17,7 @@
                             <div class="flex mr-3.5">
                                 <div
                                     v-if="
-                                        item.typeName?.toLowerCase() ===
+                                        item?.typeName?.toLowerCase() ===
                                             'column' &&
                                         item.attributes?.dataType
                                     "
@@ -63,7 +63,7 @@
                         <AtlanIcon
                             v-if="
                                 ['atlasglossarycategory'].includes(
-                                    item.typeName?.toLowerCase()
+                                    item?.typeName?.toLowerCase()
                                 )
                             "
                             icon="Category"
@@ -72,7 +72,7 @@
                         <AtlanIcon
                             v-if="
                                 ['atlasglossaryterm'].includes(
-                                    item.typeName?.toLowerCase()
+                                    item?.typeName?.toLowerCase()
                                 )
                             "
                             icon="Term"
@@ -99,7 +99,7 @@
                         <!-- DB and Schema context for tables/views etc. -->
                         <div
                             v-if="
-                                db && item.typeName?.toLowerCase() !== 'column'
+                                db && item?.typeName?.toLowerCase() !== 'column'
                             "
                             class="flex items-center text-gray-500"
                         >
@@ -115,7 +115,7 @@
                         <div
                             v-if="
                                 schema &&
-                                item.typeName?.toLowerCase() !== 'column'
+                                item?.typeName?.toLowerCase() !== 'column'
                             "
                             class="flex items-center text-gray-500"
                         >
@@ -156,7 +156,7 @@
                                     'view',
                                     'tablepartition',
                                     'materialisedview',
-                                ].includes(item.typeName?.toLowerCase())
+                                ].includes(item?.typeName?.toLowerCase())
                             "
                             class="flex justify-between flex-grow pb-4"
                         >
@@ -178,8 +178,8 @@
                         <!--data type context for columns -->
                         <div
                             v-if="
-                                item.typeName?.toLowerCase() === 'column' &&
-                                item.attributes?.dataType
+                                item?.typeName?.toLowerCase() === 'column' &&
+                                item?.attributes?.dataType
                             "
                             class="pb-4"
                         >
@@ -189,7 +189,7 @@
                                     :is="dataTypeCategoryImage(item)"
                                     class="h-4 mr-1 text-gray-500 mb-0.5"
                                 />
-                                <span>{{ item.attributes?.dataType }}</span>
+                                <span>{{ item?.attributes?.dataType }}</span>
                                 <div class="flex ml-1 gap-x-2">
                                     <ColumnKeys
                                         :is-primary="isPrimary(item)"

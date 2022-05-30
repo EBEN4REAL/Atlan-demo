@@ -1,5 +1,11 @@
 <template>
     <div ref="monacoRoot" class="relative monacoeditor"></div>
+    <SuggestionList
+        id="auto-suggestions"
+        v-model:selectedSuggestionIndex="selectedSuggestionIndex"
+        :suggestions="suggestions"
+        @applySuggestions="handleApplySuggestion"
+    />
 </template>
 
 <script lang="ts">
@@ -23,7 +29,6 @@
         ComputedRef,
         nextTick,
     } from 'vue'
-
     import { languageTokens } from './sqlTokens'
     import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
     import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
@@ -39,24 +44,13 @@
     import { useResultPane } from '~/components/insights/playground/resultsPane/common/composables/useResultPane'
     import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
     import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
-    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
-    import Column from '~/assets/images/insights/autocomplete/Column.png'
-    import Default from '~/assets/images/insights/autocomplete/default.png'
-    import Table from '~/assets/images/insights/autocomplete/Table.png'
-    import TableDeprecated from '~/assets/images/insights/autocomplete/TableDeprecated.png'
-    import TableDraft from '~/assets/images/insights/autocomplete/TableDraft.png'
-    import TableVerified from '~/assets/images/insights/autocomplete/TableVerified.png'
-    import View from '~/assets/images/insights/autocomplete/View.png'
-    import ViewDeprecated from '~/assets/images/insights/autocomplete/ViewDeprecated.png'
-    import ViewDraft from '~/assets/images/insights/autocomplete/ViewDraft.png'
-    import ViewVerified from '~/assets/images/insights/autocomplete/ViewVerified.png'
     import {
         editorStates,
         updateEditorModelOnTabOpen,
         updateEditorModel,
     } from '~/components/insights/playground/editor/monaco/useModel'
+    import SuggestionList from '~/components/insights/playground/editor/monaco/suggestionList.vue'
 
     // @ts-ignore
     self.MonacoEnvironment = {
@@ -68,6 +62,7 @@
     export default defineComponent({
         emits: ['editorInstance'],
         props: {},
+        components: { SuggestionList },
 
         setup(props, { emit }) {
             const cancelTokenSource = ref()
@@ -124,6 +119,172 @@
             )
 
             let timeout = null
+            /** START CUSTOM DROPDOWN */
+
+            const suggestions = ref([])
+            // declare and update selectedSuggestionIndex /
+            const selectedSuggestionIndex = ref(0)
+            const scrollSuggestionList = () => {
+                const el = document.getElementById(
+                    `sugg-${selectedSuggestionIndex.value}`
+                )
+
+                if (el)
+                    el.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'end',
+                        inline: 'nearest',
+                    })
+            }
+            const traverseUp = () => {
+                selectedSuggestionIndex.value =
+                    (selectedSuggestionIndex.value -
+                        1 +
+                        suggestions.value.length) %
+                    suggestions.value.length
+                scrollSuggestionList()
+            }
+            const traverseDown = () => {
+                selectedSuggestionIndex.value =
+                    (selectedSuggestionIndex.value + 1) %
+                    suggestions.value.length
+                scrollSuggestionList()
+            }
+            // declare flag to know the state of auto-suggestion dropdown
+            const isAutoComplete = ref(false)
+            const hideAutoCompletion = () => {
+                const el = document.getElementById('auto-suggestions')
+                el?.classList.add('hidden')
+                isAutoComplete.value = false
+                selectedSuggestionIndex.value = 0
+            }
+            const showAutoCompletion = () => {
+                const el = document.getElementById('auto-suggestions')
+                el?.classList.remove('hidden')
+                isAutoComplete.value = true
+                selectedSuggestionIndex.value = 0
+            }
+
+            watch(
+                suggestions,
+                () => {
+                    if (suggestions?.value?.length) showAutoCompletion()
+                    else hideAutoCompletion()
+                },
+                { deep: true }
+            )
+            // fix dropdown's position
+            const setDropdown = () => {
+                const cursor = document.querySelector(
+                    '.cursor.monaco-mouse-cursor-text'
+                )
+                const autoSuggestionsDropdown =
+                    document.getElementById('auto-suggestions')
+                autoSuggestionsDropdown.style.top = `${cursor.offsetTop + 27}px`
+                autoSuggestionsDropdown.style.left = `${
+                    cursor.offsetLeft + 65
+                }px`
+            }
+
+            const triggerAutoCompletion = (
+                promise: Promise<{
+                    suggestions: suggestionKeywordInterface[]
+                    incomplete: boolean
+                }>
+            ) => {
+                setDropdown()
+                // clearing previous popover register data
+                // if (disposable) disposable.value?.dispose()
+                promise.then((value) => {
+                    // debugger
+                    const editorPosition =
+                        editor?.getPosition() as monaco.IPosition
+                    // use current cursor position to get position of the word to be replaced
+                    const wordPosition = editor
+                        ?.getModel()
+                        ?.getWordAtPosition(editorPosition)
+                    // debugger
+                    // const regex = /^${wordPosition?.word ?? ''}/
+                    const regex = new RegExp(
+                        `^${wordPosition?.word ?? ''}`,
+                        'i'
+                    )
+                    suggestions.value = value?.suggestions?.filter(
+                        (suggestion) => {
+                            return regex?.test(suggestion.label)
+                        }
+                    )
+                })
+                // disposable.value =
+                //     monaco.languages.registerCompletionItemProvider(
+                //         'atlansql',
+                //         {
+                //             triggerCharacters: triggerCharacters,
+                //             provideCompletionItems() {
+                //                 // For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
+                //                 return promise
+                //             },
+                //         }
+                //     )
+
+                // editor autosuggestion icons
+            }
+
+            const handleApplySuggestion = (suggestion) => {
+                // get current cursor position
+                const editorPosition = editor?.getPosition() as monaco.IPosition
+                // use current cursor position to get position of the word to be replaced
+                const wordPosition = editor
+                    ?.getModel()
+                    ?.getWordAtPosition(editorPosition)
+
+                if (
+                    wordPosition?.endColumn &&
+                    wordPosition?.startColumn &&
+                    editorPosition?.lineNumber
+                ) {
+                    // edit the word at the position calculated above
+                    editor?.getModel()?.pushEditOperations(
+                        [],
+                        [
+                            {
+                                range: {
+                                    endColumn: wordPosition.endColumn,
+                                    startColumn: wordPosition.startColumn,
+                                    startLineNumber: editorPosition.lineNumber,
+                                    endLineNumber: editorPosition.lineNumber,
+                                },
+                                text: suggestion.insertText,
+                            },
+                        ],
+                        () => null
+                    )
+                    // calling the above method selects the text that gets appended - we need to reset the selection to remove the selection
+                    // getting position of the completed word
+                    const completedWordPosition = editor
+                        ?.getModel()
+                        ?.getWordAtPosition(
+                            editor?.getPosition() as monaco.IPosition
+                        )
+                    const endColumn = completedWordPosition?.endColumn
+                    const endLine = editor?.getPosition()?.lineNumber
+                    // provide completed word's line number and end column number to reset selection (we do this by creating a new selection with same end and start position which is the end of the completed word - so the cursor gets set at the end of the completed word and no text is selected/highlighted)
+                    if (endColumn && endLine)
+                        editor?.setSelection(
+                            new monaco.Selection(
+                                endLine,
+                                endColumn,
+                                endLine,
+                                endColumn
+                            )
+                        )
+                    // restore focus on the editor (gets hidden after we insert the suggestion)
+                    editor?.focus()
+                    selectedSuggestionIndex.value = 0
+                }
+            }
+
+            /** END CUSTOM DROPDOWN */
 
             function createDebounce() {
                 return function (fnc, delayMs) {
@@ -195,107 +356,6 @@
                 languageTokens
             )
 
-            const { assetType, certificateStatus } = useAssetInfo()
-
-            const triggerAutoCompletion = (
-                promise: Promise<{
-                    suggestions: suggestionKeywordInterface[]
-                    incomplete: boolean
-                }>
-            ) => {
-                // clearing previous popover register data
-                if (disposable) disposable.value?.dispose()
-                disposable.value =
-                    monaco.languages.registerCompletionItemProvider(
-                        'atlansql',
-                        {
-                            triggerCharacters: triggerCharacters,
-                            provideCompletionItems() {
-                                // For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
-                                return promise
-                            },
-                        }
-                    )
-
-                // editor autosuggestion icons
-
-                setTimeout(() => {
-                    promise.then((item) => {
-                        let items = item.suggestions
-
-                        let data1 = document.getElementsByClassName(
-                            'suggest-icon codicon codicon-symbol-field'
-                        )
-
-                        let data2 = document.getElementsByClassName(
-                            'suggest-icon codicon codicon-symbol-keyword'
-                        )
-
-                        for (var i = 0; i < items.length; i++) {
-                            let item = items[i].documentation?.entity
-
-                            if (
-                                (item && assetType(item) === 'Table') ||
-                                assetType(item) === 'View'
-                            ) {
-                                let component =
-                                    assetType(item) === 'Table'
-                                        ? getEntityStatusIcon(
-                                              assetType(item),
-                                              certificateStatus(item)
-                                          ) === 'Table'
-                                            ? Table
-                                            : getEntityStatusIcon(
-                                                  assetType(item),
-                                                  certificateStatus(item)
-                                              ) === 'TableVerified'
-                                            ? TableVerified
-                                            : getEntityStatusIcon(
-                                                  assetType(item),
-                                                  certificateStatus(item)
-                                              ) === 'TableDraft'
-                                            ? TableDraft
-                                            : TableDeprecated
-                                        : getEntityStatusIcon(
-                                              assetType(item),
-                                              certificateStatus(item)
-                                          ) === 'View'
-                                        ? View
-                                        : getEntityStatusIcon(
-                                              assetType(item),
-                                              certificateStatus(item)
-                                          ) === 'ViewVerified'
-                                        ? ViewVerified
-                                        : getEntityStatusIcon(
-                                              assetType(item),
-                                              certificateStatus(item)
-                                          ) === 'ViewDraft'
-                                        ? ViewDraft
-                                        : ViewDeprecated
-
-                                if (data1[i] && data1[i]?.style) {
-                                    data1[
-                                        i
-                                    ].style.backgroundImage = `url(${component})`
-                                }
-                            } else if (item && assetType(item) === 'Column') {
-                                if (data1[i] && data1[i]?.style) {
-                                    data1[
-                                        i
-                                    ].style.backgroundImage = `url(${Column})`
-                                }
-                            } else {
-                                if (data2[i] && data2[i].style) {
-                                    data2[
-                                        i
-                                    ].style.backgroundImage = `url(${Default})`
-                                }
-                            }
-                        }
-                    })
-                }, 150)
-            }
-
             /* ---------------- Autoclosing pairs ------------------*/
             monaco.languages.setLanguageConfiguration(
                 'atlansql',
@@ -328,7 +388,7 @@
                     quickSuggestions: {
                         other: true,
                         comments: false,
-                        strings: true,
+                        strings: false,
                     },
                     scrollbar: {
                         useShadows: false,
@@ -347,7 +407,7 @@
                     activeInlineTab.value.playground.resultsPane.result
                         .isQueryRunning
             )
-            let suggestionsList = ref(null)
+            // let suggestionsList = ref(null)
 
             onMounted(() => {
                 loadThemes(monaco)
@@ -510,6 +570,28 @@
                         multiLineComment()
                     }
                 }
+                // CUSTOM DROPDOWN: Add event to enable keyboard actions for autoSuggestions dropdown
+                editor?.onKeyDown((e) => {
+                    if (e.keyCode === 18 && isAutoComplete.value) {
+                        // debugger
+                        traverseDown()
+                        e.preventDefault()
+                        e.stopPropagation()
+                    }
+                    if (e.keyCode === 16 && isAutoComplete.value) {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        traverseUp()
+                    }
+                    if (e.keyCode === 3 && isAutoComplete.value) {
+                        // document.activeElement.blur()
+                        e.preventDefault()
+                        e.stopPropagation()
+                        handleApplySuggestion(
+                            suggestions.value[selectedSuggestionIndex.value]
+                        )
+                    }
+                })
 
                 /* IMP for cmd+enter/ ctrl+enter to run query when editor is focused */
                 editor?.addCommand(
@@ -551,6 +633,7 @@
 
                 /* -------------------------------------------- */
                 editor?.getModel().onDidChangeContent((event) => {
+                    // debugger
                     const text = editor?.getValue()
                     onEditorContentChange(event, text, editor)
                     findAndChangeCustomVariablesColor(false)
@@ -565,11 +648,19 @@
                         suggestions: suggestionKeywordInterface[]
                         incomplete: boolean
                     }>
-                    suggestionsList.value = suggestions
+                    // suggestionsList.value = suggestions
                     triggerAutoCompletion(suggestions)
                 })
+                // editor?.cursorPositionChangedEvent(()=>{
+
+                // })
+
                 editor?.onDidChangeCursorPosition((pos) => {
+                    // console.log('POSTION', pos)
+
                     setEditorPos(pos.position, editorPos)
+                    hideAutoCompletion()
+                    // setTimeout(setDropdown, 300)
                 })
 
                 editor?.onDidBlurEditorWidget(() => {
@@ -579,6 +670,7 @@
                         monaco,
                         editor?.getPosition()
                     )
+                    // hideAutoCompletion()
                 })
                 editor?.onDidFocusEditorWidget(() => {
                     toggleGhostCursor(false, editor, monaco, editorPos)
@@ -718,7 +810,7 @@
                             suggestions: suggestionKeywordInterface[]
                             incomplete: boolean
                         }>
-                        suggestionsList.value = suggestions
+                        // suggestionsList.value = suggestions
                         triggerAutoCompletion(suggestions)
                     })
                 }
@@ -738,6 +830,24 @@
                         findAndChangeCustomVariablesColor(true)
                     }
                 }
+            )
+            watch(
+                () => tabs.value[_index.value].playground.editor,
+                () => {
+                    if (activeInlineTab.value) {
+                        // when active tab changes, create and append auto-suggestions dropdown to the active tab's editor
+                        const parentElementForAutoSuggestions =
+                            document.getElementsByClassName('monacoeditor')[0]
+                        if (parentElementForAutoSuggestions) {
+                            const autoSuggestionsDropdown =
+                                document.getElementById('auto-suggestions')
+                            parentElementForAutoSuggestions.appendChild(
+                                autoSuggestionsDropdown
+                            )
+                        }
+                    }
+                },
+                { immediate: true }
             )
             watch(outputPaneSize, () => {
                 if (monacoRoot.value) {
@@ -770,9 +880,14 @@
             })
 
             return {
+                editor,
+                isAutoComplete,
                 editorStates,
                 outputPaneSize,
                 monacoRoot,
+                suggestions,
+                handleApplySuggestion,
+                selectedSuggestionIndex,
             }
         },
     })

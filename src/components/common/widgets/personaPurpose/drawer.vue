@@ -21,6 +21,7 @@
                 <a-button-group class="ml-auto">
                     <a-button
                         class="flex items-center p-2"
+                        @click="handleViewAssets"
                         @mouseover="isHover = true"
                         @mouseleave="isHover = false"
                     >

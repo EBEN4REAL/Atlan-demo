@@ -53,7 +53,10 @@
         />
 
         <!-- GroupProcessesDrawer -->
-        <GroupProcessesDrawer :grouped-process-ids="groupedProcessIds" />
+        <GroupProcessesDrawer
+            :grouped-process-ids="groupedProcessIds"
+            @close-drawer="handleCloseProcessDrawer"
+        />
     </div>
 </template>
 
@@ -158,6 +161,10 @@
             const onCloseDrawer = () => {
                 onSelectAsset(null)
             }
+            const handleCloseProcessDrawer = () => {
+                console.log('closing drawer')
+                groupedProcessIds.value = []
+            }
 
             // handleDrawerUpdate
             const handleDrawerUpdate = (asset) => {
@@ -253,6 +260,7 @@
                 handleDrawerUpdate,
                 handleZoom,
                 groupedProcessIds,
+                handleCloseProcessDrawer,
             }
         },
     })

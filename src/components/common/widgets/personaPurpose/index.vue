@@ -259,6 +259,7 @@
             const personas = computed(
                 () =>
                     personaStore.list.filter((persona) => {
+                        if (!persona.enabled) return false
                         const users = persona?.users || []
                         // const groups = persona?.groups || []
                         let found = false
@@ -288,6 +289,7 @@
             const purposes = computed(
                 () =>
                     purposeStore.list.filter((purpose) => {
+                        if (!purpose.enabled) return false
                         const metadataPolicies = purpose?.metadataPolicies || []
                         const dataPolicies = purpose?.dataPolicies || []
                         const policies = [...metadataPolicies, ...dataPolicies]

@@ -14,8 +14,8 @@
         </div>
         <div class="px-5 py-4 border-b border-gray-200">
             <div class="text-lg font-bold">{{ item.name }}</div>
-            <div class="flex items-center mt-1">
-                <div class="flex items-center text-sm text-gray-700 uppercase">
+            <div class="flex items-center mt-1 capitalize ">
+                <div class="flex items-center text-sm text-gray-500">
                     {{ activeTab }}
                 </div>
                 <a-button-group class="ml-auto">

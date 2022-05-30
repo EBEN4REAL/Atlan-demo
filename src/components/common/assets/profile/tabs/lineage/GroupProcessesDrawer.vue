@@ -56,7 +56,7 @@
                             groupedProcessIds?.length === 0) &&
                         !isLoading
                     "
-                    class="flex-grow"
+                    class="flex-grow flex items-center justify-center  mt-24"
                 >
                     <EmptyView
                         empty-screen="NoAssetsFound"

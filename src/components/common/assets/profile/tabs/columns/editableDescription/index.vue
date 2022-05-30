@@ -61,6 +61,7 @@
         unref,
         watch,
         PropType,
+        provide,
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
@@ -104,7 +105,7 @@
 
             const { description } = useAssetInfo()
             const { localDescription, handleChangeDescription } =
-                updateAssetAttributes(assetItem, true)
+                updateAssetAttributes(assetItem, false, true)
             const originalDescription = ref(unref(localDescription))
 
             // A ref indicating if the description is being edited.

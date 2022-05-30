@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, watch, PropType } from 'vue'
+    import { defineComponent, toRefs, watch, PropType } from 'vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -31,13 +31,13 @@
                 default: () => {},
             },
         },
-        emits: ['updatedDescription'],
+        emits: ['update'],
         setup(props) {
             const { asset } = toRefs(props)
 
             const { columnUpdatePermission, classifications } = useAssetInfo()
             const { localClassifications, handleClassificationChange } =
-                updateAssetAttributes(asset, true)
+                updateAssetAttributes(asset, false, true)
 
             watch(asset, () => {
                 localClassifications.value = classifications(asset.value)

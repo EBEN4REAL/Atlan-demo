@@ -11,7 +11,11 @@ import { Entity } from '~/services/meta/entity/index'
 import { assetInterface } from '~/types/assets/asset.interface'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
-export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
+export default function updateAssetAttributes(
+    selectedAsset,
+    isDrawer = false,
+    isColumnList = false
+) {
     const {
         title,
         description,
@@ -769,14 +773,19 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
     const updateList = inject('updateList')
     const updateDrawerList = inject('updateDrawerList')
+    const updateColumnList = inject('updateColumnList')
 
     whenever(isUpdateReady, () => {
-        if (!isDrawer && updateList) {
+        if (!isDrawer && !isColumnList && updateList) {
             updateList(asset.value)
-        } else {
+        } else if (isDrawer) {
             shouldDrawerUpdate.value = true
             if (typeof updateDrawerList === 'function' && updateDrawerList) {
                 updateDrawerList(asset.value)
+            }
+        } else if (isColumnList) {
+            if (typeof updateColumnList === 'function' && updateColumnList) {
+                updateColumnList(asset.value)
             }
         }
         isConfetti.value = false

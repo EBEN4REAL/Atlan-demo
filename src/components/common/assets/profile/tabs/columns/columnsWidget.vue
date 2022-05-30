@@ -257,6 +257,7 @@
         </div>
 
         <AssetDrawer
+            :data="drawerData"
             :guid="selectedRowGuid"
             :show-mask="false"
             :show-drawer="showColumnSidebar"
@@ -270,7 +271,15 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, watch, ref, Ref, nextTick, computed } from 'vue'
+    import {
+        defineComponent,
+        watch,
+        ref,
+        Ref,
+        nextTick,
+        computed,
+        provide,
+    } from 'vue'
 
     import { useDebounceFn } from '@vueuse/core'
     import { useRoute } from 'vue-router'
@@ -327,6 +336,8 @@
             const queryText = ref('')
             const columnsList: Ref<assetInterface[]> = ref([])
             const columnFromUrl: Ref<assetInterface[]> = ref([])
+
+            const drawerData = ref({})
 
             const openDrawerOnLoad = ref<boolean>(false)
 
@@ -565,6 +576,15 @@
                 },
             })
 
+            const updateColumnList = (asset) => {
+                if (selectedRowGuid.value === asset?.guid) {
+                    drawerData.value = asset
+                    console.log('hello', asset)
+                }
+            }
+
+            provide('updateColumnList', updateColumnList)
+
             const bodyEvaluation = ref({})
             const { refresh: refreshEvaluate } = useEvaluate(
                 bodyEvaluation,
@@ -761,6 +781,7 @@
                 defaultAttributes,
                 limit,
                 offset,
+                drawerData,
                 columns: [
                     {
                         width: 50,

@@ -38,12 +38,14 @@
                 default: () => {},
             },
         },
+        emits: ['update'],
+
         setup(props) {
             const { asset } = toRefs(props)
 
             const { columnUpdatePermission, meanings } = useAssetInfo()
             const { localMeanings, handleMeaningsUpdate } =
-                updateAssetAttributes(asset, true)
+                updateAssetAttributes(asset, false, true)
 
             watch(asset, () => {
                 localMeanings.value = meanings(asset.value)

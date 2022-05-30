@@ -188,9 +188,13 @@
                 }
             })
 
-            watch(data, () => {
-                drawerData.value = data.value
-            })
+            watch(
+                data,
+                () => {
+                    drawerData.value = data.value
+                },
+                { deep: true }
+            )
 
             watch(isLoading, () => {
                 if (isLoading.value) {

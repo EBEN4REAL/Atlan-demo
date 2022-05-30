@@ -259,7 +259,7 @@
                     purposeStore.list,
                 ],
                 ([newValue, persona, purpose]) => {
-                    let payload = newValue
+                    const payload = newValue
                     if (payload[0] === 'persona') {
                         const finded = persona.find(
                             (el) => el.id === payload[1]

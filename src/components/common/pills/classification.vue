@@ -1,8 +1,8 @@
 <template>
     <div
-        class="flex items-center py-1 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer  group"
+        class="flex items-center py-1 text-sm text-gray-700 bg-white border border-gray-200 rounded-full cursor-pointer group"
         :data-test-id="displayName"
-        :class="noHover?'':'pl-2 pr-2 hover:text-white'"
+        :class="noHover ? '' : 'pl-2 pr-2 hover:text-white'"
         :style="`background-color: ${bgHover}!important;`"
         @mouseenter="
             () => {
@@ -21,9 +21,10 @@
             :icon="icon"
             :color="shieldColour"
             :mouse-enter="mouseEnter"
+            :class-names="classIcon"
         />
 
-        <div class="ml-1 overflow-ellipsis truncate">
+        <div :class="`ml-1 overflow-ellipsis truncate ${classCopy}`">
             {{ displayName || name }}
         </div>
 
@@ -80,6 +81,16 @@
                 },
             },
             createdBy: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            classCopy: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            classIcon: {
                 type: String,
                 required: false,
                 default: '',

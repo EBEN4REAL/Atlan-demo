@@ -424,7 +424,12 @@
                 // showAddToGroupModal.value = false;
                 showUserGroups.value = true
             }
-
+            watch(showGroupsPopover, () => {
+                if (showGroupsPopover.value) {
+                    selectedGroupIds.value.ownerGroups = []
+                    disabledButtonSave.value = true
+                }
+            })
             return {
                 groupList,
                 totalGroupCount,

@@ -143,7 +143,7 @@
                         }}
                     </template>
                     <div
-                        class="flex items-center justify-center w-6 h-6 mt-1 text-gray-500 bg-gray-200 rounded-full text-10"
+                        class="flex items-center justify-center w-6 h-6 text-gray-500 bg-gray-200 rounded-full text-10"
                         :style="{
                             'z-index': `4`,
                             transform: `translateX(-24px)`,

@@ -20,18 +20,20 @@
                 </div>
                 <a-button-group class="ml-auto">
                     <a-button
-                        class="flex items-center p-2"
+                        class="flex items-center p-2 text-gray-700"
                         @click="handleViewAssets"
                         @mouseover="isHover = true"
                         @mouseleave="isHover = false"
                     >
                         <AtlanIcon
-                            :icon="
-                                isHover
-                                    ? 'AssetsActiveLight'
-                                    : 'AssetsInactiveLight'
-                            "
+                            v-if="isHover"
+                            :icon="'AssetsActiveLight'"
                             class="mr-1"
+                        />
+                        <AtlanIcon
+                            v-else
+                            :icon="'AssetsInactiveLight'"
+                            class="mr-1 asset-icon-persona-purpose"
                         />
                         View assets
                     </a-button>
@@ -276,6 +278,13 @@
     }
 </style>
 
+<style lang="less">
+    .asset-icon-persona-purpose {
+        path {
+            stroke: rgb(55, 65, 81) !important;
+        }
+    }
+</style>
 <style lang="less" module>
     .widgetPreviewTabs {
         &:global(.ant-tabs-right) {

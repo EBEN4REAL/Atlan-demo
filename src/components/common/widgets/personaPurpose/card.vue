@@ -143,7 +143,7 @@
                         }}
                     </template>
                     <div
-                        class="flex items-center justify-center w-6 h-6 text-gray-500 bg-gray-200 rounded-full text-10"
+                        class="flex items-center justify-center text-gray-500 bg-gray-200 rounded-full card-avatar-size"
                         :style="{
                             'z-index': `4`,
                             transform: `translateX(-24px)`,
@@ -348,9 +348,7 @@
     .shadow-connector {
         box-shadow: 1px 2px 3px 3px rgba(0, 0, 0, 0.05);
     }
-    .text-10 {
-        font-size: 10px;
-    }
+    
 </style>
 <style lang="less">
     .icon-all-users {
@@ -361,5 +359,11 @@
     }
     .pill-class-widget {
         max-width: 60px !important;
+    }
+    .card-avatar-size {
+        width: 26px;
+        height: 26px;
+        font-size: 10px;
+        padding-top: 2px;
     }
 </style>

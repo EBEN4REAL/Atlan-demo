@@ -385,7 +385,13 @@
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
     import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
-
+    import Activity from './activity/activityTab.vue'
+    import Columns from './columns/index.vue'
+    import Resources from '@/common/assets/preview/resources/resourcesWrapper.vue'
+    import Jira from '@/common/assets/preview/integrations/jira/jira.vue'
+    import SlackResources from '@/common/assets/preview/resources/slackResourcesWrapper.vue'
+    import Lineage from './lineage/lineageTab.vue'
+    
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
     import {
@@ -409,15 +415,13 @@
             QueryDropdown,
             KebabMenu,
             info: defineAsyncComponent(() => import('./info/index.vue')),
-            columns: defineAsyncComponent(() => import('./columns/index.vue')),
+            columns: Columns,
             actions: defineAsyncComponent(() => import('./actions/index.vue')),
             request: defineAsyncComponent(() => import('./request/index.vue')),
             property: defineAsyncComponent(
                 () => import('./property/index.vue')
             ),
-            activity: defineAsyncComponent(
-                () => import('./activity/activityTab.vue')
-            ),
+            activity: Activity,
             queries: defineAsyncComponent(() => import('./queries/index.vue')),
             s3Objects: defineAsyncComponent(
                 () => import('./s3objects/index.vue')
@@ -425,31 +429,16 @@
             relations: defineAsyncComponent(
                 () => import('./relations/index.vue')
             ),
-            resources: defineAsyncComponent(
-                () =>
-                    import(
-                        '@/common/assets/preview/resources/resourcesWrapper.vue'
-                    )
-            ),
-            lineage: defineAsyncComponent(
-                () => import('./lineage/lineageTab.vue')
-            ),
+            resources: Resources,
+            lineage: Lineage,
             customMetadata: defineAsyncComponent(
                 () => import('./customMetadata/index.vue')
             ),
             linkedAssets: defineAsyncComponent(
                 () => import('./linkedAssets/linkedAssetsWrapper.vue')
             ),
-            Jira: defineAsyncComponent(
-                () =>
-                    import('@/common/assets/preview/integrations/jira/jira.vue')
-            ),
-            SlackResourcesTab: defineAsyncComponent(
-                () =>
-                    import(
-                        '@/common/assets/preview/resources/slackResourcesWrapper.vue'
-                    )
-            ),
+            Jira,
+            SlackResourcesTab: SlackResources,
             SlackAskButton,
         },
 

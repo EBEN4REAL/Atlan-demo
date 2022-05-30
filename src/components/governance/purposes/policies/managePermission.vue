@@ -20,7 +20,7 @@
                 <!-- <div class="text-gray-500">Data consultant policy</div> -->
             </div>
         </div>
-        <div class="pt-0 mt-5 mb-5 bg-gray-100 container-content">
+        <div class="pt-0 mt-5 mb-10 bg-gray-100 container-content">
             <MetadataScopes
                 v-model:actions="actionsLocal"
                 class="mb-6"

@@ -28,7 +28,7 @@
             </AtlanBtn> -->
         </div>
 
-        <div class="pt-0 mt-6 mb-4 container-content">
+        <div class="pt-0 mt-6 mb-10 container-content">
             <MetadataScopes
                 v-model:actions="actionsLocal"
                 class="mb-6"

@@ -82,7 +82,7 @@
                             : emptyViewText
                     "
                     :button-text="queryText ? 'Clear search' : null"
-                    class="flex items-center justify-center h-full mt-4"
+                    class="flex items-center justify-center h-full mt-4 empty-asset"
                     @event="handleClearSearch"
                 ></EmptyView>
             </div>

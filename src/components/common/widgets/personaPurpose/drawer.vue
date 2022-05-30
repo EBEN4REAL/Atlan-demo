@@ -15,7 +15,7 @@
         <div class="px-5 py-4 border-b border-gray-200">
             <div class="text-lg font-bold">{{ item.name }}</div>
             <div class="flex items-center mt-1">
-                <div class="flex items-center text-sm text-gray-700 uppercase ">
+                <div class="flex items-center text-sm text-gray-700 uppercase">
                     {{ activeTab }}
                 </div>
                 <a-button-group class="ml-auto">
@@ -156,7 +156,7 @@
                     (el, i) => i === activeKey.value
                 )
                 useAddEvent('governance', activeTab.value, 'home_tab', {
-                    title: item.value.name,
+                    [`${activeTab.value}_name`]: item.value.name,
                     tab_name: menu.component,
                 })
             })
@@ -243,6 +243,10 @@
 
             const assetStore = useAssetStore()
             const handleViewAssets = () => {
+                useAddEvent('discovery', 'cta_action', 'clicked', {
+                    action: 'view_asset',
+                    [`${activeTab.value}_name`]: item.value.name,
+                })
                 assetStore.setGlobalState([activeTab.value, item.value.id])
                 router.push('/assets')
             }

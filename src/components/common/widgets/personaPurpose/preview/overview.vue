@@ -289,8 +289,7 @@
             })
             const expandedReadme = () => {
                 useAddEvent('governance', activeTab.value, 'readme_expanded', {
-                    title: item.value.name,
-                    index: item.value.i,
+                    [`${activeTab.value}_name`]: item.value.name,
                 })
             }
             return {

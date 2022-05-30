@@ -336,7 +336,7 @@
             const handleViewAssets = (item) => {
                 assetStore.setGlobalState([activeTab.value, item.id])
                 useAddEvent('governance', activeTab.value, 'home_card_asset', {
-                    title: item.name,
+                    [`${activeTab.value}_name`]: item.name,
                     index: item.i,
                 })
 
@@ -344,7 +344,7 @@
             }
             const handleOverView = (item) => {
                 useAddEvent('governance', activeTab.value, 'home_card', {
-                    title: item.name,
+                    [`${activeTab.value}_name`]: item.name,
                     index: item.i,
                 })
                 selectedItem.value = item

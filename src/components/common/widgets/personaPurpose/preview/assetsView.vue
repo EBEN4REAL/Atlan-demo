@@ -4,7 +4,7 @@
             <AtlanIcon icon="AssetsInactiveLight" class="mr-2" />Assets
         </div>
 
-        <div>
+        <div class="container-asset-list-persona-purpose">
             <AssetList
                 asset-list-class="overflow-scroll asset-list-persona-purpose"
                 :persona="item"
@@ -56,6 +56,11 @@
     })
 </script>
 <style lang="less">
+    .container-asset-list-persona-purpose {
+        .empty-asset {
+            margin-top: calc(50vh - 230px) !important;
+        }
+    }
     .asset-list-persona-purpose {
         height: calc(100vh - 250px);
     }

@@ -8,13 +8,25 @@
             <div v-if="type === 'persona'" class="flex h-9">
                 <div class="p-1 bg-gray-100 rounded-tl-xl rounded-br-xl">
                     <div class="p-1.5 bg-white rounded-tl-xl rounded-br-xl">
-                        <div v-if="connection.length" class="flex gap-2">
+                        <div
+                            v-if="connection.length || haveGlossary"
+                            class="flex gap-2"
+                        >
                             <div
-                                v-for="imgPath in connection.slice(0, 3)"
+                                v-for="imgPath in connection.slice(
+                                    0,
+                                    haveGlossary ? 2 : 3
+                                )"
                                 :key="imgPath"
                                 class="relative bg-white rounded-full fit"
                             >
                                 <img class="w-4 h-4" :src="imgPath" />
+                            </div>
+                            <div
+                                v-if="haveGlossary"
+                                class="relative w-4 h-4 rounded-full glossary-icon"
+                            >
+                                <AtlanIcon icon="Glossary" />
                             </div>
                             <div
                                 v-if="connection.length > 3"
@@ -304,6 +316,12 @@
             const imageUrl = (username: any) =>
                 `${window.location.origin}/api/service/avatars/${username}`
             const displayName = computed(() => tenantStore.displayName)
+            const haveGlossary = computed(() => {
+                if (type.value === 'persona') {
+                    return item.value.glossaryPolicies?.length || false
+                }
+                return false
+            })
             return {
                 connection,
                 users,
@@ -312,11 +330,15 @@
                 imageUrl,
                 logoUrl,
                 displayName,
+                haveGlossary,
             }
         },
     })
 </script>
 <style scoped lang="less">
+    .glossary-icon {
+        transform: translateY(-4px);
+    }
     .shadow-card {
         transition: all ease 0.3s;
         &:hover {

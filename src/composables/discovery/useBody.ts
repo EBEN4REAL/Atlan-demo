@@ -512,6 +512,12 @@ export function useBody(
                 }
                 break
             }
+            case '__hasLineage': {
+                const { value, operand } = filterObject
+                if (value) base.filter('exists', 'field', operand)
+
+                break
+            }
             case 'guidList': {
                 if (filterObject) {
                     base.filter('terms', '__guid', filterObject)

@@ -11,9 +11,9 @@
             >
             </SearchAndFilter>
         </div>
-        <div class="my-3">
+        <div class="my-4">
             <AggregationTabs
-                v-model="facets.connectorName"
+                v-model="postFacets.assetType"
                 class="overflow-auto"
                 :list="connectorAggregateList"
                 :shortcut-enabled="false"
@@ -62,6 +62,9 @@
             })
             const globalState = ref([])
             const selectedAssetId = ref('')
+            const preference = ref({
+                sort: 'name.keyword-asc',
+            })
 
             const aggregations = ref(['connectorName'])
             const postFacets = ref({
@@ -113,6 +116,7 @@
                 relationAttributes,
                 globalState,
                 suppressLogs: true,
+                preference: preference,
             })
 
             const handleSearchChange = () => {

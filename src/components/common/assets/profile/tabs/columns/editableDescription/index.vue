@@ -5,7 +5,7 @@
         v-if="!isEditing && localDescription.length > 0"
         width="1000px"
         :tooltip-text="localDescription"
-        :classes="allowEditing ? 'cursor-text' : ''"
+        :classes="allowEditing ? 'cursor-text hover:underline' : ''"
         :rows="2"
         @click="handleEdit($event)"
     />
@@ -14,7 +14,7 @@
         class="flex items-center gap-x-2.5"
     >
         <p
-            :class="{ 'cursor-text': allowEditing }"
+            :class="{ 'cursor-text hover:underline': allowEditing }"
             style="color: #bfbfbf"
             @click="handleEdit($event)"
         >

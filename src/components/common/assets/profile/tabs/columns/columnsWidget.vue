@@ -16,18 +16,12 @@
                     :is-loading="isValidating"
                     @change="handleSearchChange"
                 >
-                    <template #postFilter>
-                        <div
-                            class="flex items-center justify-between py-1 rounded"
-                        >
-                            <p class="mr-4 text-sm text-gray-500">Sort By</p>
-
-                            <Sorting
-                                v-model="preference.sort"
-                                asset-type="Column"
-                                @change="handleChangeSort"
-                            ></Sorting>
-                        </div>
+                    <template #sort>
+                        <Sorting
+                            v-model="preference.sort"
+                            asset-type="Column"
+                            @change="handleChangeSort"
+                        />
                     </template>
                 </SearchAdvanced>
             </div>
@@ -286,7 +280,7 @@
     import EmptyView from '@common/empty/index.vue'
     import EditableDescription from './editableDescription/index.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
-    import Sorting from '@/common/select/sorting.vue'
+    import Sorting from '@/common/dropdown/sorting.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import Tooltip from '@/common/ellipsis/index.vue'
     import CertificateBadge from '@/common/badge/certificate/index.vue'
@@ -795,7 +789,7 @@
                         width: 275,
                     },
                     {
-                        width: 200,
+                        width: 100,
                     },
                 ],
                 columnUpdatePermission,

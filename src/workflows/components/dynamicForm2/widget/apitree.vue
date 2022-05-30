@@ -8,7 +8,7 @@
     ></APITreeSelect>
 </template>
 
-<script>
+<script lang="ts">
     import {
         defineComponent,
         toRefs,
@@ -98,29 +98,20 @@
 
             const localValue = ref(initArray)
 
+            const pathToObject = (path: string) => {
+                if (!path) return {}
+                const splits = path.split(':')
+
+                if (splits.length === 1) return { [path]: {} }
+
+                return { [splits[0]]: pathToObject(splits.slice(1).join(':')) }
+            }
+
             const handleChange = () => {
-                let valueMap = {}
-
-                const tempArray = []
-
-                localValue.value.forEach((item) => {
-                    let map = {}
-                    const arr = item.toString().split(':')
-                    for (var i = 0; i < arr.length; i++) {
-                        if (i == 0) {
-                            map[arr[i]] = {}
-                        } else {
-                            let temp = {}
-                            temp[arr[i]] = {}
-                            map[arr[i - 1]] = temp
-                        }
-                    }
-                    tempArray.push(map)
-                })
-                console.log(tempArray)
-                console.log(mergeDeep(valueMap, ...tempArray))
-
-                modelValue.value = mergeDeep(valueMap, ...tempArray)
+                const objArray = localValue.value.map((item) =>
+                    pathToObject(item)
+                )
+                modelValue.value = mergeDeep({}, ...objArray)
                 emit('change', modelValue.value)
             }
 

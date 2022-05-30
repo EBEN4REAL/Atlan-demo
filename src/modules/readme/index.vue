@@ -1,19 +1,29 @@
 <template>
     <div
         ref="editorDiv"
-        :class="isEditing ? 'editor-open' : 'editor-close'"
+        :class="{
+            'editor-open': isEditing,
+            'editor-close': !isEditing,
+            'max-modal-height': usedInModal,
+        }"
         @transitionend="
             () => {
                 editorDiv?.scrollIntoView({ behavior: 'smooth' })
             }
         "
     >
-        <div class="flex p-4 border-b border-gray-200">
-            <div class="flex items-center">
-                <AtlanIcon icon="Readme" class="w-auto h-8 mr-2" /><span
-                    class="text-base font-bold text-gray"
-                    >Readme</span
-                >
+        <div
+            class="flex border-b border-gray-200"
+            :class="usedInModal ? 'p-5' : 'p-6'"
+        >
+            <div v-if="usedInModal">
+                <slot name="assetInfo"></slot>
+            </div>
+            <div v-else class="flex items-center">
+                <div class="p-2 mr-2 rounded-md bg-primary-light">
+                    <AtlanIcon icon="Readme" class="w-5 h-5 text-primary" />
+                </div>
+                <span class="text-base font-bold text-gray">Readme</span>
             </div>
             <div class="ml-auto">
                 <a-tooltip
@@ -28,7 +38,7 @@
                     <a-button
                         v-if="!localReadmeContent && !isEditing"
                         :disabled="!isEditingAllowed"
-                        class="flex items-center text-primary border-0 shadow-none"
+                        class="flex items-center border-0 shadow-none text-primary"
                         type="minimal"
                         @click="handleEditMode"
                         @transitionend.stop="() => {}"
@@ -52,7 +62,7 @@
                     >
 
                     <a-button
-                        class="flex w-28 justify-center items-center"
+                        class="flex items-center justify-center w-28"
                         type="primary"
                         :loading="isSaving"
                         @click="handleUpdate"
@@ -73,7 +83,7 @@
                     <a-button
                         v-if="localReadmeContent && !isEditing"
                         :disabled="!isEditingAllowed"
-                        class="flex items-center text-primary border-0 shadow-none"
+                        class="flex items-center border-0 shadow-none text-primary"
                         type="minimal"
                         @click="handleEditMode"
                         @transitionend.stop="() => {}"
@@ -86,10 +96,13 @@
                 >
             </div>
         </div>
-        <div class="border-0 h-full p-6">
+        <div
+            class="p-6 border-0"
+            :class="usedInModal ? 'overflow-y-auto' : 'h-full'"
+        >
             <AtlanEditor
                 ref="editor"
-                v-model="localReadmeContent"
+                v-model="sanitizedReadmeContent"
                 placeholder="Type '/' for commands"
                 :asset-type="assetType"
                 :is-edit-mode="isEditing"
@@ -106,10 +119,11 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
+    import { defineComponent, watch, ref, toRefs, computed } from 'vue'
 
     import { useVModel } from '@vueuse/core'
     import Editor from '~/modules/editor/index.vue'
+    import DOMPurify from 'dompurify'
 
     export default defineComponent({
         components: {
@@ -160,6 +174,16 @@
                 default: 'DISCOVERY',
                 required: false,
             },
+            usedInModal: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            loadEditMode: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['savedChanges', 'editing', 'update:modelValue'],
         setup(props, { emit }) {
@@ -169,13 +193,19 @@
                 handleSave,
                 handleSuccess,
                 handleFailure,
+                loadEditMode,
             } = toRefs(props)
             const content = useVModel(props, 'modelValue', emit)
+            const allowedTags=['iframe','img', 'table', 'th','tr','td','code', 'pre']
             const localReadmeContent = ref(
                 encodeContent.value
                     ? decodeURIComponent(content.value)
                     : content.value
             )
+            const sanitizedReadmeContent = ref(
+                DOMPurify.sanitize(localReadmeContent.value, {ADD_TAGS: [...allowedTags]})
+            )
+
             const isEditing = ref(false)
             const isSaving = ref(false)
 
@@ -187,11 +217,15 @@
                 editor.value?.editor?.commands.focus('end')
             }
 
+            if (loadEditMode.value) {
+                handleEditMode()
+            }
+
             const handleUpdate = async () => {
                 isSaving.value = true
                 content.value = encodeContent.value
-                    ? encodeURIComponent(localReadmeContent.value)
-                    : localReadmeContent.value
+                    ? encodeURIComponent(sanitizedReadmeContent.value)
+                    : sanitizedReadmeContent.value
                 try {
                     await handleSave.value(content.value)
                     handleSuccess?.value()
@@ -204,18 +238,21 @@
             }
 
             const handleCancel = () => {
+                sanitizedReadmeContent.value = encodeContent.value
+                    ? DOMPurify.sanitize(decodeURIComponent(content.value), {ADD_TAGS: [...allowedTags]})
+                    : DOMPurify.sanitize(content.value)
                 editor.value?.editor?.commands.setContent(
-                    encodeContent.value
-                        ? decodeURIComponent(content.value)
-                        : content.value
+                    sanitizedReadmeContent.value
                 )
-                localReadmeContent.value = encodeContent.value
-                    ? decodeURIComponent(content.value)
-                    : content.value
                 isEditing.value = false
                 emit('savedChanges')
             }
 
+            watch(localReadmeContent, () => {
+                sanitizedReadmeContent.value = DOMPurify.sanitize(
+                    localReadmeContent.value,  {ADD_TAGS: [...allowedTags]}
+                )
+            })
             return {
                 localReadmeContent,
                 handleUpdate,
@@ -226,6 +263,7 @@
                 editorDiv,
                 isEditing,
                 isSaving,
+                sanitizedReadmeContent,
             }
         },
     })
@@ -239,5 +277,9 @@
     .editor-close {
         min-height: 0;
         transition: min-height 0.3s ease-in-out;
+    }
+
+    .max-modal-height {
+        max-height: 75vh;
     }
 </style>

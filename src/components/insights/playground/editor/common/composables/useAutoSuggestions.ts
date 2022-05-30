@@ -923,6 +923,8 @@ export async function useAutoSuggestions(
     )
     databaseName = _databaseName
     schemaName = _schemaName
+    connectorsInfo.databaseName = _databaseName
+    connectorsInfo.schemaName = _schemaName
 
     let tokens = editorTextTillCursorPos.split(/[ ,\n;"')(]+/gm)
     // console.log(tokens, 'tokk')
@@ -997,7 +999,6 @@ export async function useAutoSuggestions(
             return suggestionsPromise
         }
     }
-    debugger
     /* If it is a first/nth character of first word */
     if (tokens.length < 2) {
         return getLocalSQLSugggestions(currentWord)

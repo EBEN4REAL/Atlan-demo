@@ -9,6 +9,17 @@
         :show-description-limit="true"
         :destroy-on-close="true"
     >
+        <template #topHeader>
+            <div
+                class="absolute w-full p-3 text-sm bg-white rounded -top-14 text-new-gray-800"
+                v-if="slackSharePopoverVisible"
+            >
+                <span
+                    >You need to first save this query, to share the query
+                    output on slack.
+                </span>
+            </div>
+        </template>
         <template #leftHeader>
             <div class="flex items-center mr-1 cursor-pointer">
                 <QueryFolderSelector
@@ -225,6 +236,10 @@
         emits: ['update:showSaveQueryModal', 'onSaveQuery'],
         setup(props, { emit }) {
             const { showSaveQueryModal, saveQueryLoading } = toRefs(props)
+            const slackSharePopoverVisible = inject(
+                'slackSharePopoverVisible'
+            ) as Ref<Boolean>
+
             /* Initial status will be null */
             const currentStatus: Ref<string | undefined> = ref('is_null')
             const title: Ref<string> = ref('')
@@ -350,6 +365,7 @@
             })
 
             return {
+                slackSharePopoverVisible,
                 getLastUntitledNumber,
                 parentFolder,
                 title,

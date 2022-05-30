@@ -759,6 +759,7 @@
                     >No SQL data available</span
                 >
             </div>
+
             <div v-if="selectedAsset?.typeName === 'LookerQuery'">
                 <SQLSnippet
                     class="mx-4 rounded-lg"
@@ -1026,6 +1027,27 @@
                 </RelatedTerms>
             </div>
 
+            <div
+                v-if="
+                    selectedAsset.typeName === 'Column' ||
+                    readmeGuid(selectedAsset)
+                "
+                class="flex flex-col px-5"
+            >
+                <p class="mb-1 text-sm text-gray-500">Readme</p>
+                <ReadmeCTA
+                    :asset="selectedAsset"
+                    :edit-permission="
+                        selectedAssetUpdatePermission(
+                            selectedAsset,
+                            isDrawer,
+                            'RELATIONSHIP_ADD',
+                            'Readme'
+                        ) && assetPermission('CREATE_README')
+                    "
+                />
+            </div>
+
             <CustomMetadataPreview
                 v-if="
                     readPermission &&
@@ -1091,6 +1113,7 @@
     import RelatedTerms from '@/common/input/relatedTerms/relatedTerms.vue'
     import Connection from './connection.vue'
     import Suggestion from './suggestion.vue'
+    import ReadmeCTA from './readme/readmeCTA.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
@@ -1130,6 +1153,7 @@
             Categories,
             Categories2,
             RelatedTerms,
+            ReadmeCTA,
             SourceCreated,
             SourceUpdated,
             Admins,
@@ -1211,6 +1235,7 @@
                 isGTC,
                 isUserDescription,
                 selectedAssetUpdatePermission,
+                assetPermission,
                 tableName,
                 viewName,
                 attributes,
@@ -1236,6 +1261,7 @@
                 s3ObjectSize,
                 s3ObjectCount,
                 s3ObjectContentType,
+                readmeGuid,
             } = useAssetInfo()
 
             const {
@@ -1406,6 +1432,7 @@
                 localViewers,
                 handleChangeViewers,
                 selectedAssetUpdatePermission,
+                assetPermission,
                 localSQLQuery,
                 handleSQLQueryUpdate,
                 tableName,
@@ -1444,6 +1471,7 @@
                 similarList,
                 aggregationMap,
                 handleApplySuggestion,
+                readmeGuid,
             }
         },
     })

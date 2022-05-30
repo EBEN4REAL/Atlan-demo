@@ -100,6 +100,7 @@ export const typeCopyMapping: Record<string, string> = {
 
 export const destinationAttributeMapping: Record<string, string> = {
     ownerUsers: 'Owner',
+    ownerGroups: 'Owner',
     userDescription: 'Description',
     name: 'Name',
     certificateStatus: 'Certificate',

@@ -692,6 +692,14 @@ export function useBody(
                 }
                 break
             }
+            case 'connectorName': {
+                if (filterObject) {
+                    if (filterObject !== '__all') {
+                        postFilter.filter('term', 'connectorName', filterObject)
+                    }
+                }
+                break
+            }
         }
     })
     base.rawOption('post_filter', postFilter.build().query)

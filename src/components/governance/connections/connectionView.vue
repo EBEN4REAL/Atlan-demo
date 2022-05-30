@@ -13,7 +13,7 @@
         </div>
         <div class="my-4">
             <AggregationTabs
-                v-model="postFacets.assetType"
+                v-model="postFacets.connectorName"
                 class="overflow-auto"
                 :list="connectorAggregateList"
                 :shortcut-enabled="false"
@@ -68,8 +68,9 @@
 
             const aggregations = ref(['connectorName'])
             const postFacets = ref({
-                typeName: 'Connection',
+                connectorName: '__all',
             })
+
             const dependentKey = ref('connectionsList' || 'DEFAULT_ASSET_LIST')
 
             const defaultAttributes = ref([

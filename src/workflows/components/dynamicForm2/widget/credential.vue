@@ -47,7 +47,7 @@
         </div>
         <div class="flex items-center my-2" v-if="testMessage">
             <div class="flex items-center">
-                <AtlanIcon :icon="testIcon" class="h-5 mr-1"></AtlanIcon>
+                <AtlanIcon :icon="testIcon" class="h-5 mb-1 mr-1"></AtlanIcon>
                 <span :class="testClass">{{ testMessage }}</span>
             </div>
         </div>

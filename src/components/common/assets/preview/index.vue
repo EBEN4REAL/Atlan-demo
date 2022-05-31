@@ -390,7 +390,6 @@
     import Resources from '@/common/assets/preview/resources/resourcesWrapper.vue'
     import Jira from '@/common/assets/preview/integrations/jira/jira.vue'
     import SlackResources from '@/common/assets/preview/resources/slackResourcesWrapper.vue'
-    import Lineage from './lineage/lineageTab.vue'
     
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
@@ -430,7 +429,9 @@
                 () => import('./relations/index.vue')
             ),
             resources: Resources,
-            lineage: Lineage,
+            lineage: defineAsyncComponent(
+                () => import('./lineage/lineageTab.vue')
+            ),
             customMetadata: defineAsyncComponent(
                 () => import('./customMetadata/index.vue')
             ),

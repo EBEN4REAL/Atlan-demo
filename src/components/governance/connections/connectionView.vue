@@ -98,7 +98,7 @@
             ErrorView,
         },
         setup() {
-            const limit = ref(100)
+            const limit = ref(200)
             const offset = ref(0)
             const queryText = ref('')
             const facets = ref({
@@ -115,7 +115,7 @@
                 connectorName: '__all',
             })
 
-            const dependentKey = ref('connectionsList' || 'DEFAULT_ASSET_LIST')
+            const dependentKey = ref('connectionsList')
 
             const defaultAttributes = ref([
                 ...InternalAttributes,

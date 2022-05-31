@@ -69,7 +69,6 @@
                                 v-else
                                 :clamp-percentage="assetNameTruncatePercentage"
                                 :tooltip-text="`${title(item)}`"
-                                :route-to="getProfilePath(item)"
                                 :classes="
                                     isScrubbed(item)
                                         ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 tracking-wide'
@@ -78,7 +77,6 @@
                                 :should-open-in-new-tab="
                                     openAssetProfileInNewTab
                                 "
-                                @click="(e) => e.stopPropagation()"
                             />
 
                             <CertificateBadge

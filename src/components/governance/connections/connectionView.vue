@@ -37,19 +37,20 @@
             class="flex-grow mt-36"
         >
             <EmptyView
-                empty-screen="NoAssetsFound"
+                :empty-screen="queryText ? 'NoAssetsFound' : 'EmptySampleData'"
                 image-class="h-44"
                 :desc="
                     !queryText
-                        ? 'No connections found'
+                        ? `You don't have any connections setup yet`
                         : queryText
-                        ? 'We didn\'t find anything that matches your search criteria'
-                        : 'No connections found'
+                        ? 'We didn\'t find any connection that matches your search'
+                        : `You don't have any connections setup yet`
                 "
-                :button-text="''"
+                :button-text="queryText ? '' : 'Setup Now'"
+                buttonClass="mt-1"
                 class="mb-10"
+                @event="redirectToMarketplace"
             ></EmptyView>
-            <!-- @event="handleResetEvent" -->
         </div>
         <div
             v-else-if="list.length === 0 && isValidating"
@@ -174,6 +175,10 @@
                 //     discoveryStore.setActivePostFacet(postFacets.value)
             }
 
+            const redirectToMarketplace = () => {
+                window.location.href = `/workflows/marketplace`
+            }
+
             watch(queryText, () => {
                 handleSearchChange()
             })
@@ -190,6 +195,7 @@
                 facets,
                 isValidating,
                 error,
+                redirectToMarketplace,
             }
         },
     })

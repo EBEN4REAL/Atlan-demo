@@ -11,34 +11,9 @@
     >
         <div
             class="flex flex-col"
-            :class="[
-                !bulkSelectMode && isSelected
-                    ? 'border-primary '
-                    : 'border-transparent',
-                bulkSelectMode && isChecked ? 'bg-primary-menu' : '',
-            ]"
+            :class="[isSelected ? 'border-primary ' : 'border-transparent']"
         >
             <div class="flex items-start flex-1 px-3 py-3 asset-card">
-                <a-tooltip
-                    placement="leftTop"
-                    :title="
-                        isScrubbed(item) && disableCheckboxForScrubbed
-                            ? `You don't have permission to link this asset to a term`
-                            : ''
-                    "
-                    :mouse-enter-delay="0.2"
-                >
-                    <a-checkbox
-                        v-if="showCheckBox"
-                        :checked="isChecked"
-                        :disabled="
-                            isScrubbed(item) && disableCheckboxForScrubbed
-                        "
-                        class="ml-2 mr-3 opacity-60 hover:opacity-100"
-                        :class="bulkSelectMode ? 'opacity-100' : 'opacity-0'"
-                        @click.stop
-                        @change="(e) => $emit('listItem:check', e, item)"
-                /></a-tooltip>
                 <div class="flex flex-col flex-1" :class="{ '': !isCompact }">
                     <div class="flex items-center justify-between">
                         <div
@@ -1259,14 +1234,6 @@
                 <slot name="cta"></slot>
             </div>
         </div>
-        <hr
-            class="mx-2 text-gray-100 bg-gray-200"
-            :class="
-                (bulkSelectMode && isChecked) || isSelected || page === 'assets'
-                    ? 'invisible'
-                    : ''
-            "
-        />
 
         <AssetDrawer
             :guid="selectedAssetDrawerGuid"

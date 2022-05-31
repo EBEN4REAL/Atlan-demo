@@ -19,7 +19,7 @@
         </p>
         <AtlanButton2
             v-if="buttonText"
-            size="large"
+            size="medium"
             :class="buttonClass"
             :color="buttonColor"
             :prefixIcon="buttonIcon"

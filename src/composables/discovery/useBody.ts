@@ -558,13 +558,16 @@ export function useBody(
                                 }
                             }
                             if (element.operator === 'isNotNull') {
-                                  if (
+                                if (
                                     element.operand === 'description.keyword' ||
                                     element.operand ===
                                         'userDescription.keyword'
                                 ) {
                                     base.filter('bool', (q) => {
-                                        q.orFilter('exists', 'description.keyword')
+                                        q.orFilter(
+                                            'exists',
+                                            'description.keyword'
+                                        )
                                         q.orFilter(
                                             'exists',
                                             'userDescription.keyword'
@@ -574,11 +577,31 @@ export function useBody(
                                 } else {
                                     base.filter('exists', element.operand)
                                 }
-                               
-
-                               
                             }
-                            if (element.value != null && element.value !== '') {
+                            if (
+                                element.operator === 'boolean' &&
+                                element.operand === '__hasLineage'
+                            ) {
+                                element.value
+                                    ? base.filter(
+                                          'term',
+                                          '__hasLineage',
+                                          Array.isArray(element.value)
+                                              ? JSON.stringify(element.value)
+                                              : element.value
+                                      )
+                                    : (base.orFilter(
+                                          'term',
+                                          '__hasLineage',
+                                          Array.isArray(element.value)
+                                              ? JSON.stringify(element.value)
+                                              : element.value
+                                      ),
+                                      base.notFilter('exists', element.operand))
+                            } else if (
+                                element.value != null &&
+                                element.value !== ''
+                            ) {
                                 if (element.operator === 'equals') {
                                     if (
                                         element.operand ===

@@ -30,6 +30,9 @@
                         :placeholder="`Add Workspace Name`"
                         class="text-lg font-bold border-0 shadow-none outline-none"
                     />
+                    <div v-if="!newTenantName" class="texr-xs text-error">
+                        Please enter Workspace name
+                    </div>
                     <div class="flex items-center justify-end gap-x-3">
                         <AtlanButton2
                             color="secondary"
@@ -37,7 +40,9 @@
                             @click="showEditTenantNameModal = false"
                         />
                         <AtlanButton2
-                            :disabled="updateStatus === 'loading'"
+                            :disabled="
+                                updateStatus === 'loading' || !newTenantName
+                            "
                             :loading="updateStatus === 'loading'"
                             :label="
                                 updateStatus !== 'loading'
@@ -69,7 +74,7 @@
                         </div>
                     </div>
                     <div class="ml-5 mr-1 text-2xl text-gray-700">
-                        {{ name }}
+                        {{ name || 'default' }}
                     </div>
                     <AtlanIcon
                         icon="Pencil"

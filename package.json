@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "2.71.4",
+  "version": "2.72.0",
   "scripts": {
     "dev": "vite --port 3333 --open",
     "build-dev": "vite build --mode development",

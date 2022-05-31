@@ -1,5 +1,5 @@
 <template>
-    <div class="px-6 py-7">
+    <div class="px-6 overflow-y-hidden py-7" style="height: calc(100vh - 40px)">
         <span class="text-xl">Connections</span>
         <div class="w-1/3 mt-4">
             <SearchAndFilter
@@ -57,7 +57,11 @@
         >
             <AtlanLoader class="h-10" />
         </div>
-        <div class="grid grid-cols-4 gap-4 gap-y-6 mt-7 pb-7" v-else>
+        <div
+            class="grid h-full grid-cols-4 gap-4 overflow-y-auto pb-36 gap-y-6 mt-7"
+            style="grid-template-rows: auto auto 1fr 1fr 1fr auto auto"
+            v-else
+        >
             <ConnectorCard
                 v-for="item in list"
                 :key="item.guid"

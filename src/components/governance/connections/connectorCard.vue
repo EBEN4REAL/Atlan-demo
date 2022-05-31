@@ -2,6 +2,7 @@
 <template>
     <div
         class="transition duration-100 border rounded-md cursor-pointer hover:border-primary"
+        style="height: 75px"
         :class="{
             'border-primary  shadow border bg-primary-menu': isSelected,
             'opacity-80': isLoading,

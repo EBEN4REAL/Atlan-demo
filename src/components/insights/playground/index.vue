@@ -97,7 +97,11 @@
                                                     : '',
                                             ]"
                                         >
-                                            <TabItem :title="tab.label" :index="tab.key" @onDroped="sortTabsOnDrop"/>
+                                            <TabItem
+                                                :title="tab.label"
+                                                :index="tab.key"
+                                                @onDroped="sortTabsOnDrop"
+                                            />
                                         </span>
                                     </div>
                                 </div>
@@ -249,7 +253,7 @@
         inject,
         ref,
         provide,
-        unref
+        unref,
     } from 'vue'
     import { useRouter, useRoute } from 'vue-router'
     import { useDebounceFn } from '@vueuse/core'
@@ -280,7 +284,7 @@
             SaveQueryModal,
             ResultPaneFooter,
             Tooltip,
-            TabItem
+            TabItem,
         },
         props: {
             activeInlineTabKey: {
@@ -593,40 +597,17 @@
             })
 
             const sortTabsOnDrop = (currentKey: String, dropKey: String) => {
-                 console.log("Current Key: " + currentKey + " Drop Key: " + dropKey)
-                // let copyTabs = unref(tabs.value);
+                // debugger
+                const currIndex = tabs.value.findIndex(
+                    (tab) => tab.key === currentKey
+                )
+                const dropIndex = tabs.value.findIndex(
+                    (tab) => tab.key === dropKey
+                )
+                const content = tabs.value[currIndex]
+                tabs.value.splice(currIndex, 1)
 
-                tabs.value = tabs.value.map((tab) => {
-                    if(currentKey===tab.key){
-                        const tempTab = unref(tab);
-                        tempTab.key=dropKey;
-
-                        return tempTab;
-                    }
-
-                    if(dropKey===tab.key){
-                        const tempTab = unref(tab);
-                        tempTab.key=currentKey;
-
-                        return tempTab;
-                    }
-
-                   return tab; 
-                });
-
-                // const content = tabs.value[currentKey];
-
-                // newPanes.splice(currentKey, 1);
-
-                // newPanes.splice(dropKey, 0, content);
-
-                // tabs.value=newPanes
-
-                if(activeInlineTabKey.value===currentKey)
-                    activeInlineTabKey.value=dropKey
-
-                // if(dropKey===activeInlineTabKey.value)
-                //     activeInlineTabKey.value=dropKey+1
+                tabs.value.splice(dropIndex, 0, content)
             }
 
             return {
@@ -655,7 +636,7 @@
                 isSaving,
                 showContextMenu,
                 contentMenu,
-                sortTabsOnDrop
+                sortTabsOnDrop,
             }
         },
     })

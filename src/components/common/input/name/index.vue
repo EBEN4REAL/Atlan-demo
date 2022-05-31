@@ -1,45 +1,47 @@
 <template>
-    <div v-if="isEdit" class="freeze-clicks-outside-popover"></div>
+    <div>
+        <div v-if="isEdit" class="freeze-clicks-outside-popover"></div>
 
-    <Shortcut
-        shortcut-key="n"
-        action="set name"
-        placement="left"
-        :edit-permission="editPermission && !isEdit"
-    >
-        <div
-            class="flex flex-col px-1 rounded"
-            :class="{
-                'bg-primary-light': isEdit,
-                'hover:bg-primary-light': editPermission,
-            }"
+        <Shortcut
+            shortcut-key="n"
+            action="set name"
+            placement="left"
+            :edit-permission="editPermission && !isEdit"
         >
             <div
-                class="text-sm text-gray-700"
-                :class="$style.editable"
-                @click="handleEdit"
+                class="flex flex-col px-1 rounded"
+                :class="{
+                    'bg-primary-light': isEdit,
+                    'hover:bg-primary-light': editPermission,
+                }"
             >
-                <span
-                    v-if="!isEdit && localValue"
-                    class="break-words whitespace-pre-wrap"
-                    >{{ localValue }}</span
+                <div
+                    class="text-sm text-gray-700"
+                    :class="$style.editable"
+                    @click="handleEdit"
                 >
-                <span
-                    v-else-if="!isEdit && localValue === ''"
-                    class="text-gray-700"
-                    >No name available</span
-                >
-                <a-input
-                    v-else
-                    ref="nameRef"
-                    v-model:value="localValue"
-                    tabindex="0"
-                    :rows="4"
-                    @blur="handleBlur"
-                    @keyup.esc="handleCancel"
-                ></a-input>
-            </div></div
-    ></Shortcut>
+                    <span
+                        v-if="!isEdit && localValue"
+                        class="break-words whitespace-pre-wrap"
+                        >{{ localValue }}</span
+                    >
+                    <span
+                        v-else-if="!isEdit && localValue === ''"
+                        class="text-gray-700"
+                        >No name available</span
+                    >
+                    <a-input
+                        v-else
+                        ref="nameRef"
+                        v-model:value="localValue"
+                        tabindex="0"
+                        :rows="4"
+                        @blur="handleBlur"
+                        @keyup.esc="handleCancel"
+                    ></a-input>
+                </div></div
+        ></Shortcut>
+    </div>
 </template>
 
 <script lang="ts">

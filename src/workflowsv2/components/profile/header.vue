@@ -51,7 +51,7 @@
                         }}</span
                     >
                     <span class="italic truncate text-grey-500">
-                        ({{ name(workflowObject) }})
+                        ({{ refName(workflowObject) }})
                     </span>
                 </div>
 
@@ -428,6 +428,7 @@
             })
             return {
                 handleBack,
+                refName,
                 name,
                 creationTimestamp,
                 creatorUsername,

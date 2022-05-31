@@ -1,14 +1,16 @@
 <template>
-    <InsightsComponent v-if="featureEnabledMap[INSIGHT_WORKSPACE_LEVEL_TAB]" />
-    <div v-else class="flex items-center justify-around w-full h-full">
-        <div class="flex flex-col items-center">
-            <AtlanIcon icon="LockedFile" class="h-32" />
-            <span class="mt-5 text-2xl font-bold">Insights is disabled</span>
-            <span class="text-base text-gray-500"
-                >Insights workspace is disabled by your admin.</span
-            >
+    <DndProvider :backend="HTML5Backend">
+        <InsightsComponent v-if="featureEnabledMap[INSIGHT_WORKSPACE_LEVEL_TAB]" />
+        <div v-else class="flex items-center justify-around w-full h-full">
+            <div class="flex flex-col items-center">
+                <AtlanIcon icon="LockedFile" class="h-32" />
+                <span class="mt-5 text-2xl font-bold">Insights is disabled</span>
+                <span class="text-base text-gray-500"
+                    >Insights workspace is disabled by your admin.</span
+                >
+            </div>
         </div>
-    </div>
+    </DndProvider>
 </template>
 
 <script lang="ts">
@@ -22,9 +24,11 @@
         onMounted,
     } from 'vue'
     import { useHead } from '@vueuse/head'
-    import InsightsComponent from '~/components/insights/index.vue'
+    import { HTML5Backend } from 'react-dnd-html5-backend'
+    import { DndProvider } from 'vue3-dnd'
     import { useRoute, useRouter } from 'vue-router'
     import { message } from 'ant-design-vue'
+    import InsightsComponent from '~/components/insights/index.vue'
     import { SavedQuery } from '~/types/insights/savedQuery.interface'
     import {
         AssetAttributes,
@@ -39,10 +43,14 @@
         featureEnabledMap,
         INSIGHT_WORKSPACE_LEVEL_TAB,
     } from '~/composables/labs/labFeatureList'
+    
 
     export default defineComponent({
         name: 'Insights Page',
-        components: { InsightsComponent },
+        components: { 
+            InsightsComponent, 
+            DndProvider,
+        },
         props: {},
         setup(props) {
             useHead({
@@ -199,6 +207,7 @@
             return {
                 featureEnabledMap,
                 INSIGHT_WORKSPACE_LEVEL_TAB,
+                HTML5Backend
             }
         },
     })

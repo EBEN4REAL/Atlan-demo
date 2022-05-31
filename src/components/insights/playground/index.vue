@@ -30,8 +30,8 @@
                                         class="p-2 mt-2 bg-white newTabDropdown"
                                     >
                                         <div
-                                            @click="handleAdd(false)"
                                             class="flex items-center pl-2 newTabDropdownOption newTabDropdownOption1"
+                                            @click="handleAdd(false)"
                                         >
                                             <AtlanIcon
                                                 icon="Query24"
@@ -42,8 +42,8 @@
                                             </span>
                                         </div>
                                         <div
-                                            @click="handleAdd(true)"
                                             class="flex items-center pl-2 mt-2 newTabDropdownOption newTabDropdownOption2"
+                                            @click="handleAdd(true)"
                                         >
                                             <AtlanIcon
                                                 icon="Vqb24"
@@ -97,11 +97,7 @@
                                                     : '',
                                             ]"
                                         >
-                                            <Tooltip
-                                                clamp-percentage="99%"
-                                                :tooltip-text="tab.label"
-                                                :rows="1"
-                                            />
+                                            <TabItem :title="tab.label" :index="tab.key" @onDroped="sortTabsOnDrop"/>
                                         </span>
                                     </div>
                                 </div>
@@ -228,13 +224,13 @@
 
         <!-- <NoActiveInlineTab @handleAdd="handleAdd(false)" v-else /> -->
         <SaveQueryModal
-            v-model:showSaveQueryModal="showSaveQueryModal"
-            :saveQueryLoading="saveQueryLoading"
             :ref="
                 (el) => {
                     saveModalRef = el
                 }
             "
+            v-model:showSaveQueryModal="showSaveQueryModal"
+            :saveQueryLoading="saveQueryLoading"
             :connector="
                 activeInlineTab?.explorer?.queries?.connectors?.connector
             "
@@ -253,7 +249,10 @@
         inject,
         ref,
         provide,
+        unref
     } from 'vue'
+    import { useRouter, useRoute } from 'vue-router'
+    import { useDebounceFn } from '@vueuse/core'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -264,12 +263,11 @@
     import UnsavedPopover from '~/components/insights/common/unsavedPopover/index.vue'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
     import ResultPaneFooter from '~/components/insights/playground/resultsPane/result/resultPaneFooter.vue'
-    import { useRouter, useRoute } from 'vue-router'
     import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
     import { useSpiltPanes } from '~/components/insights/common/composables/useSpiltPanes'
-    import { useDebounceFn } from '@vueuse/core'
     import Tooltip from '@/common/ellipsis/index.vue'
     import insightsStore from '~/store/insights/index'
+    import TabItem from '~/components/insights/playground/tabs/TabItem.vue'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
@@ -282,6 +280,7 @@
             SaveQueryModal,
             ResultPaneFooter,
             Tooltip,
+            TabItem
         },
         props: {
             activeInlineTabKey: {
@@ -558,6 +557,7 @@
             }
 
             let tabHover = ref(null)
+
             const setTabHover = (val) => {
                 // console.log('tab: ', val)
                 if (val) {
@@ -592,6 +592,43 @@
                     ?.executionTime
             })
 
+            const sortTabsOnDrop = (currentKey: String, dropKey: String) => {
+                 console.log("Current Key: " + currentKey + " Drop Key: " + dropKey)
+                // let copyTabs = unref(tabs.value);
+
+                tabs.value = tabs.value.map((tab) => {
+                    if(currentKey===tab.key){
+                        const tempTab = unref(tab);
+                        tempTab.key=dropKey;
+
+                        return tempTab;
+                    }
+
+                    if(dropKey===tab.key){
+                        const tempTab = unref(tab);
+                        tempTab.key=currentKey;
+
+                        return tempTab;
+                    }
+
+                   return tab; 
+                });
+
+                // const content = tabs.value[currentKey];
+
+                // newPanes.splice(currentKey, 1);
+
+                // newPanes.splice(dropKey, 0, content);
+
+                // tabs.value=newPanes
+
+                if(activeInlineTabKey.value===currentKey)
+                    activeInlineTabKey.value=dropKey
+
+                // if(dropKey===activeInlineTabKey.value)
+                //     activeInlineTabKey.value=dropKey+1
+            }
+
             return {
                 queryExecutionTime,
                 onHorizontalResize,
@@ -618,6 +655,7 @@
                 isSaving,
                 showContextMenu,
                 contentMenu,
+                sortTabsOnDrop
             }
         },
     })

@@ -155,7 +155,7 @@
                 </div>
                 <div
                     v-if="sizeBytes(selectedAsset) !== '0'"
-                    class="flex flex-col text-sm cursor-pointer"
+                    class="flex flex-col text-sm"
                 >
                     <span class="mb-1 text-sm text-gray-500">Size</span>
                     <span class="text-gray-700">{{

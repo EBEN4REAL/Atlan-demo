@@ -22,7 +22,42 @@
             >
             </AggregationTabs>
         </div>
-        <div class="grid grid-cols-4 gap-4 gap-y-6 mt-7 pb-7">
+        <div
+            v-if="
+                error &&
+                error?.message !== 'operation cancelled' &&
+                !isValidating
+            "
+            class="flex items-center justify-center flex-grow mt-36"
+        >
+            <ErrorView></ErrorView>
+        </div>
+        <div
+            v-else-if="list.length === 0 && !isValidating"
+            class="flex-grow mt-36"
+        >
+            <EmptyView
+                empty-screen="NoAssetsFound"
+                image-class="h-44"
+                :desc="
+                    !queryText
+                        ? 'No connections found'
+                        : queryText
+                        ? 'We didn\'t find anything that matches your search criteria'
+                        : 'No connections found'
+                "
+                :button-text="''"
+                class="mb-10"
+            ></EmptyView>
+            <!-- @event="handleResetEvent" -->
+        </div>
+        <div
+            v-else-if="list.length === 0 && isValidating"
+            class="flex items-center justify-center mt-36"
+        >
+            <AtlanLoader class="h-10" />
+        </div>
+        <div class="grid grid-cols-4 gap-4 gap-y-6 mt-7 pb-7" v-else>
             <ConnectorCard
                 v-for="item in list"
                 :key="item.guid"
@@ -46,12 +81,16 @@
     import SearchAndFilter from '@/common/input/searchAndFilter.vue'
     import ConnectorCard from './connectorCard.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
+    import EmptyView from '@common/empty/index.vue'
+    import ErrorView from '@common/error/discover.vue'
 
     export default defineComponent({
         components: {
             SearchAndFilter,
             ConnectorCard,
             AggregationTabs,
+            EmptyView,
+            ErrorView,
         },
         setup() {
             const limit = ref(100)
@@ -145,6 +184,8 @@
                 connectorAggregateList,
                 handleConnectorTypeChange,
                 facets,
+                isValidating,
+                error,
             }
         },
     })

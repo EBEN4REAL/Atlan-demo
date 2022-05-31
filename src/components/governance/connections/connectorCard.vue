@@ -1261,6 +1261,7 @@
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -1467,6 +1468,7 @@
             const handlePreview = (item: any) => {
                 showAssetSidebarDrawer.value = true
                 selectedAssetDrawerGuid.value = item?.guid
+                useAddEvent('governance', 'connection', 'card_clicked')
             }
 
             const handleCloseDrawer = () => {

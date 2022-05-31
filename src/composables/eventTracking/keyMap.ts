@@ -70,11 +70,11 @@ const keyMap = {
                 action: 'discovery_cta_action_clicked',
                 properties: (props: {
                     action:
-                    | 'open_asset'
-                    | 'vqb_query'
-                    | 'sql_query'
-                    | 'copy_link'
-                    | 'open_in_source'
+                        | 'open_asset'
+                        | 'vqb_query'
+                        | 'sql_query'
+                        | 'copy_link'
+                        | 'open_in_source'
                     asset_type: string
                 }) => ({
                     ...props,
@@ -838,7 +838,6 @@ const keyMap = {
                 }),
             },
         },
-
         options: {
             created: {
                 action: 'governance_options_created',
@@ -851,6 +850,11 @@ const keyMap = {
                 properties: (props: { title: string }) => ({
                     ...props,
                 }),
+            },
+        },
+        connection: {
+            card_clicked: {
+                action: 'governance_connection_card_clicked',
             },
         },
     },

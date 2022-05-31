@@ -36,7 +36,7 @@
         </div>
         <div class="mt-7">
             <div class="text-sm text-gray-500">Description</div>
-            <div class="mt-2 text-sm text-gray-800">
+            <div class="mt-2 text-sm" :class="item.description ? 'text-gray-800' : 'text-gray-600'">
                 {{ item.description || 'No description' }}
             </div>
         </div>
@@ -44,7 +44,7 @@
             <div class="text-sm text-gray-500">Classifications</div>
             <div
                 v-if="!listClassifications.length"
-                class="mt-2 text-sm text-gray-800"
+                class="mt-2 text-sm text-gray-600"
             >
                 No classification attached
             </div>

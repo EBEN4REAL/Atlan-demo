@@ -1,10 +1,10 @@
 <template>
     <a-popover
-        v-model:visible="assetPopoverVisible"
+        v-model:visible="localAssetPopoverVisible"
         title=""
         placement="left"
         :mouse-enter-delay="mouseEnterDelay"
-        trigger="hover"
+        :trigger="popoverTrigger"
     >
         <template #content>
             <div class="rounded w-96">
@@ -335,11 +335,8 @@
                         </div>
                     </div>
 
-                    <div class="flex" v-if="showPreviewLink" >
-                        <router-link
-                            :to="path"
-                            class="ml-auto" 
-                        >
+                    <div class="flex" v-if="showPreviewLink">
+                        <router-link :to="path" class="ml-auto">
                             <AtlanBtn
                                 class="flex-none px-0"
                                 size="sm"
@@ -371,7 +368,15 @@
 </template>
 
 <script lang="ts">
-    import { toRefs, computed, inject, onMounted, ref, ComputedRef } from 'vue'
+    import {
+        toRefs,
+        computed,
+        inject,
+        onMounted,
+        ref,
+        ComputedRef,
+        watch,
+    } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
@@ -385,6 +390,7 @@
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
+    import { useVModels } from '@vueuse/core'
 
     export default {
         name: 'PopoverAsset',
@@ -419,10 +425,19 @@
                 type: Boolean,
                 default: true,
             },
+            assetPopoverVisible: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
+            popoverTrigger: {
+                type: String,
+                default: 'hover',
+            },
         },
         emits: ['previewAsset'],
         setup(props, { slots, emit }) {
-            const { item } = toRefs(props)
+            const { item, popoverTrigger } = toRefs(props)
 
             const {
                 certificateStatus,
@@ -451,8 +466,14 @@
 
             const { showUserPreview: openPreview, setUserUniqueAttribute } =
                 useUserPreview()
+            const { assetPopoverVisible } = useVModels(props, emit)
+            const localAssetPopoverVisible = ref(
+                assetPopoverVisible.value ?? false
+            )
+            watch(assetPopoverVisible, () => {
+                localAssetPopoverVisible.value = localAssetPopoverVisible
+            })
             const { classificationList } = useTypedefData()
-            const assetPopoverVisible = ref(false)
             const showTablePreview = ref(false)
 
             const isPropagated = (classification) => {
@@ -541,6 +562,8 @@
             })
 
             return {
+                localAssetPopoverVisible,
+                popoverTrigger,
                 certificateStatus,
                 certificateUpdatedBy,
                 certificateUpdatedAt,

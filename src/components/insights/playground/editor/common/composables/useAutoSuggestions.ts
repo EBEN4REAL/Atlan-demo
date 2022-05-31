@@ -209,7 +209,8 @@ export function entitiesToEditorKeyword(
         attributeName: string
         attributeValue: string
     },
-    isDotBased: boolean = false // wether to include table with column or not T.C
+    isDotBased: boolean = false, // wether to include table with column or not T.C,
+    kind: number = 3
 ) {
     const { getConnectorName } = useConnector()
     // for assetQuote Info of different sources
@@ -296,7 +297,9 @@ export function entitiesToEditorKeyword(
                             // detail: `${entityType}`, // TABLE,
                             label: label,
                             detail: `${entityType}`,
-                            kind: monaco.languages.CompletionItemKind.Field,
+                            kind:
+                                kind ||
+                                monaco.languages.CompletionItemKind.Field,
                             documentation: {
                                 value: generateMarkdown(
                                     turndownService,
@@ -330,7 +333,9 @@ export function entitiesToEditorKeyword(
                             // detail: `${type}: ${tableName}`, // COLUMN - TABLE_NAME,
                             label: entities[i].attributes.name,
                             detail: `${tableName}`, // COLUMN - TABLE_NAME,
-                            kind: monaco.languages.CompletionItemKind.Field,
+                            kind:
+                                kind ||
+                                monaco.languages.CompletionItemKind.Field,
                             documentation: {
                                 value: generateMarkdown(
                                     turndownService,
@@ -426,9 +431,16 @@ const attributes = [
     'columnCount',
     'tableCount',
     'certificateStatus',
+    'updatedBy',
+    'updatedAt',
     '__guid',
     'qualifiedName',
     'connectionName',
+    'announcementMessage',
+    'announcementTitle',
+    'announcementType',
+    'announcementUpdatedAt',
+    'announcementUpdatedBy',
 ]
 const body = ref()
 
@@ -551,7 +563,8 @@ async function getSuggestionsUsingType(
     context: {
         attributeName: string
         attributeValue: string
-    }
+    },
+    kind: number = 3
 ) {
     refreshBody()
     if (connectorsInfo.schemaName) {
@@ -612,7 +625,9 @@ async function getSuggestionsUsingType(
                     type,
                     currentWord,
                     connectorsInfo,
-                    context
+                    context,
+                    false,
+                    kind
                 )
                 // console.log('connector: ', connectorsInfo)
 
@@ -720,7 +735,9 @@ async function getSuggestionsUsingType(
                     type,
                     currentWord,
                     connectorsInfo,
-                    context
+                    context,
+                    false,
+                    kind
                 )
 
                 return suggestionsPromise
@@ -1047,7 +1064,7 @@ export async function useAutoSuggestions(
                                         return {
                                             label: keyword,
                                             kind: monaco.languages
-                                                .CompletionItemKind.Keyword,
+                                                .CompletionItemKind.Function,
                                             insertText: keyword,
                                         }
                                     }
@@ -1082,7 +1099,7 @@ export async function useAutoSuggestions(
                                         return {
                                             label: keyword,
                                             kind: monaco.languages
-                                                .CompletionItemKind.Keyword,
+                                                .CompletionItemKind.Function,
                                             insertText: keyword,
                                         }
                                     }
@@ -1104,7 +1121,7 @@ export async function useAutoSuggestions(
                                         return {
                                             label: keyword,
                                             kind: monaco.languages
-                                                .CompletionItemKind.Keyword,
+                                                .CompletionItemKind.Function,
                                             insertText: keyword,
                                         }
                                     }
@@ -1141,7 +1158,7 @@ export async function useAutoSuggestions(
                                     return {
                                         label: keyword,
                                         kind: monaco.languages
-                                            .CompletionItemKind.Keyword,
+                                            .CompletionItemKind.Function,
                                         insertText: `${keyword}()`,
                                     }
                                 }
@@ -1159,8 +1176,10 @@ export async function useAutoSuggestions(
                                 (keyword) => {
                                     return {
                                         label: keyword,
-                                        kind: monaco.languages
-                                            .CompletionItemKind.Keyword,
+                                        kind:
+                                            1 ||
+                                            monaco.languages.CompletionItemKind
+                                                .Keyword,
                                         insertText: keyword,
                                     }
                                 }

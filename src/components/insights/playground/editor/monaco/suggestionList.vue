@@ -1,49 +1,102 @@
 <template>
     <div
-        class="absolute max-w-md py-0.5 overflow-auto bg-white shadow max-h-64"
+        class="absolute"
+        style="filter: drop-shadow(0px 5px 16px rgba(0, 0, 0, 0.1))"
     >
         <div
-            v-for="(suggestion, index) in suggestionListModified"
-            :id="`sugg-${index}`"
-            :key="index"
-            class="hover:bg-gray-300"
-            :class="selectedSuggestionIndex === index ? 'bg-gray-300' : ''"
-            tabindex="-1"
+            class="py-0.5 overflow-auto bg-white max-h-52 rounded-t-md"
+            style="overflow: hidden; width: 447px"
         >
-            <div v-if="suggestion?.documentation?.entity">
-                <PopoverAsset
-                    :item="suggestion?.documentation?.entity"
-                    placement="right"
-                    :mouseEnterDelay="0.3"
-                >
-                    <div
-                        @keyup.enter.stop="handleApplySuggestion(suggestion)"
-                        @click.stop="handleApplySuggestion(suggestion)"
-                        class="px-2 suggestion-item"
+            <div
+                v-for="(suggestion, index) in suggestionListModified"
+                :id="`sugg-${index}`"
+                :key="index"
+                class="cursor-pointer hover:bg-new-gray-100"
+                :class="
+                    selectedSuggestionIndex === index ? 'bg-new-gray-100' : ''
+                "
+                tabindex="-1"
+            >
+                <div v-if="suggestion?.documentation?.entity">
+                    <PopoverAsset
+                        v-if="
+                            autosuggestionPopoverActive &&
+                            selectedSuggestionIndex === index
+                        "
+                        :item="suggestion?.documentation?.entity"
+                        placement="right"
+                        :mouseEnterDelay="0.3"
+                        v-model:assetPopoverVisible="
+                            autosuggestionPopoverActive
+                        "
+                        popoverTrigger="focus"
                     >
-                        <AtlanIcon
-                            :icon="getIcon(suggestion)"
-                            class="mr-0.5"
-                            :class="suggestion.iconClass"
-                        ></AtlanIcon
-                        ><span class="text-xs" v-html="suggestion.label"></span>
+                        <div
+                            @keyup.enter.stop="
+                                (e) => checkEnterPress(e, suggestion)
+                            "
+                            @click.stop="handleApplySuggestion(suggestion)"
+                            class="items-center justify-between w-full px-2 py-1"
+                        >
+                            <SuggestionListItem
+                                :isActive="selectedSuggestionIndex === index"
+                                :suggestion="suggestion"
+                            />
+                        </div>
+                    </PopoverAsset>
+                    <div v-else>
+                        <div
+                            @keyup.enter.stop="
+                                (e) => checkEnterPress(e, suggestion)
+                            "
+                            @click.stop="handleApplySuggestion(suggestion)"
+                            class="px-2 py-1"
+                        >
+                            <SuggestionListItem
+                                :isActive="selectedSuggestionIndex === index"
+                                :suggestion="suggestion"
+                            />
+                        </div>
                     </div>
-                </PopoverAsset>
-            </div>
-            <div v-else>
-                <div
-                    @keyup.enter.stop="handleApplySuggestion(suggestion)"
-                    @click.stop="handleApplySuggestion(suggestion)"
-                    class="px-2 suggestion-item"
-                >
-                    <AtlanIcon
-                        :icon="getIcon(suggestion)"
-                        class="mr-0.5"
-                        :class="suggestion.iconClass"
-                    ></AtlanIcon
-                    ><span class="text-xs" v-html="suggestion.label"></span>
+                </div>
+                <div v-else>
+                    <div
+                        @keyup.enter.stop="
+                            (e) => checkEnterPress(e, suggestion)
+                        "
+                        @click.stop="handleApplySuggestion(suggestion)"
+                        class="px-2 py-1"
+                    >
+                        <SuggestionListItem
+                            :isActive="selectedSuggestionIndex === index"
+                            :suggestion="suggestion"
+                        />
+                    </div>
                 </div>
             </div>
+        </div>
+        <div class="w-full bg-new-gray-100" style="height: 1px"></div>
+        <div
+            class="flex justify-end px-2 py-1 text-sm bg-white text-new-gray-600 rounded-b-md"
+        >
+            <span> showing {{ suggestionListModified?.length }} results</span>
+        </div>
+        <div
+            class="absolute flex items-center bg-white mt-1.5 px-1.5 text-sm rounded-md text-new-gray-700"
+            style="min-width: 300px; padding-top: 5px; padding-bottom: 5px"
+        >
+            <div
+                class="px-1 text-sm border rounded suggestion-item bg-new-gray-100 border-new-gray-300"
+            >
+                Enter
+            </div>
+            &nbsp;to learn more, &nbsp;
+            <div
+                class="px-1 text-sm border rounded suggestion-item bg-new-gray-100 border-new-gray-300"
+            >
+                <span>shift</span> + Enter
+            </div>
+            &nbsp;to learn more.
         </div>
     </div>
 </template>
@@ -51,9 +104,10 @@
     import { defineComponent, toRefs, computed, inject, toRaw, Ref } from 'vue'
     import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
     import { useVModels } from '@vueuse/core'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { capitalizeFirstLetter } from '~/utils/string'
+    import { getSuggestionsListIcon } from './useUtils'
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
+    import SuggestionListItem from './suggestionListItem.vue'
 
     export default defineComponent({
         name: 'SuggestionList',
@@ -66,39 +120,18 @@
                 type: Number,
                 default: null,
             },
+            autosuggestionPopoverActive: {
+                type: Boolean,
+                required: true,
+            },
         },
-        components: { PopoverAsset },
+        components: { PopoverAsset, SuggestionListItem },
         emits: ['applySuggestions'],
         setup(props, { emit }) {
             const { suggestions: suggestionList } = toRefs(props)
-            const { selectedSuggestionIndex } = useVModels(props, emit)
+            const { selectedSuggestionIndex, autosuggestionPopoverActive } =
+                useVModels(props, emit)
 
-            const { assetType, certificateStatus } = useAssetInfo()
-
-            const getAssetIconWithCertification = (asset) => {
-                if (!asset) return ''
-                const type =
-                    capitalizeFirstLetter(
-                        assetType(asset)?.toLowerCase() ||
-                            asset.typeName.toLowerCase() ||
-                            ''
-                    ) || ''
-                const certification =
-                    capitalizeFirstLetter(
-                        certificateStatus(asset)?.toLowerCase() || ''
-                    ) || ''
-
-                if (type && certification) return `${type}${certification}`
-                if (type) return `${type}`
-                return ''
-            }
-            const getIcon = (suggestion) => {
-                if (suggestion?.documentation?.entity)
-                    return getAssetIconWithCertification(
-                        suggestion.documentation.entity
-                    )
-                return 'Vqb24'
-            }
             const handleApplySuggestion = () => {
                 emit(
                     'applySuggestions',
@@ -132,12 +165,21 @@
                 })
                 return list
             })
+
+            const checkEnterPress = (e, suggestion) => {
+                debugger
+                // handleApplySuggestion(suggestion);
+                //             if ((mac && e.metaKey) || ((windows || linux) && e.ctrlKey)) {
+                // }
+            }
             return {
+                autosuggestionPopoverActive,
+                checkEnterPress,
+                capitalizeFirstLetter,
                 suggestionListModified,
                 selectedSuggestionIndex,
                 handleApplySuggestion,
-                getAssetIconWithCertification,
-                getIcon,
+                getSuggestionsListIcon,
             }
         },
     })

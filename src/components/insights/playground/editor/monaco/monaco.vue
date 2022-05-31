@@ -4,6 +4,7 @@
         id="auto-suggestions"
         v-model:selectedSuggestionIndex="selectedSuggestionIndex"
         :suggestions="suggestions"
+        :autosuggestionPopoverActive="autosuggestionPopoverActive"
         @applySuggestions="handleApplySuggestion"
     />
 </template>
@@ -65,6 +66,7 @@
         components: { SuggestionList },
 
         setup(props, { emit }) {
+            const autosuggestionPopoverActive = ref(false)
             const cancelTokenSource = ref()
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -373,9 +375,10 @@
                     value: activeInlineTab.value.playground.editor.text,
                     theme: editorConfig.value.theme,
                     fontSize: 14,
-                    cursorStyle: 'line',
+                    cursorStyle: 'block',
                     cursorWidth: 2,
                     letterSpacing: 0.1,
+                    // cursorSmoothCaretAnimation: true,
                     minimap: {
                         enabled: false,
                     },
@@ -583,13 +586,32 @@
                         e.stopPropagation()
                         traverseUp()
                     }
-                    if (e.keyCode === 3 && isAutoComplete.value) {
+                    if (
+                        e.keyCode === 3 &&
+                        isAutoComplete.value &&
+                        !e.ctrlKey &&
+                        !e.metaKey &&
+                        !e.shiftKey
+                    ) {
                         // document.activeElement.blur()
                         e.preventDefault()
                         e.stopPropagation()
                         handleApplySuggestion(
                             suggestions.value[selectedSuggestionIndex.value]
                         )
+                    }
+                    if (
+                        e.keyCode === 3 &&
+                        isAutoComplete.value &&
+                        !e.ctrlKey &&
+                        !e.metaKey &&
+                        e.shiftKey
+                    ) {
+                        // document.activeElement.blur()
+                        e.preventDefault()
+                        e.stopPropagation()
+                        autosuggestionPopoverActive.value =
+                            !autosuggestionPopoverActive.value
                     }
                 })
 
@@ -878,8 +900,15 @@
                     }
                 })
             })
+            // closing the popover once autosuggestion dropdown closed
+            watch(isAutoComplete, () => {
+                if (!isAutoComplete.value) {
+                    autosuggestionPopoverActive.value = false
+                }
+            })
 
             return {
+                autosuggestionPopoverActive,
                 editor,
                 isAutoComplete,
                 editorStates,
@@ -972,6 +1001,11 @@
         height: 15px !important;
         background-size: 15px 15px;
         margin-top: 3px !important;
+    }
+    .monaco-editor .cursors-layer .cursor {
+        @apply bg-primary !important;
+        @apply border-primary !important;
+        color: #ffffff;
     }
 </style>
 

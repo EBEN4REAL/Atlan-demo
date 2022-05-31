@@ -1329,6 +1329,7 @@ export default function useAssetInfo() {
         attributes(asset)?.s3ObjectVersionId || '-'
 
     return {
+        dataTypeCategory,
         attributes,
         title,
         getConnectorImage,

@@ -228,6 +228,7 @@
                     sameTargetCount,
                     nodes,
                     edges,
+                    groupedProcessIds,
                     onSelectAsset,
                     onCloseDrawer,
                     addSubGraph,

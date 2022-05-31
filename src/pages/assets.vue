@@ -69,7 +69,7 @@
 
             provide('updateList', updateList)
             provide('preview', handlePreview)
-            provide('switchTab', handleTabSwitch)
+            provide('switchSidebarTab', handleTabSwitch)
 
             const sendPageEvent = () => {
                 useTrackPage('assets', 'discovery')

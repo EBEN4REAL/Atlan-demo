@@ -589,12 +589,12 @@
             })
 
             const handlePreview = inject('preview')
-            const switchTab = inject('switchTab')
+            const switchSidebarTab = inject('switchSidebarTab', () => {})
             const isCmndKVisible: ComputedRef<boolean | undefined> =
                 inject('isCmndKVisible')
 
             const handleTabSwitch = (payload) => {
-                switchTab(payload)
+                switchSidebarTab(payload)
             }
 
             const updateCurrentList = (asset) => {
@@ -1047,7 +1047,6 @@
                 handleBrowseAsset,
                 hierarchyDirtyTimestamp,
                 handleTabSwitch,
-                switchTab,
             }
         },
     })

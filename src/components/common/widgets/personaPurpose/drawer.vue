@@ -13,7 +13,7 @@
             <AtlanIcon icon="Add" class="text-gray-700" />
         </div>
         <div class="px-5 py-4 border-b border-gray-200">
-            <div class="text-lg font-bold">{{ item.name }}</div>
+            <div class="text-lg font-bold">{{ item.displayName }}</div>
             <div class="flex items-center mt-1 capitalize">
                 <div class="flex items-center text-sm text-gray-500">
                     {{ activeTab }}
@@ -160,7 +160,7 @@
                     (el, i) => i === activeKey.value
                 )
                 useAddEvent('governance', activeTab.value, 'home_tab', {
-                    [`${activeTab.value}_name`]: item.value.name,
+                    [`${activeTab.value}_name`]: item.value.displayName,
                     tab_name: menu.component,
                 })
             })
@@ -249,7 +249,7 @@
             const handleViewAssets = () => {
                 useAddEvent('governance', activeTab.value, 'cta_clicked', {
                     action: 'view_assets',
-                    [`${activeTab.value}_name`]: item.value.name,
+                    [`${activeTab.value}_name`]: item.value.displayName,
                 })
                 assetStore.setGlobalState([activeTab.value, item.value.id])
                 router.push('/assets')
@@ -258,13 +258,13 @@
             const editItem = () => {
                 useAddEvent('governance', activeTab.value, 'cta_clicked', {
                     action: `edit_${activeTab.value}`,
-                    [`${activeTab.value}_name`]: item.value.name,
+                    [`${activeTab.value}_name`]: item.value.displayName,
                 })
             }
             const viewSlack = () => {
                 useAddEvent('governance', activeTab.value, 'cta_clicked', {
                     action: `open_slack`,
-                    [`${activeTab.value}_name`]: item.value.name,
+                    [`${activeTab.value}_name`]: item.value.displayName,
                 })
             }
             return {

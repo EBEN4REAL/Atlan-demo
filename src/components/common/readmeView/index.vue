@@ -15,11 +15,11 @@
             @transitionend.stop="() => {}"
         /> -->
         <div
-            v-if="readme"
+            v-if="readme && localReadmeContent !== '<p></p>'"
             class="ProseMirror"
             v-html="localReadmeContent"
         ></div>
-        <div v-else-if="!readme" class="text-sm text-gray-600">No readme</div>
+        <div v-else class="text-sm text-gray-600">No readme</div>
         <div
             v-if="expandShow"
             class="absolute bottom-0 left-0 flex justify-center w-full py-4 bg-over-flow-btn"
@@ -93,6 +93,7 @@
                 emit('expandedReadme')
                 expandReadme.value = true
             }
+
             return {
                 editor,
                 localReadmeContent,

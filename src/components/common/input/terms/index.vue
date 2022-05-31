@@ -72,6 +72,11 @@
                             isEdit = true
                         }
                     "
+                    @dblclick.native="
+                        (e) => {
+                            e.stopPropagation()
+                        }
+                    "
                 >
                     <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
                 ></a-button>

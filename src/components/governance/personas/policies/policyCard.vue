@@ -79,7 +79,8 @@
                                                 <div>
                                                     Looks like the connection
                                                     used in this policy is
-                                                    deleted.  Feel free to delete the policy.
+                                                    deleted. Feel free to delete
+                                                    the policy.
                                                     <!--You can edit the
                                                     policy with a new connection
                                                     or delete it -->
@@ -247,7 +248,7 @@
                             <div
                                 v-if="
                                     computedActions <
-                                    (type !== 'glossaryPolicy' ? 9 : 5)
+                                    (type !== 'glossaryPolicy' ? 9 : 6)
                                 "
                             >
                                 {{ computedActions }}
@@ -267,7 +268,7 @@
 
                             {{
                                 computedActions >=
-                                (type !== 'glossaryPolicy' ? 9 : 5)
+                                (type !== 'glossaryPolicy' ? 9 : 6)
                                     ? 'All'
                                     : computedActions
                             }}

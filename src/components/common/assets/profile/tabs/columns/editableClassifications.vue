@@ -9,7 +9,7 @@
         :allow-delete="
             columnUpdatePermission(asset, 'ENTITY_REMOVE_CLASSIFICATION')
         "
-        @change="handleClassificationChange"
+        @change="handleClassifications"
     >
     </Classification>
 </template>
@@ -32,7 +32,7 @@
             },
         },
         emits: ['update'],
-        setup(props) {
+        setup(props, { emit }) {
             const { asset } = toRefs(props)
 
             const { columnUpdatePermission, classifications } = useAssetInfo()
@@ -43,9 +43,14 @@
                 localClassifications.value = classifications(asset.value)
             })
 
+            const handleClassifications = () => {
+                emit('update')
+                handleClassificationChange()
+            }
+
             return {
                 localClassifications,
-                handleClassificationChange,
+                handleClassifications,
                 columnUpdatePermission,
             }
         },

@@ -96,7 +96,7 @@
                 },
             },
         },
-        emits: ['updatedDescription'],
+        emits: ['update'],
         setup(props, { emit }) {
             const truncated = ref<boolean>(false)
             const { allowEditing, assetItem } = toRefs(props)
@@ -147,7 +147,7 @@
                     originalDescription.value = localDescription.value
                     isEditing.value = false
                     handleChangeDescription()
-                    emit('updatedDescription')
+                    emit('update')
                 } else {
                     pressedEsc.value = false
                 }

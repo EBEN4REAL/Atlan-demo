@@ -182,15 +182,22 @@
                                     columnUpdatePermission(record.item)
                                 "
                                 :similar-list="similarListByName(record.item)"
+                                @update="handleExtraDrawerClick"
                             />
                         </div>
                     </template>
 
                     <template v-else-if="column.key === 'classifications'">
-                        <EditableClassifications :asset="record.item" />
+                        <EditableClassifications
+                            :asset="record.item"
+                            @update="handleExtraDrawerClick"
+                        />
                     </template>
                     <template v-else-if="column.key === 'terms'">
-                        <EditableTerms :asset="record.item" />
+                        <EditableTerms
+                            :asset="record.item"
+                            @update="handleExtraDrawerClick"
+                        />
                     </template>
                 </template>
             </a-table>
@@ -270,18 +277,9 @@
 
 <script lang="ts">
     // Vue
-    import {
-        defineComponent,
-        watch,
-        ref,
-        Ref,
-        nextTick,
-        computed,
-        provide,
-    } from 'vue'
+    import { defineComponent, watch, ref, Ref, computed, provide } from 'vue'
 
     import { useDebounceFn } from '@vueuse/core'
-    import { useRoute } from 'vue-router'
 
     // Components
     import ErrorView from '@common/error/discover.vue'
@@ -334,11 +332,9 @@
             const showColumnSidebar = ref<boolean>(false)
             const queryText = ref('')
             const columnsList: Ref<assetInterface[]> = ref([])
-            const columnFromUrl: Ref<assetInterface[]> = ref([])
 
             const drawerData = ref({})
-
-            const openDrawerOnLoad = ref<boolean>(false)
+            const preventClick = ref(false)
 
             const {
                 selectedAsset,
@@ -420,7 +416,6 @@
 
             const {
                 freshList: list,
-                list: combinedList,
                 isLoading,
                 quickChange,
                 getAggregationList,
@@ -449,24 +444,6 @@
                     true
                 )
             )
-
-            /** UTILS */
-            const route = useRoute()
-
-            const column = computed(() => route?.query?.column || '')
-
-            const scrollToElement = () => {
-                const tableRow = document.querySelector(
-                    `tr[data-row-key="${selectedRow.value}"]`
-                )
-
-                if (tableRow) {
-                    tableRow.scrollIntoView({
-                        block: 'nearest',
-                        inline: 'nearest',
-                    })
-                }
-            }
 
             const scrollToTop = () => {
                 const tableRow = document.querySelector(
@@ -500,7 +477,7 @@
 
             // filterColumnsList
             const filterColumnsList = () => {
-                columnsList.value = [...list.value, ...columnFromUrl.value]
+                columnsList.value = [...list.value]
 
                 const filteredListData = columnsList.value.map((i) => ({
                     key: i.attributes.order,
@@ -527,11 +504,6 @@
                 const index = list.value.findIndex((i) => i.guid === asset.guid)
                 if (index > -1) {
                     list.value[index] = asset
-                }
-
-                // In case column from url was updated instead of the other list (20 items)
-                if (asset.guid === columnFromUrl.value[0]?.guid) {
-                    columnFromUrl.value[0] = asset
                 }
 
                 filterColumnsList()
@@ -568,10 +540,12 @@
             const customRow = (record: { key: null }) => ({
                 onClick: () => {
                     // Column drawer trigger
-                    if (selectedRow.value === record.key)
-                        handleCloseColumnSidebar()
-                    else {
-                        openColumnSidebar(record.key)
+                    if (!preventClick.value) {
+                        if (selectedRow.value === record.key)
+                            handleCloseColumnSidebar()
+                        else {
+                            openColumnSidebar(record.key)
+                        }
                     }
                 },
             })
@@ -627,50 +601,18 @@
             const rowClassName = (record: { key: null }) =>
                 record.key === selectedRow.value ? 'bg-primary-menu' : ''
 
+            const handleExtraDrawerClick = () => {
+                preventClick.value = true
+                setTimeout(() => {
+                    preventClick.value = false
+                }, 400)
+            }
+
             /** WATCHERS */
             watch(
                 () => [...list.value],
                 () => {
-                    // If redirected from asset column discovery
-                    if (column.value !== '') {
-                        columnFromUrl.value = []
-                        const limit = ref(1)
-                        const offset = ref(0)
-                        const facets = ref({
-                            guid: column.value,
-                        })
-                        const fetchKey = computed(() => {
-                            if (
-                                combinedList.value.some(
-                                    (item) => item.guid === column.value
-                                )
-                            ) {
-                                return null
-                            }
-                            return column.value
-                        })
-                        const dependentKey = ref(fetchKey.value)
-
-                        const { freshList: urlColumnList } = useDiscoverList({
-                            isCache: false,
-                            dependentKey,
-                            facets,
-                            limit,
-                            offset,
-                            attributes: defaultAttributes,
-                            relationAttributes,
-                            suppressLogs: true,
-                        })
-                        watch([urlColumnList], () => {
-                            columnFromUrl.value = urlColumnList.value
-                            filterColumnsList()
-                        })
-                        if (fetchKey.value === null) {
-                            filterColumnsList()
-                        }
-                    } else {
-                        filterColumnsList()
-                    }
+                    filterColumnsList()
 
                     let actions = []
 
@@ -727,24 +669,6 @@
                     }
 
                     quickSuggestionChange()
-                }
-            )
-
-            watch(
-                () => [...columnsList.value],
-                () => {
-                    if (!openDrawerOnLoad.value) {
-                        columnsList.value?.forEach((singleRow) => {
-                            if (singleRow.guid === column.value) {
-                                openColumnSidebar(singleRow.attributes.order)
-                            }
-                        })
-                        openDrawerOnLoad.value = true
-
-                        nextTick(() => {
-                            scrollToElement()
-                        })
-                    }
                 }
             )
 
@@ -814,6 +738,7 @@
                 ],
                 columnUpdatePermission,
                 similarListByName,
+                handleExtraDrawerClick,
             }
         },
     })

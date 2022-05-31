@@ -579,7 +579,6 @@
             const updateColumnList = (asset) => {
                 if (selectedRowGuid.value === asset?.guid) {
                     drawerData.value = asset
-                    console.log('hello', asset)
                 }
             }
 

@@ -1,6 +1,6 @@
 <template>
     <div class="flex items-center text-xs text-gray-500">
-        <div :class="{ 'freeze-clicks-outside-popover': isEdit }"></div>
+        <div v-if="isEdit" class="freeze-clicks-outside-popover"></div>
 
         <a-popover
             v-if="showPopover && role !== 'Guest'"

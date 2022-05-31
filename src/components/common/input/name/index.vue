@@ -1,5 +1,5 @@
 <template>
-    <div :class="{ 'freeze-clicks-outside-popover': isEdit }"></div>
+    <div v-if="isEdit" class="freeze-clicks-outside-popover"></div>
 
     <Shortcut
         shortcut-key="n"

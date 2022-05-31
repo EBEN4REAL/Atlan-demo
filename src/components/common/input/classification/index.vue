@@ -1,6 +1,6 @@
 <template>
     <div data-test-id="classification-popover" class="relative">
-        <div :class="{ 'freeze-clicks-outside-popover': isEdit }"></div>
+        <div v-if="isEdit" class="freeze-clicks-outside-popover"></div>
         <a-popover
             v-model:visible="isEdit"
             placement="leftTop"

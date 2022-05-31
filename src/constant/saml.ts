@@ -260,6 +260,10 @@ export const topSAMLProviders = [
                 label: 'Audience (EntityID)',
                 suffix: ['/broker/onelogin/endpoint'],
             },
+            {
+                label: 'Recipient',
+                suffix: ['/broker/onelogin/endpoint'],
+            },
             
             {
                 label: 'ACS (Consumer) URL Validator',

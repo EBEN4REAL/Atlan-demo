@@ -25,7 +25,9 @@
                     <template #headerCell="{ column }">
                         <template v-if="column.isCm">
                             <span class="flex items-center">
-                                {{ column.cmNameDN }}
+                                <span :title="`CM Name: ${column.cmNameDN}`">
+                                    {{ column.cmNameDN }}
+                                </span>
 
                                 <svg
                                     width="2"
@@ -44,7 +46,12 @@
                                     />
                                 </svg>
 
-                                {{ column.cmAttributeDN }}
+                                <span
+                                    :title="`CM Attribute: ${column.cmAttributeDN}`"
+                                    class="truncate"
+                                >
+                                    {{ column.cmAttributeDN }}
+                                </span>
 
                                 <span
                                     v-if="!column.cmIconValue"
@@ -216,9 +223,38 @@
                             </div>
                         </template>
 
+                        <!-- SQL -->
+                        <template v-else-if="column.isSQL">
+                            <div class="truncate">
+                                {{ text || '--' }}
+                            </div>
+                            <div v-if="text" class="relative">
+                                <span
+                                    class="flex justify-end cursor-pointer text-new-blue-500"
+                                    @click="
+                                        () =>
+                                            currrTruncatedSQL === text
+                                                ? (currrTruncatedSQL = '')
+                                                : (currrTruncatedSQL = text)
+                                    "
+                                    >{{
+                                        currrTruncatedSQL === text
+                                            ? 'hide'
+                                            : 'see more'
+                                    }}</span
+                                >
+                                <div
+                                    v-if="currrTruncatedSQL === text"
+                                    class="absolute right-0 z-50 p-3 overflow-scroll bg-white shadow-2xl max-h-40"
+                                >
+                                    {{ text }}
+                                </div>
+                            </div>
+                        </template>
+
                         <template v-else>
                             <span>
-                                {{ text }}
+                                {{ text || '--' }}
                             </span>
                         </template>
                     </template>
@@ -298,6 +334,7 @@
         setup(props, { emit }) {
             const { guid, assetName, visible } = toRefs(props)
             const classificationPopoverMouseEnterDelay = ref(1)
+            const currrTruncatedSQL = ref('')
             const { useFetchLineage } = useLineageService()
             const {
                 ownerGroups,
@@ -446,11 +483,21 @@
                     })
                 })
 
-                Object.values(cmColumns).forEach((cmColumn) => {
+                const cmColumnsSorted = Object.values(cmColumns)
+                cmColumnsSorted.sort((a, b) => {
+                    const nameA = a.cmNameDN.toUpperCase()
+                    const nameB = b.cmNameDN.toUpperCase()
+                    if (nameA < nameB) return -1
+                    if (nameA > nameB) return 1
+                    return 0
+                })
+
+                cmColumnsSorted.forEach((cmColumn) => {
                     const {
                         cmNameDN,
                         cmAttributeDN,
                         cmIcon,
+                        isSQL,
                         isEmojiIcon,
                         isImageIcon,
                     } = cmColumn
@@ -474,6 +521,7 @@
                         key: id,
                         cmNameDN,
                         cmAttributeDN,
+                        isSQL,
                         isEmojiIcon,
                         isImageIcon,
                         cmIconValue: isEmojiIcon ? cmEmojiHexa : cmImageURL,
@@ -566,6 +614,7 @@
                 columns,
                 classificationPopoverMouseEnterDelay,
                 termMouseEnterDelay,
+                currrTruncatedSQL,
                 termEnteredPill,
                 termLeftPill,
                 leftPill,

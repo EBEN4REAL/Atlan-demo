@@ -8,7 +8,8 @@ export default function useCustomMetadata(assets) {
         .map((a) => {
             const newObj = {}
             Object.entries(a.attributes).forEach(([k, v]) => {
-                if (k.includes('.') && v.length) newObj[k] = v
+                const exists = Array.isArray(v) ? v.length : true
+                if (k.includes('.') && exists) newObj[k] = v
             })
             return { [a.guid]: newObj }
         })
@@ -43,6 +44,7 @@ export default function useCustomMetadata(assets) {
             const cmNameDN = cmData.displayName
             const cmAttributeDN = cmAttributeData.displayName
             const cmValueDN = v
+            const isSQL = cmAttributeData.options.customType === 'SQL'
             const isMultiValue =
                 cmAttributeData.options.multiValueSelect === 'true'
             const isEmojiIcon = cmData.options.logoType === 'emoji'
@@ -58,6 +60,7 @@ export default function useCustomMetadata(assets) {
                 cmAttribute,
                 cmAttributeDN,
                 cmValueDN,
+                isSQL,
                 isEmojiIcon,
                 isImageIcon,
                 isMultiValue,

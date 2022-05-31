@@ -34,8 +34,8 @@
         </div>
         <!-- Table -->
         <div
-            class="flex items-center justify-center w-full border-t border-b border-gray-light"
-            style="height: calc(100vh - 322px)"
+            class="flex items-center justify-center w-full border-t border-gray-light"
+            style="height: calc(100vh - 330px)"
         >
             <div
                 v-if="
@@ -68,9 +68,14 @@
 
             <a-table
                 v-else
+                ref="tableRef"
                 :columns="columns"
                 :data-source="columnsData.filteredList"
-                :scroll="{ x: 1200, y: 'calc(100vh - 364px)' }"
+                :scroll="{
+                    x: 1200,
+                    y: 'calc(100vh - 378px)',
+                    scrollToFirstRowOnChange: false,
+                }"
                 :pagination="false"
                 :custom-row="customRow"
                 :row-class-name="rowClassName"
@@ -206,59 +211,19 @@
         <!-- Pagination -->
         <div
             v-if="(columnsList && columnsList.length) || isValidating"
-            class="flex flex-row items-center justify-end w-full px-5 py-3 text-sm"
+            class="flex items-center w-full p-5 text-sm border-t border-gray-light"
         >
-            <div class="mr-auto text-new-gray-600">
-                Showing
-                <span class="font-bold"
-                    >{{ offset + 1 }}-{{
-                        offset + columnsList?.length || 0
-                    }}</span
-                >
-                out of {{ totalCount }} columns
+            <div
+                v-if="isValidating && columnsList?.length !== 0"
+                class="mx-auto text-new-gray-600"
+            >
+                Loading <span class="font-bold">20</span> more columns…
+                <AtlanLoader class="h-4" />
             </div>
-            <div class="flex flex-row items-center">
-                <AtlanBtn
-                    class="bg-transparent rounded-r-none"
-                    size="sm"
-                    color="secondary"
-                    padding="compact"
-                    :disabled="pagination.current === 1"
-                    @click="handlePagination(pagination.current - 1)"
-                >
-                    <AtlanIcon icon="CaretLeft" />
-                </AtlanBtn>
-                <AtlanBtn
-                    class="bg-transparent border-l-0 border-r-0 rounded-none cursor-default"
-                    size="sm"
-                    color="secondary"
-                    padding="compact"
-                >
-                    {{ pagination.current }} of
-                    <span v-if="Math.ceil(pagination.total)"
-                        >{{ Math.ceil(pagination.total) }}
-                    </span>
-
-                    <div
-                        v-else-if="isValidating"
-                        class="flex items-center justify-center"
-                    >
-                        <AtlanLoader />
-                    </div>
-                </AtlanBtn>
-
-                <AtlanBtn
-                    class="bg-transparent rounded-l-none"
-                    size="sm"
-                    color="secondary"
-                    padding="compact"
-                    :disabled="
-                        pagination.current === Math.ceil(pagination.total)
-                    "
-                    @click="handlePagination(pagination.current + 1)"
-                >
-                    <AtlanIcon icon="CaretRight" />
-                </AtlanBtn>
+            <div v-else class="text-new-gray-600">
+                Showing
+                <span class="font-bold">{{ columnsList?.length || 0 }}</span>
+                out of {{ totalCount }} columns
             </div>
         </div>
 
@@ -279,7 +244,7 @@
     // Vue
     import { defineComponent, watch, ref, Ref, computed, provide } from 'vue'
 
-    import { useDebounceFn } from '@vueuse/core'
+    import { useDebounceFn, watchOnce } from '@vueuse/core'
 
     // Components
     import ErrorView from '@common/error/discover.vue'
@@ -332,6 +297,7 @@
             const showColumnSidebar = ref<boolean>(false)
             const queryText = ref('')
             const columnsList: Ref<assetInterface[]> = ref([])
+            const tableRef = ref(null)
 
             const drawerData = ref({})
             const preventClick = ref(false)
@@ -349,7 +315,7 @@
             } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
-            const limit = ref(50)
+            const limit = ref(20)
             const offset = ref(0)
             const facets = ref({
                 typeName: 'Column',
@@ -415,13 +381,15 @@
             updateFacet()
 
             const {
-                freshList: list,
+                freshList,
+                list,
                 isLoading,
                 quickChange,
                 getAggregationList,
                 totalCount,
                 error,
                 isValidating,
+                isLoadMore,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -445,7 +413,7 @@
                 )
             )
 
-            const scrollToTop = () => {
+            /*  const scrollToTop = () => {
                 const tableRow = document.querySelector(
                     `tr[data-row-key="${columnsList.value[0]?.attributes?.order}"]`
                 )
@@ -457,7 +425,7 @@
                         behavior: 'smooth',
                     })
                 }
-            }
+            } */
 
             const handleCloseColumnSidebar = () => {
                 selectedRow.value = null
@@ -509,17 +477,11 @@
                 filterColumnsList()
             }
 
-            const pagination = computed(() => ({
-                total: totalCount.value / limit.value,
-
-                current: offset.value / limit.value + 1,
-            }))
-
-            const handlePagination = async (page) => {
-                offset.value = (page - 1) * 50
-                await quickChange()
-
-                scrollToTop()
+            const handleLoadMore = () => {
+                if (isLoadMore.value) {
+                    offset.value += limit.value
+                    quickChange()
+                }
             }
 
             const handleSearchChange = useDebounceFn(() => {
@@ -610,13 +572,13 @@
 
             /** WATCHERS */
             watch(
-                () => [...list.value],
+                () => [...freshList.value],
                 () => {
                     filterColumnsList()
 
                     let actions = []
 
-                    list.value.forEach((item) =>
+                    freshList.value.forEach((item) =>
                         actions.push(
                             {
                                 typeName: item.typeName,
@@ -665,12 +627,32 @@
 
                     suggestionFacets.value = {
                         ...suggestionFacets.value,
-                        similarities: list.value.map((item) => title(item)),
+                        similarities: freshList.value.map((item) =>
+                            title(item)
+                        ),
                     }
 
                     quickSuggestionChange()
                 }
             )
+
+            watchOnce(tableRef, () => {
+                const node = document.querySelector('.ant-table-body')
+                if (node) {
+                    node.addEventListener('scroll', () => {
+                        const perc =
+                            (node.scrollTop /
+                                (node.scrollHeight - node.clientHeight)) *
+                            100
+                        if (perc >= 100) {
+                            console.log(
+                                'Scrolling has reached bottom, loading more data...'
+                            )
+                            handleLoadMore()
+                        }
+                    })
+                }
+            })
 
             return {
                 rowClassName,
@@ -696,15 +678,14 @@
                 selectedRow,
                 columnsData,
                 queryText,
-                handlePagination,
                 handleChangeSort,
                 showColumnSidebar,
-                pagination,
                 selectedRowGuid,
                 defaultAttributes,
                 limit,
                 offset,
                 drawerData,
+                tableRef,
                 columns: [
                     {
                         width: 50,

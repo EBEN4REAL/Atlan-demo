@@ -211,7 +211,7 @@
                 />
             </Carousel>
         </div>
-        <div v-else class="flex items-center justify-center h-64">
+        <div v-else class="flex items-center justify-center loader-container">
             <AtlanLoader icon="CircleLoader" class="h-8 animate-spin" />
         </div>
         <DrawerWidgetPersonaPurpose
@@ -376,10 +376,14 @@
 </script>
 
 <style lang="less" scoped>
+    .loader-container {
+        height: 280px;
+    }
     .icon-cross {
         transform: scale(0.5);
     }
     .persona-purpose-widget {
+        height: 360px;
         box-shadow: 0px 8px 24px 0px #1920380a;
     }
     .active-widget-tab {

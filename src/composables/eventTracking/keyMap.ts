@@ -548,13 +548,13 @@ const keyMap = {
                             is_full_screen: props?.is_full_screen,
                             description_added: props?.description_added,
                         }
-                    } else {
+                    } 
                         return {
                             action: props.action,
                             query_tab_id: props?.query_tab_id,
                             is_full_screen: props?.is_full_screen,
                         }
-                    }
+                    
                 },
             },
             tab_switched: {
@@ -612,6 +612,10 @@ const keyMap = {
     },
     governance: {
         persona: {
+            cta_clicked: {
+                action: "governance_persona_cta_clicked",
+                 properties: (props) => (props),
+            },
             home_tab: {
                  action: 'governance_persona_sidebar_tab_change',
                 properties: (props) => (props),
@@ -693,8 +697,12 @@ const keyMap = {
             },
         },
         purpose: {
+            cta_clicked: {
+                action: "governance_purpose_cta_clicked",
+                 properties: (props) => (props),
+            },
             home_tab: {
-                 action: 'governance_purpose_sidebar_tab_change',
+                action: 'governance_purpose_sidebar_tab_change',
                 properties: (props) => (props),
             },
             readme_expanded: {

@@ -86,6 +86,29 @@
                 </div>
             </div>
         </div>
+        <div v-if="glossary.length" class="mt-7">
+            <div class="text-sm text-gray-500">Glossary</div>
+            <div
+                class="flex flex-col gap-2 p-2 mt-2 overflow-scroll bg-gray-100 rounded-lg max-h-44"
+            >
+                <div
+                    v-for="glo in glossary"
+                    :key="glo?.id"
+                    class="bg-white rounded-lg px-2.5 py-1.5 text-sm text-gray-800 flex shadow-connection"
+                >
+                    <AtlanIcon
+                        :icon="
+                            getEntityStatusIcon(
+                                glo.typeName,
+                                certificateStatus(glo)
+                            )
+                        "
+                        class="mr-2"
+                    />
+                    {{ glo?.displayText }}
+                </div>
+            </div>
+        </div>
         <div class="mt-7">
             <div class="mb-2 text-sm text-gray-500">Readme</div>
             <ReadmeView
@@ -110,6 +133,8 @@
     import Popover from '@/common/popover/classification/index.vue'
     import { useConnectionStore } from '~/store/connection'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import useGlossaryStore from '~/store/glossary'
+    import useGlossaryData from '~/composables/glossary2/useGlossaryData'
 
     export default defineComponent({
         name: 'PersonaPurposeOverview',
@@ -162,7 +187,7 @@
                     0
                 )
             )
-            const { getConnectorImageMap } = useAssetInfo()
+            const { getConnectorImageMap, certificateStatus } = useAssetInfo()
             const userGroupPurpose = computed(() => {
                 let userPurposes = []
                 let groupPurposes = []
@@ -292,6 +317,24 @@
                     [`${activeTab.value}_name`]: item.value.name,
                 })
             }
+            const { list } = useGlossaryStore()
+            const glossary = computed(() => {
+                if (activeTab.value === 'purpose') {
+                    return []
+                }
+                const glossaryPolicy = item.value?.glossaryPolicies || []
+                let result = []
+                glossaryPolicy.forEach((el) => {
+                    result = [...result, ...el.glossaryQualifiedNames]
+                })
+
+                const formated = result.map((el) =>
+                    list.find((elc) => elc.id === el)
+                )
+                return formated
+            })
+            const { getEntityStatusIcon } = useGlossaryData()
+
             return {
                 userGroup,
                 connections,
@@ -301,6 +344,9 @@
                 userGroupPurpose,
                 listClassifications,
                 expandedReadme,
+                glossary,
+                getEntityStatusIcon,
+                certificateStatus,
             }
         },
     })

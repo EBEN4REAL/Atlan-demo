@@ -41,7 +41,7 @@
             </div>
             <div class="px-4 mt-3">
                 <div class="w-40 text-base font-bold truncate text-primary">
-                    {{ item.name }}
+                    {{ item.displayName }}
                 </div>
                 <div
                     :class="`w-40 h-8 mb-8 mt-2 ${
@@ -348,7 +348,6 @@
     .shadow-connector {
         box-shadow: 1px 2px 3px 3px rgba(0, 0, 0, 0.05);
     }
-    
 </style>
 <style lang="less">
     .icon-all-users {

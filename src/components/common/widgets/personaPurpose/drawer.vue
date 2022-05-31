@@ -14,7 +14,7 @@
         </div>
         <div class="px-5 py-4 border-b border-gray-200">
             <div class="text-lg font-bold">{{ item.name }}</div>
-            <div class="flex items-center mt-1 capitalize ">
+            <div class="flex items-center mt-1 capitalize">
                 <div class="flex items-center text-sm text-gray-500">
                     {{ activeTab }}
                 </div>
@@ -40,6 +40,7 @@
                     <a-button
                         v-if="item.attributes?.channelLink"
                         class="flex items-center p-2"
+                        @click="viewSlack"
                     >
                         <a :href="item.attributes?.channelLink" target="_blank">
                             <AtlanIcon icon="Slack" />
@@ -48,6 +49,7 @@
                     <a-button
                         v-auth="[map.LIST_PERSONA, map.LIST_PURPOSE]"
                         class="flex items-center p-2"
+                        @click="editItem"
                     >
                         <router-link
                             :to="`/governance/${activeTab}s/${item.id}`"
@@ -245,7 +247,7 @@
 
             const assetStore = useAssetStore()
             const handleViewAssets = () => {
-                useAddEvent('discovery', 'cta_action', 'clicked', {
+                useAddEvent('governance', activeTab.value, 'cta_clicked', {
                     action: 'view_assets',
                     [`${activeTab.value}_name`]: item.value.name,
                 })
@@ -253,7 +255,18 @@
                 router.push('/assets')
             }
             const isHover = ref(false)
-
+            const editItem = () => {
+                useAddEvent('governance', activeTab.value, 'cta_clicked', {
+                    action: `edit_${activeTab.value}`,
+                    [`${activeTab.value}_name`]: item.value.name,
+                })
+            }
+            const viewSlack = () => {
+                useAddEvent('governance', activeTab.value, 'cta_clicked', {
+                    action: `open_slack`,
+                    [`${activeTab.value}_name`]: item.value.name,
+                })
+            }
             return {
                 tabList,
                 activeKey,
@@ -261,6 +274,8 @@
                 handleChangeTab,
                 map,
                 isHover,
+                editItem,
+                viewSlack,
             }
         },
     })

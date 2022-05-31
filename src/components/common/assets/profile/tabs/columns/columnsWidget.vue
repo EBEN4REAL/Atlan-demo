@@ -301,6 +301,7 @@
 
             const drawerData = ref({})
             const preventClick = ref(false)
+            const shouldLoadMore = ref(true)
 
             const {
                 selectedAsset,
@@ -477,10 +478,10 @@
                 filterColumnsList()
             }
 
-            const handleLoadMore = () => {
+            const handleLoadMore = async () => {
                 if (isLoadMore.value) {
                     offset.value += limit.value
-                    quickChange()
+                    await quickChange()
                 }
             }
 
@@ -637,20 +638,32 @@
             )
 
             watchOnce(tableRef, () => {
-                const node = document.querySelector('.ant-table-body')
-                if (node) {
-                    node.addEventListener('scroll', () => {
-                        const perc =
-                            (node.scrollTop /
-                                (node.scrollHeight - node.clientHeight)) *
-                            100
-                        if (perc >= 100) {
-                            console.log(
-                                'Scrolling has reached bottom, loading more data...'
-                            )
-                            handleLoadMore()
-                        }
-                    })
+                if (tableRef.value) {
+                    const node = document.querySelector(
+                        '.columns-widget .ant-table-body'
+                    )
+                    if (node) {
+                        node.addEventListener('scroll', () => {
+                            const perc =
+                                (node.scrollTop /
+                                    (node.scrollHeight - node.offsetHeight)) *
+                                100
+
+                            if (perc >= 100) {
+                                console.log(
+                                    'Scrolling has reached bottom, loading more data...'
+                                )
+                                if (shouldLoadMore.value) {
+                                    shouldLoadMore.value = false
+                                    handleLoadMore()
+
+                                    setTimeout(() => {
+                                        shouldLoadMore.value = true
+                                    }, 1000)
+                                }
+                            }
+                        })
+                    }
                 }
             })
 

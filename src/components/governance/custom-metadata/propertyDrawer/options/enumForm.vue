@@ -199,13 +199,20 @@
                         enumList.value[reqIndex]?.elementDefs &&
                         enumList.value[reqIndex]?.elementDefs.length
                     ) {
-                        return enumList.value[reqIndex]?.elementDefs.map(
-                            (item: { value: any }) => ({
-                                key: item.value,
-                                title: item.value,
-                                value: item.value,
-                                children: undefined,
-                            })
+                        return JSON.parse(
+                            JSON.stringify(
+                                enumList.value[reqIndex]?.elementDefs.map(
+                                    (item: { value: any }) => ({
+                                        key: item.value,
+                                        title: item.value,
+                                        value: item.value,
+                                        children: undefined,
+                                    })
+                                )
+                            )
+                        ).sort((a, b) =>
+                            // eslint-disable-next-line no-nested-ternary
+                            a.title === b.title ? 0 : a.title < b.title ? -1 : 1
                         )
                     }
                 }

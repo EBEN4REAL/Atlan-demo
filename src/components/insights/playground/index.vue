@@ -100,7 +100,9 @@
                                             <TabItem
                                                 :title="tab.label"
                                                 :index="tab.key"
-                                                @onDroped="sortTabsOnDrop"
+                                                :active-tab-key="activeInlineTabKey"
+                                                :tab-hover="tabHover"
+                                                @on-droped="sortTabsOnDrop"
                                             />
                                         </span>
                                     </div>
@@ -658,7 +660,7 @@
             border-right: 0px !important;
             border-top: 0px !important;
             border-bottom: 0px !important;
-            padding: 0 12px !important;
+            padding: 0 10px 0 0 !important;
             height: 28px !important;
             @apply bg-gray-light !important;
             transition: none !important;

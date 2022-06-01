@@ -1,7 +1,7 @@
 <template>
     <div :class="`flex items-center ${className}`">
         <avatar
-            v-if="getUserName() !== 'API key'"
+            v-if="getUserName() !== 'API key' || getUserName() !== 'API token'"
             :image-url="avatarURL"
             :allow-upload="false"
             :avatar-size="avatarSize"
@@ -69,7 +69,7 @@
                     return 'Atlan'
                 }
                 if (username.value.startsWith('service-account-apikey-'))
-                    return 'API key'
+                    return 'API token'
                 return username.value
             }
 

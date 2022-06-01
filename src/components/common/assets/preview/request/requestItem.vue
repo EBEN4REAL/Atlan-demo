@@ -3,7 +3,7 @@
         <div
             class="relative mx-1 border border-gray-200 rounded-lg cursor-pointer hover:border-primary card-container"
         >
-            <div class="flex flex-col bg-gray-100 px-3 py-3 rounded-lg">
+            <div class="flex flex-col px-3 py-3 bg-gray-100 rounded-lg">
                 <div class="flex items-center">
                     <div
                         v-if="item.requestType === 'term_link' && isGlossary"
@@ -103,7 +103,7 @@
                         selectedAsset?.typeName === 'AtlasGlossary' &&
                         item?.destinationEntity?.attributes?.name
                     "
-                    class="flex items-center space-x-1 mt-1"
+                    class="flex items-center mt-1 space-x-1"
                 >
                     <atlan-icon
                         :icon="
@@ -245,10 +245,10 @@
                                         :key="i"
                                     >
                                         <span
-                                            class="border-gray-200 px-2 py-1 flex items-center"
+                                            class="flex items-center px-2 py-1 border-gray-200"
                                             ><atlan-icon
                                                 icon="User"
-                                                class="mr-1 h-3"
+                                                class="h-3 mr-1"
                                             />{{ i }}</span
                                         >
                                     </template>
@@ -257,7 +257,7 @@
 
                             <span
                                 v-if="item?.destinationValueArray?.length > 1"
-                                class="text-primary flex items-center cursor-pointer"
+                                class="flex items-center cursor-pointer text-primary"
                                 >+
                                 {{ item?.destinationValueArray?.length - 1 }}
                                 more</span
@@ -324,7 +324,7 @@
                 </div>
             </div>
             <div
-                class="flex px-3 py-2 mt-2 border-t border-gray-200 text-gray-500"
+                class="flex px-3 py-2 mt-2 text-gray-500 border-t border-gray-200"
             >
                 <span class="mr-2">by</span>
                 <AtlanIcon
@@ -343,7 +343,7 @@
                 />
                 <span class="ml-2 text-gray-500">{{
                     item.createdBy?.startsWith('service-account-apikey-')
-                        ? 'API key'
+                        ? 'API token'
                         : item.createdBy
                 }}</span>
                 <div class="flex ml-auto">

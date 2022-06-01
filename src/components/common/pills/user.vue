@@ -73,7 +73,7 @@
                     return 'Atlan'
                 }
                 if (username.value.startsWith('service-account-apikey-'))
-                    return 'API key'
+                    return 'API token'
                 return username.value
             }
 

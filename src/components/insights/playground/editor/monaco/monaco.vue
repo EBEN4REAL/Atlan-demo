@@ -186,14 +186,19 @@
                     '.cursor.monaco-mouse-cursor-text'
                 )
                 const viewportOffset = cursor?.getBoundingClientRect()
+                let left = viewportOffset.left
+                let right = viewportOffset.right
+                const windowRight = window.innerWidth
+                let requiredLeft = left
+                if (left + 447 + 20 >= windowRight) {
+                    requiredLeft = right - (left + 447 + 20 - windowRight)
+                }
                 const autoSuggestionsDropdown =
                     document.getElementById('auto-suggestions')
                 autoSuggestionsDropdown.style.top = `${
                     viewportOffset.top + 22
                 }px`
-                autoSuggestionsDropdown.style.left = `${
-                    viewportOffset.left + 5
-                }px`
+                autoSuggestionsDropdown.style.left = `${requiredLeft + 5}px`
             }
 
             const triggerAutoCompletion = (

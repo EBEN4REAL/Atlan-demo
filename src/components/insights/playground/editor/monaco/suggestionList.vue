@@ -35,6 +35,7 @@
                         "
                         popoverTrigger="focus"
                         @previewAsset="openSidebar"
+                        overlayClassName="popoverAssetClassNameInsights"
                     >
                         <div
                             @keyup.enter.stop="
@@ -254,5 +255,8 @@
     }
     .plex-mono {
         font-family: PlexMono !important;
+    }
+    .popoverAssetClassNameInsights {
+        padding-right: 2px !important;
     }
 </style>

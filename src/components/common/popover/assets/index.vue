@@ -5,6 +5,7 @@
         :placement="placement"
         :mouse-enter-delay="mouseEnterDelay"
         :trigger="popoverTrigger"
+        :overlayClassName="overlayClassName"
     >
         <template #content>
             <div class="rounded w-96">
@@ -438,10 +439,15 @@
                 type: String,
                 default: 'left',
             },
+            overlayClassName: {
+                type: String,
+                default: '',
+            },
         },
         emits: ['previewAsset'],
         setup(props, { slots, emit }) {
-            const { item, popoverTrigger, placement } = toRefs(props)
+            const { item, popoverTrigger, placement, overlayClassName } =
+                toRefs(props)
 
             const {
                 certificateStatus,
@@ -566,6 +572,7 @@
             })
 
             return {
+                overlayClassName,
                 placement,
                 localAssetPopoverVisible,
                 popoverTrigger,

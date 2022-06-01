@@ -95,7 +95,9 @@
             clearable: { type: Boolean, default: () => false },
             placeholder: { type: String, default: () => 'Search' },
             size: {
-                type: String as PropType<'default' | 'minimal' | 'large'>,
+                type: String as PropType<
+                    'default' | 'minimal' | 'large' | 'small'
+                >,
                 default: () => 'default',
             },
             modelValue: {
@@ -221,7 +223,7 @@
         -moz-transition: border 500ms ease-out;
         -o-transition: border 500ms ease-out;
         transition: border 500ms ease-out;
-        height: 40px;
+
         &:global(.ant-input:focus) {
             @apply border-0 shadow-none  !important;
             outline: 0 !important;

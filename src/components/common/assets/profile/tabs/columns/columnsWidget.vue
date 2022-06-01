@@ -213,19 +213,19 @@
         <!-- Pagination -->
         <div
             v-if="(columnsList && columnsList.length) || isValidating"
-            class="flex items-center w-full p-5 text-sm border-t border-gray-light"
+            class="flex items-center justify-between w-full p-5 text-sm border-t border-gray-light"
         >
-            <div
-                v-if="isValidating && columnsList?.length !== 0"
-                class="mx-auto text-new-gray-600"
-            >
-                Loading <span class="font-bold">20</span> more columns…
-                <AtlanLoader class="h-4" />
-            </div>
-            <div v-else class="text-new-gray-600">
+            <div class="text-new-gray-600">
                 Showing
                 <span class="font-bold">{{ columnsList?.length || 0 }}</span>
                 out of {{ totalCount }} columns
+            </div>
+            <div
+                v-if="isValidating && columnsList?.length !== 0"
+                class="text-new-gray-600"
+            >
+                Loading <span class="font-bold">20</span> more...
+                <AtlanLoader class="h-4" />
             </div>
         </div>
 
@@ -244,7 +244,15 @@
 
 <script lang="ts">
     // Vue
-    import { defineComponent, watch, ref, Ref, computed, provide } from 'vue'
+    import {
+        defineComponent,
+        watch,
+        ref,
+        Ref,
+        computed,
+        provide,
+        nextTick,
+    } from 'vue'
 
     import { useDebounceFn, watchOnce } from '@vueuse/core'
 
@@ -570,11 +578,19 @@
             const rowClassName = (record: { key: null }) =>
                 record.key === selectedRow.value ? 'bg-primary-menu' : ''
 
-            const handleExtraDrawerClick = () => {
+            const setAsyncTimeout = (cb, timeout = 0) =>
+                new Promise<void>((resolve) => {
+                    setTimeout(() => {
+                        cb()
+                        resolve()
+                    }, timeout)
+                })
+
+            const handleExtraDrawerClick = async () => {
                 preventClick.value = true
-                setTimeout(() => {
+                await setAsyncTimeout(() => {
                     preventClick.value = false
-                }, 1500)
+                }, 600)
             }
 
             /** WATCHERS */

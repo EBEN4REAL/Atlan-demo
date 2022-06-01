@@ -34,7 +34,10 @@
                     @mouseenter="showApplyButton = index"
                     @mouseleave="showApplyButton = -1"
                 >
-                    <div class="text-new-gray-700">
+                    <div
+                        class="break-words text-new-gray-700"
+                        style="max-width: 250px"
+                    >
                         {{ item?.key }}
                     </div>
 

@@ -261,22 +261,48 @@
                     ?.getWordAtPosition(editorPosition)
 
                 // for stripping quotes if cursor is in b/w quotes
-                const matches = editor
-                    ?.getModel()
-                    .findMatches(`"[a-zA-Z]*"`, true, true, false, null, true)
-                const matches1 = editor
+
+                let matches1 = 0
+                let matches2 = 0
+                let matches3 = 0
+
+                editor
                     ?.getModel()
                     .findMatches('`[a-zA-Z]*`', true, true, false, null, true)
-                const matches2 = editor
+                    ?.forEach((_el) => {
+                        if (
+                            _el?.matches?.filter((_ely) => _ely?.length <= 5)
+                                .length
+                        ) {
+                            matches1 += 1
+                        }
+                    })
+                editor
                     ?.getModel()
                     .findMatches(`'[a-zA-Z]*'`, true, true, false, null, true)
+                    ?.forEach((_el) => {
+                        if (
+                            _el?.matches?.filter((_ely) => _ely?.length <= 5)
+                                .length
+                        ) {
+                            matches2 += 1
+                        }
+                    })
+                editor
+                    ?.getModel()
+                    .findMatches('"[a-zA-Z]*"', true, true, false, null, true)
+                    ?.forEach((_el) => {
+                        if (
+                            _el?.matches?.filter((_ely) => {
+                                return _ely?.length <= 5
+                            }).length
+                        ) {
+                            matches3 += 1
+                        }
+                    })
 
                 let stripQuotes = false
-                if (
-                    matches.length > 0 ||
-                    matches1.length > 0 ||
-                    matches2.length > 0
-                ) {
+                if (matches1 > 0 || matches2 > 0 || matches3 > 0) {
                     stripQuotes = true
                 }
 

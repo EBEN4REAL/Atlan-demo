@@ -10,6 +10,10 @@ import { LineageAttributesPortLevel } from '~/constant/projection'
 
 /** COMPOSABLES */
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
+import {
+    featureEnabledMap,
+    LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE,
+} from '~/composables/labs/labFeatureList'
 
 export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
     const portTypeNameMap = {
@@ -17,17 +21,25 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
         View: 'Column',
         MaterialisedView: 'Column',
         TableauDatasource: ['TableauDatasourceField', 'TableauCalculatedField'],
-        LookerExplore: 'LookerField',
-        LookerView: 'LookerField',
+        // LookerExplore: 'LookerField',
+        // LookerView: 'LookerField',
     }
     const nodeTypeNameMap = {
         Table: 'table',
         View: 'view',
         MaterialisedView: 'view',
         TableauDatasource: 'datasource',
-        LookerExplore: 'lookerExplore',
-        LookerView: 'lookerView',
+        // LookerExplore: 'lookerExplore',
+        // LookerView: 'lookerView',
     }
+
+    if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
+        portTypeNameMap.LookerExplore = 'LookerField'
+        portTypeNameMap.LookerView = 'LookerField'
+        nodeTypeNameMap.LookerExplore = 'lookerExplore'
+        nodeTypeNameMap.LookerView = 'lookerView'
+    }
+
     const base = bodybuilder()
     const attributes = LineageAttributesPortLevel
     const facets = [

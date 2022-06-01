@@ -17,6 +17,10 @@ import useGraph from './useGraph'
 import useTransformGraph from './useTransformGraph'
 import fetchPorts from './fetchPorts'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
+import {
+    featureEnabledMap,
+    LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE,
+} from '~/composables/labs/labFeatureList'
 
 /** CONSTANTS */
 import {
@@ -174,9 +178,14 @@ export default function useEventGraph({
             View: 'column',
             MaterialisedView: 'column',
             TableauDatasource: 'field',
-            LookerExplore: 'field',
-            LookerView: 'field',
+            // LookerExplore: 'field',
+            // LookerView: 'field',
         }
+        if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
+            portsLabelMap.LookerExplore = 'field'
+            portsLabelMap.LookerView = 'field'
+        }
+
         return portsLabelMap[typeName]
     }
 
@@ -293,8 +302,12 @@ export default function useEventGraph({
             'Column',
             'TableauDatasourceField',
             'TableauCalculatedField',
-            'LookerField',
+            // 'LookerField',
         ]
+
+        if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE])
+            typeNames.push('LookerField')
+
         return typeNames.includes(typeName)
     }
 

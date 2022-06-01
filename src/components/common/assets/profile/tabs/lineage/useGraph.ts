@@ -1,6 +1,10 @@
 /* eslint-disable no-nested-ternary */
 /** COMPOSABLES */
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
+import {
+    featureEnabledMap,
+    LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE,
+} from '~/composables/labs/labFeatureList'
 
 /** CONSTANTS */
 import { dataTypeCategoryList } from '~/constant/dataType'
@@ -69,6 +73,20 @@ const certificateStatusIcons = {
     DEPRECATED: iconDeprecated,
 }
 
+const nodeWithPorts = [
+    'Table',
+    'View',
+    'MaterialisedView',
+    'TableauDatasource',
+    // 'LookerExplore',
+    // 'LookerView',
+]
+
+if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
+    nodeWithPorts.push('LookerExplore')
+    nodeWithPorts.push('LookerView')
+}
+
 const portDataTypeIcons = {
     array,
     boolean,
@@ -93,8 +111,11 @@ const portDataTypeIcons = {
 const biPortDataTypeIcons = {
     TableauCalculatedField: tableauCalculatedField,
     TableauDatasourceField: tableauDatasourceField,
-    LookerField: lookerField,
+    // LookerField: lookerField,
 }
+
+if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE])
+    biPortDataTypeIcons.LookerField = lookerField
 
 const columnKeyTypeIcons = {
     isPrimary: iconPrimary,
@@ -106,8 +127,13 @@ const portsLabelMap = {
     View: 'columns',
     MaterialisedView: 'columns',
     TableauDatasource: 'fields',
-    LookerExplore: 'fields',
-    LookerView: 'fields',
+    // LookerExplore: 'fields',
+    // LookerView: 'fields',
+}
+
+if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
+    portsLabelMap.LookerExplore = 'fields'
+    portsLabelMap.LookerView = 'fields'
 }
 
 const getPortsCTALabel = (typeName, portsCount) => {
@@ -134,14 +160,7 @@ export default function useGraph(graph) {
         const isBase = guid === baseEntityGuid
         const isVpNode = typeName === 'vpNode'
         const isSQLNode = SQLAssets.includes(typeName)
-        const isNodeWithPorts = [
-            'Table',
-            'View',
-            'MaterialisedView',
-            'TableauDatasource',
-            'LookerExplore',
-            'LookerView',
-        ].includes(typeName)
+        const isNodeWithPorts = nodeWithPorts.includes(typeName)
 
         const computedData = {
             id: guid,

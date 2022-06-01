@@ -11,6 +11,10 @@ import useLineageStore from '~/store/lineage'
 import useGraph from './useGraph'
 import useGetNodes from './useGetNodes'
 import useTransformGraph from './useTransformGraph'
+import {
+    featureEnabledMap,
+    LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE,
+} from '~/composables/labs/labFeatureList'
 
 /** UTILS */
 import {
@@ -66,8 +70,11 @@ export default async function useComputeGraph({
             'Column',
             'TableauDatasourceField',
             'TableauCalculatedField',
-            'LookerField',
+            // 'LookerField',
         ]
+        if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE])
+            typeNames.push('LookerField')
+
         return typeNames.includes(typeName)
     }
 

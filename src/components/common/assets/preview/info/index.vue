@@ -150,9 +150,28 @@
                     @click="switchTab(selectedAsset, 'Columns')"
                 >
                     <span class="mb-1 text-sm text-gray-500">Columns</span>
-                    <span class="font-semibold text-primary">{{
-                        columnCount(selectedAsset)
-                    }}</span>
+                    <span class="inline-flex items-center">
+                        <span class="font-semibold text-primary"
+                            >{{ columnCount(selectedAsset) }}
+                        </span>
+                        <a-tooltip
+                            placement="bottom"
+                            :title="`${columnWithLineageCount} out of ${columnCount(
+                                selectedAsset
+                            )} columns have lineage`"
+                        >
+                            <span
+                                v-if="columnWithLineageCount"
+                                class="inline-flex items-center px-1 ml-3 border rounded-full border-new-gray-200 text-new-gray-600"
+                            >
+                                <AtlanIcon
+                                    icon="LineageNew"
+                                    class="mb-0.5 mr-2"
+                                />
+                                <span>{{ columnWithLineageCount }}</span>
+                            </span>
+                        </a-tooltip>
+                    </span>
                 </div>
                 <div
                     v-if="sizeBytes(selectedAsset) !== '0'"
@@ -1133,6 +1152,7 @@
     import PopOverUser from '@/common/popover/user/user.vue'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import { useSimilarList } from '~/composables/discovery/useSimilarList'
+    import { getColumnCountWithLineage } from '~/components/common/assets/profile/tabs/lineage/util.js'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -1211,6 +1231,7 @@
             const { isDrawer } = toRefs(props)
 
             const sampleDataVisible = ref<boolean>(false)
+            const columnWithLineageCount = ref(null)
 
             const {
                 getConnectorImage,
@@ -1316,6 +1337,11 @@
                 quickChange()
             }
 
+            getColumnCountWithLineage(
+                selectedAsset.value,
+                columnWithLineageCount
+            )
+
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
                 if (
                     selectedAsset.typeName === 'View' ||
@@ -1387,6 +1413,7 @@
                 sizeBytes,
                 dataType,
                 columnCount,
+                columnWithLineageCount,
                 localOwners,
                 dataTypeCategoryImage,
                 isDist,

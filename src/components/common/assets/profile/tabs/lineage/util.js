@@ -1,3 +1,14 @@
+/** VUE */
+import { ref } from 'vue'
+import { watchOnce } from '@vueuse/core'
+
+/** COMPOSABLES */
+import fetchPorts from '~/components/common/assets/profile/tabs/lineage/fetchPorts'
+
+/** STORE */
+import useLineageStore from '~/store/lineage'
+
+/** ICONS */
 import {
     snowflake,
     tableau,
@@ -13,9 +24,6 @@ import {
     glue,
     salesforce,
 } from './icons'
-
-/** STORE */
-import useLineageStore from '~/store/lineage'
 
 const lineageStore = useLineageStore()
 
@@ -130,6 +138,23 @@ export const getDatabase = (entity) => {
         entity.uniqueAttributes?.qualifiedName?.split('/')
     if (item[0] === 'default') return item[3]
     return item[2]
+}
+
+/**
+ * It takes an asset and a columnWithLineageCount, and then it fetches the ports of the asset, and then
+ * it watches the count of the ports, and then it sets the columnWithLineageCount to the new value of
+ * the count
+ * @param asset - The asset object that you want to get the column count for.
+ * @param columnWithLineageCount - This is the variable that will be updated with the count of columns
+ * with lineage.
+ */
+export const getColumnCountWithLineage = (asset, columnWithLineageCount) => {
+    const { typeName, attributes: attr } = asset
+    const { qualifiedName } = attr
+    const { count } = fetchPorts(typeName, qualifiedName, 0, 999999999)
+    watchOnce(count, (newVal) => {
+        columnWithLineageCount.value = newVal
+    })
 }
 
 /**

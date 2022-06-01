@@ -150,10 +150,7 @@
             watch(
                 activeKey,
                 () => {
-                    if (
-                        activeKey.value === 'columns' ||
-                        activeKey.value === 'lineage'
-                    ) {
+                    if (activeKey.value === 'columns') {
                         handlePreviewVisibility(false)
                     } else {
                         handlePreviewVisibility(true)

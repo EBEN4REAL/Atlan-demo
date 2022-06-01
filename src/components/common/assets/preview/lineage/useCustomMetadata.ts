@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import useTypedefData from '~/composables/typedefs/useTypedefData'
+import dayjs, { Dayjs } from 'dayjs'
 
 const { customMetadataList } = useTypedefData()
 
@@ -40,18 +41,34 @@ export default function useCustomMetadata(assets) {
             const cmAttributeData = cmData.attributeDefs.find(
                 (x) => x.name === cmAttribute
             )
+            const { multiValueSelect, customType, primitiveType } =
+                cmAttributeData.options
 
             const cmNameDN = cmData.displayName
             const cmAttributeDN = cmAttributeData.displayName
-            const cmValueDN = v
-            const isSQL = cmAttributeData.options.customType === 'SQL'
-            const isMultiValue =
-                cmAttributeData.options.multiValueSelect === 'true'
+            const isSQL = customType === 'SQL'
+            const isMultiValue = multiValueSelect === 'true'
             const isEmojiIcon = cmData.options.logoType === 'emoji'
             const isImageIcon = cmData.options.logoType === 'image'
             const cmIcon = isEmojiIcon
                 ? cmData.options.emoji
                 : cmData.options.imageId || ''
+
+            let cmValueDN = v
+
+            switch (primitiveType) {
+                case 'boolean':
+                    cmValueDN = v ? 'Yes' : 'No'
+                    break
+                case 'date':
+                    cmValueDN = dayjs(v).format('DD/MM/YYYY')
+                    break
+                case 'string':
+                    if (isMultiValue) cmValueDN = v.join(', ')
+                    break
+                default:
+                    break
+            }
 
             const datObj = {
                 cmName,

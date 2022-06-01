@@ -603,7 +603,7 @@ export default function updateAssetAttributes(
 
         const response = await mutate()
         sendTrackEvent('resource', 'created', {
-            domain: localResource.value.link.split('/')[2],
+            resource_url_domain: localResource.value.link.split('/')[2],
         })
         return response
     }
@@ -625,7 +625,7 @@ export default function updateAssetAttributes(
 
         await mutate()
         sendTrackEvent('resource', 'updated', {
-            domain: localResource.value.link.split('/')[2],
+            resource_url_domain: localResource.value.link.split('/')[2],
         })
     }
 

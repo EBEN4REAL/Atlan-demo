@@ -38,6 +38,7 @@
                 v-show="showMinimap"
                 ref="minimapContainer"
                 class="minimap"
+                @mouseup="handleMinimapAction"
             ></div>
         </LineageFooter>
 
@@ -125,6 +126,10 @@
                 })
             }, 600)
 
+            const sendMiniMapChangedEvent = useDebounceFn(() => {
+                useAddEvent('lineage', 'control_panel_mini_map', 'changed')
+            }, 300)
+
             /** METHODS */
             // onZoomChange
             const handleZoom = (e) => {
@@ -164,6 +169,12 @@
             const handleDrawerUpdate = (asset) => {
                 if (typeof control === 'function')
                     control('selectedAsset', asset)
+            }
+
+            // handleMinimapAction
+            const handleMinimapAction = () => {
+                // Handle Event - lineage_control_panel_mini_map_changed
+                sendMiniMapChangedEvent()
             }
 
             // initialize
@@ -254,6 +265,7 @@
                 handleDrawerUpdate,
                 handleZoom,
                 groupedProcessIds,
+                handleMinimapAction,
             }
         },
     })

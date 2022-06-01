@@ -8,7 +8,7 @@
         :mouse-leave-delay="mouseLeaveDelay"
         :mouse-enter-delay="mouseEnterDelay"
     >
-        <template v-if="truncated" #title>
+        <template v-if="truncated && showTooltip" #title>
             <div v-linkified class="whitespace-pre-wrap">
                 {{ tooltipText }}
             </div>
@@ -48,7 +48,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs } from 'vue'
+    import { defineComponent, ref, toRefs, watch } from 'vue'
 
     export default defineComponent({
         name: 'Tooltip',
@@ -56,6 +56,10 @@
             tooltipText: {
                 type: String,
                 default: '',
+            },
+            showTooltip: {
+                type: Boolean,
+                default: true,
             },
             rows: {
                 type: Number,

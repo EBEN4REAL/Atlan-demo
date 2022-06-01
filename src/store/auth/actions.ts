@@ -11,6 +11,7 @@ export interface Actions extends State {
     setIsAuthenticated(value: any): void
     setUserDetails(): void
     setRoles(value: any): void
+    setDefaultRoles(value: any): void
     setDecentralizedRoles(value: any): void
     setPersonas(value: any): void
     setPurposes(value: any): void
@@ -175,6 +176,9 @@ export const actions: Actions = {
 
     setRoles(value) {
         this.roles = value
+    },
+    setDefaultRoles(value) {
+        this.defaultRoles = value
     },
     setDecentralizedRoles(value) {
         this.decentralizedRoles = value

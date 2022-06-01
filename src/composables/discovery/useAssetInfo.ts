@@ -254,6 +254,10 @@ export default function useAssetInfo() {
         return activeLinks
     }
 
+    const hasLineage = (asset: assetInterface) => {
+        return attributes(asset)?.__hasLineage
+    }
+
     function isValidHttpUrl(string) {
         let url
 
@@ -1532,5 +1536,6 @@ export default function useAssetInfo() {
         s3ObjectContentDisposition,
         s3ObjectVersionId,
         columnUpdatePermission,
+        hasLineage,
     }
 }

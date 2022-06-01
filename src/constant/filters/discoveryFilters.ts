@@ -81,16 +81,33 @@ export const discoveryFilters = [
                 name: 'description.keyword',
                 displayName: 'Description',
                 typeName: 'string',
-                description:
-                    'Description of the asset crawled from the source.',
+                description: 'Description of the asset on Atlan/Source',
                 isMandatory: false,
             },
+            // {
+            //     name: 'userDescription.keyword',
+            //     displayName: 'User Description',
+            //     typeName: 'string',
+            //     description: 'Description of the asset updated on Atlan.',
+            //     isMandatory: false,
+            // },
+
             {
-                name: 'userDescription.keyword',
-                displayName: 'User Description',
+                name: '__hasLineage',
+                displayName: 'Has Lineage',
+                typeName: 'boolean',
+                description: 'All assets which have lineage relationship',
+                isMandatory: true,
+            },
+
+            {
+                name: 'announcementType',
+                displayName: 'Announcement',
                 typeName: 'string',
-                description: 'Description of the asset updated on Atlan.',
-                isMandatory: false,
+                subTypeName: 'announcement',
+                description:
+                    'All assets which have the selected announcement type',
+                isMandatory: true,
             },
             {
                 name: '__modifiedBy',
@@ -110,14 +127,14 @@ export const discoveryFilters = [
             {
                 name: '__guid',
                 displayName: 'Unique identifier',
-                description: 'Unique Id for Assets',
+                description: 'Unique Id for the asset',
                 typeName: 'string',
                 isMandatory: true,
             },
             {
                 name: 'qualifiedName',
                 displayName: 'Qualified name',
-                description: 'Unique name for asset',
+                description: 'Unique name for the asset',
                 typeName: 'string',
                 isMandatory: true,
             },
@@ -130,26 +147,10 @@ export const discoveryFilters = [
                 isMandatory: true,
             },
             {
-                name: '__hasLineage',
-                displayName: 'Has Lineage',
-                typeName: 'boolean',
-                description: 'All assets which have lineage relationship',
-                isMandatory: true,
-            },
-            {
                 name: '__state',
                 displayName: 'Is Archived',
                 typeName: 'boolean',
                 description: 'All assets which have been archived',
-                isMandatory: true,
-            },
-            {
-                name: 'announcementType',
-                displayName: 'Announcement',
-                typeName: 'string',
-                subTypeName: 'announcement',
-                description:
-                    'All assets which have the selected announcement type',
                 isMandatory: true,
             },
         ],

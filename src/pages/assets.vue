@@ -11,6 +11,7 @@
             </keep-alive>
         </div>
 
+        <<<<<<< HEAD
         <transition name="nested">
             <div
                 v-if="showAssetPreview"
@@ -18,6 +19,11 @@
             >
                 <AssetPreview :selected-asset="localSelected" /></div
         ></transition>
+        =======
+        <div class="relative hidden bg-white asset-preview-container md:block">
+            <AssetPreview :selected-asset="localSelected" ref="previewRef" />
+        </div>
+        >>>>>>> main
     </div>
 </template>
 
@@ -52,6 +58,7 @@
             const localSelected = ref()
 
             const showAssetPreview = ref(true)
+            const previewRef = ref(null)
 
             const assetStore = useAssetStore()
 
@@ -59,6 +66,11 @@
                 localSelected.value = asset
                 assetStore.setSelectedAsset(asset)
             }
+            const handleTabSwitch = (payload) => {
+                console.log('switch', payload)
+                previewRef.value?.switchTab(payload?.asset, payload?.tab)
+            }
+
             const updateList = (asset) => {
                 if (assetdiscovery.value) {
                     assetdiscovery.value.updateCurrentList(asset)
@@ -72,6 +84,7 @@
 
             provide('updateList', updateList)
             provide('preview', handlePreview)
+            provide('switchSidebarTab', handleTabSwitch)
 
             provide('handlePreviewVisibility', handlePreviewVisibility)
 
@@ -97,6 +110,8 @@
                 localSelected,
                 sendPageEvent,
                 showAssetPreview,
+                handleTabSwitch,
+                previewRef,
             }
         },
     })

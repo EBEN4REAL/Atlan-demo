@@ -25,6 +25,7 @@ export interface State {
     }[]
     personas: { id: string; name: string }[]
     purposes: { id: string; name: string }[]
+    defaultRoles: string[]
 }
 
 export const state: State = {
@@ -48,4 +49,5 @@ export const state: State = {
     decentralizedRoles: [],
     personas: useStorage('personas', []),
     purposes: useStorage('purposes', []),
+    defaultRoles: useStorage('defaultRoles', []),
 }

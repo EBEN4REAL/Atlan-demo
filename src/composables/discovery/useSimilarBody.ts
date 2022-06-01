@@ -71,8 +71,43 @@ export function useSimilarBody(
                         'terms',
                         'description.keyword',
                         {},
-                        `${agg_prefix}_${mkey}`
+                        'group_by_description',
+                        (a) =>
+                            a.aggregation(
+                                'top_hits',
+                                {
+                                    size: 1,
+                                    _source: ['description'],
+                                },
+                                'group_by_description'
+                            )
                     )
+                }
+                break
+            }
+            case 'userDescription': {
+                if (mkey) {
+                    base.aggregation(
+                        'terms',
+                        'userDescription.keyword',
+                        {},
+                        'group_by_userDescription',
+                        (a) =>
+                            a.aggregation(
+                                'top_hits',
+                                {
+                                    size: 1,
+                                    _source: ['userDescription'],
+                                },
+                                'group_by_userDescription'
+                            )
+                    )
+                    // base.aggregation(
+                    //     'terms',
+                    //     'userDescription.keyword',
+                    //     {},
+                    //     `${agg_prefix}_${mkey}`
+                    // )
                 }
                 break
             }

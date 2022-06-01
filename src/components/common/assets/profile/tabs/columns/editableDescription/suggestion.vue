@@ -41,7 +41,7 @@
                     <a-button
                         v-if="editPermission && showApplyButton === index"
                         class="flex items-center justify-center p-2"
-                        @click="handleApply(item?.key)"
+                        @click="handleApply(item?.key, index)"
                     >
                         <AtlanIcon
                             class="w-auto h-4 approved-icon text-success"
@@ -97,13 +97,14 @@
 
             const showApplyButton = ref(-1)
 
-            const handleApply = (key) => {
+            const handleApply = (key, index) => {
                 emit('apply', {
                     key: 'description',
                     value: key,
                 })
                 const properties = {
                     asset_type: asset.value?.typeName,
+                    index,
                 }
                 useAddEvent(
                     'discovery',

@@ -8,21 +8,42 @@
             :icon="icon(term)"
             class="hover:text-white"
             :class="pillColor"
-            @click="$emit('toggleDrawer', term)"
+            @click="
+                (e) => {
+                    e.stopPropagation()
+                    $emit('toggleDrawer', term)
+                }
+            "
         ></AtlanIcon>
 
         <div
             class="ml-1 truncate overflow-ellipsis peer"
             style="max-width: 150px"
-            @click="$emit('toggleDrawer', term)"
+            @click="
+                (e) => {
+                    e.stopPropagation()
+                    $emit('toggleDrawer', term)
+                }
+            "
         >
             {{ term.attributes?.name ?? term.displayText }}
         </div>
 
-        <div class="flex" @click="handleRemove" v-if="allowDelete">
+        <div
+            v-if="allowDelete"
+            class="flex"
+            @click="
+                (e) => {
+                    e.stopPropagation()
+                    handleRemove()
+                }
+            "
+        >
             <AtlanIcon
                 icon="Cross"
-                :class="pillColor==='text-purple'?'text-gray-500':'text-white'"
+                :class="
+                    pillColor === 'text-purple' ? 'text-gray-500' : 'text-white'
+                "
                 class="h-3 ml-2"
             ></AtlanIcon>
         </div>

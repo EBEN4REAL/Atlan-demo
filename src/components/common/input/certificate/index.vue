@@ -1,5 +1,7 @@
 <template>
     <div class="flex items-center text-xs text-gray-500">
+        <div v-if="isEdit" class="freeze-clicks-outside-popover"></div>
+
         <a-popover
             v-if="showPopover && role !== 'Guest'"
             v-model:visible="isEdit"
@@ -14,7 +16,7 @@
                     class="px-3 py-2 mx-4 mb-3 bg-gray-100"
                 >
                     You don't have edit access. Suggest a new Certificate and
-                    <span class="text-primary cursor-pointer">
+                    <span class="cursor-pointer text-primary">
                         <a-popover placement="rightBottom">
                             <template #content>
                                 <AdminList></AdminList>
@@ -39,7 +41,7 @@
                 </div>
                 <div
                     v-if="!editPermission && role !== 'Guest'"
-                    class="flex items-center justify-end mx-2 space-x-2 mt-5"
+                    class="flex items-center justify-end mx-2 mt-5 space-x-2"
                 >
                     <a-button @click="handleCancelRequest">Cancel</a-button>
                     <a-button

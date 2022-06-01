@@ -1013,36 +1013,90 @@
                                 lastMatchedKeyword &&
                                 lastMatchedKeyword.token === 'SELECT'
                             ) {
-                                toRaw(editorInstanceRef.value).trigger(
-                                    'keyboard',
-                                    'type',
-                                    {
-                                        text: `${assetQuoteType}${title(
-                                            t
-                                        )}${assetQuoteType}, `,
-                                    }
-                                )
+                                const editorPosition = toRaw(
+                                    editorInstanceRef.value
+                                )?.getPosition() as monaco.IPosition
+                                // edit the word at the position calculated above
+                                toRaw(editorInstanceRef.value)
+                                    ?.getModel()
+                                    ?.pushEditOperations(
+                                        [],
+                                        [
+                                            {
+                                                range: {
+                                                    endColumn:
+                                                        editorPosition?.column,
+                                                    startColumn:
+                                                        editorPosition?.column,
+                                                    startLineNumber:
+                                                        editorPosition.lineNumber,
+                                                    endLineNumber:
+                                                        editorPosition.lineNumber,
+                                                },
+                                                text: `${assetQuoteType}${title(
+                                                    t
+                                                )}${assetQuoteType}`,
+                                            },
+                                        ],
+                                        () => null
+                                    )
                             } else {
-                                toRaw(editorInstanceRef.value).trigger(
-                                    'keyboard',
-                                    'type',
-                                    {
-                                        text: `${assetQuoteType}${title(
-                                            t
-                                        )}${assetQuoteType}`,
-                                    }
-                                )
+                                const editorPosition = toRaw(
+                                    editorInstanceRef.value
+                                )?.getPosition() as monaco.IPosition
+                                // edit the word at the position calculated above
+                                toRaw(editorInstanceRef.value)
+                                    ?.getModel()
+                                    ?.pushEditOperations(
+                                        [],
+                                        [
+                                            {
+                                                range: {
+                                                    endColumn:
+                                                        editorPosition?.column,
+                                                    startColumn:
+                                                        editorPosition?.column,
+                                                    startLineNumber:
+                                                        editorPosition.lineNumber,
+                                                    endLineNumber:
+                                                        editorPosition.lineNumber,
+                                                },
+                                                text: `${assetQuoteType}${title(
+                                                    t
+                                                )}${assetQuoteType}`,
+                                            },
+                                        ],
+                                        () => null
+                                    )
                             }
                         } else {
-                            toRaw(editorInstanceRef.value).trigger(
-                                'keyboard',
-                                'type',
-                                {
-                                    text: `${assetQuoteType}${title(
-                                        t
-                                    )}${assetQuoteType}`,
-                                }
-                            )
+                            const editorPosition = toRaw(
+                                editorInstanceRef.value
+                            )?.getPosition() as monaco.IPosition
+                            // edit the word at the position calculated above
+                            toRaw(editorInstanceRef.value)
+                                ?.getModel()
+                                ?.pushEditOperations(
+                                    [],
+                                    [
+                                        {
+                                            range: {
+                                                endColumn:
+                                                    editorPosition?.column,
+                                                startColumn:
+                                                    editorPosition?.column,
+                                                startLineNumber:
+                                                    editorPosition.lineNumber,
+                                                endLineNumber:
+                                                    editorPosition.lineNumber,
+                                            },
+                                            text: `${assetQuoteType}${title(
+                                                t
+                                            )}${assetQuoteType}`,
+                                        },
+                                    ],
+                                    () => null
+                                )
                         }
                         useAddEvent('insights', 'schema_tree', 'item_click', {
                             action: 'place_name_in_editor',

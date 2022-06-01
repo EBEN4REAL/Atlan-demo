@@ -256,7 +256,7 @@
                         [
                             {
                                 range: {
-                                    endColumn: wordPosition.endColumn,
+                                    endColumn: wordPosition?.endColumn,
                                     startColumn: wordPosition.startColumn,
                                     startLineNumber: editorPosition.lineNumber,
                                     endLineNumber: editorPosition.lineNumber,
@@ -266,25 +266,18 @@
                         ],
                         () => null
                     )
-                    // calling the above method selects the text that gets appended - we need to reset the selection to remove the selection
-                    // getting position of the completed word
-                    const completedWordPosition = editor
-                        ?.getModel()
-                        ?.getWordAtPosition(
-                            editor?.getPosition() as monaco.IPosition
-                        )
-                    const endColumn = completedWordPosition?.endColumn
-                    const endLine = editor?.getPosition()?.lineNumber
+
                     // provide completed word's line number and end column number to reset selection (we do this by creating a new selection with same end and start position which is the end of the completed word - so the cursor gets set at the end of the completed word and no text is selected/highlighted)
-                    if (endColumn && endLine)
-                        editor?.setSelection(
-                            new monaco.Selection(
-                                endLine,
-                                endColumn,
-                                endLine,
-                                endColumn
-                            )
+                    editor?.setSelection(
+                        new monaco.Selection(
+                            editorPosition.lineNumber,
+                            wordPosition.startColumn,
+                            editorPosition.lineNumber,
+                            wordPosition.startColumn +
+                                suggestion?.insertText?.length
                         )
+                    )
+                    // if (endColumn && endLine)
                     // restore focus on the editor (gets hidden after we insert the suggestion)
                     editor?.focus()
                     selectedSuggestionIndex.value = 0

@@ -8,15 +8,18 @@
                     "
                     :is="getSuggestionsListIcon(suggestion)"
                     class="h-4 text-gray-500 mr-1.5"
+                    style="min-width: 16px"
                 />
                 <AtlanIcon
                     v-else
                     :icon="getSuggestionsListIcon(suggestion)"
                     class="mr-1.5 parent-ellipsis-container-extension"
+                    style="min-width: 16px"
                     :class="suggestion.iconClass"
                 ></AtlanIcon
                 ><span
-                    class="text-sm font-medium truncate text-new-gray-700 suggestion-item parent-ellipsis-container-base"
+                    class="text-sm truncate text-new-gray-700 parent-ellipsis-container-base"
+                    style="font-weight: 500"
                     v-html="suggestion.label"
                 ></span>
 
@@ -26,6 +29,7 @@
                     "
                     :icon="getAnnouncementIcon(suggestion)"
                     class="mr-1.5 ml-1 -mt-0.5 w-4 h-4"
+                    style="min-width: 16px"
                 ></AtlanIcon>
                 <CertificateBadge
                     v-if="
@@ -96,6 +100,15 @@
     >
         <span class="ml-6 text-sm truncate text-new-gray-700 hack-font">
             {{ description(suggestion?.documentation?.entity) }}
+        </span>
+    </div>
+    <div
+        style="max-width: 99%"
+        class="truncate"
+        v-if="suggestion?.kind === 'snippet'"
+    >
+        <span class="ml-6 text-sm truncate text-new-gray-700 hack-font">
+            {{ suggestion?.insertText }}
         </span>
     </div>
 </template>

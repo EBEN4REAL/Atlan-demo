@@ -247,7 +247,7 @@ import TablePartition from '~/assets/images/icons/table-partition.svg'
 // autosuggetions
 import Function from '~/assets/images/insights/autocomplete/function.svg'
 import Nut from '~/assets/images/insights/autocomplete/nut.svg'
-import Snippet from '~/assets/images/insights/autocomplete/nut.svg'
+import Snippet from '~/assets/images/insights/autocomplete/snippet.svg'
 
 import Gdoc from '~/assets/images/admin/integrations/gDoc.svg'
 

@@ -1,7 +1,10 @@
 <template>
     <div
         class="absolute"
-        style="filter: drop-shadow(0px 5px 16px rgba(0, 0, 0, 0.1))"
+        style="
+            filter: drop-shadow(0px 5px 16px rgba(0, 0, 0, 0.1));
+            z-index: 1000000;
+        "
     >
         <div
             class="py-0.5 overflow-auto bg-white max-h-52 rounded-t-md"
@@ -77,22 +80,26 @@
         </div>
         <div class="w-full bg-new-gray-100" style="height: 1px"></div>
         <div
-            class="flex justify-end px-2 py-1 text-sm bg-white text-new-gray-600 rounded-b-md"
+            class="flex justify-end px-2 py-1 text-xs bg-white text-new-gray-600 rounded-b-md"
         >
             <span> showing {{ suggestionListModified?.length }} results</span>
         </div>
         <div
             class="absolute flex items-center bg-white mt-1.5 px-1.5 text-sm rounded-md text-new-gray-700"
+            v-if="
+                suggestionListModified[selectedSuggestionIndex]?.documentation
+                    ?.entity
+            "
             style="min-width: 300px; padding-top: 5px; padding-bottom: 5px"
         >
             <div
-                class="px-1 text-sm border rounded suggestion-item bg-new-gray-100 border-new-gray-300"
+                class="px-1 text-xs border rounded suggestion-item bg-new-gray-100 border-new-gray-300"
             >
                 Enter
             </div>
             &nbsp;to learn more, &nbsp;
             <div
-                class="px-1 text-sm border rounded suggestion-item bg-new-gray-100 border-new-gray-300"
+                class="px-1 text-xs border rounded suggestion-item bg-new-gray-100 border-new-gray-300"
             >
                 <span>shift</span> + Enter
             </div>

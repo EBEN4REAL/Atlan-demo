@@ -1,12 +1,14 @@
 <template>
     <div ref="monacoRoot" class="relative monacoeditor"></div>
-    <SuggestionList
-        id="auto-suggestions"
-        v-model:selectedSuggestionIndex="selectedSuggestionIndex"
-        :suggestions="suggestions"
-        :autosuggestionPopoverActive="autosuggestionPopoverActive"
-        @applySuggestions="handleApplySuggestion"
-    />
+    <teleport to="body">
+        <SuggestionList
+            id="auto-suggestions"
+            v-model:selectedSuggestionIndex="selectedSuggestionIndex"
+            :suggestions="suggestions"
+            :autosuggestionPopoverActive="autosuggestionPopoverActive"
+            @applySuggestions="handleApplySuggestion"
+        />
+    </teleport>
 </template>
 
 <script lang="ts">
@@ -180,11 +182,15 @@
                 const cursor = document.querySelector(
                     '.cursor.monaco-mouse-cursor-text'
                 )
+                const viewportOffset = cursor?.getBoundingClientRect()
+                debugger
                 const autoSuggestionsDropdown =
                     document.getElementById('auto-suggestions')
-                autoSuggestionsDropdown.style.top = `${cursor.offsetTop + 27}px`
+                autoSuggestionsDropdown.style.top = `${
+                    viewportOffset.top + 22
+                }px`
                 autoSuggestionsDropdown.style.left = `${
-                    cursor.offsetLeft + 65
+                    viewportOffset.left + 5
                 }px`
             }
 

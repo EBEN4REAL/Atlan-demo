@@ -6,7 +6,9 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
 import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
+import { capitalizeFirstLetter } from '~/utils/string'
 import {
+    getSnippetKeywords,
     createAliasesMap,
     extractTablesFromContext,
     getSchemaAndDatabaseFromSqlQueryText,
@@ -375,6 +377,22 @@ function getLocalSQLSugggestions(currWrd: string) {
     let suggestions = sqlKeywords.filter((keyword) =>
         keyword.label.includes(currentWord?.toUpperCase())
     )
+    const snippetWords = getSnippetKeywords()
+    snippetWords.forEach((snippetWord) => {
+        if (
+            snippetWord.word.toUpperCase().includes(currentWord.toUpperCase())
+        ) {
+            suggestions = [
+                ...suggestions,
+                {
+                    label: `${capitalizeFirstLetter(snippetWord.word)} snippet`,
+                    kind: 'snippet',
+                    insertText: snippetWord.text,
+                },
+            ]
+        }
+    })
+
     return Promise.resolve({
         suggestions: suggestions,
         incomplete: true,

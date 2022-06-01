@@ -151,3 +151,12 @@ export function createAliasesMap(text: string) {
     }
     return aliasMap
 }
+export function getSnippetKeywords() {
+    const words = [
+        {
+            word: 'select',
+            text: 'Select * from {asset name} limit 100',
+        },
+    ]
+    return words
+}

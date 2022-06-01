@@ -35,6 +35,10 @@ export function getSuggestionsListIcon(suggestion: any) {
         type = keys[index]
     }
     let icon
+    debugger
+    if (suggestion.kind === 'snippet') {
+        return 'Snippet'
+    }
     if (type) {
         if (type === 'Function') {
             icon = type
@@ -52,6 +56,7 @@ export function getSuggestionsListIcon(suggestion: any) {
                 suggestion.documentation.entity
             )
     }
+
     return 'Vqb24'
 }
 export function getSuggestionsListType(suggestion: any) {
@@ -69,6 +74,9 @@ export function getSuggestionsListType(suggestion: any) {
             // for other keyword
             return 'Block'
         }
+    }
+    if (suggestion.kind === 'snippet') {
+        return 'Snippet'
     }
     return ''
 }

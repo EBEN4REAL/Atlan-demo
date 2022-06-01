@@ -85,7 +85,7 @@
                 <template #bodyCell="{ column, record, text }">
                     <template v-if="column.key === 'hash_index'">
                         <div
-                            class="absolute top-0 left-0 flex items-center justify-center w-full h-full text-gray-500 bg-gray-100 border-r border-gray-light"
+                            class="absolute top-0 left-0 flex justify-center w-full h-full pt-3 text-gray-500 bg-gray-100 border-r border-gray-light"
                             :class="{
                                 'selected-row': record.key === selectedRow,
                             }"
@@ -568,7 +568,7 @@
                 preventClick.value = true
                 setTimeout(() => {
                     preventClick.value = false
-                }, 400)
+                }, 1500)
             }
 
             /** WATCHERS */

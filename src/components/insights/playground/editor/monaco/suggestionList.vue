@@ -258,5 +258,6 @@
     }
     .popoverAssetClassNameInsights {
         padding-right: 2px !important;
+        padding-left: 2px !important;
     }
 </style>

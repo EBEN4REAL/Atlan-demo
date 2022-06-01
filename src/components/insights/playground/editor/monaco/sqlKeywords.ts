@@ -8,7 +8,10 @@ export interface suggestionKeywordInterface {
     insertText: string
 }
 const sqlKeywords = (): suggestionKeywordInterface[] => {
-    const keywordsList = languageTokens.keywords.map((keyword) => ({
+    const keywordsList = [
+        ...languageTokens.operators,
+        ...languageTokens.keywords,
+    ].map((keyword) => ({
         label: keyword,
         kind: monaco.languages.CompletionItemKind.Keyword,
         insertText: keyword,

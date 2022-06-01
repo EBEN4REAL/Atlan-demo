@@ -1,8 +1,8 @@
 <template>
     <div
         v-if="
-            selectedAsset.assetInfo.guid &&
-            activeInlineTab?.assetSidebar?.isVisible
+            activeInlineTab?.assetSidebar?.isVisible &&
+            selectedAsset.assetInfo.guid
         "
         class="relative z-20 flex flex-col h-full bg-white asset-preview-container"
     >

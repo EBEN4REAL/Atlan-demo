@@ -55,6 +55,7 @@
         updateEditorModel,
     } from '~/components/insights/playground/editor/monaco/useModel'
     import SuggestionList from '~/components/insights/playground/editor/monaco/suggestionList.vue'
+    import { useDebounceFn } from '@vueuse/core'
 
     // @ts-ignore
     self.MonacoEnvironment = {
@@ -183,7 +184,7 @@
             // fix dropdown's position
             const setDropdown = () => {
                 const cursor = document.querySelector(
-                    '.cursor.monaco-mouse-cursor-text'
+                    '.monaco-mouse-cursor-text'
                 )
                 const viewportOffset = cursor?.getBoundingClientRect()
                 let left = viewportOffset.left
@@ -252,7 +253,6 @@
             }
 
             const handleApplySuggestion = (suggestion) => {
-                debugger
                 // get current cursor position
                 const editorPosition = editor?.getPosition() as monaco.IPosition
                 // use current cursor position to get position of the word to be replaced
@@ -484,6 +484,7 @@
                         .isQueryRunning
             )
             // let suggestionsList = ref(null)
+            monaco?.sc
 
             onMounted(() => {
                 loadThemes(monaco)
@@ -728,11 +729,20 @@
 
                 /* -------------------------------------------- */
                 editor?.getModel().onDidChangeContent((event) => {
-                    // debugger
+                    const changes = event?.changes[0]
+                    debugger
+                    if (
+                        changes.text === '""' ||
+                        changes.text === `''` ||
+                        changes.text === '``'
+                    ) {
+                        return
+                    }
+
                     const text = editor?.getValue()
                     onEditorContentChange(event, text, editor)
                     findAndChangeCustomVariablesColor(false)
-                    const changes = event?.changes[0]
+
                     /* Preventing network request when pasting name of table */
                     const suggestions = useAutoSuggestions(
                         changes,
@@ -757,6 +767,13 @@
                     // hideAutoCompletion()
                     // setTimeout(setDropdown, 300)
                 })
+                // editor?.onDidScrollChange((scrollEvent) => {
+                //     const t = useDebounceFn(() => {
+                //         debugger
+                //         // setDropdown()
+                //     }, 500)
+                //     t()
+                // })
 
                 editor?.onDidBlurEditorWidget(() => {
                     toggleGhostCursor(
@@ -840,6 +857,12 @@
                             editor?.getPosition()
                         )
                     })
+                    editor?.onDidScrollChange((scrollEvent) => {
+                    //     const t = useDebounceFn(() => {
+                    //         setDropdown()
+                    //     }, 500)
+                    //     t()
+                    // })
 
                     // old
                     const _index = tabs.value.findIndex(

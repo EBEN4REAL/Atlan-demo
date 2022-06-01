@@ -2,7 +2,7 @@
     <a-popover
         v-model:visible="localAssetPopoverVisible"
         title=""
-        placement="left"
+        :placement="placement"
         :mouse-enter-delay="mouseEnterDelay"
         :trigger="popoverTrigger"
     >
@@ -434,10 +434,14 @@
                 type: String,
                 default: 'hover',
             },
+            placement: {
+                type: String,
+                default: 'left',
+            },
         },
         emits: ['previewAsset'],
         setup(props, { slots, emit }) {
-            const { item, popoverTrigger } = toRefs(props)
+            const { item, popoverTrigger, placement } = toRefs(props)
 
             const {
                 certificateStatus,
@@ -562,6 +566,7 @@
             })
 
             return {
+                placement,
                 localAssetPopoverVisible,
                 popoverTrigger,
                 certificateStatus,

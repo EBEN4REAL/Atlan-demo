@@ -93,13 +93,13 @@
             style="min-width: 300px; padding-top: 5px; padding-bottom: 5px"
         >
             <div
-                class="px-1 text-xs border rounded suggestion-item bg-new-gray-100 border-new-gray-300"
+                class="px-1 text-xs border rounded suggestion-item bg-new-gray-100 border-new-gray-300 plex-mono"
             >
                 Enter
             </div>
             &nbsp;to learn more, &nbsp;
             <div
-                class="px-1 text-xs border rounded suggestion-item bg-new-gray-100 border-new-gray-300"
+                class="px-1 text-xs border rounded suggestion-item bg-new-gray-100 border-new-gray-300 plex-mono"
             >
                 <span>shift</span> + Enter
             </div>
@@ -195,5 +195,12 @@
     }
     .suggestion-item {
         font-family: Hack;
+    }
+    @font-face {
+        font-family: PlexMono;
+        src: url('~/assets/fonts/ibmPlexMono/IBMPlexMono-Regular.ttf');
+    }
+    .plex-mono {
+        font-family: PlexMono !important;
     }
 </style>

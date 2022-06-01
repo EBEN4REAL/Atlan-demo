@@ -18,7 +18,7 @@
                     :class="suggestion.iconClass"
                 ></AtlanIcon
                 ><span
-                    class="text-sm truncate text-new-gray-700 parent-ellipsis-container-base"
+                    class="text-sm truncate plex-mono-medium text-new-gray-700 parent-ellipsis-container-base"
                     style="font-weight: 500"
                     v-html="suggestion.label"
                 ></span>
@@ -49,7 +49,7 @@
                     class="ml-1 mr-0.5 parent-ellipsis-container-extension"
                 ></CertificateBadge>
                 <span
-                    class="ml-1 text-xs text-gray-500 truncate parent-ellipsis-container-base"
+                    class="ml-1 text-xs text-gray-500 truncate plex-mono parent-ellipsis-container-base"
                     v-if="
                         isActive &&
                         suggestion?.documentation?.entity?.typeName === 'Column'
@@ -98,7 +98,7 @@
         class="truncate"
         v-if="isActive && description(suggestion?.documentation?.entity)"
     >
-        <span class="ml-6 text-sm truncate text-new-gray-700 hack-font">
+        <span class="ml-6 text-sm truncate plex-mono text-new-gray-700">
             {{ description(suggestion?.documentation?.entity) }}
         </span>
     </div>
@@ -107,7 +107,7 @@
         class="truncate"
         v-if="suggestion?.kind === 'snippet'"
     >
-        <span class="ml-6 text-sm truncate text-new-gray-700 hack-font">
+        <span class="ml-6 text-sm truncate text-new-gray-700 plex-mono">
             {{ suggestion?.insertText }}
         </span>
     </div>
@@ -176,6 +176,21 @@
     }
     .hack-font {
         font-family: Hack;
+    }
+    @font-face {
+        font-family: PlexMono;
+        src: url('~/assets/fonts/ibmPlexMono/IBMPlexMono-Regular.ttf');
+    }
+    @font-face {
+        font-family: PlexMonoMedium;
+        src: url('~/assets/fonts/ibmPlexMono/IBMPlexMono-Medium.ttf');
+    }
+
+    .plex-mono {
+        font-family: PlexMono !important;
+    }
+    .plex-mono-medium {
+        font-family: PlexMonoMedium !important;
     }
 </style>
 <style lang="less" scoped>

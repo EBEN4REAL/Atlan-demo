@@ -238,12 +238,33 @@
             }
 
             const handleApplySuggestion = (suggestion) => {
+                debugger
                 // get current cursor position
                 const editorPosition = editor?.getPosition() as monaco.IPosition
                 // use current cursor position to get position of the word to be replaced
                 const wordPosition = editor
                     ?.getModel()
                     ?.getWordAtPosition(editorPosition)
+
+                // for stripping quotes if cursor is in b/w quotes
+                const matches = editor
+                    ?.getModel()
+                    .findMatches(`"[a-zA-Z]*"`, true, true, false, null, true)
+                const matches1 = editor
+                    ?.getModel()
+                    .findMatches('`[a-zA-Z]*`', true, true, false, null, true)
+                const matches2 = editor
+                    ?.getModel()
+                    .findMatches(`'[a-zA-Z]*'`, true, true, false, null, true)
+
+                let stripQuotes = false
+                if (
+                    matches.length > 0 ||
+                    matches1.length > 0 ||
+                    matches2.length > 0
+                ) {
+                    stripQuotes = true
+                }
 
                 if (
                     wordPosition?.endColumn &&
@@ -256,8 +277,12 @@
                         [
                             {
                                 range: {
-                                    endColumn: wordPosition?.endColumn,
-                                    startColumn: wordPosition.startColumn,
+                                    endColumn: stripQuotes
+                                        ? wordPosition?.endColumn + 1
+                                        : wordPosition?.endColumn,
+                                    startColumn: stripQuotes
+                                        ? wordPosition.startColumn - 1
+                                        : wordPosition.startColumn,
                                     startLineNumber: editorPosition.lineNumber,
                                     endLineNumber: editorPosition.lineNumber,
                                 },
@@ -271,7 +296,8 @@
                     editor?.setSelection(
                         new monaco.Selection(
                             editorPosition.lineNumber,
-                            wordPosition.startColumn,
+                            wordPosition.startColumn +
+                                suggestion?.insertText?.length,
                             editorPosition.lineNumber,
                             wordPosition.startColumn +
                                 suggestion?.insertText?.length

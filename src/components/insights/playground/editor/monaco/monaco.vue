@@ -303,6 +303,15 @@
                                 suggestion?.insertText?.length
                         )
                     )
+                    // for aggregation position shift ( here)
+                    if (suggestion?.insertText.includes('()')) {
+                        const position: any =
+                            editor?.getPosition() as monaco.IPosition
+                        editor?.setPosition({
+                            ...position,
+                            column: position.column - 1,
+                        })
+                    }
                     // if (endColumn && endLine)
                     // restore focus on the editor (gets hidden after we insert the suggestion)
                     editor?.focus()

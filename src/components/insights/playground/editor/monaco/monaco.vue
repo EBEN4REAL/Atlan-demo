@@ -857,7 +857,7 @@
                             editor?.getPosition()
                         )
                     })
-                    editor?.onDidScrollChange((scrollEvent) => {
+                    // editor?.onDidScrollChange((scrollEvent) => {
                     //     const t = useDebounceFn(() => {
                     //         setDropdown()
                     //     }, 500)

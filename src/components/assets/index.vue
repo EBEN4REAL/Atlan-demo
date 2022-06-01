@@ -244,6 +244,7 @@
                                     item.typeName.toLowerCase() === 'query'
                                 "
                                 @preview="handleClickAssetItem"
+                                @switch="handleTabSwitch"
                                 @updateDrawer="updateCurrentList"
                                 @listItem:check="
                                     (e, item) => updateBulkSelectedAssets(item)
@@ -588,8 +589,13 @@
             })
 
             const handlePreview = inject('preview')
+            const switchSidebarTab = inject('switchSidebarTab', () => {})
             const isCmndKVisible: ComputedRef<boolean | undefined> =
                 inject('isCmndKVisible')
+
+            const handleTabSwitch = (payload) => {
+                switchSidebarTab(payload)
+            }
 
             const updateCurrentList = (asset) => {
                 updateList(asset)
@@ -1040,6 +1046,7 @@
                 isGlossaryChange,
                 handleBrowseAsset,
                 hierarchyDirtyTimestamp,
+                handleTabSwitch,
             }
         },
     })

@@ -196,12 +196,14 @@
                         <EditableClassifications
                             :asset="record.item"
                             @update="handleExtraDrawerClick"
+                            @popoverActive="() => (preventClick = true)"
                         />
                     </template>
                     <template v-else-if="column.key === 'terms'">
                         <EditableTerms
                             :asset="record.item"
                             @update="handleExtraDrawerClick"
+                            @popoverActive="() => (preventClick = true)"
                         />
                     </template>
                 </template>
@@ -429,19 +431,23 @@
             } */
 
             const handleCloseColumnSidebar = () => {
-                selectedRow.value = null
-                selectedRowGuid.value = ''
-                showColumnSidebar.value = false
+                if (!preventClick.value) {
+                    selectedRow.value = null
+                    selectedRowGuid.value = ''
+                    showColumnSidebar.value = false
+                }
             }
             const openColumnSidebar = (columnOrder) => {
-                selectedRow.value = columnOrder
-                columnsList.value.forEach((singleRow) => {
-                    if (singleRow.attributes.order === columnOrder) {
-                        selectedRowGuid.value = singleRow?.guid
-                    }
-                })
+                if (!preventClick.value) {
+                    selectedRow.value = columnOrder
+                    columnsList.value.forEach((singleRow) => {
+                        if (singleRow.attributes.order === columnOrder) {
+                            selectedRowGuid.value = singleRow?.guid
+                        }
+                    })
 
-                showColumnSidebar.value = true
+                    showColumnSidebar.value = true
+                }
             }
 
             // filterColumnsList
@@ -699,6 +705,7 @@
                 offset,
                 drawerData,
                 tableRef,
+                preventClick,
                 columns: [
                     {
                         width: 50,

@@ -203,7 +203,7 @@
                 required: true,
             },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'popoverActive'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
@@ -391,6 +391,7 @@
             const handleOpenPopover = () => {
                 isEdit.value = true
                 requestLoading.value = false
+                emit('popoverActive')
             }
             const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
 

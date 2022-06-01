@@ -10,6 +10,7 @@
             columnUpdatePermission(asset, 'ENTITY_REMOVE_CLASSIFICATION')
         "
         @change="handleClassifications"
+        @popoverActive="$emit('popoverActive')"
     >
     </Classification>
 </template>
@@ -31,7 +32,7 @@
                 default: () => {},
             },
         },
-        emits: ['update'],
+        emits: ['update', 'popoverActive'],
         setup(props, { emit }) {
             const { asset } = toRefs(props)
 

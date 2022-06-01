@@ -17,6 +17,7 @@
             )
         "
         @change="handleMeanings"
+        @popoverActive="$emit('popoverActive')"
     >
     </TermsWidget>
 </template>
@@ -38,7 +39,7 @@
                 default: () => {},
             },
         },
-        emits: ['update'],
+        emits: ['update', 'popoverActive'],
 
         setup(props, { emit }) {
             const { asset } = toRefs(props)

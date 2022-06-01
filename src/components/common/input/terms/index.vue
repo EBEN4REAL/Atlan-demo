@@ -181,7 +181,7 @@
             },
         },
         // emits: ['update:selectedAsset'],
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'popoverActive'],
         setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
@@ -371,6 +371,12 @@
                 enteredPill: termEnteredPill,
                 leftPill: termLeftPill,
             } = useMouseEnterDelay()
+
+            watch(isEdit, () => {
+                if (isEdit.value) {
+                    emit('popoverActive')
+                }
+            })
 
             return {
                 getFetchedTerm,

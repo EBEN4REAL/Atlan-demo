@@ -829,7 +829,7 @@
                 <div
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
                 >
-                    <span>Admins</span>
+                    <span>Connection Admins</span>
                 </div>
 
                 <Admins
@@ -839,6 +839,38 @@
                     :edit-permission="editPermission"
                     @change="handleChangeAdmins"
                 />
+                <div
+                    class="flex flex-col p-3 mx-5 mt-3 rounded-md bg-primary-light"
+                >
+                    <div class="flex flex-col w-full">
+                        <div class="flex items-center justify-between mb-1">
+                            <div
+                                class="flex items-center text-gray-700 capitalize"
+                            >
+                                <AtlanIcon icon="Info" class="mb-0.5 mr-1" />
+                                <span>Connection Admin</span>
+                            </div>
+                        </div>
+
+                        <div class="text-gray-500 break-words">
+                            <p>
+                                Being a connection admin gives these permissions
+                            </p>
+                            <p>
+                                1. Access to read and edit all assets in that
+                                connection
+                            </p>
+                            <p>
+                                2. Access to edit the connection & its
+                                preferences
+                            </p>
+                            <p>
+                                3. Access to edit policies in personas for the
+                                connection
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div

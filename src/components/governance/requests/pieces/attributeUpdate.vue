@@ -88,7 +88,7 @@
                                         <div
                                             class="w-full mt-2 overflow-x-scroll desc-wrapper"
                                         >
-                                            <p class="font-bold desc-text">
+                                            <p class="font-medium desc-text">
                                                 {{ value }}
                                             </p>
                                         </div>
@@ -115,7 +115,7 @@
                                         <Avatar
                                             :allow-upload="false"
                                             :avatar-name="request.createdBy"
-                                            :avatar-size="20"
+                                            :avatar-size="16"
                                             :avatar-shape="'circle'"
                                             class="mr-2"
                                             :image-url="

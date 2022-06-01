@@ -110,10 +110,6 @@
             const truncated = ref<boolean>(false)
             const { tooltipText } = toRefs(props)
 
-            const hey = (visible) => {
-                console.log('Hey: ', visible)
-            }
-
             return {
                 tooltipText,
                 truncated,

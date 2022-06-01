@@ -11,19 +11,16 @@
             </keep-alive>
         </div>
 
-        <<<<<<< HEAD
         <transition name="nested">
             <div
                 v-if="showAssetPreview"
                 class="relative hidden bg-white asset-preview-container md:block"
             >
-                <AssetPreview :selected-asset="localSelected" /></div
+                <AssetPreview
+                    ref="previewRef"
+                    :selected-asset="localSelected"
+                /></div
         ></transition>
-        =======
-        <div class="relative hidden bg-white asset-preview-container md:block">
-            <AssetPreview :selected-asset="localSelected" ref="previewRef" />
-        </div>
-        >>>>>>> main
     </div>
 </template>
 

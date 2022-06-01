@@ -12,7 +12,7 @@
         </div>
 
         <div class="relative hidden bg-white asset-preview-container md:block">
-            <AssetPreview :selected-asset="localSelected" />
+            <AssetPreview :selected-asset="localSelected" ref="previewRef" />
         </div>
     </div>
 </template>
@@ -47,12 +47,19 @@
             const isItem = computed(() => !!route.params.id)
             const localSelected = ref()
 
+            const previewRef = ref(null)
+
             const assetStore = useAssetStore()
 
             const handlePreview = (asset) => {
                 localSelected.value = asset
                 assetStore.setSelectedAsset(asset)
             }
+            const handleTabSwitch = (payload) => {
+                console.log('switch', payload)
+                previewRef.value?.switchTab(payload?.asset, payload?.tab)
+            }
+
             const updateList = (asset) => {
                 if (assetdiscovery.value) {
                     assetdiscovery.value.updateCurrentList(asset)
@@ -62,6 +69,7 @@
 
             provide('updateList', updateList)
             provide('preview', handlePreview)
+            provide('switchSidebarTab', handleTabSwitch)
 
             const sendPageEvent = () => {
                 useTrackPage('assets', 'discovery')
@@ -84,6 +92,9 @@
                 assetdiscovery,
                 localSelected,
                 sendPageEvent,
+
+                handleTabSwitch,
+                previewRef,
             }
         },
     })

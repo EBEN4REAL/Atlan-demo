@@ -803,7 +803,7 @@ export default function updateAssetAttributes(
         mutate: mutateClassification,
         isLoading: isLoadingClassification,
         isReady: isReadyClassification,
-        error: isErrorClassification,
+        error: errorClassification,
     } = useSetClassifications(classificationBody)
 
     const arrayEquals = (a, b) =>
@@ -839,13 +839,12 @@ export default function updateAssetAttributes(
         mutateUpdate()
     })
 
-    whenever(isErrorClassification, () => {
+    whenever(errorClassification, () => {
         localClassifications.value = classifications(selectedAsset.value)
-        if (error.value?.response?.data?.errorCode) {
+        if (errorClassification.value?.response?.data?.errorCode) {
             message.error(
-                `${error.value?.response?.data?.errorCode} ${
-                    error.value?.response?.data?.errorMessage.split(':')[0]
-                }`
+                `${errorClassification.value?.response?.data?.errorMessage}`,
+                10
             )
         } else {
             message.error('Something went wrong')

@@ -269,10 +269,12 @@
             "
             tab-position="right"
             :destroy-inactive-tab-pane="true"
+            @tabClick="handleTabClick"
         >
+           
             <template
                 v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
-            >
+            >   
                 <a-tab-pane
                     v-if="
                         tab.component === 'Jira' && !jiraAppInstalled
@@ -283,7 +285,7 @@
                     :destroy-inactive-tab-pane="true"
                     :disabled="isScrubbed(selectedAsset) && tab.scrubbed"
                     :class="index === activeKey ? 'flex flex-col' : ''"
-                >
+                >  
                     <template #tab>
                         <a-badge
                             :count="getCount(tab.name)"
@@ -295,6 +297,7 @@
                                 color: '#fff',
                             }"
                         >
+                       
                             <div class="flex flex-col" style="width: 45px">
                                 <PreviewTabsIcon
                                     :title="tab.tooltip"
@@ -550,7 +553,8 @@
                 links,
             } = useAssetInfo()
 
-            const activeKey = ref(0)
+            const activeKey = ref(1)
+            const activeLabel = ref<string>("Overview")
 
             const route = useRoute()
             const isProfile = ref(false)
@@ -626,18 +630,36 @@
             ) => {
                 if (enableEditinCM) {
                     readOnlyInCm.value = false
-                }
-
+                }                
                 const idx = getPreviewTabs(asset, isProfile.value).findIndex(
                     (tl) => tl.name === tabName
                 )
-                if (idx > -1) activeKey.value = idx
+                
+                if (idx > -1) {
+                    activeKey.value = idx
+                }
 
                 // After a while change back to read state as the same component is being used for other CM tabs
 
                 setTimeout(() => {
                     readOnlyInCm.value = true
                 }, 1000)
+            }
+
+            watch(selectedAsset, () => {
+                const activeLabelIndex = getPreviewTabs(selectedAsset.value, isProfile.value).findIndex(
+                    (tl) => tl.name === activeLabel.value
+                )
+                if(activeLabelIndex > -1) {
+                    activeKey.value = activeLabelIndex
+                }else {
+                    activeKey.value = 0
+                }
+            }, {deep: true})
+
+            const handleTabClick = (tabIndex) => {
+                const getTab = getPreviewTabs(selectedAsset.value, isProfile.value)[tabIndex]
+                activeLabel.value = getTab.name
             }
 
             provide('switchTab', switchTab)
@@ -709,8 +731,7 @@
                 window.open(URL, '_blank')?.focus()
             }
 
-            const onClickTabIcon = (tabObj: object) => {
-                console.log('onClickTabIcon', tabObj)
+            const onClickTabIcon = (tabObj) => {
                 if (!tabObj.analyticsKey) {
                     return
                 }
@@ -777,6 +798,9 @@
                 () => countReady?.value && !!count.value
             )
 
+           
+
+        
             return {
                 INSIGHT_WORKSPACE_LEVEL_TAB,
                 featureEnabledMap,
@@ -835,6 +859,7 @@
                 links,
                 slackResourceCount,
                 switchTab,
+                handleTabClick
             }
         },
     })

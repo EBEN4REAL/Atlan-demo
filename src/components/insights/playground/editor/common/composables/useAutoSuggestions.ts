@@ -371,7 +371,7 @@ export function entitiesToEditorKeyword(
     })
 }
 
-function getLocalSQLSugggestions(currWrd: string) {
+function getLocalSQLSugggestions(currWrd: string, withPromise = true) {
     let currentWord = currWrd?.toUpperCase()
     const sqlKeywords = getSqlKeywords()
     let suggestions = sqlKeywords.filter((keyword) =>
@@ -392,6 +392,32 @@ function getLocalSQLSugggestions(currWrd: string) {
             ]
         }
     })
+    if (!withPromise) return suggestions
+
+    return Promise.resolve({
+        suggestions: suggestions,
+        incomplete: true,
+    })
+}
+function getLocalSnippetSugggestions(currWrd: string, withPromise = true) {
+    let currentWord = currWrd?.toUpperCase()
+    const snippetWords = getSnippetKeywords()
+    let suggestions = []
+    snippetWords.forEach((snippetWord) => {
+        if (
+            snippetWord.word.toUpperCase().includes(currentWord.toUpperCase())
+        ) {
+            suggestions = [
+                ...suggestions,
+                {
+                    label: `${capitalizeFirstLetter(snippetWord.word)} snippet`,
+                    kind: 'snippet',
+                    insertText: snippetWord.text,
+                },
+            ]
+        }
+    })
+    if (!withPromise) return suggestions
 
     return Promise.resolve({
         suggestions: suggestions,
@@ -1087,11 +1113,21 @@ export async function useAutoSuggestions(
                                         }
                                     }
                                 )
-
                                 let _suggestions = [
                                     ...value.suggestions,
                                     ...AliasesKeywordsMap,
                                 ]
+                                const localSuggestions =
+                                    getLocalSnippetSugggestions(
+                                        currentWord,
+                                        false
+                                    )
+
+                                _suggestions = [
+                                    ..._suggestions,
+                                    ...localSuggestions,
+                                ]
+
                                 resolve({
                                     suggestions: _suggestions,
                                     incomplete: true,
@@ -1150,6 +1186,16 @@ export async function useAutoSuggestions(
                                     ...suggestions,
                                     ...AliasesKeywordsMap,
                                 ]
+                                const localSuggestions =
+                                    getLocalSnippetSugggestions(
+                                        currentWord,
+                                        false
+                                    )
+
+                                _suggestions = [
+                                    ..._suggestions,
+                                    ...localSuggestions,
+                                ]
 
                                 resolve({
                                     suggestions: _suggestions,
@@ -1207,6 +1253,13 @@ export async function useAutoSuggestions(
                                 ...value.suggestions,
                                 ...filterKeywordsMap,
                                 ...AliasesKeywordsMap,
+                            ]
+                            const localSuggestions =
+                                getLocalSnippetSugggestions(currentWord, false)
+
+                            _suggestions = [
+                                ..._suggestions,
+                                ...localSuggestions,
                             ]
                             resolve({
                                 suggestions: _suggestions,

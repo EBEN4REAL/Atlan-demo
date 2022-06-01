@@ -9,6 +9,7 @@
         <div
             class="py-0.5 overflow-auto bg-white max-h-52 rounded-t-md"
             style="overflow: hidden; width: 447px"
+            v-if="!autoSuggestionLoading"
         >
             <div
                 v-for="(suggestion, index) in suggestionListModified"
@@ -33,6 +34,7 @@
                             autosuggestionPopoverActive
                         "
                         popoverTrigger="focus"
+                        @previewAsset="openSidebar"
                     >
                         <div
                             @keyup.enter.stop="
@@ -78,8 +80,13 @@
                 </div>
             </div>
         </div>
-        <div class="w-full bg-new-gray-100" style="height: 1px"></div>
         <div
+            v-if="!autoSuggestionLoading"
+            class="w-full bg-new-gray-100"
+            style="height: 1px"
+        ></div>
+        <div
+            v-if="!autoSuggestionLoading"
             class="flex justify-end px-2 py-1 text-xs bg-white text-new-gray-600 rounded-b-md"
         >
             <span> showing {{ suggestionListModified?.length }} results</span>
@@ -88,7 +95,7 @@
             class="absolute flex items-center bg-white mt-1.5 px-1.5 text-sm rounded-md text-new-gray-700"
             v-if="
                 suggestionListModified[selectedSuggestionIndex]?.documentation
-                    ?.entity
+                    ?.entity && !autoSuggestionLoading
             "
             style="min-width: 300px; padding-top: 5px; padding-bottom: 5px"
         >
@@ -105,16 +112,36 @@
             </div>
             &nbsp;to learn more.
         </div>
+        <div
+            v-else-if="autoSuggestionLoading"
+            class="py-0.5 flex flex-col items-center justify-center overflow-auto bg-white h-52 rounded-t-md"
+            style="overflow: hidden; width: 447px"
+        >
+            <AtlanLoader class="h-10" />
+            <p class="mt-2 text-lg text-new-gray-600">
+                Crunching suggestions...
+            </p>
+        </div>
     </div>
 </template>
 <script lang="ts">
-    import { defineComponent, toRefs, computed, inject, toRaw, Ref } from 'vue'
+    import {
+        defineComponent,
+        toRefs,
+        computed,
+        inject,
+        toRaw,
+        Ref,
+        ComputedRef,
+    } from 'vue'
     import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
     import { useVModels } from '@vueuse/core'
     import { capitalizeFirstLetter } from '~/utils/string'
     import { getSuggestionsListIcon } from './useUtils'
     import PopoverAsset from '~/components/common/popover/assets/index.vue'
     import SuggestionListItem from './suggestionListItem.vue'
+    import { useAssetSidebar } from '~/components/insights/assetSidebar/composables/useAssetSidebar'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
 
     export default defineComponent({
         name: 'SuggestionList',
@@ -131,11 +158,26 @@
                 type: Boolean,
                 required: true,
             },
+            autoSuggestionLoading: {
+                type: Boolean,
+                required: true,
+            },
         },
         components: { PopoverAsset, SuggestionListItem },
         emits: ['applySuggestions'],
         setup(props, { emit }) {
-            const { suggestions: suggestionList } = toRefs(props)
+            const inlineTabs = inject('inlineTabs') as Ref<
+                activeInlineTabInterface[]
+            >
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as ComputedRef<activeInlineTabInterface>
+            const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
+                inlineTabs,
+                activeInlineTab
+            )
+            const { suggestions: suggestionList, autoSuggestionLoading } =
+                toRefs(props)
             const { selectedSuggestionIndex, autosuggestionPopoverActive } =
                 useVModels(props, emit)
 
@@ -176,7 +218,17 @@
                 //             if ((mac && e.metaKey) || ((windows || linux) && e.ctrlKey)) {
                 // }
             }
+
+            const openSidebar = (item: any) => {
+                const activeInlineTabCopy: activeInlineTabInterface = {
+                    ...activeInlineTab.value,
+                }
+                activeInlineTabCopy.assetSidebar.assetInfo = item
+                activeInlineTabCopy.assetSidebar.isVisible = true
+                openAssetSidebar(activeInlineTabCopy, 'not_editor')
+            }
             return {
+                openSidebar,
                 autosuggestionPopoverActive,
                 checkEnterPress,
                 capitalizeFirstLetter,

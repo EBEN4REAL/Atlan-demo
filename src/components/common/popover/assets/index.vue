@@ -52,7 +52,7 @@
                                 size="icn"
                                 color="minimal"
                                 padding="icon"
-                                @click="handleAssetPreview"
+                                @click="(e, item) => handleAssetPreview(item)"
                             >
                                 <AtlanIcon icon="OpenPreview" />
                             </AtlanBtn>
@@ -558,7 +558,7 @@
             }
             const handleAssetPreview = () => {
                 closePopover()
-                emit('previewAsset')
+                emit('previewAsset', item)
             }
 
             onMounted(() => {

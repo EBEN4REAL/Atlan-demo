@@ -7,6 +7,7 @@
             :suggestions="suggestions"
             :autosuggestionPopoverActive="autosuggestionPopoverActive"
             @applySuggestions="handleApplySuggestion"
+            :autoSuggestionLoading="autoSuggestionLoading"
         />
     </teleport>
 </template>
@@ -68,6 +69,7 @@
         components: { SuggestionList },
 
         setup(props, { emit }) {
+            const autoSuggestionLoading = ref(false)
             const autosuggestionPopoverActive = ref(false)
             const cancelTokenSource = ref()
             const activeInlineTab = inject(
@@ -156,7 +158,8 @@
             }
             // declare flag to know the state of auto-suggestion dropdown
             const isAutoComplete = ref(false)
-            const hideAutoCompletion = () => {
+            const hideAutoCompletion = (unhide?: boolean) => {
+                // debugger
                 const el = document.getElementById('auto-suggestions')
                 el?.classList.add('hidden')
                 isAutoComplete.value = false
@@ -173,7 +176,7 @@
                 suggestions,
                 () => {
                     if (suggestions?.value?.length) showAutoCompletion()
-                    else hideAutoCompletion()
+                    else hideAutoCompletion(suggestions?.value?.length)
                 },
                 { deep: true }
             )
@@ -199,29 +202,35 @@
                     incomplete: boolean
                 }>
             ) => {
+                autoSuggestionLoading.value = true
                 setDropdown()
                 // clearing previous popover register data
                 // if (disposable) disposable.value?.dispose()
-                promise.then((value) => {
-                    // debugger
-                    const editorPosition =
-                        editor?.getPosition() as monaco.IPosition
-                    // use current cursor position to get position of the word to be replaced
-                    const wordPosition = editor
-                        ?.getModel()
-                        ?.getWordAtPosition(editorPosition)
-                    // debugger
-                    // const regex = /^${wordPosition?.word ?? ''}/
-                    const regex = new RegExp(
-                        `^${wordPosition?.word ?? ''}`,
-                        'i'
-                    )
-                    suggestions.value = value?.suggestions?.filter(
-                        (suggestion) => {
-                            return regex?.test(suggestion.label)
-                        }
-                    )
-                })
+                promise
+                    .then((value) => {
+                        autoSuggestionLoading.value = false
+                        // debugger
+                        const editorPosition =
+                            editor?.getPosition() as monaco.IPosition
+                        // use current cursor position to get position of the word to be replaced
+                        const wordPosition = editor
+                            ?.getModel()
+                            ?.getWordAtPosition(editorPosition)
+                        // debugger
+                        // const regex = /^${wordPosition?.word ?? ''}/
+                        const regex = new RegExp(
+                            `^${wordPosition?.word ?? ''}`,
+                            'i'
+                        )
+                        suggestions.value = value?.suggestions?.filter(
+                            (suggestion) => {
+                                return regex?.test(suggestion.label)
+                            }
+                        )
+                    })
+                    .catch(() => {
+                        autoSuggestionLoading.value = false
+                    })
                 // disposable.value =
                 //     monaco.languages.registerCompletionItemProvider(
                 //         'atlansql',
@@ -714,7 +723,7 @@
                     // console.log('POSTION', pos)
 
                     setEditorPos(pos.position, editorPos)
-                    hideAutoCompletion()
+                    // hideAutoCompletion()
                     // setTimeout(setDropdown, 300)
                 })
 
@@ -725,7 +734,9 @@
                         monaco,
                         editor?.getPosition()
                     )
-                    // hideAutoCompletion()
+                    setTimeout(() => {
+                        hideAutoCompletion()
+                    }, 150)
                 })
                 editor?.onDidFocusEditorWidget(() => {
                     toggleGhostCursor(false, editor, monaco, editorPos)
@@ -941,6 +952,7 @@
             })
 
             return {
+                autoSuggestionLoading,
                 autosuggestionPopoverActive,
                 editor,
                 isAutoComplete,

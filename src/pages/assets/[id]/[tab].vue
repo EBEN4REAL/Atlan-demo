@@ -1,9 +1,11 @@
 <template>
     <Loader v-if="isLoading || isReadmeLoading"></Loader>
+    <div v-else-if="showEmptyState">Hellloooo</div>
     <AssetProfile
         v-else
         :asset="localSelected"
         :key="localSelected.guid"
+        :showEmptyState="showEmptyState"
     ></AssetProfile>
 </template>
 
@@ -52,6 +54,7 @@
             const id = computed(() => route?.params?.id || null)
             const profileActiveTab = computed(() => route?.params?.tab)
             const handlePreview = inject('preview')
+            const showEmptyState = ref(false)
 
             if (selectedAsset.value?.guid === id.value) {
                 localSelected.value = selectedAsset.value
@@ -131,6 +134,8 @@
                     localSelected.value = list.value[0]
 
                     handlePreview(list.value[0])
+                } else {
+                    showEmptyState.value = true
                 }
             })
 
@@ -141,6 +146,7 @@
             watch(
                 () => id.value,
                 () => {
+                    showEmptyState.value = false
                     dependentKey.value = fetchKey.value
                     facets.value = {
                         guid: id.value,
@@ -181,6 +187,7 @@
                 handlePreview,
                 isReadmeLoading,
                 localReadmeAsset,
+                showEmptyState,
             }
         },
     })

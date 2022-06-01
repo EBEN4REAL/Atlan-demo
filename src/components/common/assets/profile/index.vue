@@ -94,6 +94,11 @@
                 required: false,
                 default: 'assets',
             },
+            showEmptyState: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['preview'],
         setup(props) {
@@ -102,6 +107,7 @@
             const actions = computed(() => getAllowedActions(asset.value))
             provide('actions', actions)
             provide('selectedAsset', asset)
+            console.log('hello asset', asset.value)
 
             const { getProfileTabs, isScrubbed } = useAssetInfo()
 

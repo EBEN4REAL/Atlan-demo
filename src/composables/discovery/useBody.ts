@@ -582,6 +582,7 @@ export function useBody(
                                 element.operator === 'boolean' &&
                                 element.operand === '__hasLineage'
                             ) {
+                                // eslint-disable-next-line no-unused-expressions
                                 element.value
                                     ? base.filter(
                                           'term',
@@ -597,7 +598,10 @@ export function useBody(
                                               ? JSON.stringify(element.value)
                                               : element.value
                                       ),
-                                      base.notFilter('exists', element.operand))
+                                      base.orFilter('bool', (q) => {
+                                          q.notFilter('exists', element.operand)
+                                          return q
+                                      }))
                             } else if (
                                 element.value != null &&
                                 element.value !== ''

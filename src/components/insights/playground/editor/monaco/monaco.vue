@@ -183,7 +183,6 @@
                     '.cursor.monaco-mouse-cursor-text'
                 )
                 const viewportOffset = cursor?.getBoundingClientRect()
-                debugger
                 const autoSuggestionsDropdown =
                     document.getElementById('auto-suggestions')
                 autoSuggestionsDropdown.style.top = `${

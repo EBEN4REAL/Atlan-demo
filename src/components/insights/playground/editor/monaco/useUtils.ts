@@ -35,7 +35,6 @@ export function getSuggestionsListIcon(suggestion: any) {
         type = keys[index]
     }
     let icon
-    debugger
     if (suggestion.kind === 'snippet') {
         return 'Snippet'
     }

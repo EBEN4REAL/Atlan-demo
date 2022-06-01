@@ -38,7 +38,7 @@
                             @keyup.enter.stop="
                                 (e) => checkEnterPress(e, suggestion)
                             "
-                            @click.stop="handleApplySuggestion(suggestion)"
+                            @click.stop="handleApplySuggestion(index)"
                             class="items-center justify-between w-full px-2 py-1"
                         >
                             <SuggestionListItem
@@ -52,7 +52,7 @@
                             @keyup.enter.stop="
                                 (e) => checkEnterPress(e, suggestion)
                             "
-                            @click.stop="handleApplySuggestion(suggestion)"
+                            @click.stop="handleApplySuggestion(index)"
                             class="px-2 py-1"
                         >
                             <SuggestionListItem
@@ -67,7 +67,7 @@
                         @keyup.enter.stop="
                             (e) => checkEnterPress(e, suggestion)
                         "
-                        @click.stop="handleApplySuggestion(suggestion)"
+                        @click.stop="handleApplySuggestion(index)"
                         class="px-2 py-1"
                     >
                         <SuggestionListItem
@@ -139,11 +139,8 @@
             const { selectedSuggestionIndex, autosuggestionPopoverActive } =
                 useVModels(props, emit)
 
-            const handleApplySuggestion = () => {
-                emit(
-                    'applySuggestions',
-                    suggestionList.value[selectedSuggestionIndex.value]
-                )
+            const handleApplySuggestion = (index) => {
+                emit('applySuggestions', suggestionList.value[index])
             }
             const editorInstanceRef = inject('editorInstance') as Ref<any>
 

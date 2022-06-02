@@ -132,6 +132,8 @@
                 handleOwnersChange()
             }
 
+            handleOwnersChange()
+
             return {
                 selectedOwnersData,
                 allAdmins,

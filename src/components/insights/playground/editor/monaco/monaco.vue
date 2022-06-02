@@ -330,17 +330,44 @@
                         () => null
                     )
 
-                    // provide completed word's line number and end column number to reset selection (we do this by creating a new selection with same end and start position which is the end of the completed word - so the cursor gets set at the end of the completed word and no text is selected/highlighted)
-                    editor?.setSelection(
-                        new monaco.Selection(
-                            editorPosition.lineNumber,
-                            wordPosition.startColumn +
-                                suggestion?.insertText?.length,
-                            editorPosition.lineNumber,
-                            wordPosition.startColumn +
-                                suggestion?.insertText?.length
+                    if (suggestion?.kind && suggestion?.kind === 'snippet') {
+                        debugger
+                        // debugger
+                        const position: any =
+                            editor?.getPosition() as monaco.IPosition
+                        const startColumn =
+                            position.column +
+                            suggestion?.selectionColumnStart -
+                            suggestion?.insertText?.length -
+                            wordPosition.word.length
+                        const endColumn =
+                            startColumn +
+                            (suggestion?.selectionColumnEnd -
+                                suggestion?.selectionColumnStart)
+
+                        // provide completed word's line number and end column number to reset selection (we do this by creating a new selection with same end and start position which is the end of the completed word - so the cursor gets set at the end of the completed word and no text is selected/highlighted)
+                        editor?.setSelection(
+                            new monaco.Selection(
+                                editorPosition.lineNumber,
+                                startColumn,
+                                editorPosition.lineNumber,
+                                endColumn
+                            )
                         )
-                    )
+                    } else {
+                        // provide completed word's line number and end column number to reset selection (we do this by creating a new selection with same end and start position which is the end of the completed word - so the cursor gets set at the end of the completed word and no text is selected/highlighted)
+                        editor?.setSelection(
+                            new monaco.Selection(
+                                editorPosition.lineNumber,
+                                wordPosition.startColumn +
+                                    suggestion?.insertText?.length,
+                                editorPosition.lineNumber,
+                                wordPosition.startColumn +
+                                    suggestion?.insertText?.length
+                            )
+                        )
+                    }
+
                     // for aggregation position shift ( here)
                     if (suggestion?.insertText.includes('()')) {
                         const position: any =
@@ -350,6 +377,8 @@
                             column: position.column - 1,
                         })
                     }
+                    // for aggregation position shift ( here)
+
                     // if (endColumn && endLine)
                     // restore focus on the editor (gets hidden after we insert the suggestion)
                     editor?.focus()

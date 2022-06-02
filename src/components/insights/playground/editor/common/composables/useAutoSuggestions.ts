@@ -388,6 +388,8 @@ function getLocalSQLSugggestions(currWrd: string, withPromise = true) {
                     label: `${capitalizeFirstLetter(snippetWord.word)} snippet`,
                     kind: 'snippet',
                     insertText: snippetWord.text,
+                    selectionColumnStart: snippetWord.selectionColumnStart,
+                    selectionColumnEnd: snippetWord.selectionColumnEnd,
                 },
             ]
         }
@@ -413,6 +415,8 @@ function getLocalSnippetSugggestions(currWrd: string, withPromise = true) {
                     label: `${capitalizeFirstLetter(snippetWord.word)} snippet`,
                     kind: 'snippet',
                     insertText: snippetWord.text,
+                    selectionColumnStart: snippetWord.selectionColumnStart,
+                    selectionColumnEnd: snippetWord.selectionColumnEnd,
                 },
             ]
         }

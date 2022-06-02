@@ -156,6 +156,8 @@ export function getSnippetKeywords() {
         {
             word: 'select',
             text: 'Select * from {asset name} limit 100',
+            selectionColumnStart: 16,
+            selectionColumnEnd: 28,
         },
     ]
     return words

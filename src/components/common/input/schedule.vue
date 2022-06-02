@@ -16,7 +16,8 @@
                         v-model="localModel.timezone"
                         placeholder=""
                         @change="buildCron"
-                    ></Timezone>
+                        :allow-clear="false"
+                    />
                 </a-form-item>
             </div>
         </div>

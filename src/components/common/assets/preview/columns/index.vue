@@ -43,6 +43,19 @@
         ></AggregationTabs>
 
         <div
+            v-if="columnWithLineageCount"
+            class="flex items-center px-5 my-2 text-new-gray-600 ebuka"
+        >
+            <a-checkbox
+                :class="$style.checkbox_style"
+                class="inline-flex items-center w-full"
+                @change="handleLineageFilterChange"
+            >
+                Show columns with lineage ({{ columnWithLineageCount }})
+            </a-checkbox>
+        </div>
+
+        <div
             v-if="!isValidating && error"
             class="flex items-center justify-center flex-grow"
         >
@@ -110,6 +123,7 @@
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { useSimilarList } from '~/composables/discovery/useSimilarList'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { getColumnCountWithLineage } from '~/components/common/assets/profile/tabs/lineage/util.js'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -147,7 +161,8 @@
             const aggregations = ref([aggregationAttributeName])
             const postFacets = ref({})
             const dependentKey = ref('DEFAULT_COLUMNS')
-
+            const filterByColumnsWithLineage = ref(false)
+            const columnWithLineageCount = ref(null)
             const columnAttributes = ref([
                 'name',
                 'displayName',
@@ -227,6 +242,21 @@
 
             const handleListUpdate = (asset: any) => {
                 updateList(asset)
+            }
+
+            getColumnCountWithLineage(
+                selectedAsset.value,
+                columnWithLineageCount
+            )
+
+            const handleLineageFilterChange = (e) => {
+                filterByColumnsWithLineage.value = e.target.checked
+                facets.value['__hasLineage'] = {
+                    value: !!filterByColumnsWithLineage.value,
+                    operand: '__hasLineage',
+                }
+
+                quickChange()
             }
 
             const columnDataTypeAggregationList = computed(() =>
@@ -351,7 +381,17 @@
                 handleListUpdate,
                 columnAttributes,
                 similarListByName,
+                columnWithLineageCount,
+                handleLineageFilterChange,
             }
         },
     })
 </script>
+
+<style lang="less" module>
+    .checkbox_style {
+        :global(.ant-checkbox) {
+            top: 0 !important;
+        }
+    }
+</style>

@@ -10,6 +10,7 @@ interface WhoAmIResponse {
         id: string
         name: string
     }[]
+    defaultRoles: string[]
     username: string
     userId: string
     groups: { id: string; name: string; path: string }[]

@@ -30,6 +30,7 @@ export const InternalAttributes = [
     '__customAttributes',
     '__labels',
     '__businessAttributes',
+    '__hasLineage',
     'anchor',
 ]
 
@@ -66,7 +67,6 @@ export const AssetAttributes = [
     'viewerGroups',
     'viewerUsers',
     'meanings',
-    'readme',
     'rawQuery',
     'compiledQuery',
     'links',
@@ -84,6 +84,7 @@ export const AssetAttributes = [
     'parentQualifiedName',
     'collectionQualifiedName',
     'parent',
+    'readme',
     'externalLocation',
     'externalLocationFormat',
     'sql',
@@ -188,10 +189,8 @@ export const GlossaryRelationAttributes = ['name']
 
 export const AssetRelationAttributes = [
     'certificateStatus',
-    'readme',
     'displayText',
     'name',
-    'description',
     'shortDescription',
     'link',
     'qualifiedName',
@@ -355,7 +354,6 @@ export const BasicSearchAttributes = [
     'databaseQualifiedName',
     'isPrimary',
     'isPartition',
-    'readme',
     'parent',
 ]
 

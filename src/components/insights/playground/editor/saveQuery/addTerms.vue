@@ -28,8 +28,8 @@
                 :icon="
                     checkedTerms?.length === 1
                         ? getEntityStatusIcon(
-                              checkedTerms[0]?.dataRef.typeName,
-                              certificateStatus(checkedTerms[0]?.dataRef)
+                              checkedTerms[0]?.typeName,
+                              certificateStatus(checkedTerms[0])
                           )
                         : 'Term'
                 "
@@ -37,7 +37,7 @@
             ></AtlanIcon>
             <span class="flex truncate">
                 <span v-if="checkedTerms?.length === 1">
-                    {{ title(checkedTerms[0]?.dataRef) }}
+                    {{ title(checkedTerms[0]) }}
                 </span>
                 <span v-else-if="checkedTerms?.length > 1">
                     {{ checkedTerms?.length }} Terms</span

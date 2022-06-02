@@ -161,7 +161,7 @@
                 )
                 useAddEvent('governance', activeTab.value, 'home_tab', {
                     [`${activeTab.value}_name`]: item.value.displayName,
-                    tab_name: menu.component,
+                    tab_name: menu?.tooltip,
                 })
             })
             const handleChangeTab = (section) => {

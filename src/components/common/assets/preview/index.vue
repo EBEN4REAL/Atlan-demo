@@ -637,6 +637,8 @@
                 
                 if (idx > -1) {
                     activeKey.value = idx
+                }else {
+                     activeKey.value = 0
                 }
 
                 // After a while change back to read state as the same component is being used for other CM tabs
@@ -647,14 +649,7 @@
             }
 
             watch(selectedAsset, () => {
-                const activeLabelIndex = getPreviewTabs(selectedAsset.value, isProfile.value).findIndex(
-                    (tl) => tl.name === activeLabel.value
-                )
-                if(activeLabelIndex > -1) {
-                    activeKey.value = activeLabelIndex
-                }else {
-                    activeKey.value = 0
-                }
+                switchTab(selectedAsset.value, activeLabel.value)
             }, {deep: true})
 
             const handleTabClick = (tabIndex) => {

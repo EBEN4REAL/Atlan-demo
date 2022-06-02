@@ -525,7 +525,7 @@
                 error: err,
                 isLoading: isDeleteLoading,
                 mutate: deleteWorkflow,
-            } = deleteWorkflowByName(name(workflowObject.value), false)
+            } = deleteWorkflowByName(refName(workflowObject.value), false)
 
             const navigateToConnectionDelete = () => {
                 const qfName = name(workflowObject.value)

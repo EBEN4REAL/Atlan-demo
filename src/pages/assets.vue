@@ -11,9 +11,16 @@
             </keep-alive>
         </div>
 
-        <div class="relative hidden bg-white asset-preview-container md:block">
-            <AssetPreview :selected-asset="localSelected" ref="previewRef" />
-        </div>
+        <transition name="nested">
+            <div
+                v-if="showAssetPreview"
+                class="relative hidden bg-white asset-preview-container md:block"
+            >
+                <AssetPreview
+                    ref="previewRef"
+                    :selected-asset="localSelected"
+                /></div
+        ></transition>
     </div>
 </template>
 
@@ -47,6 +54,7 @@
             const isItem = computed(() => !!route.params.id)
             const localSelected = ref()
 
+            const showAssetPreview = ref(true)
             const previewRef = ref(null)
 
             const assetStore = useAssetStore()
@@ -67,9 +75,15 @@
                 handlePreview(asset)
             }
 
+            const handlePreviewVisibility = (value) => {
+                showAssetPreview.value = value
+            }
+
             provide('updateList', updateList)
             provide('preview', handlePreview)
             provide('switchSidebarTab', handleTabSwitch)
+
+            provide('handlePreviewVisibility', handlePreviewVisibility)
 
             const sendPageEvent = () => {
                 useTrackPage('assets', 'discovery')
@@ -92,7 +106,7 @@
                 assetdiscovery,
                 localSelected,
                 sendPageEvent,
-
+                showAssetPreview,
                 handleTabSwitch,
                 previewRef,
             }
@@ -103,6 +117,17 @@
     .asset-preview-container {
         min-width: 420px !important;
         max-width: 420px !important;
+    }
+
+    .nested-enter-active,
+    .nested-leave-active {
+        transition: all 0.3s ease;
+    }
+
+    .nested-enter-from,
+    .nested-leave-to {
+        transform: translateX(30px);
+        opacity: 0;
     }
 </style>
 

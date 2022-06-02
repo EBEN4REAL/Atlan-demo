@@ -512,6 +512,12 @@ export function useBody(
                 }
                 break
             }
+            case '__hasLineage': {
+                const { value, operand } = filterObject
+                if (value) base.filter('exists', 'field', operand)
+
+                break
+            }
             case 'guidList': {
                 if (filterObject) {
                     base.filter('terms', '__guid', filterObject)
@@ -558,13 +564,16 @@ export function useBody(
                                 }
                             }
                             if (element.operator === 'isNotNull') {
-                                  if (
+                                if (
                                     element.operand === 'description.keyword' ||
                                     element.operand ===
                                         'userDescription.keyword'
                                 ) {
                                     base.filter('bool', (q) => {
-                                        q.orFilter('exists', 'description.keyword')
+                                        q.orFilter(
+                                            'exists',
+                                            'description.keyword'
+                                        )
                                         q.orFilter(
                                             'exists',
                                             'userDescription.keyword'
@@ -574,11 +583,35 @@ export function useBody(
                                 } else {
                                     base.filter('exists', element.operand)
                                 }
-                               
-
-                               
                             }
-                            if (element.value != null && element.value !== '') {
+                            if (
+                                element.operator === 'boolean' &&
+                                element.operand === '__hasLineage'
+                            ) {
+                                // eslint-disable-next-line no-unused-expressions
+                                element.value
+                                    ? base.filter(
+                                          'term',
+                                          '__hasLineage',
+                                          Array.isArray(element.value)
+                                              ? JSON.stringify(element.value)
+                                              : element.value
+                                      )
+                                    : (base.orFilter(
+                                          'term',
+                                          '__hasLineage',
+                                          Array.isArray(element.value)
+                                              ? JSON.stringify(element.value)
+                                              : element.value
+                                      ),
+                                      base.orFilter('bool', (q) => {
+                                          q.notFilter('exists', element.operand)
+                                          return q
+                                      }))
+                            } else if (
+                                element.value != null &&
+                                element.value !== ''
+                            ) {
                                 if (element.operator === 'equals') {
                                     if (
                                         element.operand ===

@@ -107,6 +107,7 @@
 
     /** STORE */
     import useLineageStore from '~/store/lineage'
+    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         name: 'LineageSearch',
@@ -115,6 +116,7 @@
         setup(_, { emit }) {
             /** INITIALIZE */
             const lineageStore = useLineageStore()
+            const assetStore = useAssetStore()
 
             /** DATA */
             const query = ref('')
@@ -132,13 +134,8 @@
             const mergedLineageData = computed(() =>
                 lineageStore.getMergedLineageData()
             )
-            const currentPortLineageData = computed(() => {
-                const selectedPortId = lineageStore.getSelectedPortId()
-                const data = lineageStore.getPortsLineage(selectedPortId)
-                return data
-            })
             const baseEntityGuid = computed(
-                () => mergedLineageData.value.baseEntityGuid
+                () => assetStore.getSelectedAsset.guid
             )
             const selectedNodeId = computed(() =>
                 lineageStore.getSelectedNodeId()
@@ -240,21 +237,20 @@
             }
 
             // checkImpactedAsset
-            const checkImpactedAsset = () => {
-                const guid = guidForImpactedAssets.value
-                const type = !selectedPortId.value ? 'node' : 'port'
-                const { childrenCounts } =
-                    type === 'node'
-                        ? mergedLineageData.value
-                        : currentPortLineageData.value
-                const hasDownstreamAssets = childrenCounts[guid].OUTPUT
-                if (hasDownstreamAssets) hasImpactedAssets.value = true
-                else hasImpactedAssets.value = false
-            }
+            // const checkImpactedAsset = () => {
+            //     const guid = guidForImpactedAssets.value
+            //     const type = !selectedPortId.value ? 'node' : 'port'
+            //     const { childrenCounts } =
+            //         type === 'node'
+            //             ? mergedLineageData.value
+            //             : currentPortLineageData.value
+            //     const hasDownstreamAssets = childrenCounts[guid].OUTPUT
+            //     if (hasDownstreamAssets) hasImpactedAssets.value = true
+            //     else hasImpactedAssets.value = false
+            // }
 
             // controlImpactedAssets
             const controlImpactedAssets = () => {
-                if (!hasImpactedAssets.value) return
                 showImpactedAssets.value = !showImpactedAssets.value
             }
 
@@ -264,23 +260,12 @@
                 else showResults.value = false
             })
 
-            watch(selectedNodeId, () => {
-                checkImpactedAsset()
-            })
-
-            watch(currentPortLineageData, (newVal) => {
-                if (newVal?.childrenCounts) checkImpactedAsset()
-            })
-
             whenever(showSearch, async () => {
                 await nextTick()
                 searchBar.value?.focus()
             })
 
             /** LIFECYCLE */
-            onMounted(async () => {
-                checkImpactedAsset()
-            })
 
             return {
                 query,

@@ -9,7 +9,7 @@
             "
         >
             <div
-                class="py-0.5 overflow-auto bg-white max-h-52 rounded-t-md"
+                class="py-0.5 overflow-auto bg-white max-h-52 rounded-md"
                 style="overflow: hidden; width: 447px"
                 v-if="!autoSuggestionLoading"
             >
@@ -89,19 +89,19 @@
                     </div>
                 </div>
             </div>
-            <div
+            <!-- <div
                 v-if="!autoSuggestionLoading"
                 class="w-full bg-new-gray-100"
                 style="height: 1px"
-            ></div>
-            <div
+            ></div> -->
+            <!-- <div
                 v-if="!autoSuggestionLoading"
                 class="flex justify-end px-2 py-1 text-xs bg-white text-new-gray-600 rounded-b-md"
             >
                 <span>
                     showing {{ suggestionListModified?.length }} results</span
                 >
-            </div>
+            </div> -->
             <div
                 class="absolute flex items-center bg-white mt-1.5 px-1.5 text-sm rounded-md text-new-gray-700"
                 v-if="
@@ -115,7 +115,7 @@
                 >
                     Enter
                 </div>
-                &nbsp;to learn more, &nbsp;
+                &nbsp;to accept, &nbsp;
                 <div
                     class="px-1 text-xs border rounded suggestion-item bg-new-gray-100 border-new-gray-300 plex-mono"
                 >

@@ -647,6 +647,12 @@
                 }
                 // CUSTOM DROPDOWN: Add event to enable keyboard actions for autoSuggestions dropdown
                 editor?.onKeyDown((e) => {
+                    if (e.keyCode === 9 && isAutoComplete.value) {
+                        hideAutoCompletion()
+
+                        e.preventDefault()
+                        e.stopPropagation()
+                    }
                     if (e.keyCode === 18 && isAutoComplete.value) {
                         // debugger
                         traverseDown()

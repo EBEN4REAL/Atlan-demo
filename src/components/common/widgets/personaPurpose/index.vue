@@ -126,8 +126,8 @@
                 :swipe="true"
                 :arrows="true"
                 :infinite="false"
-                :slides-to-show="3"
-                :slides-to-scroll="3"
+                :slides-to-scroll="1"
+                variable-width
             >
                 <template #prevArrow>
                     <div
@@ -144,7 +144,7 @@
                     </div>
                 </template>
                 <!-- <div v-if="showDemo[activeTab]" class="pr-3"> -->
-                <div v-if="false" class="pr-3">
+                <div v-if="false" class="pr-3 container-card-slider">
                     <div
                         class="relative flex flex-col items-center p-4 bg-gray-100 border border-gray-200 rounded-lg"
                     >
@@ -391,6 +391,9 @@
     }
 </style>
 <style lang="less">
+    .container-card-slider {
+        width: 192px;
+    }
     .ilustration-persona-purpose-demo {
         height: 70px !important;
         width: 92px !important;

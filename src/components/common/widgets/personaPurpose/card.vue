@@ -1,5 +1,5 @@
 <template>
-    <div class="pr-3">
+    <div class="pr-3 container-card-slider">
         <div
             class="border cursor-pointer rounded-xl hover:border-blue-200 shadow-card"
             :class="active ? 'border-primary ' : 'border-gray-300'"

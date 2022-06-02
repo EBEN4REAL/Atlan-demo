@@ -269,6 +269,7 @@
             "
             tab-position="right"
             :destroy-inactive-tab-pane="true"
+            @tabClick="handleTabClick"
         >
             <template
                 v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
@@ -539,7 +540,8 @@
                 links,
             } = useAssetInfo()
 
-            const activeKey = ref(0)
+            const activeKey = ref(1)
+            const activeLabel = ref<string>('Overview')
 
             const route = useRoute()
             const isProfile = ref(false)
@@ -616,17 +618,40 @@
                 if (enableEditinCM) {
                     readOnlyInCm.value = false
                 }
-
                 const idx = getPreviewTabs(asset, isProfile.value).findIndex(
                     (tl) => tl.name === tabName
                 )
-                if (idx > -1) activeKey.value = idx
+
+                if (idx > -1) {
+                    activeKey.value = idx
+                } else {
+                    activeKey.value = 0
+                    activeLabel.value = 'Overview'
+                }
 
                 // After a while change back to read state as the same component is being used for other CM tabs
 
                 setTimeout(() => {
                     readOnlyInCm.value = true
                 }, 1000)
+            }
+
+            debouncedWatch(
+                selectedAsset,
+                () => {
+                    if (drawerActiveKey.value === 'Overview') {
+                        switchTab(selectedAsset.value, activeLabel.value)
+                    }
+                },
+                { debounce: 200, deep: true }
+            )
+
+            const handleTabClick = (tabIndex) => {
+                const getTab = getPreviewTabs(
+                    selectedAsset.value,
+                    isProfile.value
+                )[tabIndex]
+                activeLabel.value = getTab.name
             }
 
             provide('switchTab', switchTab)
@@ -698,8 +723,7 @@
                 window.open(URL, '_blank')?.focus()
             }
 
-            const onClickTabIcon = (tabObj: object) => {
-                console.log('onClickTabIcon', tabObj)
+            const onClickTabIcon = (tabObj) => {
                 if (!tabObj.analyticsKey) {
                     return
                 }
@@ -824,6 +848,7 @@
                 links,
                 slackResourceCount,
                 switchTab,
+                handleTabClick,
             }
         },
     })

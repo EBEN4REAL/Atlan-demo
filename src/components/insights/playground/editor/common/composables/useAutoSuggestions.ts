@@ -374,7 +374,6 @@ export function entitiesToEditorKeyword(
 function getLocalSQLSugggestions(currWrd: string, withPromise = true) {
     let currentWord = currWrd?.toUpperCase()
     const sqlKeywords = getSqlKeywords()
-    debugger
     let suggestions = sqlKeywords.filter((keyword) =>
         keyword.label.includes(currentWord?.toUpperCase())
     )
@@ -996,7 +995,6 @@ export async function useAutoSuggestions(
         t = !token.match(/[-[\]{};/\n()*+?'"\\/^$|#\s\t]/g) && token !== ''
         return t
     })
-    debugger
     // tokens.push(' ')
     let currentWord = tokens[tokens.length - 1]
     // TABLE[DOT]  // check if previous is [dot]
@@ -1062,7 +1060,6 @@ export async function useAutoSuggestions(
             return suggestionsPromise
         }
     }
-    debugger
     /* If it is a first/nth character of first word */
     if (tokens.length < 2) {
         return getLocalSQLSugggestions(currentWord)

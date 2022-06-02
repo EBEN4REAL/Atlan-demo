@@ -184,7 +184,7 @@
             // fix dropdown's position
             const setDropdown = () => {
                 const cursor = document.querySelector(
-                    '.monaco-mouse-cursor-text'
+                    '.cursor.monaco-mouse-cursor-text'
                 )
                 const viewportOffset = cursor?.getBoundingClientRect()
                 let left = viewportOffset.left
@@ -730,7 +730,6 @@
                 /* -------------------------------------------- */
                 editor?.getModel().onDidChangeContent((event) => {
                     const changes = event?.changes[0]
-                    debugger
                     if (
                         changes.text === '""' ||
                         changes.text === `''` ||
@@ -766,14 +765,15 @@
                     setEditorPos(pos.position, editorPos)
                     // hideAutoCompletion()
                     // setTimeout(setDropdown, 300)
+                    // setDropdown()
                 })
-                // editor?.onDidScrollChange((scrollEvent) => {
-                //     const t = useDebounceFn(() => {
-                //         debugger
-                //         // setDropdown()
-                //     }, 500)
-                //     t()
-                // })
+                editor?.onDidScrollChange((scrollEvent) => {
+                    const t = useDebounceFn(() => {
+                        debugger
+                        // setDropdown()
+                    }, 500)
+                    t()
+                })
 
                 editor?.onDidBlurEditorWidget(() => {
                     toggleGhostCursor(
@@ -783,7 +783,7 @@
                         editor?.getPosition()
                     )
                     setTimeout(() => {
-                        hideAutoCompletion()
+                        // hideAutoCompletion()
                     }, 150)
                 })
                 editor?.onDidFocusEditorWidget(() => {
@@ -842,6 +842,7 @@
                     }
                     editor?.onDidChangeCursorPosition((pos) => {
                         setEditorPos(pos.position, editorPos)
+                        // setDropdown()
                     })
                     editor?.onDidFocusEditorWidget(() => {
                         toggleGhostCursor(false, editor, monaco, editorPos)
@@ -857,12 +858,12 @@
                             editor?.getPosition()
                         )
                     })
-                    // editor?.onDidScrollChange((scrollEvent) => {
-                    //     const t = useDebounceFn(() => {
-                    //         setDropdown()
-                    //     }, 500)
-                    //     t()
-                    // })
+                    editor?.onDidScrollChange((scrollEvent) => {
+                        const t = useDebounceFn(() => {
+                            setDropdown()
+                        }, 500)
+                        t()
+                    })
 
                     // old
                     const _index = tabs.value.findIndex(

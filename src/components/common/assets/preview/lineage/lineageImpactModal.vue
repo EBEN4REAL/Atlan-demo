@@ -316,6 +316,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import useLineageService from '~/services/meta/lineage/lineage_service'
     import { AssetAttributes } from '~/constant/projection'
+    import useCustomMetadata from '@/common/assets/preview/lineage/useCustomMetadata'
 
     /** UTILS */
     import {

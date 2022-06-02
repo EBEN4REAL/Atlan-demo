@@ -1,11 +1,26 @@
 <template>
     <Loader v-if="isLoading || isReadmeLoading"></Loader>
-    <div v-else-if="showEmptyState">Hellloooo</div>
+    <div
+        v-else-if="showEmptyState"
+        class="flex items-center justify-center h-full"
+    >
+        <EmptyView
+            empty-screen="EmptyAssetProfile"
+            image-class="h-52"
+            headline="Nothing to see here!"
+            desc="Hmmm… we don't know how you landed here, but nothing exists here at the moment!"
+            button-text="Take me home"
+            button-icon="ArrowRight"
+            button-icon-class="mr-2 transform rotate-180"
+            button-color="secondary"
+            button-class="mt-5 font-bold w-44"
+            @event="() => router.push('/assets')"
+        ></EmptyView>
+    </div>
     <AssetProfile
         v-else
         :asset="localSelected"
         :key="localSelected.guid"
-        :showEmptyState="showEmptyState"
     ></AssetProfile>
 </template>
 
@@ -21,7 +36,7 @@
         provide,
     } from 'vue'
     import { useHead } from '@vueuse/head'
-    import { useRoute } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
 
     import { whenever } from '@vueuse/core'
     import AssetProfile from '@/common/assets/profile/index.vue'
@@ -38,11 +53,13 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
     import { useAssetAttributes } from '~/composables/discovery/useCurrentUpdate'
+    import EmptyView from '@common/empty/index.vue'
 
     export default defineComponent({
         components: {
             AssetProfile,
             Loader,
+            EmptyView,
         },
         emits: ['preview'],
         setup(props, { emit }) {
@@ -51,6 +68,8 @@
             const localSelected = ref()
             const localReadmeAsset = ref()
             const route = useRoute()
+            const router = useRouter()
+
             const id = computed(() => route?.params?.id || null)
             const profileActiveTab = computed(() => route?.params?.tab)
             const handlePreview = inject('preview')
@@ -179,6 +198,25 @@
                 }
             })
 
+            const handlePreviewVisibility = inject(
+                'handlePreviewVisibility',
+                (args) => {
+                    console.log(args)
+                }
+            )
+
+            watch(
+                showEmptyState,
+                () => {
+                    if (showEmptyState.value) {
+                        handlePreviewVisibility(false)
+                    } else {
+                        handlePreviewVisibility(true)
+                    }
+                },
+                { immediate: true }
+            )
+
             return {
                 fetchKey,
                 isLoading,
@@ -188,6 +226,7 @@
                 isReadmeLoading,
                 localReadmeAsset,
                 showEmptyState,
+                router,
             }
         },
     })

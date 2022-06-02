@@ -5,7 +5,11 @@
         :data-test-id="dataTestId"
         class="atlan-btn"
     >
-        <AtlanIcon v-if="prefixIcon" :icon="prefixIcon" />
+        <AtlanIcon
+            v-if="prefixIcon"
+            :icon="prefixIcon"
+            :class="prefixIconClass"
+        />
         <!-- Main content: Use Label if present or use slot for custom stuff -->
         <span
             v-if="label"
@@ -58,6 +62,11 @@
             },
             prefixIcon: {
                 type: String as PropType<keyof typeof iconMap>,
+                required: false,
+                default: () => '',
+            },
+            prefixIconClass: {
+                type: String,
                 required: false,
                 default: () => '',
             },

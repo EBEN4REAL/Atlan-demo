@@ -107,7 +107,7 @@
                             allowDelete && !isPropagated(classification)
                         "
                         :color="classification.options?.color"
-                        @delete="handleDeleteClassification"
+                        @delete="handleDeleteClassification(classification.name, classification?.displayName)"
                         :created-by="classification?.createdBy"
                     />
                 </Popover>
@@ -125,6 +125,7 @@
         toRefs,
         watch,
         defineAsyncComponent,
+        h
     } from 'vue'
     import {
         and,
@@ -146,6 +147,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import whoami from '~/composables/user/whoami.ts'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import {Modal} from "ant-design-vue"
 
     export default defineComponent({
         name: 'ClassificationWidget',
@@ -256,16 +258,43 @@
                 }
             }
 
-            const handleDeleteClassification = (name) => {
-                localValue.value = localValue.value.filter(
-                    (i) => i.typeName !== name || isPropagated(i)
-                )
-                selectedValue.value = {
-                    classifications: modelValue.value
-                        .filter((i) => !isPropagated(i))
-                        .map((j) => j.typeName),
-                }
-                handleChange()
+            const handleDeleteClassification = (name, displayName) => {
+                Modal.confirm({
+                    title: `Delete classification`,
+                    class: 'delete-classification-modal',
+                    content: () =>
+                        h('div', [
+                            `Are you sure you want to delete classification`,
+                            h('span', [' ']),
+                            h(
+                                'span',
+                                {
+                                    class: ['font-bold'],
+                                },
+                                [` ${displayName || name}`]
+                            ),
+                            h('span', '?'),
+                        ]),
+                    okType: 'danger',
+                    autoFocusButton: null,
+                    okButtonProps: {
+                        type: 'primary',
+                    },
+                    okText: 'Delete',
+                    cancelText: 'Cancel',
+                    async onOk() {
+                        localValue.value = localValue.value.filter(
+                            (i) => i.typeName !== name || isPropagated(i)
+                        )
+                        selectedValue.value = {
+                            classifications: modelValue.value
+                                .filter((i) => !isPropagated(i))
+                                .map((j) => j.typeName),
+                        }
+                        handleChange()
+                    },
+                })
+                
             }
 
             const handleSelectedChange = () => {

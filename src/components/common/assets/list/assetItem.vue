@@ -86,6 +86,7 @@
                                         />
                                     </div>
 
+                                    <!-- assets not having profile to have these classes -->
                                     <Tooltip
                                         v-if="
                                             [
@@ -1668,6 +1669,7 @@
                 if (enableSidebarDrawer.value === true) {
                     showAssetSidebarDrawer.value = true
                     selectedAssetDrawerGuid.value = item?.guid
+                    console.log(item?.guid)
                 } else {
                     emit('preview', item, itemIndex.value)
                 }
@@ -1676,6 +1678,10 @@
             const handleCloseDrawer = () => {
                 selectedAssetDrawerGuid.value = ''
                 showAssetSidebarDrawer.value = false
+            }
+            const handleUpdateDrawer=(guid)=>{
+                selectedAssetDrawerGuid.value = guid
+                console.log(selectedAssetDrawerGuid.value)
             }
 
             const handleListUpdate = (asset) => {
@@ -1862,6 +1868,7 @@
                 parentTable,
                 parentView,
                 s3BucketName,
+                handleUpdateDrawer
             }
         },
     })

@@ -120,31 +120,48 @@
                 </div>
             </a>
         </div>
-        <div v-else-if="!loadingChange" class="p-6 carousel-container">
+        <div v-else-if="!loadingChange" class="relative p-6 carousel-container">
+            <div
+                v-if="activeCard > 1"
+                class="absolute z-10 flex items-center justify-center w-8 h-8 ml-2 text-gray-800 bg-white border border-gray-300 border-solid rounded-full cursor-pointer -left-0 custom-arrow"
+                @click="handlePrev"
+            >
+                <AtlanIcon icon="ChevronLeft" class="w-4 h-4" />
+            </div>
+            <div
+                v-if="items.length - 1 > activeCard"
+                class="absolute z-10 flex items-center justify-center w-8 h-8 mr-5 text-gray-800 bg-white border border-gray-300 border-solid rounded-full cursor-pointer -right-2 custom-arrow"
+                @click="handleNext"
+            >
+                <AtlanIcon icon="ChevronRight" class="w-4 h-4" />
+            </div>
             <Carousel
+                ref="CarouselRef"
+                :arrows="false"
                 :draggable="true"
                 :swipe="true"
-                :arrows="true"
                 :infinite="false"
-                :slides-to-scroll="3"
-                :slides-to-show="3"
+                :slides-to-scroll="1"
+                :variable-width="true"
+                :slides-to-show="1"
+                :after-change="afterChange"
             >
                 <template #prevArrow>
                     <div
-                        class="z-10 flex items-center justify-center w-8 h-8 ml-2 text-gray-800 bg-white border border-gray-300 border-solid rounded-full"
+                        class="z-10 flex items-center justify-center w-8 h-8 ml-2 text-gray-800 bg-white border border-gray-300 border-solid rounded-full pointer-event"
                     >
                         <AtlanIcon icon="ChevronLeft" class="w-4 h-4" />
                     </div>
                 </template>
                 <template #nextArrow>
                     <div
-                        class="flex items-center justify-center w-8 h-8 mr-5 text-gray-800 bg-white border border-gray-300 border-solid rounded-full"
+                        class="flex items-center justify-center w-8 h-8 mr-5 text-gray-800 bg-white border border-gray-300 border-solid rounded-full pointer-event"
                     >
                         <AtlanIcon icon="ChevronRight" class="w-4 h-4" />
                     </div>
                 </template>
                 <!-- <div v-if="showDemo[activeTab]" class="pr-3"> -->
-                <div v-if="false" class="pr-3 container-card-slider">
+                <div v-if="false" class="pr-3" style="width: 192px">
                     <div
                         class="relative flex flex-col items-center p-4 bg-gray-100 border border-gray-200 rounded-lg"
                     >
@@ -242,6 +259,7 @@
         components: { Card, Carousel, AtlanLoader, DrawerWidgetPersonaPurpose },
         props: {},
         setup() {
+            const activeCard = ref(0)
             const router = useRouter()
             const { id, username } = useUserData()
             const activeTab = ref('persona')
@@ -326,6 +344,7 @@
             watch(activeTab, () => {
                 loadingChange.value = true
                 setTimeout(() => {
+                    activeCard.value = 0
                     loadingChange.value = false
                 }, 100)
             })
@@ -357,6 +376,26 @@
             onMounted(() => {
                 mutate()
             })
+            const CarouselRef = ref()
+
+            const handlePrev = () => {
+                if (activeCard.value <= 2) {
+                    CarouselRef.value.goTo(1)
+                } else {
+                    CarouselRef.value.prev()
+                }
+            }
+            const handleNext = () => {
+                if (activeCard.value === 0) {
+                    CarouselRef.value.goTo(2)
+                } else {
+                    CarouselRef.value.next()
+                }
+            }
+            const afterChange = (current) => {
+                activeCard.value = current
+            }
+
             return {
                 personas,
                 activeTab,
@@ -370,6 +409,11 @@
                 handleOverView,
                 handleCloseDrawer,
                 userList,
+                CarouselRef,
+                handlePrev,
+                handleNext,
+                activeCard,
+                afterChange,
             }
         },
     })
@@ -391,9 +435,15 @@
     }
 </style>
 <style lang="less">
-    // .container-card-slider {
-    //     width: 192px;
-    // }
+    .custom-arrow {
+        top: calc(47% - 2px);
+    }
+    .pointer-event {
+        pointer-events: auto !important;
+    }
+    .container-card-slider {
+        width: 192px;
+    }
     .ilustration-persona-purpose-demo {
         height: 70px !important;
         width: 92px !important;
@@ -412,6 +462,9 @@
         }
     }
     .carousel-container {
+        .slick-slide {
+            pointer-events: auto !important;
+        }
         .slick-disabled {
             display: none !important;
         }

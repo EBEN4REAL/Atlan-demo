@@ -1,5 +1,5 @@
 <template>
-    <div class="pr-3 container-card-slider">
+    <div class="pr-3" :style="{ width: '192px' }">
         <div
             class="border cursor-pointer rounded-xl hover:border-blue-200 shadow-card"
             :class="active ? 'border-primary ' : 'border-gray-300'"
@@ -268,7 +268,10 @@
                         if (metadataPolicy.allUsers) {
                             isAllUser = true
                         }
-                        userPurposes = [...userPurposes, ...metadataPolicy.users]
+                        userPurposes = [
+                            ...userPurposes,
+                            ...metadataPolicy.users,
+                        ]
                     })
                     if (!userPurposes.includes('all-users') && !isAllUser) {
                         const result = [...new Set(userPurposes)].map(

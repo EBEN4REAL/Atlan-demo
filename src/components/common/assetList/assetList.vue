@@ -284,7 +284,7 @@
             },
             globalState: {
                 type: Array,
-                default: [],
+                default: () => [],
                 required: false,
             },
         },

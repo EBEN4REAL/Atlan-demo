@@ -47,7 +47,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, watch, toRefs, ref, onMounted } from 'vue'
+    import {
+        defineComponent,
+        watch,
+        toRefs,
+        ref,
+        onMounted,
+        nextTick,
+    } from 'vue'
 
     export default defineComponent({
         name: 'ReadmeView',
@@ -80,18 +87,18 @@
                 }
             }
             watch(readme, () => {
-                setTimeout(() => {
+                nextTick(() => {
                     calculateHeightBox()
-                }, 200)
+                })
             })
             onMounted(() => {
-                setTimeout(() => {
+                nextTick(() => {
                     calculateHeightBox()
-                }, 200)
+                })
             })
             const handleExpandReadme = () => {
-                emit('expandedReadme')
                 expandReadme.value = true
+                emit('expandedReadme')
             }
 
             return {

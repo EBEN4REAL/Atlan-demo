@@ -826,33 +826,51 @@
                 "
                 class="flex flex-col"
             >
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 cursor-help"
-                >
-                    <a-tooltip color="#2A2F45">
-                        <template #title>
-                            <p class="font-bold">
-                                Connection Admin Permissions:
-                            </p>
-                            <p>1. View and edit all assets in the connection</p>
-                            <p>2. Edit connection preferences</p>
-                            <p>
-                                3. Edit persona based policies for the
-                                connection.
-                            </p>
-                        </template>
+                <a-tooltip color="#2A2F45">
+                    <template #title>
+                        <p class="font-bold">Connection Admin Permissions:</p>
+                        <p>1. View and edit all assets in the connection</p>
+                        <p>2. Edit connection preferences</p>
+                        <p>
+                            3. Edit persona based policies for the connection.
+                        </p>
+                    </template>
+                    <div
+                        class="flex items-center h-6 px-5 mb-1 text-sm text-gray-500 cursor-help"
+                    >
                         <span>Connection Admins</span>
                         <AtlanIcon icon="Info" class="mb-0.5 ml-1 mr-auto" />
-                    </a-tooltip>
-                </div>
+                        <AtlanButton2
+                            v-if="!localAdmins.adminRoles"
+                            label="Add all admins"
+                            color="link"
+                            class="h-6 ml-auto"
+                            @click="localAdmins.adminRoles = true"
+                        />
+                    </div>
+                </a-tooltip>
 
-                <Admins
-                    v-model="localAdmins"
-                    class="px-5"
-                    :selected-asset="selectedAsset"
-                    :edit-permission="editPermission"
-                    @change="handleChangeAdmins"
-                />
+                <div class="flex">
+                    <Admins
+                        v-model="localAdmins"
+                        class="px-5"
+                        :selected-asset="selectedAsset"
+                        :edit-permission="editPermission"
+                        @change="handleChangeAdmins"
+                    >
+                        <div
+                            v-if="localAdmins.adminRoles"
+                            class="flex items-center justify-between flex-none px-2 py-1 ml-2 border border-gray-200 rounded-full cursor-pointer text-new-gray-800 hover:bg-primary hover:text-white"
+                        >
+                            <span> All admins </span>
+                            <AtlanIcon
+                                icon="Cross"
+                                class="h-3 ml-3 rotate-45"
+                                @click="localAdmins.adminRoles = false"
+                            />
+                        </div>
+                    </Admins>
+                </div>
             </div>
 
             <div

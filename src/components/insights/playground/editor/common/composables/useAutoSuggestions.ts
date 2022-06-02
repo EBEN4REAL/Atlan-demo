@@ -408,6 +408,7 @@ export function getLastMappedKeyword(
 }
 
 const attributes = [
+    'sizeBytes',
     'name',
     'displayName',
     'typeName',

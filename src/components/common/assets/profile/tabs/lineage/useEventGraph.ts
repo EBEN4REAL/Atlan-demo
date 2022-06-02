@@ -43,6 +43,7 @@ export default function useEventGraph({
     sameTargetCount,
     nodes,
     edges,
+    groupedProcessIds,
     onSelectAsset,
     onCloseDrawer,
     addSubGraph,
@@ -174,8 +175,8 @@ export default function useEventGraph({
             View: 'column',
             MaterialisedView: 'column',
             TableauDatasource: 'field',
-            // LookerExplore: 'field',
-            // LookerView: 'field',
+            LookerExplore: 'field',
+            LookerView: 'field',
         }
         return portsLabelMap[typeName]
     }
@@ -293,7 +294,7 @@ export default function useEventGraph({
             'Column',
             'TableauDatasourceField',
             'TableauCalculatedField',
-            // 'LookerField',
+            'LookerField',
         ]
         return typeNames.includes(typeName)
     }
@@ -1937,5 +1938,9 @@ export default function useEventGraph({
             graph.value.scrollToCell(cell, { animation: { duration: 600 } })
             guidToSelectOnGraph.value = ''
         }
+    })
+
+    watch(groupedProcessIds, (newVal) => {
+        if (!newVal.length) resetState()
     })
 }

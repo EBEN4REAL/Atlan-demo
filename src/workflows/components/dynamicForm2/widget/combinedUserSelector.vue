@@ -1,4 +1,20 @@
 <template>
+    <div
+        class="flex items-center justify-between mb-1 text-sm text-gray cursor-help"
+        style="line-height: 22px"
+    >
+        <a-tooltip color="#2A2F45">
+            <template #title>
+                <p class="font-bold">Connection Admin Permissions:</p>
+                <p>1. View and edit all assets in the connection</p>
+                <p>2. Edit connection preferences</p>
+                <p>3. Edit persona based policies for the connection.</p>
+            </template>
+            <span>{{ componentProps.title }}</span>
+            <AtlanIcon icon="Info" class="mb-0.5 ml-1 mr-auto" />
+        </a-tooltip>
+    </div>
+
     <div class="flex justify-between">
         <Owners
             v-model:modelValue="selectedOwnersData"
@@ -53,6 +69,7 @@
         inject,
     } from 'vue'
 
+    import whoami from '~/composables/user/whoami'
     import Owners from '~/components/common/input/owner/index.vue'
 
     export default defineComponent({
@@ -79,14 +96,14 @@
         setup(props, { emit }) {
             const { property, isEdit, baseKey } = toRefs(props)
             const formState = inject('formState')
-            // const componentProps = computed(() => property.value.ui)
+            const componentProps = computed(() => property.value.ui)
             const fieldMappings = computed(() => property.value.ui?.mappings)
+            const { username } = whoami()
 
             const selectedOwnersData = ref({
-                ownerUsers:
-                    formState[
-                        `${baseKey.value}.${fieldMappings.value.users}`
-                    ] || [],
+                ownerUsers: formState[
+                    `${baseKey.value}.${fieldMappings.value.users}`
+                ] || [username.value],
                 ownerGroups:
                     formState[
                         `${baseKey.value}.${fieldMappings.value.groups}`
@@ -120,6 +137,7 @@
                 allAdmins,
                 handleOwnersChange,
                 toggleAllAdmin,
+                componentProps,
             }
         },
     })

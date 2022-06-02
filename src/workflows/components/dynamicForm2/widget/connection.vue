@@ -401,9 +401,8 @@
                     admins: {
                         type: 'multiple',
                         ui: {
-                            help: 'These users will have ability to modify the connection and read/update/query all the related assets for this connection',
                             widget: 'CombinedUserSelector',
-                            label: 'Connection Admins',
+                            title: 'Connection Admins',
                             mappings: {
                                 users: 'adminUsers',
                                 groups: 'adminGroups',

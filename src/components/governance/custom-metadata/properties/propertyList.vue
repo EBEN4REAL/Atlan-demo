@@ -208,7 +208,7 @@
                     property.typeName
                 )
             }
-            const { userId } = whoami()
+            const { username } = whoami()
             // residue code to delete
             const handleArchiveProperty = (guid) => {
                 const timestamp = new Date().getTime()
@@ -220,7 +220,7 @@
                     index
                 ].displayName += `-archived-${timestamp}`
                 tempBM.attributeDefs[index].options.archivedAt = timestamp
-                tempBM.attributeDefs[index].options.archivedBy = userId.value
+                tempBM.attributeDefs[index].options.archivedBy = username.value
                 tempBM.attributeDefs[index].options.isArchived = true
 
                 const { data, error, isReady } = Types.updateCustomMetadata({
@@ -375,7 +375,6 @@
             })
 
             return {
-                userId,
                 handleArchiveProperty,
                 isSorting,
                 sortedProperties,

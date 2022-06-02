@@ -149,6 +149,7 @@
                             :allow-editing="
                                 selectedAssetUpdatePermission(record.item, true)
                             "
+                            :similar-list="similarListByName(record.item)"
                         />
                     </template>
                 </template>
@@ -220,7 +221,7 @@
     // Components
     import ErrorView from '@common/error/discover.vue'
     import EmptyView from '@common/empty/index.vue'
-    import EditableDescription from '@common/assets/profile/tabs/columns/editableDescription.vue'
+    import EditableDescription from '@common/assets/profile/tabs/columns/editableDescription/index.vue'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import Sorting from '@/common/select/sorting.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
@@ -233,6 +234,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { DefaultRelationAttributes } from '~/constant/projection'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
+    import { useSimilarList } from '~/composables/discovery/useSimilarList'
 
     // Interfaces
     import { assetInterface } from '~/types/assets/asset.interface'
@@ -272,6 +274,7 @@
                 dataTypeCategoryImage,
                 isScrubbed,
                 selectedAssetUpdatePermission,
+                title,
             } = useAssetInfo()
 
             const aggregationAttributeName = 'dataType'
@@ -476,6 +479,37 @@
                     ? 'bg-primary-light'
                     : 'bg-transparent'
 
+            // Description suggestions
+
+            const suggestionLimit = ref(0)
+            const suggestionOffset = ref(0)
+            const suggestionFacets = ref({
+                typeNames: ['Column'],
+                orExists: ['description', 'userDescription'],
+                similarities: [],
+            })
+            const suggestionAggregations = ref(['name'])
+
+            const { quickChange: quickSuggestionChange, list: suggestionList } =
+                useSimilarList({
+                    limit: suggestionLimit,
+                    offset: suggestionOffset,
+                    facets: suggestionFacets,
+                    aggregations: suggestionAggregations,
+                })
+
+            const similarListByName = (asset) => {
+                const suggestion = suggestionList.value.find(
+                    (item) => title(asset)?.toLowerCase() === item?.key
+                )
+
+                if (suggestion?.group_by_description?.buckets) {
+                    return suggestion?.group_by_description?.buckets
+                }
+
+                return []
+            }
+
             /** WATCHERS */
             watch(
                 () => [...list.value],
@@ -529,6 +563,13 @@
                         })),
                     }
                     refreshEvaluate()
+
+                    suggestionFacets.value = {
+                        ...suggestionFacets.value,
+                        similarities: list.value.map((item) => title(item)),
+                    }
+
+                    quickSuggestionChange()
                 }
             )
 
@@ -577,6 +618,7 @@
                 pagination,
                 selectedRowGuid,
                 defaultAttributes,
+                similarListByName,
                 columns: [
                     {
                         width: 50,

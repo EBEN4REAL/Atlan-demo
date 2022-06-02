@@ -117,6 +117,7 @@ export interface assetInterface {
         __modificationTimestamp: number
         __timestamp: number
         __modifiedBy: string
+        __hasLineage: boolean
         __state: string
         isPublished?: boolean
         isTopLevelProject?: boolean

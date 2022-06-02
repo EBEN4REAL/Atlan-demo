@@ -103,6 +103,7 @@ import KebabMenuHorizontal from '~/assets/images/icons/kebab-menu.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import OverviewActive from '~/assets/images/icons/overview_active.svg'
 import Lineage from '~/assets/images/icons/lineage.svg'
+import LineageNew from '~/assets/images/icons/lineage-new.svg'
 import LineageSmall from '~/assets/images/icons/lineage-small.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
@@ -230,6 +231,7 @@ import Policy from '~/assets/images/icons/policy.svg'
 import PolicyAlt from '~/assets/images/icons/policy-alt.svg'
 import Key from '~/assets/images/icons/key.svg'
 import EmptyDiscover from '~/assets/images/illustrations/empty_discover.svg'
+import EmptyAssetProfile from '~/assets/images/icons/empty_asset_profile.svg'
 import EmptyLineage from '~/assets/images/illustrations/empty_lineage.svg'
 import EmptyLineageTab from '~/assets/images/illustrations/empty_lineage_tab.svg'
 import Property from '~/assets/images/icons/property.svg'
@@ -607,6 +609,7 @@ export default {
     Overview,
     Pin,
     Lineage,
+    LineageNew,
     LineageSmall,
     Activity,
     Columns,
@@ -766,6 +769,7 @@ export default {
     Policy,
     Key,
     EmptyDiscover,
+    EmptyAssetProfile,
     Property,
     PropertyActive,
     OverviewActive,

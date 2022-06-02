@@ -75,6 +75,7 @@ specifiers:
   highlight.js: ^11.4.0
   https-localhost: ^4.7.0
   husky: ^7.0.4
+  jose: ^4.8.1
   json-2-csv: ^3.17.0
   katex: ^0.15.3
   keycloak-js: ^16.1.1
@@ -179,6 +180,7 @@ dependencies:
   emoji-picker-element: 1.11.3
   event-source-polyfill: github.com/atlanhq/EventSource/f12e560428065c00f61c7eb2a8ae773115e6e7c7
   highlight.js: 11.4.0
+  jose: 4.8.1
   json-2-csv: 3.17.0
   katex: 0.15.3
   keycloak-js: 16.1.1
@@ -5422,6 +5424,10 @@ packages:
       merge-stream: 2.0.0
       supports-color: 7.2.0
     dev: true
+
+  /jose/4.8.1:
+    resolution: {integrity: sha512-+/hpTbRcCw9YC0TOfN1W47pej4a9lRmltdOVdRLz5FP5UvUq3CenhXjQK7u/8NdMIIShMXYAh9VLPhc7TjhvFw==}
+    dev: false
 
   /jquery-mousewheel/3.1.13:
     resolution: {integrity: sha1-BvAzXxbjU6aV5yBr9QUDy1I6buU=}

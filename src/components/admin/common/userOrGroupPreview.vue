@@ -73,7 +73,7 @@
                                 </span>
                             </div>
                             <span class="mr-1 text-sm truncate w-28">
-                                {{ name }} 
+                                {{ name }}
                             </span>
 
                             <span v-if="details" class="mr-1 text-sm">
@@ -135,7 +135,7 @@
                             <a-button-group v-if="previewType === 'group'">
                                 <MemberPopover
                                     :selected-group="selectedGroup"
-                                    @members-added="handleChangeTab('members')"
+                                    @members-added="handleMemberAdded"
                                 >
                                     <template #label>
                                         <AtlanButton2
@@ -282,7 +282,7 @@
             const { previewType } = toRefs(props)
             const updatedImageUrl = ref(null)
             const isUserPreview = computed(() => previewType.value === 'user')
-            const { changeTogleEdit } = useGroupPreview()
+            const { changeTogleEdit, lastUpdate } = useGroupPreview()
             const {
                 isLoading,
                 error,
@@ -360,7 +360,15 @@
             const handleChangeTab = (tabKey) => {
                 activeKey.value = tabKey
             }
-
+            const handleMemberAdded = async () => {
+                try {
+                    await reload()
+                    lastUpdate.value = new Date()
+                    handleChangeTab('members')
+                } catch (er) {
+                    console.log(er)
+                }
+            }
             return {
                 tabs,
                 isValidEntity,
@@ -384,6 +392,7 @@
                 handleChangeTab,
                 map,
                 changeTogleEdit,
+                handleMemberAdded,
             }
         },
     })

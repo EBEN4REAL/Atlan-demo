@@ -285,30 +285,41 @@
                     :class="index === activeKey ? 'flex flex-col' : ''"
                 >
                     <template #tab>
-                        <div class="flex flex-col">
-                            <PreviewTabsIcon
-                                :title="tab.tooltip"
-                                :icon="tab.icon"
-                                :image="tab.image"
-                                :emoji="tab.emoji"
-                                height="h-5"
-                                width="w-5"
-                                :active-icon="tab.activeIcon"
-                                :is-active="activeKey === index"
-                                :is-scrubbed="
-                                    isScrubbed(selectedAsset) && tab.scrubbed
-                                "
-                                @click="onClickTabIcon(tab)"
-                            >
-                                <template #label>
-                                    <span
-                                        class="tracking-tight text-gray-500 leading-none mt-0.5"
-                                        style="font-size: 11px"
-                                        >{{ trimText(tab.name) }}
-                                    </span></template
-                                ></PreviewTabsIcon
-                            >
-                        </div>
+                        <a-badge
+                            :count="getCount(tab.name)"
+                            :offset="[-8, 5]"
+                            class="small"
+                            :number-style="{
+                                background:
+                                    'linear-gradient(132.26deg, #0575E6 7.86%, #0029C4 89.25%)',
+                                color: '#fff',
+                            }"
+                        >
+                            <div class="flex flex-col" style="width: 45px">
+                                <PreviewTabsIcon
+                                    :title="tab.tooltip"
+                                    :icon="tab.icon"
+                                    :image="tab.image"
+                                    :emoji="tab.emoji"
+                                    height="h-5"
+                                    width="w-5"
+                                    :active-icon="tab.activeIcon"
+                                    :is-active="activeKey === index"
+                                    :is-scrubbed="
+                                        isScrubbed(selectedAsset) &&
+                                        tab.scrubbed
+                                    "
+                                    @click="onClickTabIcon(tab)"
+                                >
+                                </PreviewTabsIcon>
+
+                                <span
+                                    class="tracking-tight text-gray-500 leading-none mt-0.5"
+                                    style="font-size: 11px"
+                                    >{{ trimText(tab.name) }}
+                                </span>
+                            </div>
+                        </a-badge>
                     </template>
                     <NoAccess
                         v-if="isScrubbed(selectedAsset) && tab.scrubbed"
@@ -403,6 +414,7 @@
         featureEnabledMap,
         INSIGHT_WORKSPACE_LEVEL_TAB,
     } from '~/composables/labs/labFeatureList'
+    import { getDomain } from '~/utils/url'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -473,6 +485,7 @@
         setup(props, { emit }) {
             const { selectedAsset, isDrawer, page, drawerActiveKey } =
                 toRefs(props)
+
             const { getAllowedActions, getAssetEvaluationsBody } =
                 useAssetEvaluate()
             const actions = computed(() =>
@@ -523,6 +536,7 @@
                 selectedAssetUpdatePermission,
                 isCustom,
                 isPublished,
+                links,
             } = useAssetInfo()
 
             const activeKey = ref(0)
@@ -546,6 +560,21 @@
 
             const body = ref({})
             const authStore = useAuthStore()
+
+            const slackResourceCount = () =>
+                links(selectedAsset.value).filter(
+                    (l) => getDomain(l.attributes.link) === 'slack.com'
+                ).length
+
+            const getCount = (tab) => {
+                if (tab?.toLowerCase() === 'resources') {
+                    return (
+                        links(selectedAsset.value).length - slackResourceCount()
+                    )
+                } else if (tab?.toLowerCase() === 'slack') {
+                    return slackResourceCount()
+                }
+            }
 
             const { refresh, isLoading: isEvaluating } = useEvaluate(
                 body,
@@ -791,6 +820,10 @@
                 isCustom,
                 isPublished,
                 trimText,
+                getCount,
+                links,
+                slackResourceCount,
+                switchTab,
             }
         },
     })
@@ -836,6 +869,25 @@
             :global(.ant-tabs-content-holder) {
                 @apply h-full !important;
             }
+        }
+    }
+</style>
+
+<style lang="less">
+    .small {
+        .ant-badge-count {
+            height: 16px;
+            font-size: 10px;
+            line-height: 18px;
+            min-width: 16px;
+        }
+
+        .ant-scroll-number-only {
+            height: 16px;
+        }
+
+        .ant-scroll-number-only > p.ant-scroll-number-only-unit {
+            height: 16px;
         }
     }
 </style>

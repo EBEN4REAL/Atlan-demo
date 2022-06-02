@@ -16,7 +16,11 @@ dayjs.extend(advanced)
 dayjs.extend(relativeTime)
 
 export default function useWorkflowInfo() {
-    const name = (item: any): string => item?.metadata?.name
+    const refName = (item: any): string => item?.metadata?.name
+
+    const name = (item: any): string =>
+        item?.metadata?.annotations['orchestration.atlan.com/atlanName'] ||
+        item?.metadata?.name
 
     const creationTimestamp = (item: any, relative: any) => {
         if (relative) {
@@ -431,6 +435,7 @@ export default function useWorkflowInfo() {
         ] as string
 
     return {
+        refName,
         name,
         creationTimestamp,
         labels,

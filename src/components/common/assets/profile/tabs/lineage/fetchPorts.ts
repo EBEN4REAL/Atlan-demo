@@ -57,12 +57,19 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
             type: 'must',
             prop: Array.isArray(portTypeNameMap[typeName]) ? 'terms' : 'term',
         },
+        // {
+        //     id: 'haslineage',
+        //     key: 'field',
+        //     value: '__hasLineage',
+        //     type: 'must',
+        //     prop: 'exists',
+        // },
         {
             id: 'haslineage',
-            key: 'field',
-            value: '__hasLineage',
+            key: '__hasLineage',
+            value: 'true',
             type: 'must',
-            prop: 'exists',
+            prop: 'term',
         },
         {
             id: 'parent',

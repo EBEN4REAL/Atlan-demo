@@ -386,7 +386,6 @@
     import QueryDropdown from '@/common/query/queryDropdown.vue'
     import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
     import Activity from './activity/activityTab.vue'
-    import Columns from './columns/index.vue'
     import Resources from '@/common/assets/preview/resources/resourcesWrapper.vue'
     import Jira from '@/common/assets/preview/integrations/jira/jira.vue'
     import SlackResources from '@/common/assets/preview/resources/slackResourcesWrapper.vue'
@@ -407,7 +406,7 @@
 
     export default defineComponent({
         name: 'AssetPreview',
-        components: {
+       components: {
             PreviewTabsIcon,
             CertificateBadge,
             NoAccess,
@@ -415,7 +414,7 @@
             QueryDropdown,
             KebabMenu,
             info: defineAsyncComponent(() => import('./info/index.vue')),
-            columns: Columns,
+            columns: defineAsyncComponent(() => import('./columns/index.vue')),
             actions: defineAsyncComponent(() => import('./actions/index.vue')),
             request: defineAsyncComponent(() => import('./request/index.vue')),
             property: defineAsyncComponent(
@@ -430,6 +429,7 @@
                 () => import('./relations/index.vue')
             ),
             resources: Resources,
+            
             lineage: defineAsyncComponent(
                 () => import('./lineage/lineageTab.vue')
             ),

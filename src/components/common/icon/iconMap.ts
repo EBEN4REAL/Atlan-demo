@@ -231,6 +231,7 @@ import Policy from '~/assets/images/icons/policy.svg'
 import PolicyAlt from '~/assets/images/icons/policy-alt.svg'
 import Key from '~/assets/images/icons/key.svg'
 import EmptyDiscover from '~/assets/images/illustrations/empty_discover.svg'
+import EmptyAssetProfile from '~/assets/images/icons/empty_asset_profile.svg'
 import EmptyLineage from '~/assets/images/illustrations/empty_lineage.svg'
 import EmptyLineageTab from '~/assets/images/illustrations/empty_lineage_tab.svg'
 import Property from '~/assets/images/icons/property.svg'
@@ -768,6 +769,7 @@ export default {
     Policy,
     Key,
     EmptyDiscover,
+    EmptyAssetProfile,
     Property,
     PropertyActive,
     OverviewActive,

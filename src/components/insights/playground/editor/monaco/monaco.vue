@@ -337,10 +337,10 @@
                         const position: any =
                             editor?.getPosition() as monaco.IPosition
                         const startColumn =
-                            position.column +
+                            position.column -
+                            1 +
                             suggestion?.selectionColumnStart -
-                            suggestion?.insertText?.length -
-                            wordPosition.word.length
+                            suggestion?.insertText?.length
                         const endColumn =
                             startColumn +
                             (suggestion?.selectionColumnEnd -
@@ -817,7 +817,7 @@
                         editor?.getPosition()
                     )
                     setTimeout(() => {
-                        hideAutoCompletion()
+                        // hideAutoCompletion()
                     }, 150)
                 })
                 editor?.onDidFocusEditorWidget(() => {

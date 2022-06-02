@@ -107,7 +107,7 @@
                             allowDelete && !isPropagated(classification)
                         "
                         :color="classification.options?.color"
-                        @delete="handleDeleteClassification(classification.name, classification?.displayName)"
+                        @delete="handleDeleteClassification"
                         :created-by="classification?.createdBy"
                     />
                 </Popover>
@@ -258,42 +258,16 @@
                 }
             }
 
-            const handleDeleteClassification = (name, displayName) => {
-                Modal.confirm({
-                    title: `Delete classification`,
-                    class: 'delete-classification-modal',
-                    content: () =>
-                        h('div', [
-                            `Are you sure you want to delete classification`,
-                            h('span', [' ']),
-                            h(
-                                'span',
-                                {
-                                    class: ['font-bold'],
-                                },
-                                [` ${displayName || name}`]
-                            ),
-                            h('span', '?'),
-                        ]),
-                    okType: 'danger',
-                    autoFocusButton: null,
-                    okButtonProps: {
-                        type: 'primary',
-                    },
-                    okText: 'Delete',
-                    cancelText: 'Cancel',
-                    async onOk() {
-                        localValue.value = localValue.value.filter(
-                            (i) => i.typeName !== name || isPropagated(i)
-                        )
-                        selectedValue.value = {
-                            classifications: modelValue.value
-                                .filter((i) => !isPropagated(i))
-                                .map((j) => j.typeName),
-                        }
-                        handleChange()
-                    },
-                })
+            const handleDeleteClassification = (name) => {
+               localValue.value = localValue.value.filter(
+                    (i) => i.typeName !== name || isPropagated(i)
+                )
+                selectedValue.value = {
+                    classifications: modelValue.value
+                        .filter((i) => !isPropagated(i))
+                        .map((j) => j.typeName),
+                }
+                handleChange()
                 
             }
 

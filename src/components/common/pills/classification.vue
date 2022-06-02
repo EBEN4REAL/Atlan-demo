@@ -26,32 +26,64 @@
         <div class="ml-1 truncate overflow-ellipsis">
             {{ displayName || name }}
         </div>
-
-        <div
-            v-if="allowDelete"
-            class="flex"
-            @click="
-                (e) => {
-                    e.stopPropagation()
-                    handleRemove()
-                }
-            "
-        >
-            <AtlanIcon
-                icon="Cross"
-                class="h-3 ml-2 text-gray-500 group-hover:text-white"
-            ></AtlanIcon>
-        </div>
+        <a-popconfirm
+            :title="`Are you sure you want to remove ${displayName}?`"
+            :visible="visible"
+            ok-text="Remove"
+            cancel-text="Cancel"
+            :overlay-class-name="$style.classificationDeletePopover"
+            
+            @visible-change="handleVisibleChange"
+            >
+            <template #cancelButton>
+                <AtlanBtn
+                    :color="'minimal'"
+                    size="sm"
+                    padding="compact"
+                    @click="() => visible = false"
+                >
+                    {{ $t('Cancel') }}
+                    
+                </AtlanBtn>
+            </template>
+            <template #okButton>
+                <AtlanBtn
+                    :color="'primary'"
+                    size="sm"
+                    padding="compact"
+                    @click="handleRemove"
+                >
+                    {{ $t('Remove') }}
+                </AtlanBtn>
+            </template>
+            <div
+                v-if="allowDelete"
+                class="flex"
+                @click="
+                    (e) => {
+                        e.stopPropagation()
+                        confirmDelete()
+                    }
+                "
+            >
+                <AtlanIcon
+                    icon="Cross"
+                    class="h-3 ml-2 text-gray-500 group-hover:text-white"
+                ></AtlanIcon>
+            </div>
+        </a-popconfirm>
+        
     </div>
 </template>
 
 <script lang="ts">
-    import { toRefs, computed, unref, ref, defineComponent, watch } from 'vue'
+    import { toRefs, computed, unref, ref, defineComponent } from 'vue'
     import ClassificationIcon from '@/governance/classifications/classificationIcon.vue'
     import getClassificationColorHex from '@/governance/classifications/utils/getClassificationColor'
+    import AtlanBtn from '@/UI/button.vue'
 
     export default defineComponent({
-        components: { ClassificationIcon },
+        components: { ClassificationIcon , AtlanBtn},
         props: {
             guid: {
                 type: String,
@@ -107,6 +139,24 @@
             const originalColour = ref(unref(color).toLowerCase())
 
             const mouseEnter = ref(false)
+
+            const visible = ref<boolean>(false);
+
+            const handleVisibleChange = (bool: boolean) => {
+                if (!bool) {
+                    visible.value = false;
+                }
+            };
+
+            const handleRemove = () => {
+                visible.value = false
+                emit('delete', name.value)
+            }
+
+            const confirmDelete = () => {
+                visible.value = true
+            }
+
             const bgColor = computed(() =>
                 mouseEnter.value ? originalColour.value : 'white'
             )
@@ -117,15 +167,10 @@
                 if (isPropagated.value) {
                     return 'ClassificationPropagated'
                 }
-                // if (createdBy.value?.length && createdBy.value?.includes('service-account-atlan')) {
-                //     return mouseEnter.value ? "ClassificationAtlanHollow" : "ClassificationAtlan"
-                // }
                 return 'ClassificationShield'
             })
 
-            const handleRemove = () => {
-                emit('delete', name.value)
-            }
+           
 
             const toggleColor = () => {
                 bgColor.value =
@@ -151,7 +196,21 @@
                 toggleColor,
                 icon,
                 mouseEnter,
+                visible,
+                handleVisibleChange,
+                confirmDelete
             }
         },
     })
 </script>
+
+<style lang="less" module>
+    .classificationDeletePopover {
+        :global(.ant-popover-inner) {
+            @apply px-3 py-3 !important;
+        }
+        :global(.ant-popover-buttons) {
+            @apply flex justify-end;
+        }
+    }
+</style>

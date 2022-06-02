@@ -251,6 +251,7 @@
             }
 
             const handleApplySuggestion = (suggestion) => {
+                debugger
                 // get current cursor position
                 const editorPosition = editor?.getPosition() as monaco.IPosition
                 // use current cursor position to get position of the word to be replaced

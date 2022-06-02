@@ -9,7 +9,7 @@
             "
         >
             <div
-                class="py-0.5 overflow-auto bg-white max-h-52 rounded-md"
+                class="overflow-auto bg-white rounded-md max-h-52"
                 style="overflow: hidden; width: 447px"
                 v-if="!autoSuggestionLoading"
             >

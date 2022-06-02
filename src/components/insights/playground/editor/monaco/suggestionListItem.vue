@@ -1,5 +1,8 @@
 <template>
-    <div class="flex items-start justify-between parent-ellipsis-container">
+    <div
+        class="flex items-start justify-between parent-ellipsis-container"
+        style="max-height: 20px"
+    >
         <div class="flex flex-col parent-ellipsis-container-base">
             <div class="flex items-center">
                 <component
@@ -67,7 +70,7 @@
             class="justify-end parent-ellipsis-container-extension"
             v-if="suggestion?.documentation?.entity?.typeName === 'Column'"
         >
-            <span class="pr-2 text-xs normal-case text-new-gray-600">
+            <span class="text-xs normal-case text-new-gray-600">
                 {{
                     capitalizeFirstLetter(
                         suggestion?.documentation?.entity?.attributes?.dataType?.toLowerCase()
@@ -79,7 +82,7 @@
             class="justify-end parent-ellipsis-container-extension"
             v-if="!suggestion?.documentation?.entity"
         >
-            <span class="pr-2 text-xs normal-case text-new-gray-600">
+            <span class="text-xs normal-case text-new-gray-600">
                 {{ getSuggestionsListType(suggestion) }}
             </span>
         </div>
@@ -87,7 +90,7 @@
             class="justify-end parent-ellipsis-container-extension"
             v-if="suggestion?.documentation?.entity?.typeName === 'Table'"
         >
-            <span class="pr-2 text-xs normal-case text-new-gray-600">
+            <span class="text-xs normal-case text-new-gray-600">
                 {{ rowCount(suggestion?.documentation?.entity) }} rows,
                 {{ columnCount(suggestion?.documentation?.entity) }} cols
             </span>

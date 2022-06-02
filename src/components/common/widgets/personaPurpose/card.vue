@@ -258,17 +258,17 @@
                     let isAllUser = false
                     let userPurposes = []
                     const { metadataPolicies, dataPolicies } = item.value
-                    dataPolicies.forEach((el) => {
-                        if (el.allUsers) {
+                    dataPolicies.forEach((dataPolicy) => {
+                        if (dataPolicy.allUsers) {
                             isAllUser = true
                         }
-                        userPurposes = [...userPurposes, ...el.users]
+                        userPurposes = [...userPurposes, ...dataPolicy.users]
                     })
-                    metadataPolicies.forEach((el) => {
-                        if (el.allUsers) {
+                    metadataPolicies.forEach((metadataPolicy) => {
+                        if (metadataPolicy.allUsers) {
                             isAllUser = true
                         }
-                        userPurposes = [...userPurposes, ...el.users]
+                        userPurposes = [...userPurposes, ...metadataPolicy.users]
                     })
                     if (!userPurposes.includes('all-users') && !isAllUser) {
                         const result = [...new Set(userPurposes)].map(
@@ -283,12 +283,12 @@
                 }
                 if (!userList?.value.length) return []
                 if (type.value === 'persona') {
-                    const usersItem = item.value?.users?.slice(0, 3) || []
-                    const personaUsers = usersItem.map(
-                        (el) =>
+                    const usersSliced = item.value?.users?.slice(0, 3) || []
+                    const personaUsers = usersSliced.map(
+                        (user) =>
                             userList?.value?.find(
-                                (elc: any) => elc?.id === el
-                            ) || el
+                                (item: any) => item?.id === user
+                            ) || user
                     )
                     return personaUsers
                 }

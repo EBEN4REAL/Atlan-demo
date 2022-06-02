@@ -215,19 +215,19 @@
                 let groupPurposes = []
                 const { metadataPolicies, dataPolicies } = item.value
                 let isAllUser = false
-                dataPolicies?.forEach((el) => {
-                    if (el.allUsers) {
+                dataPolicies?.forEach((dataPolicy) => {
+                    if (dataPolicy.allUsers) {
                         isAllUser = true
                     }
-                    userPurposes = [...userPurposes, ...el.users]
-                    groupPurposes = [...groupPurposes, ...el.groups]
+                    userPurposes = [...userPurposes, ...dataPolicy.users]
+                    groupPurposes = [...groupPurposes, ...dataPolicy.groups]
                 })
-                metadataPolicies?.forEach((el) => {
-                    if (el.allUsers) {
+                metadataPolicies?.forEach((metadataPolicy) => {
+                    if (metadataPolicy.allUsers) {
                         isAllUser = true
                     }
-                    userPurposes = [...userPurposes, ...el.users]
-                    groupPurposes = [...groupPurposes, ...el.groups]
+                    userPurposes = [...userPurposes, ...metadataPolicy.users]
+                    groupPurposes = [...groupPurposes, ...metadataPolicy.groups]
                 })
                 if (
                     !userPurposes.includes('all-users') &&
@@ -344,17 +344,16 @@
                 if (activeTab.value === 'purpose') {
                     return []
                 }
-                const glossaryPolicy = item.value?.glossaryPolicies || []
-                let result = []
-                glossaryPolicy.forEach((el) => {
-                    result = [...result, ...el.glossaryQualifiedNames]
+                const glossaryPolicies = item.value?.glossaryPolicies || []
+                let glossaries = []
+                glossaryPolicies.forEach((glossaryPolicy) => {
+                    glossaries = [...glossaries, ...glossaryPolicy.glossaryQualifiedNames]
                 })
 
-                const formated = result.map((el) =>
-                    list.find((elc) => elc.id === el)
+                const formated = glossaries.map((glossary) =>
+                    list.find((item) => item.id === glossary)
                 )
 
-                console.log(formated)
                 return formated
             })
             const { getEntityStatusIcon } = useGlossaryData()

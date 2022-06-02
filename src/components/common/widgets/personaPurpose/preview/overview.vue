@@ -36,7 +36,10 @@
         </div>
         <div class="mt-7">
             <div class="text-sm text-gray-500">Description</div>
-            <div class="mt-2 text-sm" :class="item.description ? 'text-gray-800' : 'text-gray-600'">
+            <div
+                class="mt-2 text-sm"
+                :class="item.description ? 'text-gray-800' : 'text-gray-600'"
+            >
                 {{ item.description || 'No description' }}
             </div>
         </div>
@@ -91,22 +94,35 @@
             <div
                 class="flex flex-col gap-2 p-2 mt-2 overflow-scroll bg-gray-100 rounded-lg max-h-44"
             >
-                <div
+                <!-- <GlossaryPopover
                     v-for="glo in glossary"
                     :key="glo?.id"
-                    class="bg-white rounded-lg px-2.5 py-1.5 text-sm text-gray-800 flex shadow-connection"
+                    placement="right"
+                    trigger="click"
+                    :term="glo"
+                    :show-drawer-toggle="false"
+                > -->
+                <router-link
+                    v-for="glo in glossary"
+                    :key="glo?.id"
+                    :to="`/glossary/${glo.guid}/overview`"
                 >
-                    <AtlanIcon
-                        :icon="
-                            getEntityStatusIcon(
-                                glo.typeName,
-                                certificateStatus(glo)
-                            )
-                        "
-                        class="mr-2"
-                    />
-                    {{ glo?.displayText }}
-                </div>
+                    <div
+                        class="bg-white cursor-pointer rounded-lg px-2.5 py-1.5 text-sm text-gray-800 flex shadow-connection"
+                    >
+                        <AtlanIcon
+                            :icon="
+                                getEntityStatusIcon(
+                                    glo.typeName,
+                                    certificateStatus(glo)
+                                )
+                            "
+                            class="mr-2"
+                        />
+                        {{ glo?.displayText }}
+                    </div>
+                </router-link>
+                <!-- </GlossaryPopover> -->
             </div>
         </div>
         <div class="mt-7">
@@ -123,6 +139,7 @@
 <script lang="ts">
     import { defineComponent, computed, toRefs, ref } from 'vue'
 
+    // import GlossaryPopover from '@common/popover/glossary/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { getCountString } from '~/utils/number'
@@ -138,7 +155,12 @@
 
     export default defineComponent({
         name: 'PersonaPurposeOverview',
-        components: { ReadmeView, ClassificationPill, Popover },
+        components: {
+            ReadmeView,
+            ClassificationPill,
+            Popover,
+            // GlossaryPopover,
+        },
         props: {
             item: {
                 type: Object,
@@ -331,6 +353,8 @@
                 const formated = result.map((el) =>
                     list.find((elc) => elc.id === el)
                 )
+
+                console.log(formated)
                 return formated
             })
             const { getEntityStatusIcon } = useGlossaryData()

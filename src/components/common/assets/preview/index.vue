@@ -638,7 +638,7 @@
                 if (idx > -1) {
                     activeKey.value = idx
                 }else {
-                     activeKey.value = 0
+                    activeKey.value = 0
                 }
 
                 // After a while change back to read state as the same component is being used for other CM tabs

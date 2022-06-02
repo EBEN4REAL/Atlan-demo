@@ -1,4 +1,10 @@
 <template>
+    <LinkedAssetsModal
+        v-model:visible="linkedAssetsVisible"
+        :linked-assets="linkedAssets"
+        :assetCount="assetCount"
+        :metadata="selectedBm"
+    />
     <div class="relative">
         <div
             class="flex flex-col items-start justify-between px-8 pb-4 bg-white border-b pt-7 gap-y-2"
@@ -27,13 +33,21 @@
                     />
                 </div>
             </div>
-            <div class="flex items-start justify-between">
-                <CreateUpdateInfo
-                    :created-at="localBm.createTime"
-                    :updated-at="localBm.updateTime"
-                    :created-by="localBm.createdBy"
-                    :updated-by="localBm.updatedBy"
-                />
+            <div class="flex gap-x-2">
+                <div class="flex items-start justify-between">
+                    <CreateUpdateInfo
+                        :created-at="localBm.createTime"
+                        :updated-at="localBm.updateTime"
+                        :created-by="localBm.createdBy"
+                        :updated-by="localBm.updatedBy"
+                    />
+                </div>
+                <span class="text-gray-300 p">•</span>
+                <span
+                    class="cursor-pointer hover:underline text-primary"
+                    @click="linkedAssetsVisible = true"
+                    >View linked assets</span
+                >
             </div>
         </div>
 
@@ -189,12 +203,14 @@
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
     import Truncate from '@/common/ellipsis/index.vue'
+    import LinkedAssetsModal from '@/governance/custom-metadata/linkedAssetsModal.vue'
 
     export default defineComponent({
         components: {
             Truncate,
             CreateUpdateInfo,
             MetadataHeaderButton,
+            LinkedAssetsModal,
             InternalCMBanner,
             AddPropertyDrawer,
             PropertyList,
@@ -211,6 +227,7 @@
         setup(props, context) {
             const store = useTypedefStore()
             const { checkAccess } = useAuth()
+            const linkedAssetsVisible = ref(false)
             // * Data
             const localBm = computed({
                 get: () => props.selectedBm,
@@ -315,6 +332,7 @@
 
             const {
                 count: assetCount,
+                data: linkedAssets,
                 mutate,
                 isReady,
             } = getAssetCount(localBm.value)
@@ -391,10 +409,12 @@
             }
             return {
                 openDirection,
+                linkedAssetsVisible,
                 selected,
                 openEdit,
                 allowDelete,
                 assetCount,
+                linkedAssets,
                 attrsearchText,
                 error,
                 archiveAttribute,

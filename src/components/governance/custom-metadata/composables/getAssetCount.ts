@@ -1,12 +1,17 @@
 import { ref, watch } from 'vue'
 import { Search } from '~/services/meta/search'
+import { useTypedefStore } from '~/store/typedef'
+
 
 
 const getAssetCount = (selectedBM) => {
+    const typedefStore = useTypedefStore()
     const count = ref(0)
+
+
     const body = {
         "dsl": {
-            "size": 0,
+            "size": 50,
             "query": {
                 "bool": {
                     "should": [
@@ -19,6 +24,9 @@ const getAssetCount = (selectedBM) => {
                 }
             }
         },
+        attributes: typedefStore.getCustomMetadataListProjectionsByName(
+            selectedBM.name
+        ),
         suppressLogs: true
     }
 

@@ -2,7 +2,12 @@
     <a-popover
         placement="left"
         :mouse-enter-delay="mouseEnterDelay"
-        @click="togglePreview"
+        @click="
+            (e) => {
+                e.stopPropagation()
+                togglePreview()
+            }
+        "
         @mouseenter="$emit('mouseEntered')"
         @mouseleave="$emit('mouseLeft')"
     >

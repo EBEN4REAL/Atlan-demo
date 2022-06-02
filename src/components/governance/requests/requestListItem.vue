@@ -1,6 +1,6 @@
 <template>
     <div
-        class="grid items-center justify-between grid-cols-10 bg-white border-t border-gray-light border-style-500 group gap-x-4 request-card pl-4"
+        class="grid items-center justify-between grid-cols-10 pl-4 bg-white border-t border-gray-light border-style-500 group gap-x-4 request-card"
         style="height: 72px"
         :class="{
             'bg-primary-light': selected,
@@ -23,7 +23,7 @@
               
             </Popover> -->
             <div
-                class="cursor-pointer flex items-center"
+                class="flex items-center cursor-pointer"
                 :class="showRequestStatus ? 'w-full' : ''"
                 @mouseenter="$emit('mouseEnterAsset')"
                 @click="handleShowAssetSidebar(item)"
@@ -63,7 +63,7 @@
                         />
                     </div>
                     <span
-                        class="flex items-center space-x-1 mt-1 text-gray-500"
+                        class="flex items-center mt-1 space-x-1 text-gray-500"
                     >
                         <atlan-icon
                             :icon="
@@ -71,7 +71,7 @@
                                     glossaryLabel[request?.entityType]
                                 )
                             "
-                            class="mr-1 mb-1"
+                            class="mb-1 mr-1"
                         ></atlan-icon>
 
                         {{
@@ -108,7 +108,7 @@
                                 ?.attributes?.name
                         }}</span>
                         <div class="flex items-center text-gray-500">
-                            <atlan-icon icon="Glossary" class="mr-1 w-4" />
+                            <atlan-icon icon="Glossary" class="w-4 mr-1" />
                             <span>Glossary</span>
                         </div>
                     </div>
@@ -168,7 +168,18 @@
                 v-else-if="request.destinationAttribute"
                 :name="request.destinationAttribute"
                 :value="request.destinationValue"
+                :status="request.status"
+                :request="request"
                 :value-array="request?.destinationValueArray"
+                :loading="state.isLoading"
+                :is-approval-loading="state.isApprovalLoading"
+                @accept="handleApproval"
+                @reject="handleRejection"
+                @switchUpdatePopover="
+                    (val) => {
+                        updatePopoverActive = val
+                    }
+                "
             />
 
             <AssetPiece
@@ -190,7 +201,7 @@
             <!-- <div v-else-if="selected"> -->
             <div class="pr-5">
                 <div
-                    v-if="activeHover === request.id"
+                    v-if="activeHover === request.id && !updatePopoverActive"
                     class="flex items-center justify-end font-bold"
                 >
                     <!-- <AtlanIcon
@@ -337,11 +348,11 @@
         </div>
         <div
             v-if="showRequestStatus"
-            class="flex items-center col-span-3 text-sm ml-10"
+            class="flex items-center col-span-3 ml-10 text-sm"
         >
             <div v-if="activeHover === request.id" class="flex items-center">
                 <div v-if="request.status === 'active'" class="flex flex-col">
-                    <span class="text-yellow-500 flex items-center mb-1">
+                    <span class="flex items-center mb-1 text-yellow-500">
                         Pending</span
                     >
                     <a-popover placement="rightBottom">
@@ -370,7 +381,7 @@
                     }}
 
                     <div
-                        class="flex items-center font-light whitespace-nowrap mt-1"
+                        class="flex items-center mt-1 font-light whitespace-nowrap"
                     >
                         <div class="flex items-center truncate">
                             <Avatar
@@ -391,7 +402,7 @@
             </div>
             <div v-else>
                 <div v-if="request.status === 'active'" class="flex flex-col">
-                    <span class="text-yellow-500 flex items-center mb-1">
+                    <span class="flex items-center mb-1 text-yellow-500">
                         Pending</span
                     >
                     <span class="text-gray-500">
@@ -536,6 +547,7 @@
         setup(props, { emit }) {
             const { request } = toRefs(props)
             const updatedBy = ref({})
+            const updatePopoverActive = ref(false)
             const state = reactive({
                 isLoading: false,
                 isApprovalLoading: false,
@@ -728,6 +740,7 @@
                 handleShowAssetSidebar,
                 glossaryLabel,
                 capitalizeFirstLetter,
+                updatePopoverActive,
             }
         },
     })

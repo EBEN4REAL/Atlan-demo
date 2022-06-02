@@ -1226,22 +1226,34 @@
                                             item.typeName?.toLowerCase()
                                         )
                                     "
-                                    class="flex mr-2 text-sm text-gray-500 gap-x-2"
+                                    class="flex mr-2 text-sm text-gray-500"
                                 >
                                     <a-tooltip placement="bottomLeft">
                                         <div
-                                            v-if="s3BucketName(item)"
+                                            v-if="
+                                                parentBucket(item)?.attributes
+                                                    ?.name
+                                            "
                                             class="flex items-center text-gray-500"
                                         >
                                             <span class="tracking-tight">
-                                                in
-                                                {{ s3BucketName(item) }}
+                                                <AtlanIcon
+                                                    icon="S3Bucket"
+                                                    class="self-center text-gray-500 mb-0.5"
+                                                ></AtlanIcon>
+                                                {{
+                                                    parentBucket(item)
+                                                        ?.attributes?.name
+                                                }}
                                             </span>
                                         </div>
                                         <template #title>
                                             <span
                                                 >Parent Bucket -
-                                                {{ s3BucketName(item) }}</span
+                                                {{
+                                                    parentBucket(item)
+                                                        ?.attributes?.name
+                                                }}</span
                                             >
                                         </template>
                                     </a-tooltip>
@@ -1672,6 +1684,7 @@
                 connectionQualifiedName,
                 parentTable,
                 parentView,
+                parentBucket,
                 s3BucketName,
                 hasLineage,
             } = useAssetInfo()
@@ -1894,6 +1907,7 @@
                 getEntityStatusIcon,
                 parentTable,
                 parentView,
+                parentBucket,
                 s3BucketName,
                 hasLineage,
                 handleSwitchTabLineage,

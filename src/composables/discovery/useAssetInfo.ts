@@ -938,6 +938,31 @@ export default function useAssetInfo() {
         )?.allowed
     }
 
+    const columnUpdatePermission = (
+        asset: assetInterface,
+        action = 'ENTITY_UPDATE',
+        typeName?
+    ) => {
+        const evaluations = authStore?.columnEvaluations
+
+        if (typeName) {
+            const evaluationObject = evaluations.find(
+                (ev) =>
+                    ev?.entityIdEnd2 === asset?.attributes?.qualifiedName &&
+                    ev?.action === action &&
+                    (ev?.entityTypeEnd1 === typeName ||
+                        ev?.entityTypeEnd2 === typeName)
+            )
+            return evaluationObject?.allowed
+        }
+
+        return evaluations.find(
+            (ev) =>
+                ev?.entityId === asset?.attributes?.qualifiedName &&
+                ev?.action === action
+        )?.allowed
+    }
+
     const assetPermission = (permission) => {
         return !!authStore?.permissions.find((per) => per === permission)
     }
@@ -1510,6 +1535,7 @@ export default function useAssetInfo() {
         s3ObjectContentType,
         s3ObjectContentDisposition,
         s3ObjectVersionId,
+        columnUpdatePermission,
         hasLineage,
     }
 }

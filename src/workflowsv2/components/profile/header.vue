@@ -22,7 +22,7 @@
                     class="absolute -top-1 -right-1"
                 >
                     <a-tooltip title="Certified" placement="left">
-                        <AtlanIcon icon="Verified"></AtlanIcon>
+                        <AtlanIcon icon="Verified" />
                     </a-tooltip>
                 </div>
             </div>
@@ -51,7 +51,7 @@
                         }}</span
                     >
                     <span class="italic truncate text-grey-500">
-                        ({{ name(workflowObject) }})
+                        ({{ refName(workflowObject) }})
                     </span>
                 </div>
 
@@ -221,6 +221,7 @@
 
             const {
                 name,
+                refName,
                 creationTimestamp,
                 creatorUsername,
                 displayName,
@@ -271,27 +272,34 @@
 
                     content: '',
                     okText: 'Yes',
-                    onOk() {
+                    onOk: async () => {
                         const body = {
                             namespace: 'default',
                             resourceKind: 'WorkflowTemplate',
-                            resourceName: name(workflowObject.value),
+                            resourceName: refName(workflowObject.value),
                         }
                         const { data, error, mutate, isLoading } =
                             useWorkflowSubmit(body, true)
 
                         message.loading({
-                            content: 'Starting a new run',
+                            content: 'Starting a new workflow run',
                             key: messageKey.value,
                         })
 
-                        watchOnce(data, () => {
-                            emit('newrun', name(data.value))
-                            message.success({
-                                content: 'Run started',
+                        await until(isLoading).toBe(false)
+                        if (error) {
+                            message.error({
+                                content: 'Failed to run workflow',
                                 key: messageKey.value,
                             })
-                        })
+                        }
+                        if (data) {
+                            emit('newrun', refName(data.value))
+                            message.success({
+                                content: 'Workflow run started',
+                                key: messageKey.value,
+                            })
+                        }
                     },
                     // eslint-disable-next-line @typescript-eslint/no-empty-function
                     onCancel() {},
@@ -420,6 +428,7 @@
             })
             return {
                 handleBack,
+                refName,
                 name,
                 creationTimestamp,
                 creatorUsername,

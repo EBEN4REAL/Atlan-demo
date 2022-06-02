@@ -271,10 +271,9 @@
             :destroy-inactive-tab-pane="true"
             @tabClick="handleTabClick"
         >
-           
             <template
                 v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
-            >   
+            >
                 <a-tab-pane
                     v-if="
                         tab.component === 'Jira' && !jiraAppInstalled
@@ -285,7 +284,7 @@
                     :destroy-inactive-tab-pane="true"
                     :disabled="isScrubbed(selectedAsset) && tab.scrubbed"
                     :class="index === activeKey ? 'flex flex-col' : ''"
-                >  
+                >
                     <template #tab>
                         <a-badge
                             :count="getCount(tab.name)"
@@ -297,7 +296,6 @@
                                 color: '#fff',
                             }"
                         >
-                       
                             <div class="flex flex-col" style="width: 45px">
                                 <PreviewTabsIcon
                                     :title="tab.tooltip"
@@ -554,7 +552,7 @@
             } = useAssetInfo()
 
             const activeKey = ref(1)
-            const activeLabel = ref<string>("Overview")
+            const activeLabel = ref<string>('Overview')
 
             const route = useRoute()
             const isProfile = ref(false)
@@ -630,15 +628,16 @@
             ) => {
                 if (enableEditinCM) {
                     readOnlyInCm.value = false
-                }                
+                }
                 const idx = getPreviewTabs(asset, isProfile.value).findIndex(
                     (tl) => tl.name === tabName
                 )
-                
+
                 if (idx > -1) {
                     activeKey.value = idx
-                }else {
+                } else {
                     activeKey.value = 0
+                    activeLabel.value = 'Overview'
                 }
 
                 // After a while change back to read state as the same component is being used for other CM tabs
@@ -648,12 +647,21 @@
                 }, 1000)
             }
 
-            watch(selectedAsset, () => {
-                switchTab(selectedAsset.value, activeLabel.value)
-            }, {deep: true})
+            debouncedWatch(
+                selectedAsset,
+                () => {
+                    if (drawerActiveKey.value === 'Overview') {
+                        switchTab(selectedAsset.value, activeLabel.value)
+                    }
+                },
+                { debounce: 200, deep: true }
+            )
 
             const handleTabClick = (tabIndex) => {
-                const getTab = getPreviewTabs(selectedAsset.value, isProfile.value)[tabIndex]
+                const getTab = getPreviewTabs(
+                    selectedAsset.value,
+                    isProfile.value
+                )[tabIndex]
                 activeLabel.value = getTab.name
             }
 
@@ -793,9 +801,6 @@
                 () => countReady?.value && !!count.value
             )
 
-           
-
-        
             return {
                 INSIGHT_WORKSPACE_LEVEL_TAB,
                 featureEnabledMap,
@@ -854,7 +859,7 @@
                 links,
                 slackResourceCount,
                 switchTab,
-                handleTabClick
+                handleTabClick,
             }
         },
     })

@@ -1,15 +1,21 @@
 /* eslint-disable no-nested-ternary */
 /** COMPOSABLES */
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
+import {
+    featureEnabledMap,
+    LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE,
+} from '~/composables/labs/labFeatureList'
 
 /** CONSTANTS */
 import { dataTypeCategoryList } from '~/constant/dataType'
 
 /** UTILS */
 import {
+    SQLAssets,
     getNodeSourceImage,
     getSource,
     getSchema,
+    getDatabase,
     getNodeTypeText,
 } from './util.js'
 import {
@@ -47,7 +53,7 @@ import {
     percent,
     tableauCalculatedField,
     tableauDatasourceField,
-    // lookerField,
+    lookerField,
 } from './icons'
 
 interface EdgeStyle {
@@ -65,6 +71,20 @@ const certificateStatusIcons = {
     VERIFIED: iconVerified,
     DRAFT: iconDraft,
     DEPRECATED: iconDeprecated,
+}
+
+const nodeWithPorts = [
+    'Table',
+    'View',
+    'MaterialisedView',
+    'TableauDatasource',
+    // 'LookerExplore',
+    // 'LookerView',
+]
+
+if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
+    nodeWithPorts.push('LookerExplore')
+    nodeWithPorts.push('LookerView')
 }
 
 const portDataTypeIcons = {
@@ -94,6 +114,9 @@ const biPortDataTypeIcons = {
     // LookerField: lookerField,
 }
 
+if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE])
+    biPortDataTypeIcons.LookerField = lookerField
+
 const columnKeyTypeIcons = {
     isPrimary: iconPrimary,
     isForeign: iconForeign,
@@ -106,6 +129,11 @@ const portsLabelMap = {
     TableauDatasource: 'fields',
     // LookerExplore: 'fields',
     // LookerView: 'fields',
+}
+
+if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
+    portsLabelMap.LookerExplore = 'fields'
+    portsLabelMap.LookerView = 'fields'
 }
 
 const getPortsCTALabel = (typeName, portsCount) => {
@@ -127,17 +155,12 @@ export default function useGraph(graph) {
         const displayText = title(entity)
         const source = getSource(entity)
         const schemaName = getSchema(entity)
+        const databaseName = getDatabase(entity)
         const img = getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
         const isVpNode = typeName === 'vpNode'
-        const isNodeWithPorts = [
-            'Table',
-            'View',
-            'MaterialisedView',
-            'TableauDatasource',
-            // 'LookerExplore',
-            // 'LookerView',
-        ].includes(typeName)
+        const isSQLNode = SQLAssets.includes(typeName)
+        const isNodeWithPorts = nodeWithPorts.includes(typeName)
 
         const computedData = {
             id: guid,
@@ -164,6 +187,9 @@ export default function useGraph(graph) {
             ctaLeftId: '',
             ctaLeftLoading: false,
             disableCta: false,
+            showDatabase: true,
+            showSchema: true,
+            showAnnouncement: true,
             ...dataObj,
         }
 
@@ -243,7 +269,7 @@ export default function useGraph(graph) {
                                                 : ''
                                         }
                                         ${
-                                            aType
+                                            aType && data?.showAnnouncement
                                                 ? `<span class="ml-2 node-announcement">
                                                     ${announcementTypeIcons[aType]}
                                                    </span>`
@@ -314,12 +340,15 @@ export default function useGraph(graph) {
                                                 ? 'w-0 hidden'
                                                 : 'flex-none ml-1'
                                         }">${status}</span>
-                                        <span class=" node-announcement ${
-                                            !flag
-                                                ? 'w-0 hidden'
-                                                : 'flex-none ml-1'
-                                        }">${flag}</span>
-
+                                        ${
+                                            data?.showAnnouncement && flag
+                                                ? `<span class=" node-announcement ${
+                                                      !flag
+                                                          ? 'w-0 hidden'
+                                                          : 'flex-none ml-1'
+                                                  }">${flag}</span>`
+                                                : ''
+                                        }                                        
                                     </div>
                                 </div>
                                 <div class="node-meta">
@@ -327,17 +356,44 @@ export default function useGraph(graph) {
                                     <div class="truncate node-meta__text isTypename">
                                         ${typeNameComputed}
                                     </div>
-                                    <div class="node-meta__text node-schema">
+                                    <div class="node-meta__text">
                                         ${
-                                            isNodeWithPorts && schemaName
+                                            isSQLNode &&
+                                            ((data?.showDatabase &&
+                                                databaseName) ||
+                                                (data?.showSchema &&
+                                                    schemaName))
                                                 ? 'in'
                                                 : ''
                                         }
                                     </div>
-                                    <div class="node-meta__text node-schema text-gray  truncate 
-                                        ${isNodeWithPorts ? '' : 'hidden'}">
-                                        ${schemaName || ''}
-                                    </div>
+                                      ${
+                                          data?.showDatabase &&
+                                          databaseName &&
+                                          isSQLNode
+                                              ? `<div title="Database: ${databaseName}" class="node-meta__text node-database text-gray truncate">
+                                                    ${databaseName || ''} 
+                                               </div>`
+                                              : ''
+                                      }
+                                    ${
+                                        data?.showDatabase &&
+                                        databaseName &&
+                                        data?.showSchema &&
+                                        schemaName &&
+                                        isSQLNode
+                                            ? '<div>/</div>'
+                                            : ''
+                                    }
+                                    ${
+                                        data?.showSchema &&
+                                        schemaName &&
+                                        isSQLNode
+                                            ? `<div title="Schema: ${schemaName}" class="node-meta__text node-schema text-gray truncate">
+                                                  ${schemaName || ''}
+                                                </div>`
+                                            : ''
+                                    }
                                 </div>  
                             </div>
                             <div class="lineage-node__ports 

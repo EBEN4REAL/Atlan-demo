@@ -29,12 +29,12 @@ export default function useWorkflowInfo() {
 
     const creatorUsername = (item) =>
         item?.metadata?.labels[
-        'workflows.argoproj.io/creator-preferred-username'
+            'workflows.argoproj.io/creator-preferred-username'
         ] || 'argo'
 
     const modifierUsername = (item) =>
         item?.metadata?.labels[
-        'workflows.argoproj.io/modifier-preferred-username'
+            'workflows.argoproj.io/modifier-preferred-username'
         ]
 
     // const modifiedTimestamp = (item: any, relative: any) => {
@@ -68,8 +68,9 @@ export default function useWorkflowInfo() {
 
     const allowSchedule = (item: any) => {
         if (
-            item?.metadata?.annotations && item?.metadata?.annotations[
-            'orchestration.atlan.com/allowSchedule'
+            item?.metadata?.annotations &&
+            item?.metadata?.annotations[
+                'orchestration.atlan.com/allowSchedule'
             ] === 'false'
         ) {
             return false
@@ -144,13 +145,11 @@ export default function useWorkflowInfo() {
         return percentage
     }
 
-    const cron = (item) => {
-        return item?.metadata?.annotations && item?.metadata?.annotations['orchestration.atlan.com/schedule']
-    }
+    const cron = (item) =>
+        item?.metadata?.annotations?.['orchestration.atlan.com/schedule']
 
-    const cronTimezone = (item) => {
-        return item?.metadata?.annotations && item?.metadata?.annotations['orchestration.atlan.com/timezone']
-    }
+    const cronTimezone = (item) =>
+        item?.metadata?.annotations?.['orchestration.atlan.com/timezone']
 
     const nextRuns = (item) => {
         const options = {
@@ -334,11 +333,13 @@ export default function useWorkflowInfo() {
         item?.metadata?.labels['orchestration.atlan.com/type']
 
     const packageName = (item) =>
-        item?.metadata?.annotations && item?.metadata?.annotations?.['package.argoproj.io/name']
+        item?.metadata?.annotations &&
+        item?.metadata?.annotations?.['package.argoproj.io/name']
 
     const useCases = (item) => {
         let temp =
-            item?.metadata?.annotations && item?.metadata?.annotations[
+            item?.metadata?.annotations &&
+            item?.metadata?.annotations[
                 'orchestration.atlan.com/usecases'
             ]?.split(',')
 
@@ -346,7 +347,8 @@ export default function useWorkflowInfo() {
     }
 
     const supportLink = (item) =>
-        item?.metadata?.annotations && item?.metadata?.annotations['orchestration.atlan.com/supportLink']
+        item?.metadata?.annotations &&
+        item?.metadata?.annotations['orchestration.atlan.com/supportLink']
 
     const connectorStore = useConnectionStore()
 
@@ -366,7 +368,6 @@ export default function useWorkflowInfo() {
         return map
     }
 
-
     const displayName = (
         item: Record<string, any>,
         workflowName: string,
@@ -385,7 +386,8 @@ export default function useWorkflowInfo() {
         }
         if (['miner'].includes(packageType(item))) {
             const globalArguments = getGlobalArguments({ spec })
-            const connectionQualifiedName = globalArguments['connection-qualified-name']
+            const connectionQualifiedName =
+                globalArguments['connection-qualified-name']
             suffix = suffix.replaceAll('-', '/')
             const found = connectorStore.list.find(
                 (i) => i.attributes.qualifiedName === connectionQualifiedName
@@ -425,7 +427,7 @@ export default function useWorkflowInfo() {
 
     const workflowTemplateName = (item) =>
         item?.metadata?.labels?.[
-        'workflows.argoproj.io/workflow-template'
+            'workflows.argoproj.io/workflow-template'
         ] as string
 
     return {

@@ -90,7 +90,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="">
+                        <div class="" v-if="!provider.hideDownloadMetadataButton">
                             <div class="mb-2.5">Atlan SSO metadata</div>
                             <div>
                                 <AtlanButton2

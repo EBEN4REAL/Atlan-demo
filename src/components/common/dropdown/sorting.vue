@@ -15,7 +15,10 @@
                     :class="isActive(item.id) ? 'bg-primary-menu' : ''"
                 >
                     <div class="flex items-center justify-between">
-                        {{ item.label }}
+                        <span>
+                            {{ item?.label }} 
+                            <span class="text-gray-500"> {{item?.suffix}}</span>
+                        </span>
                         <AtlanIcon
                             icon="RunSuccess"
                             class="w-3 h-3 pl-3"

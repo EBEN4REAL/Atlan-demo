@@ -1,5 +1,5 @@
 <template>
-    <Loader v-if="isLoading"></Loader>
+    <Loader v-if="isLoading || isReadmeLoading"></Loader>
     <AssetProfile
         v-else
         :asset="localSelected"
@@ -16,10 +16,12 @@
         watch,
         nextTick,
         onMounted,
+        provide,
     } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
 
+    import { whenever } from '@vueuse/core'
     import AssetProfile from '@/common/assets/profile/index.vue'
     import Loader from '@/common/loaders/page.vue'
 
@@ -33,6 +35,7 @@
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
+    import { useAssetAttributes } from '~/composables/discovery/useCurrentUpdate'
 
     export default defineComponent({
         components: {
@@ -44,6 +47,7 @@
             const { selectedAsset } = useAssetInfo()
 
             const localSelected = ref()
+            const localReadmeAsset = ref()
             const route = useRoute()
             const id = computed(() => route?.params?.id || null)
             const profileActiveTab = computed(() => route?.params?.tab)
@@ -102,6 +106,26 @@
                 })
             }
 
+            const readmeAttribute = ref(['readme'])
+
+            const {
+                asset: readmeAsset,
+                mutate: mutateReadme,
+                isReady: isReadmeReady,
+                isLoading: isReadmeLoading,
+            } = useAssetAttributes({
+                id,
+                attributes: readmeAttribute,
+            })
+
+            mutateReadme()
+
+            whenever(isReadmeReady, () => {
+                localReadmeAsset.value = readmeAsset.value
+            })
+
+            provide('readmeAsset', localReadmeAsset)
+
             watch(list, () => {
                 if (list.value.length > 0) {
                     localSelected.value = list.value[0]
@@ -155,6 +179,8 @@
                 emit,
                 localSelected,
                 handlePreview,
+                isReadmeLoading,
+                localReadmeAsset,
             }
         },
     })

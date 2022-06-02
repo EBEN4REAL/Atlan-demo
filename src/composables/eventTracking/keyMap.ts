@@ -48,8 +48,8 @@ const keyMap = {
         updates_cta: {
             clicked: {
                 action: 'main_header_updates_cta_clicked',
-            }
-        }
+            },
+        },
     },
     discovery: {
         filter: {
@@ -133,6 +133,12 @@ const keyMap = {
                 properties: (props) => ({
                     asset_type: props.asset_type,
                     tab_name: props.tab_name,
+                }),
+            },
+            readme_previewed: {
+                action: 'discovery_asset_sidebar_readme_previewed',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
                 }),
             },
         },
@@ -232,21 +238,21 @@ const keyMap = {
             created: {
                 action: 'discovery_resource_created',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                     asset_type: props.asset_type,
                 }),
             },
             updated: {
                 action: 'discovery_resource_updated',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                     asset_type: props.asset_type,
                 }),
             },
             clicked: {
                 action: 'discovery_resource_clicked',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                     asset_type: props.asset_type,
                 }),
             },
@@ -376,6 +382,65 @@ const keyMap = {
                 }),
             },
         },
+        control_panel_display_preference: {
+            updated: {
+                action: 'lineage_control_panel_display_preference_updated',
+                properties: (props) => ({
+                    option: props?.option,
+                    is_enabled: !!props?.is_enabled,
+                }),
+            },
+        },
+        control_panel_full_screen: {
+            toggled: {
+                action: 'lineage_control_panel_full_screen_toggled',
+                properties: (props) => ({
+                    is_enabled: !!props?.is_enabled,
+                }),
+            },
+        },
+        control_panel_zoom_out: {
+            clicked: {
+                action: 'lineage_control_panel_zoom_out_clicked',
+                properties: (props) => ({
+                    percentage: props?.percentage,
+                }),
+            },
+        },
+        control_panel_zoom_in: {
+            clicked: {
+                action: 'lineage_control_panel_zoom_in_clicked',
+                properties: (props) => ({
+                    percentage: props?.percentage,
+                }),
+            },
+        },
+        control_panel_refocus: {
+            clicked: {
+                action: 'lineage_control_panel_refocus_clicked',
+            },
+        },
+        control_panel: {
+            toggled: {
+                action: 'lineage_control_panel_toggled',
+                properties: (props) => ({
+                    is_hidden: !!props?.is_hidden,
+                }),
+            },
+        },
+        mini_map: {
+            clicked: {
+                action: 'lineage_mini_map_clicked',
+                properties: (props) => ({
+                    is_hidden: !!props?.is_hidden,
+                }),
+            },
+        },
+        control_panel_mini_map: {
+            changed: {
+                action: 'lineage_control_panel_mini_map_changed',
+            },
+        },
     },
     gtc: {
         term: {
@@ -475,11 +540,22 @@ const keyMap = {
         results_panel: {
             cta_clicked: {
                 action: 'insights_results_panel_cta_clicked',
-                properties: (props) => ({
-                    action: props.action,
-                    query_tab_id: props?.query_tab_id,
-                    is_full_screen: props?.is_full_screen,
-                }),
+                properties: (props) => {
+                    if (props?.description_added) {
+                        return {
+                            action: props.action,
+                            query_tab_id: props?.query_tab_id,
+                            is_full_screen: props?.is_full_screen,
+                            description_added: props?.description_added,
+                        }
+                    } else {
+                        return {
+                            action: props.action,
+                            query_tab_id: props?.query_tab_id,
+                            is_full_screen: props?.is_full_screen,
+                        }
+                    }
+                },
             },
             tab_switched: {
                 action: 'insights_results_panel_tab_switched',
@@ -575,13 +651,13 @@ const keyMap = {
             resource_created: {
                 action: 'persona_resource_created',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                 }),
             },
             resource_updated: {
                 action: 'persona_resource_updated',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                 }),
             },
             resource_deleted: {
@@ -644,13 +720,13 @@ const keyMap = {
             resource_created: {
                 action: 'purpose_resource_created',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                 }),
             },
             resource_updated: {
                 action: 'purpose_resource_updated',
                 properties: (props) => ({
-                    domain: props.domain,
+                    resource_url_domain: props.resource_url_domain,
                 }),
             },
             resource_deleted: {
@@ -697,6 +773,20 @@ const keyMap = {
                 action: 'governance_custom_metadata_property_added',
                 properties: (props) => ({
                     title: props.title,
+                    cm_title: props.cm_title,
+                    description: props.description,
+                    data_type: props.data_type,
+                    multi_value: !!props.multi_value,
+                    allow_filtering: !!props.allow_filtering,
+                    show_in_overview: !!props.show_in_overview,
+                }),
+            },
+            property_deleted: {
+                action: 'governance_custom_metadata_property_deleted',
+                properties: (props) => ({
+                    title: props.title,
+                    cm_title: props.cm_title,
+                    description: props.description,
                     data_type: props.data_type,
                     multi_value: !!props.multi_value,
                     allow_filtering: !!props.allow_filtering,
@@ -707,6 +797,8 @@ const keyMap = {
                 action: 'governance_custom_metadata_property_updated',
                 properties: (props) => ({
                     title: props.title,
+                    cm_title: props.cm_title,
+                    description: props.description,
                     data_type: props.data_type,
                     multi_value: !!props.multi_value,
                     allow_filtering: !!props.allow_filtering,
@@ -737,6 +829,12 @@ const keyMap = {
                     action: props.action,
                     request_type: props.request_type,
                     widget_type: props.widget_type,
+                }),
+            },
+            filter_changed: {
+                action: 'governance_requests_filter_changed',
+                properties: (props) => ({
+                    filter_type: props.filter_type,
                 }),
             },
         },

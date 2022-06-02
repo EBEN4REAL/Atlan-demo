@@ -120,7 +120,11 @@
                             <AtlanIcon icon="Clock" />
                             <span class="text-new-gray-600">Duration:</span>
                             <span class="text-new-gray-800">
-                                {{ duration(selectedRun) }}
+                                {{
+                                    phase(selectedRun) === 'Running'
+                                        ? runTime
+                                        : duration(selectedRun)
+                                }}
                             </span>
                         </div>
 
@@ -311,24 +315,19 @@
     // Vue
     import { computed, defineComponent, inject, ref, toRefs, watch } from 'vue'
     import { Modal, message } from 'ant-design-vue'
-    import {
-        promiseTimeout,
-        useTimeout,
-        useTimeoutFn,
-        watchOnce,
-    } from '@vueuse/core'
+    import { until, useIntervalFn } from '@vueuse/core'
+
     import useWorkflowRunRetry from '~/workflows/composables/package/useWorkflowRunRetry'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import useWorkflowLogsStream from '~/workflows/composables/package/useWorkflowLogsStream'
+    import useWorkflowRunStop from '~/workflows/composables/package/useWorkflowRunStop'
+    import { getDurationStringFromMilliSec } from '~/utils/time'
+
     import WorkflowLogs from './logs.vue'
     import WorkflowMetrics from './metrics.vue'
-    import useWorkflowRunStop from '~/workflows/composables/package/useWorkflowRunStop'
-    import useRunItem from '~/workflows/composables/package/useRunItem'
-
     import UserWrapper from '~/workflowsv2/components/common/user.vue'
 
     export default defineComponent({
-        // mixins: [WorkflowMixin],
         components: {
             WorkflowLogs,
             WorkflowMetrics,
@@ -423,24 +422,34 @@
                     title: 'Are you sure you want to retry this run?',
                     content: 'This will retry all the failed tasks',
                     okText: 'Yes',
-                    onOk() {
+                    onOk: async () => {
                         const path = ref({
                             name: selectedRun.value?.metadata?.name,
                         })
-                        const { data } = useWorkflowRunRetry(path, true)
+                        const { data, isLoading, error } = useWorkflowRunRetry(
+                            path,
+                            true
+                        )
 
                         message.loading({
                             content: 'Retrying the run',
                             key: messageKey.value,
                         })
 
-                        watchOnce(data, () => {
+                        await until(isLoading).toBe(false)
+                        if (error)
+                            message.error({
+                                content: 'Failed to start new run',
+                                key: messageKey.value,
+                            })
+
+                        if (data) {
                             handleNewRun(name(data.value))
                             message.success({
                                 content: 'Run started',
                                 key: messageKey.value,
                             })
-                        })
+                        }
                     },
                     // eslint-disable-next-line @typescript-eslint/no-empty-function
                     onCancel() {},
@@ -453,30 +462,31 @@
                     content:
                         'It might take 15-30 seconds for the workflow to kill all the tasks.',
                     okText: 'Yes',
-                    onOk() {
+                    onOk: async () => {
                         const path = ref({
                             name: selectedRun.value?.metadata?.name,
                         })
-                        const { data } = useWorkflowRunStop(path, true)
+                        const { data, error, isLoading } = useWorkflowRunStop(
+                            path,
+                            true
+                        )
 
                         message.loading({
                             content: 'Stopping the run',
                             key: messageKey.value,
                         })
-
-                        watchOnce(data, () => {
+                        await until(isLoading).toBe(false)
+                        if (error)
+                            message.error({
+                                content: 'Failed to stop running workflow',
+                                key: messageKey.value,
+                            })
+                        if (data)
                             message.success({
                                 content:
                                     'Run will be stopped and all the tasks will be cancelled',
                                 key: messageKey.value,
                             })
-                            // const {} = useTimeoutFn(() => {
-                            //     /* ... */
-                            //     // handleNewRun(name(data.value))
-
-                            //     // window.location.reload()
-                            // }, 5000)
-                        })
                     },
                     // eslint-disable-next-line @typescript-eslint/no-empty-function
                     onCancel() {},
@@ -491,8 +501,32 @@
                 isMetricVisible.value = true
             }
 
+            const runTime = ref('')
+
+            const { pause, resume } = useIntervalFn(
+                () => {
+                    const scanStartTimeDiff =
+                        Math.round(Date.now() / 1000) * 1000 -
+                        new Date(selectedRun.value?.status?.startedAt).getTime()
+                    runTime.value =
+                        getDurationStringFromMilliSec(scanStartTimeDiff)
+                },
+                1000,
+                { immediate: false, immediateCallback: false }
+            )
+
+            watch(
+                () => phase(selectedRun.value),
+                (currentPhase) => {
+                    if (currentPhase === 'Running') resume()
+                    else pause()
+                },
+                { immediate: true }
+            )
+
             return {
                 selectedPod,
+                runTime,
                 phase,
                 startedAt,
                 finishedAt,

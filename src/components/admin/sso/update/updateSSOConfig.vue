@@ -36,7 +36,7 @@
                             </div>
                         </div>
                     </div>
-                    <div>
+                     <div class="" v-if="!provider.hideDownloadMetadataButton">
                         <div class="mb-2.5">Atlan SSO metadata</div>
                         <div>
                             <AtlanBtn

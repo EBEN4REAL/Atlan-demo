@@ -107,6 +107,10 @@
                                             ? validityOptions.find(
                                                   (v) => v.value === validity
                                               ).label
+                                            : validityDate
+                                            ? dayjs(validityDate).format(
+                                                  'YYYY-MM-DD'
+                                              )
                                             : 'Custom'
                                     }}
                                 </div>
@@ -519,13 +523,15 @@
             }
             /* Following computed properties are reqd. only for displaying expiry date of existing API Key */
             const validityDateStringRelative = computed(() => {
-                if (validityDate.value) {
+
+                if (validityDate?.value) {
                     return capitalizeFirstLetter(validityDate.value.fromNow())
                 }
                 return ''
             })
             const validityDateString = computed(() => {
-                if (validityDate.value) {
+
+                if (validityDate?.value) {
                     return formatDateTime(validityDate.value.format())
                 }
                 return ''

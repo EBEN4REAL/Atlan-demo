@@ -20,12 +20,15 @@
                                 select-group-key="id"
                                 :user-id="selectedUser.id"
                                 :hide-tabs="true"
+                                @change="disabledButtonSave = false"
                             ></OwnerFacets>
                         </div>
                         <div class="flex justify-end mr-3">
                             <AtlanButton2
                                 :loading="addToGroupLoading"
-                                :disabled="addToGroupLoading"
+                                :disabled="
+                                    addToGroupLoading || disabledButtonSave
+                                "
                                 :label="addToGroupLoading ? 'Saving' : 'Save'"
                                 @click="addUserToGroups"
                             />
@@ -225,6 +228,7 @@
         setup(props) {
             const { userUpdated } = useUserPreview()
             const { selectedUser } = toRefs(props)
+            const disabledButtonSave = ref(true)
             const showUserGroups = ref(true)
             const showGroupsPopover = ref(false)
             const searchText = ref('')
@@ -420,7 +424,12 @@
                 // showAddToGroupModal.value = false;
                 showUserGroups.value = true
             }
-
+            watch(showGroupsPopover, () => {
+                if (showGroupsPopover.value) {
+                    selectedGroupIds.value.ownerGroups = []
+                    disabledButtonSave.value = true
+                }
+            })
             return {
                 groupList,
                 totalGroupCount,
@@ -443,6 +452,7 @@
                 handleShowUserGroups,
                 selectedGroupIds,
                 showGroupsPopover,
+                disabledButtonSave,
             }
         },
     })

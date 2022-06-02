@@ -159,14 +159,16 @@ export default function useAssetInfo() {
         attributes(asset)?.connectionQualifiedName ?? ''
 
     const classifications = (asset: assetInterface) =>
-        asset.classifications ?? []
+        asset?.classifications ?? []
 
     const meanings = (asset: assetInterface) =>
         attributes(asset)?.meanings ?? []
 
-    const assignedEntities = (asset: Term) => asset.attributes?.assignedEntities
+    const assignedEntities = (asset: Term) =>
+        asset?.attributes?.assignedEntities
 
-    const meaningRelationships = (asset: assetInterface) => asset.meanings ?? []
+    const meaningRelationships = (asset: assetInterface) =>
+        asset?.meanings ?? []
 
     const connectorName = (asset: assetInterface) =>
         attributes(asset)?.connectorName ?? ''
@@ -250,6 +252,10 @@ export default function useAssetInfo() {
             (link) => link?.attributes?.__state === 'ACTIVE'
         )
         return activeLinks
+    }
+
+    const hasLineage = (asset: assetInterface) => {
+        return attributes(asset)?.__hasLineage
     }
 
     function isValidHttpUrl(string) {
@@ -726,6 +732,8 @@ export default function useAssetInfo() {
     const modifiedBy = (asset: assetInterface) =>
         attributes(asset)?.__modifiedBy
 
+    const readme = (asset: assetInterface) => attributes(asset)?.readme
+
     const readmeGuid = (asset: assetInterface) =>
         attributes(asset)?.readme?.guid
 
@@ -927,6 +935,31 @@ export default function useAssetInfo() {
 
         return evaluations.find(
             (ev) => ev?.entityGuid === asset?.guid && ev?.action === action
+        )?.allowed
+    }
+
+    const columnUpdatePermission = (
+        asset: assetInterface,
+        action = 'ENTITY_UPDATE',
+        typeName?
+    ) => {
+        const evaluations = authStore?.columnEvaluations
+
+        if (typeName) {
+            const evaluationObject = evaluations.find(
+                (ev) =>
+                    ev?.entityIdEnd2 === asset?.attributes?.qualifiedName &&
+                    ev?.action === action &&
+                    (ev?.entityTypeEnd1 === typeName ||
+                        ev?.entityTypeEnd2 === typeName)
+            )
+            return evaluationObject?.allowed
+        }
+
+        return evaluations.find(
+            (ev) =>
+                ev?.entityId === asset?.attributes?.qualifiedName &&
+                ev?.action === action
         )?.allowed
     }
 
@@ -1392,6 +1425,7 @@ export default function useAssetInfo() {
         getConnectorLabel,
         anchorAttributes,
         readmeGuid,
+        readme,
         getConnectorsNameFromQualifiedName,
         dataTypeImage,
         dataTypeImageForColumn,
@@ -1501,5 +1535,7 @@ export default function useAssetInfo() {
         s3ObjectContentType,
         s3ObjectContentDisposition,
         s3ObjectVersionId,
+        columnUpdatePermission,
+        hasLineage,
     }
 }

@@ -37,19 +37,20 @@
             </div>
         </div>
 
-        <div class="p-6" style="height: calc(100vh - 9.5rem)">
+        <div
+            class="p-6 space-y-5 overflow-y-auto"
+            style="height: calc(100vh - 9.5rem)"
+        >
             <template v-if="finalAttributeList.length">
                 <div class="pt-4 space-y-4 bg-white rounded-lg">
-                    <div
-                        class="sticky top-0 z-10 flex items-center justify-between px-4"
-                    >
+                    <div class="z-10 flex items-center justify-between px-4">
                         <div class="mr-4">
                             <div
                                 class="relative flex items-stretch w-full overflow-hidden"
                             >
                                 <a-input
                                     v-model:value="attrsearchText"
-                                    class="h-8 px-2 pl-2 border border-gray-300 rounded-lg w-80"
+                                    class="h-8 px-2 pl-2 border border-gray-300 rounded-lg shadow-none w-80"
                                     :placeholder="`Search from ${finalAttributeList.length} properties`"
                                 >
                                     <template #prefix>
@@ -113,10 +114,25 @@
                         :metadata="localBm"
                         :properties="searchedAttributeList"
                         :selected="selected"
-                        @remove-property="handleRemoveAttribute"
+                        :has-archived="!!archivedAttributeList.length"
+                        @archive-property="archiveAttribute"
                         @open-edit-drawer="openEdit"
                     />
                 </div>
+                <template v-if="archivedAttributeList.length">
+                    <div class="pt-4 space-y-4 bg-white rounded-lg">
+                        <div class="px-4 text-gray-500 uppercase">
+                            deleted properties
+                        </div>
+                        <ArchivedPropertyList
+                            :metadata="localBm"
+                            :properties="archivedAttributeList"
+                            :selected="selected"
+                            @archive-property="archiveAttribute"
+                            @open-edit-drawer="openEdit"
+                        />
+                    </div>
+                </template>
             </template>
             <div
                 v-else
@@ -142,31 +158,6 @@
                         @click="addPropertyDrawer.open(undefined, false)"
                     />
                 </div>
-                <!-- <a-empty
-                    :image="noPropertyImage"
-                    :image-style="{
-                        height: '115px',
-                        display: 'flex',
-                        justifyContent: 'center',
-                    }"
-                >
-                    <template #description>
-                        <p
-                            v-if="checkAccess(map.UPDATE_BUSINESS_METADATA)"
-                            class="font-bold"
-                        >
-                            Start adding properties
-                        </p>
-                        <p v-else>This custom metadata has no properties</p>
-                    </template>
-
-                    <a-button
-                        v-auth="map.UPDATE_BUSINESS_METADATA"
-                        type="primary"
-                        @click="addPropertyDrawer.open(undefined, false)"
-                        ><AtlanIcon icon="Add" class="inline" /> Add property
-                    </a-button>
-                </a-empty> -->
             </div>
         </div>
     </div>
@@ -174,7 +165,7 @@
         ref="addPropertyDrawer"
         :metadata="cleanLocalBm"
         @added-property="handlePropertyUpdate"
-        @openIndex="openIndex"
+        @openDirection="openDirection"
     />
 </template>
 <script lang="ts">
@@ -185,11 +176,13 @@
     import MetadataHeaderButton from './metadataHeaderButton.vue'
     import AddPropertyDrawer from './propertyDrawer/propertyDrawer.vue'
     import noPropertyImage from '~/assets/images/admin/no-property.png'
-    import PropertyList from './propertyList.vue'
+    import PropertyList from '@/governance/custom-metadata/properties/propertyList.vue'
+    import ArchivedPropertyList from '@/governance/custom-metadata/properties/archivedPropertyList.vue'
     import AvatarUpdate from './avatarUpdate.vue'
 
     import getAssetCount from '@/governance/custom-metadata/composables/getAssetCount'
     import InternalCMBanner from '@/common/customMetadata/internalCMBanner.vue'
+    import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
 
     // ? Store
     import { useTypedefStore } from '~/store/typedef'
@@ -206,6 +199,7 @@
             AddPropertyDrawer,
             PropertyList,
             AvatarUpdate,
+            ArchivedPropertyList,
         },
         props: {
             selectedBm: {
@@ -227,8 +221,18 @@
             // ? attribute list that is not- deprecated,
             const finalAttributeList = computed(() =>
                 (localBm.value.attributeDefs ?? []).filter(
-                    (a) => a.options.isDeprecated !== 'true'
+                    (a) => !['true', true].includes(a.options.isArchived)
                 )
+            )
+            const archivedAttributeList = computed(() =>
+                (localBm.value.attributeDefs ?? [])
+                    .filter((a) =>
+                        ['true', true].includes(a.options.isArchived)
+                    )
+                    .map((attr) => ({
+                        ...attr,
+                        displayName: attr.displayName.split('-archived')[0],
+                    }))
             )
 
             const attrsearchText = ref('')
@@ -239,25 +243,17 @@
             const error = ref('')
             const addPropertyDrawer = ref(null)
 
-            const onUpdate = () => {
-                isUpdated.value = true
-                context.emit(
-                    'update',
-                    JSON.parse(JSON.stringify(localBm.value))
-                )
-            }
-
             /**
              * @param {Number} index - index of the newly added attribute
              * @desc removes newly added attribute if not saved
              */
-            const handleRemoveAttribute = (index: number) => {
+            // TODO this function to remove attribute locally and also store
+            const archiveAttribute = (index: number, attr: CMA) => {
                 const tempAttributes = JSON.parse(
                     JSON.stringify(localBm.value.attributeDefs)
                 )
-                tempAttributes.splice(index, 1)
+                tempAttributes[index] = attr
                 localBm.value.attributeDefs = tempAttributes
-                onUpdate()
             }
 
             // * Computed
@@ -336,38 +332,75 @@
                     : ''
             )
 
-            const openEdit = ({ property, index }) => {
-                addPropertyDrawer.value.open(
-                    cleanLocalBm.value.attributeDefs.find(
-                        (x) => x.name === property.name
-                    ),
+            const openEdit = ({ property, archived }) => {
+                const index = cleanLocalBm.value.attributeDefs.findIndex(
+                    (x) => x.name === property.name
+                )
+                addPropertyDrawer.value?.open(
+                    archived
+                        ? property
+                        : cleanLocalBm.value.attributeDefs[index],
                     true,
                     index
                 )
             }
+            const openDirection = ({ name, direction, isArchived }) => {
+                let property
+                if (isArchived) {
+                    const index = archivedAttributeList.value.findIndex(
+                        (attr) => attr.name === name
+                    )
+                    if (index === -1) return
+                    if (direction === 'next') {
+                        if (index === archivedAttributeList.value.length - 1)
+                            // eslint-disable-next-line prefer-destructuring
+                            property = archivedAttributeList.value[0]
+                        else property = archivedAttributeList.value[index + 1]
+                    } else if (direction === 'previous') {
+                        if (index)
+                            // eslint-disable-next-line prefer-destructuring
+                            property = archivedAttributeList.value[index - 1]
+                        else
+                            property =
+                                archivedAttributeList.value[
+                                    archivedAttributeList.value.length - 1
+                                ]
+                    }
+                } else {
+                    const index = searchedAttributeList.value.findIndex(
+                        (attr) => attr.name === name
+                    )
+                    if (index === -1) return
+                    if (direction === 'next') {
+                        if (index === searchedAttributeList.value.length - 1)
+                            // eslint-disable-next-line prefer-destructuring
+                            property = searchedAttributeList.value[0]
+                        else property = searchedAttributeList.value[index + 1]
+                    } else if (direction === 'previous') {
+                        if (index)
+                            property = searchedAttributeList.value[index - 1]
+                        else
+                            property =
+                                searchedAttributeList.value[
+                                    searchedAttributeList.value.length - 1
+                                ]
+                    }
+                }
 
-            const openIndex = (i) => {
-                if (i < 0 || i > addPropertyDrawer.value.length) return
-                console.log('openIndex', i)
-                addPropertyDrawer.value.open(
-                    cleanLocalBm.value.attributeDefs[i],
-                    true,
-                    i
-                )
+                addPropertyDrawer.value?.open(property, true)
             }
             return {
-                openIndex,
+                openDirection,
                 selected,
                 openEdit,
                 allowDelete,
                 assetCount,
                 attrsearchText,
                 error,
-                handleRemoveAttribute,
+                archiveAttribute,
                 isUpdated,
                 loading,
                 localBm,
-                onUpdate,
                 cleanLocalBm,
                 panelModel,
                 searchedAttributes,
@@ -378,6 +411,7 @@
                 map,
                 checkAccess,
                 finalAttributeList,
+                archivedAttributeList,
             }
         },
         data() {

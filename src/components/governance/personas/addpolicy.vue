@@ -367,12 +367,13 @@
                                     padding="compact"
                                 
                                 > -->
-                                    <AtlanIcon
-                                        v-if="!disabledForm"
-                                        icon="Cross"
-                                        class="h-3 ml-3 text-red-500 rotate-45"
-                                        @click="handleDeleteAsset(asset)"
-                                    />
+                                    <span id="cross-all-assets">
+                                        <AtlanIcon
+                                            v-if="!disabledForm"
+                                            icon="Cross"
+                                            class="h-3 ml-3 text-red-500 rotate-45"
+                                            @click="handleDeleteAsset(asset)"
+                                    /></span>
                                 </div>
                                 <!-- <div
                                 v-if="

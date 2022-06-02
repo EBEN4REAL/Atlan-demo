@@ -206,7 +206,7 @@
         if (url) {
             window.open(url)
             useAddEvent('discovery', 'resource', 'clicked', {
-                domain: getDomain(url),
+                resource_url_domain: url.split('/')[2],
                 asset_type: props.assetType,
             })
         }

@@ -11,6 +11,10 @@ import useLineageStore from '~/store/lineage'
 import useGraph from './useGraph'
 import useGetNodes from './useGetNodes'
 import useTransformGraph from './useTransformGraph'
+import {
+    featureEnabledMap,
+    LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE,
+} from '~/composables/labs/labFeatureList'
 
 /** UTILS */
 import {
@@ -35,6 +39,13 @@ export default async function useComputeGraph({
     lineageStore.mergedLineageData = {}
     lineageStore.nodesPortsList = {}
     lineageStore.portLineage = {}
+    lineageStore.preferences = {
+        showArrow: true,
+        showSchema: true,
+        showDatabase: true,
+        showAnnouncement: true,
+        showLegend: false,
+    }
 
     const model = ref(null)
     const edges = ref([])
@@ -61,6 +72,9 @@ export default async function useComputeGraph({
             'TableauCalculatedField',
             // 'LookerField',
         ]
+        if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE])
+            typeNames.push('LookerField')
+
         return typeNames.includes(typeName)
     }
 

@@ -103,6 +103,7 @@ import KebabMenuHorizontal from '~/assets/images/icons/kebab-menu.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import OverviewActive from '~/assets/images/icons/overview_active.svg'
 import Lineage from '~/assets/images/icons/lineage.svg'
+import LineageNew from '~/assets/images/icons/lineage-new.svg'
 import LineageSmall from '~/assets/images/icons/lineage-small.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
@@ -440,6 +441,7 @@ import Atlan from '~/assets/images/icons/atlan.svg'
 import Gear from '~/assets/images/icons/gear.svg'
 import SafariLock from '~/assets/images/icons/safari-lock.svg'
 import SlackToken from '~/assets/images/admin/integrations/slackToken.svg'
+import SlackAddApp from '~/assets/images/admin/integrations/SlackAddApp.svg'
 import Integrations from '~/assets/images/icons/integrations.svg'
 import IntegrationsActive from '~/assets/images/icons/integrations-active.svg'
 import QueryTime from '~/assets/images/icons/query_time.svg'
@@ -517,6 +519,7 @@ export default {
     Integrations,
     Jira,
     SlackToken,
+    SlackAddApp,
     SafariLock,
     Gear,
     Atlan,
@@ -605,6 +608,7 @@ export default {
     Overview,
     Pin,
     Lineage,
+    LineageNew,
     LineageSmall,
     Activity,
     Columns,

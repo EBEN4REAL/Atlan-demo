@@ -8,21 +8,15 @@
                 v-if="!property.ui?.hidden"
             >
                 <Component
-                    v-if="
-                        componentName(property) === 'credential' ||
-                        componentName(property) === 'nested' ||
-                        componentName(property) === 'connection'
-                    "
+                    v-if="compoundWidgets.includes(componentName(property))"
                     :is="componentName(property)"
                     v-model="formState[property.id]"
                     :property="property"
                     :isEdit="isEdit"
-                ></Component>
+                />
 
                 <Component
-                    v-else-if="
-                        ['header', 'divider'].includes(property.ui?.widget)
-                    "
+                    v-else-if="staticWidgets.includes(property.ui?.widget)"
                     :is="componentName(property)"
                     :class="property.ui?.class"
                     :style="property.ui?.style"
@@ -162,6 +156,9 @@
 
             const formState = inject('formState')
 
+            const staticWidgets = ['header', 'divider']
+            const compoundWidgets = ['credential', 'nested', 'connection']
+
             const componentName = (property) => {
                 if (!property.ui?.widget) {
                     switch (property.type) {
@@ -299,6 +296,28 @@
             }
 
             const list = ref([])
+
+            const getPropertyfromConfigMap = (key) => {
+                const property = configMap.value?.properties[key]
+
+                let baseObj = {
+                    id: `${getName(key)}`,
+                    name: `${getName(key)}`,
+                }
+
+                if (property.type === 'conditional') {
+                    const { conditions, ...rest } = property
+                    const firstFind = property.conditions?.find(
+                        (p) => formState[p.property] === p.value
+                    )
+                    baseObj = { ...baseObj, ...rest, ...firstFind }
+                } else {
+                    baseObj = { ...baseObj, ...property }
+                }
+
+                return baseObj
+            }
+
             const calculateList = () => {
                 isImplied()
                 const temp = []
@@ -312,11 +331,7 @@
                                 if (
                                     !configMap.value?.properties[key].ui?.hidden
                                 ) {
-                                    temp.push({
-                                        id: `${getName(key)}`,
-                                        name: `${getName(key)}`,
-                                        ...configMap.value?.properties[key],
-                                    })
+                                    temp.push(getPropertyfromConfigMap(key))
                                 }
                             }
                         })
@@ -326,11 +341,7 @@
                                 if (
                                     !configMap.value?.properties[key].ui?.hidden
                                 ) {
-                                    temp.push({
-                                        id: `${getName(key)}`,
-                                        name: `${getName(key)}`,
-                                        ...configMap.value?.properties[key],
-                                    })
+                                    temp.push(getPropertyfromConfigMap(key))
                                 }
                             }
                         )
@@ -354,6 +365,8 @@
                 getCol,
                 isEdit,
                 isUsername,
+                staticWidgets,
+                compoundWidgets,
             }
         },
     })

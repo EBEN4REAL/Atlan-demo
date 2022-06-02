@@ -1,18 +1,37 @@
 <template>
+    <div v-if="isEditing" class="freeze-clicks-outside-popover"></div>
+
     <Tooltip
         v-if="!isEditing && localDescription.length > 0"
         width="1000px"
         :tooltip-text="localDescription"
-        :classes="allowEditing ? 'cursor-text' : ''"
+        :classes="allowEditing ? 'cursor-text hover:underline' : ''"
+        :rows="2"
         @click="handleEdit($event)"
     />
     <div
         v-else-if="!isEditing && localDescription.length === 0"
-        class="text-transparent hover:text-gray-400"
-        :class="{ 'cursor-text': allowEditing }"
-        @click="handleEdit($event)"
+        class="flex items-center gap-x-2.5"
     >
-        <p>{{ allowEditing ? 'Add a description' : '' }}</p>
+        <p
+            :class="{ 'cursor-text hover:underline': allowEditing }"
+            style="color: #bfbfbf"
+            @click="handleEdit($event)"
+        >
+            {{ allowEditing ? '+ Add a description' : '' }}
+        </p>
+        <transition
+            v-if="similarList?.length > 0 && !localDescription"
+            name="fade"
+        >
+            <Suggestion
+                :button-between="false"
+                :edit-permission="allowEditing"
+                :list="similarList"
+                :asset="assetItem"
+                @apply="handleApplySuggestion"
+            ></Suggestion>
+        </transition>
     </div>
     <div v-else class="inline-editable" @click.stop>
         <a-textarea
@@ -30,19 +49,6 @@
             @blur="handleUpdate"
             @press-enter="handleEnter($event)"
         />
-        <!--        <p-->
-        <!--            v-if="descriptionRef !== null"-->
-        <!--            class="mt-1 text-xs text-right text-gray-500"-->
-        <!--        >-->
-        <!--            <span class="font-bold">{{ isMac ? 'Return' : 'Enter' }}</span> to-->
-        <!--            save-->
-        <!--            <span class="ml-2">-->
-        <!--                <span class="font-bold"-->
-        <!--                    >Shift + {{ isMac ? 'Return' : 'Enter' }}</span-->
-        <!--                >-->
-        <!--                to add a new line-->
-        <!--            </span>-->
-        <!--        </p>-->
     </div>
 </template>
 
@@ -55,15 +61,17 @@
         unref,
         watch,
         PropType,
+        provide,
     } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import Suggestion from './suggestion.vue'
 
     export default defineComponent({
         name: 'EditableDescription',
-        components: { Tooltip },
+        components: { Tooltip, Suggestion },
         props: {
             assetItem: {
                 type: Object as PropType<assetInterface>,
@@ -80,8 +88,15 @@
                 default: false,
                 required: false,
             },
+            similarList: {
+                type: Array,
+                required: false,
+                default() {
+                    return []
+                },
+            },
         },
-        emits: ['updatedDescription'],
+        emits: ['update'],
         setup(props, { emit }) {
             const truncated = ref<boolean>(false)
             const { allowEditing, assetItem } = toRefs(props)
@@ -90,7 +105,7 @@
 
             const { description } = useAssetInfo()
             const { localDescription, handleChangeDescription } =
-                updateAssetAttributes(assetItem, true)
+                updateAssetAttributes(assetItem, false, true)
             const originalDescription = ref(unref(localDescription))
 
             // A ref indicating if the description is being edited.
@@ -132,10 +147,15 @@
                     originalDescription.value = localDescription.value
                     isEditing.value = false
                     handleChangeDescription()
-                    emit('updatedDescription')
+                    emit('update')
                 } else {
                     pressedEsc.value = false
                 }
+            }
+
+            const handleApplySuggestion = (obj) => {
+                localDescription.value = obj.value
+                handleChangeDescription()
             }
 
             /**
@@ -166,16 +186,17 @@
                 localDescription,
                 pressedEsc,
                 isMac,
+                handleApplySuggestion,
             }
         },
     })
 </script>
 
 <style lang="less" scoped>
-    :global(div.ant-typography, .ant-typography p) {
-        margin-bottom: 0 !important;
-    }
     :global(.tooltip-black .ant-tooltip-inner) {
         @apply p-3 text-gray-700 whitespace-pre-line;
+    }
+    :global(.ant-input) {
+        z-index: 800 !important;
     }
 </style>

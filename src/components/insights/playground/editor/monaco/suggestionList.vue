@@ -1,55 +1,78 @@
 <template>
-    <div
-        class="absolute"
-        style="
-            filter: drop-shadow(0px 5px 16px rgba(0, 0, 0, 0.1));
-            z-index: 1000000;
-        "
-    >
+    <Teleport to="body">
         <div
-            class="py-0.5 overflow-auto bg-white max-h-52 rounded-t-md"
-            style="overflow: hidden; width: 447px"
-            v-if="!autoSuggestionLoading"
+            id="auto-suggestions"
+            class="fixed hidden"
+            style="
+                filter: drop-shadow(0px 5px 16px rgba(0, 0, 0, 0.1));
+                z-index: 1000000;
+            "
         >
             <div
-                v-for="(suggestion, index) in suggestionListModified"
-                :id="`sugg-${index}`"
-                :key="index"
-                class="cursor-pointer hover:bg-new-gray-100"
-                :class="
-                    selectedSuggestionIndex === index ? 'bg-new-gray-100' : ''
-                "
-                tabindex="-1"
+                class="py-0.5 overflow-auto bg-white max-h-52 rounded-t-md"
+                style="overflow: hidden; width: 447px"
+                v-if="!autoSuggestionLoading"
             >
-                <div v-if="suggestion?.documentation?.entity">
-                    <PopoverAsset
-                        v-if="
-                            autosuggestionPopoverActive &&
-                            selectedSuggestionIndex === index
-                        "
-                        :item="suggestion?.documentation?.entity"
-                        placement="right"
-                        :mouseEnterDelay="0.3"
-                        v-model:assetPopoverVisible="
-                            autosuggestionPopoverActive
-                        "
-                        popoverTrigger="focus"
-                        @previewAsset="openSidebar"
-                        overlayClassName="popoverAssetClassNameInsights"
-                    >
-                        <div
-                            @keyup.enter.stop="
-                                (e) => checkEnterPress(e, suggestion)
+                <div
+                    v-for="(suggestion, index) in suggestionListModified"
+                    :id="`sugg-${index}`"
+                    :key="index"
+                    class="cursor-pointer hover:bg-new-gray-100"
+                    :class="
+                        selectedSuggestionIndex === index
+                            ? 'bg-new-gray-100'
+                            : ''
+                    "
+                    tabindex="-1"
+                >
+                    <div v-if="suggestion?.documentation?.entity">
+                        <PopoverAsset
+                            v-if="
+                                autosuggestionPopoverActive &&
+                                selectedSuggestionIndex === index
                             "
-                            @click.stop="handleApplySuggestion(index)"
-                            class="items-center justify-between w-full px-2 py-1"
+                            :item="suggestion?.documentation?.entity"
+                            placement="right"
+                            :mouseEnterDelay="0.3"
+                            v-model:assetPopoverVisible="
+                                autosuggestionPopoverActive
+                            "
+                            popoverTrigger="focus"
+                            @previewAsset="openSidebar"
+                            overlayClassName="popoverAssetClassNameInsights"
                         >
-                            <SuggestionListItem
-                                :isActive="selectedSuggestionIndex === index"
-                                :suggestion="suggestion"
-                            />
+                            <div
+                                @keyup.enter.stop="
+                                    (e) => checkEnterPress(e, suggestion)
+                                "
+                                @click.stop="handleApplySuggestion(index)"
+                                class="items-center justify-between w-full px-2 py-1"
+                            >
+                                <SuggestionListItem
+                                    :isActive="
+                                        selectedSuggestionIndex === index
+                                    "
+                                    :suggestion="suggestion"
+                                />
+                            </div>
+                        </PopoverAsset>
+                        <div v-else>
+                            <div
+                                @keyup.enter.stop="
+                                    (e) => checkEnterPress(e, suggestion)
+                                "
+                                @click.stop="handleApplySuggestion(index)"
+                                class="px-2 py-1"
+                            >
+                                <SuggestionListItem
+                                    :isActive="
+                                        selectedSuggestionIndex === index
+                                    "
+                                    :suggestion="suggestion"
+                                />
+                            </div>
                         </div>
-                    </PopoverAsset>
+                    </div>
                     <div v-else>
                         <div
                             @keyup.enter.stop="
@@ -65,55 +88,42 @@
                         </div>
                     </div>
                 </div>
-                <div v-else>
-                    <div
-                        @keyup.enter.stop="
-                            (e) => checkEnterPress(e, suggestion)
-                        "
-                        @click.stop="handleApplySuggestion(index)"
-                        class="px-2 py-1"
-                    >
-                        <SuggestionListItem
-                            :isActive="selectedSuggestionIndex === index"
-                            :suggestion="suggestion"
-                        />
-                    </div>
+            </div>
+            <div
+                v-if="!autoSuggestionLoading"
+                class="w-full bg-new-gray-100"
+                style="height: 1px"
+            ></div>
+            <div
+                v-if="!autoSuggestionLoading"
+                class="flex justify-end px-2 py-1 text-xs bg-white text-new-gray-600 rounded-b-md"
+            >
+                <span>
+                    showing {{ suggestionListModified?.length }} results</span
+                >
+            </div>
+            <div
+                class="absolute flex items-center bg-white mt-1.5 px-1.5 text-sm rounded-md text-new-gray-700"
+                v-if="
+                    suggestionListModified[selectedSuggestionIndex]
+                        ?.documentation?.entity && !autoSuggestionLoading
+                "
+                style="min-width: 300px; padding-top: 5px; padding-bottom: 5px"
+            >
+                <div
+                    class="px-1 text-xs border rounded suggestion-item bg-new-gray-100 border-new-gray-300 plex-mono"
+                >
+                    Enter
                 </div>
+                &nbsp;to learn more, &nbsp;
+                <div
+                    class="px-1 text-xs border rounded suggestion-item bg-new-gray-100 border-new-gray-300 plex-mono"
+                >
+                    <span>shift</span> + Enter
+                </div>
+                &nbsp;to learn more.
             </div>
-        </div>
-        <div
-            v-if="!autoSuggestionLoading"
-            class="w-full bg-new-gray-100"
-            style="height: 1px"
-        ></div>
-        <div
-            v-if="!autoSuggestionLoading"
-            class="flex justify-end px-2 py-1 text-xs bg-white text-new-gray-600 rounded-b-md"
-        >
-            <span> showing {{ suggestionListModified?.length }} results</span>
-        </div>
-        <div
-            class="absolute flex items-center bg-white mt-1.5 px-1.5 text-sm rounded-md text-new-gray-700"
-            v-if="
-                suggestionListModified[selectedSuggestionIndex]?.documentation
-                    ?.entity && !autoSuggestionLoading
-            "
-            style="min-width: 300px; padding-top: 5px; padding-bottom: 5px"
-        >
-            <div
-                class="px-1 text-xs border rounded suggestion-item bg-new-gray-100 border-new-gray-300 plex-mono"
-            >
-                Enter
-            </div>
-            &nbsp;to learn more, &nbsp;
-            <div
-                class="px-1 text-xs border rounded suggestion-item bg-new-gray-100 border-new-gray-300 plex-mono"
-            >
-                <span>shift</span> + Enter
-            </div>
-            &nbsp;to learn more.
-        </div>
-        <div
+            <!-- <div
             v-else-if="autoSuggestionLoading"
             class="py-0.5 flex flex-col items-center justify-center overflow-auto bg-white h-52 rounded-t-md"
             style="overflow: hidden; width: 447px"
@@ -122,8 +132,9 @@
             <p class="mt-2 text-lg text-new-gray-600">
                 Crunching suggestions...
             </p>
+        </div> -->
         </div>
-    </div>
+    </Teleport>
 </template>
 <script lang="ts">
     import {

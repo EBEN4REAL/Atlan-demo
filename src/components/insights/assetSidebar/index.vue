@@ -2,7 +2,7 @@
     <div
         v-if="
             activeInlineTab?.assetSidebar?.isVisible &&
-            selectedAsset.assetInfo.guid
+            selectedAsset?.assetInfo?.guid
         "
         class="relative z-20 flex flex-col h-full bg-white asset-preview-container"
     >

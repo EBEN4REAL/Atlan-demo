@@ -1,15 +1,12 @@
 <template>
-    <div ref="monacoRoot" class="relative monacoeditor"></div>
-    <teleport to="body">
-        <SuggestionList
-            id="auto-suggestions"
-            v-model:selectedSuggestionIndex="selectedSuggestionIndex"
-            :suggestions="suggestions"
-            :autosuggestionPopoverActive="autosuggestionPopoverActive"
-            @applySuggestions="handleApplySuggestion"
-            :autoSuggestionLoading="autoSuggestionLoading"
-        />
-    </teleport>
+    <div ref="monacoRoot" class="monacoeditor"></div>
+    <SuggestionList
+        v-model:selectedSuggestionIndex="selectedSuggestionIndex"
+        :suggestions="suggestions"
+        :autosuggestionPopoverActive="autosuggestionPopoverActive"
+        @applySuggestions="handleApplySuggestion"
+        :autoSuggestionLoading="autoSuggestionLoading"
+    />
 </template>
 
 <script lang="ts">
@@ -183,9 +180,10 @@
             )
             // fix dropdown's position
             const setDropdown = () => {
-                const cursor = document.querySelector(
+                let cursor = document.querySelector(
                     '.cursor.monaco-mouse-cursor-text'
                 )
+
                 const viewportOffset = cursor?.getBoundingClientRect()
                 let left = viewportOffset.left
                 let right = viewportOffset.right
@@ -769,7 +767,7 @@
                 })
                 editor?.onDidScrollChange((scrollEvent) => {
                     const t = useDebounceFn(() => {
-                        debugger
+                        // debugger
                         // setDropdown()
                     }, 500)
                     t()
@@ -783,7 +781,7 @@
                         editor?.getPosition()
                     )
                     setTimeout(() => {
-                        // hideAutoCompletion()
+                        hideAutoCompletion()
                     }, 150)
                 })
                 editor?.onDidFocusEditorWidget(() => {

@@ -297,10 +297,10 @@
             const connection = computed(() => {
                 // const glossary = item.value?.glossaryPolicies?.length || 0
                 if (type.value === 'purpose') return []
-                const lengthCoonection = 5
+                const connectionLength = 5
                 return getUniqueTypeIcons().connectors.slice(
                     0,
-                    lengthCoonection
+                    connectionLength
                 )
             })
             const listClassifications = computed(() => {

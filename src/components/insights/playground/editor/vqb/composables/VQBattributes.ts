@@ -4,6 +4,7 @@ import {
 } from '~/constant/projection'
 
 export const attributes = [
+    'sizeBytes',
     'name',
     'displayName',
     'dataType',

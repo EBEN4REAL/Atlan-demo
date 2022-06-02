@@ -99,7 +99,7 @@
                 class="ilustration-persona-purpose-demo"
             />
             <div class="mt-6 text-base font-bold">
-                {{ activeTab === 'persona' ? 'Personas' : 'Purpose' }}
+                {{ activeTab === 'persona' ? 'Personas' : 'Purposes' }}
             </div>
             <div class="w-40 mt-1 text-sm text-center text-gray-600">
                 {{ `Please ask your admin to assign you a ${activeTab}` }}

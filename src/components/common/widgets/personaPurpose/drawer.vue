@@ -152,6 +152,7 @@
                     icon: 'AssetsInactiveLight',
                     activeIcon: 'AssetsActiveLight',
                     component: 'AssetsView',
+                    analyticsKey: 'assets'
                 },
             ])
             const activeKey = ref(0)
@@ -161,7 +162,7 @@
                 )
                 useAddEvent('governance', activeTab.value, 'home_tab', {
                     [`${activeTab.value}_name`]: item.value.displayName,
-                    tab_name: menu?.tooltip,
+                    tab_name: menu?.analyticsKey,
                 })
             })
             const handleChangeTab = (section) => {
@@ -182,30 +183,35 @@
                                 icon: 'Overview',
                                 activeIcon: 'Overview',
                                 component: 'Overview',
+                                analyticsKey: 'info'
                             },
                             {
                                 tooltip: 'Users',
                                 icon: 'GroupLight',
                                 activeIcon: 'GroupActive',
                                 component: 'UsersGroups',
+                                analyticsKey: 'users'
                             },
                             {
                                 tooltip: 'Assets',
                                 icon: 'AssetsInactiveLight',
                                 activeIcon: 'AssetsActiveLight',
                                 component: 'AssetsView',
+                                analyticsKey: 'assets'
                             },
                             {
                                 tooltip: 'Resources',
                                 icon: 'Link',
                                 activeIcon: 'Link',
                                 component: 'Resources',
+                                analyticsKey: 'resources',
                             },
                             {
                                 tooltip: 'Property',
                                 icon: 'Property',
                                 activeIcon: 'Property',
                                 component: 'Properties',
+                                analyticsKey: 'property',
                             },
                         ]
                     } else {
@@ -215,30 +221,35 @@
                                 icon: 'Overview',
                                 activeIcon: 'Overview',
                                 component: 'Overview',
+                                analyticsKey: 'info'
                             },
                             // {
                             //     tooltip: 'Users and groups',
                             //     icon: 'GroupLight',
                             //     activeIcon: 'GroupActive',
                             //     component: 'UsersGroups',
+                            //     analyticsKey: 'users'
                             // },
                             {
                                 tooltip: 'Assets',
                                 icon: 'AssetsInactiveLight',
                                 activeIcon: 'AssetsActiveLight',
                                 component: 'AssetsView',
+                                analyticsKey: 'assets'
                             },
                             {
                                 tooltip: 'Resources',
                                 icon: 'Link',
                                 activeIcon: 'Link',
                                 component: 'Resources',
+                                analyticsKey: 'resources',
                             },
                             {
                                 tooltip: 'Property',
                                 icon: 'Property',
                                 activeIcon: 'Property',
                                 component: 'Properties',
+                                 analyticsKey: 'property',
                             },
                         ]
                     }

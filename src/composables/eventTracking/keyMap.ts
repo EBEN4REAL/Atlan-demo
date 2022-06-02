@@ -617,7 +617,7 @@ const keyMap = {
                  properties: (props) => (props),
             },
             home_tab: {
-                 action: 'governance_persona_sidebar_tab_change',
+                 action: 'governance_persona_sidebar_tab_changed',
                 properties: (props) => (props),
             },
             readme_expanded: {
@@ -702,7 +702,7 @@ const keyMap = {
                  properties: (props) => (props),
             },
             home_tab: {
-                action: 'governance_purpose_sidebar_tab_change',
+                action: 'governance_purpose_sidebar_tab_changed',
                 properties: (props) => (props),
             },
             readme_expanded: {

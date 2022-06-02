@@ -126,8 +126,8 @@
                 :swipe="true"
                 :arrows="true"
                 :infinite="false"
-                :slides-to-scroll="1"
-                variable-width
+                :slides-to-scroll="3"
+                :slides-to-show="3"
             >
                 <template #prevArrow>
                     <div
@@ -391,9 +391,9 @@
     }
 </style>
 <style lang="less">
-    .container-card-slider {
-        width: 192px;
-    }
+    // .container-card-slider {
+    //     width: 192px;
+    // }
     .ilustration-persona-purpose-demo {
         height: 70px !important;
         width: 92px !important;

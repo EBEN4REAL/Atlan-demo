@@ -3,24 +3,26 @@
         overlay-class-name="propertiesPopover"
         :destroyTooltipOnHide="true"
     >
-        <template #title>
-            <div class="flex items-center justify-between gap-x-4">
-                <div class="w-10/12">
+        <template #title> </template>
+        <template #content>
+            <div class="flex flex-col px-3 py-2 bg-gray-100 gap-x-4">
+                <div class="flex justify-between">
                     <Truncate :tooltipText="attribute.displayName" :rows="2" />
-                    <!-- <span class="text-xs text-gray-500">
-                        {{ attribute.description }}</span
-                    > -->
+
+                    <div
+                        class="text-xs cursor-pointer hover:text-red-500"
+                        @click="handleClearAll"
+                    >
+                        clear
+                    </div>
                 </div>
 
-                <div
-                    class="text-xs cursor-pointer hover:text-red-500"
-                    @click="handleClearAll"
+                <span class="text-xs text-gray-500">
+                    {{
+                        attribute.description || attribute.options?.description
+                    }}</span
                 >
-                    clear
-                </div>
             </div>
-        </template>
-        <template #content>
             <div class="p-3">
                 <div class="flex flex-col gap-y-4">
                     <template

@@ -396,7 +396,12 @@
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
     import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
-
+    import Activity from './activity/activityTab.vue'
+    import Resources from '@/common/assets/preview/resources/resourcesWrapper.vue'
+    import Jira from '@/common/assets/preview/integrations/jira/jira.vue'
+    import SlackResources from '@/common/assets/preview/resources/slackResourcesWrapper.vue'
+    import CustomMetaData from './customMetadata/index.vue'
+    
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
     import {
@@ -413,7 +418,7 @@
 
     export default defineComponent({
         name: 'AssetPreview',
-        components: {
+       components: {
             PreviewTabsIcon,
             CertificateBadge,
             NoAccess,
@@ -427,9 +432,7 @@
             property: defineAsyncComponent(
                 () => import('./property/index.vue')
             ),
-            activity: defineAsyncComponent(
-                () => import('./activity/activityTab.vue')
-            ),
+            activity: Activity,
             queries: defineAsyncComponent(() => import('./queries/index.vue')),
             s3Objects: defineAsyncComponent(
                 () => import('./s3objects/index.vue')
@@ -437,31 +440,17 @@
             relations: defineAsyncComponent(
                 () => import('./relations/index.vue')
             ),
-            resources: defineAsyncComponent(
-                () =>
-                    import(
-                        '@/common/assets/preview/resources/resourcesWrapper.vue'
-                    )
-            ),
+            resources: Resources,
+            
             lineage: defineAsyncComponent(
                 () => import('./lineage/lineageTab.vue')
             ),
-            customMetadata: defineAsyncComponent(
-                () => import('./customMetadata/index.vue')
-            ),
+            customMetadata: CustomMetaData,
             linkedAssets: defineAsyncComponent(
                 () => import('./linkedAssets/linkedAssetsWrapper.vue')
             ),
-            Jira: defineAsyncComponent(
-                () =>
-                    import('@/common/assets/preview/integrations/jira/jira.vue')
-            ),
-            SlackResourcesTab: defineAsyncComponent(
-                () =>
-                    import(
-                        '@/common/assets/preview/resources/slackResourcesWrapper.vue'
-                    )
-            ),
+            Jira,
+            SlackResourcesTab: SlackResources,
             SlackAskButton,
         },
 

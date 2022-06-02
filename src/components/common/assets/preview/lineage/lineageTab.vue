@@ -4,7 +4,7 @@
             v-if="guid"
             v-model:visible="showImpactedAssets"
             :guid="guid"
-            :asset-name="assetName"
+            :is-base-on-graph="false"
             style="z-index: 600"
         />
         <div class="flex items-center justify-between px-5 pt-4 pb-2">
@@ -83,7 +83,6 @@
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
     import RaisedTab from '@/UI/raisedTab.vue'
-    import AtlanButton from '@/UI/button.vue'
     import LineageImpactModal from './lineageImpactModal.vue'
     import LineageList from './list/index.vue'
 
@@ -102,7 +101,6 @@
         components: {
             LineageList,
             EmptyView,
-            AtlanButton,
             LineageImpactModal,
             RaisedTab,
             ErrorView,

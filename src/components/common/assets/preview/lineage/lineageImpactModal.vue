@@ -8,7 +8,19 @@
     >
         <div class="w-full p-4 text-gray-500 bg-white rounded">
             <!-- Header -->
-            <div class="mb-6 text-lg">Downstream Impacted Assets</div>
+            <div v-if="asset?.guid" class="flex items-center mb-6 text-lg">
+                All Downstream Impacted Assets of
+                <span class="ml-2 font-medium text-gray-600">{{
+                    title(asset)
+                }}</span>
+                <router-link :to="getLineagePath(asset)" target="_blank">
+                    <div
+                        class="flex items-center ml-3 text-base cursor-pointer text-primary"
+                    >
+                        <AtlanIcon icon="External" class="mr-1" /> View Lineage
+                    </div>
+                </router-link>
+            </div>
 
             <!-- Content - Table -->
             <div class="relative mb-6">
@@ -289,14 +301,8 @@
     import { json2csv } from 'json-2-csv'
     import { whenever } from '@vueuse/core'
 
-    /** COMPOSABLES */
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import useTypedefData from '~/composables/typedefs/useTypedefData'
-    import useLineageService from '~/services/meta/lineage/lineage_service'
-    import { AssetAttributes } from '~/constant/projection'
-    import useCustomMetadata from './useCustomMetadata'
-
     /** COMPONENTS */
+    import GlossaryPopover from '@common/popover/glossary/index.vue'
     import TermPill from '@/common/pills/term.vue'
     import ClassificationPill from '@/common/pills/classification.vue'
     import ClassificationPopover from '@/common/popover/classification/index.vue'
@@ -304,7 +310,12 @@
     import Tooltip from '@/common/ellipsis/index.vue'
     import { downloadFile } from '~/utils/library/download'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
-    import GlossaryPopover from '@/common/popover/glossary/index.vue'
+
+    /** COMPOSABLES */
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import useTypedefData from '~/composables/typedefs/useTypedefData'
+    import useLineageService from '~/services/meta/lineage/lineage_service'
+    import { AssetAttributes } from '~/constant/projection'
 
     /** UTILS */
     import {
@@ -324,15 +335,18 @@
         },
         props: {
             guid: { type: String, required: true },
-            assetName: { type: String, required: true },
             visible: {
                 type: Boolean,
                 required: true,
             },
+            isBaseOnGraph: {
+                type: Boolean,
+                required: false,
+            },
         },
         emits: ['update:visible'],
         setup(props, { emit }) {
-            const { guid, assetName, visible } = toRefs(props)
+            const { guid, visible } = toRefs(props)
             const classificationPopoverMouseEnterDelay = ref(1)
             const currrTruncatedSQL = ref('')
             const { useFetchLineage } = useLineageService()
@@ -345,6 +359,7 @@
             } = useAssetInfo()
             const { classificationList, customMetadataProjections } =
                 useTypedefData()
+            const { getLineagePath, title } = useAssetInfo()
 
             /** This is a flag. We check if the guid has changed and
              * only then fetch the impacted assets. */
@@ -390,7 +405,13 @@
 
             const downstreamAssets = computed(() =>
                 Object.values(downstreamData.value?.guidEntityMap || {}).filter(
-                    (asset) => asset.guid !== guid.value
+                    (assetObj) => assetObj.guid !== guid.value
+                )
+            )
+
+            const asset = computed(() =>
+                Object.values(downstreamData.value?.guidEntityMap || {}).find(
+                    (assetObj) => assetObj.guid === guid.value
                 )
             )
 
@@ -570,7 +591,7 @@
                         else {
                             downloadFile(
                                 csv,
-                                `${assetName.value}_lineage_impact`
+                                `${title(asset.value)}_lineage_impact`
                             )
                             message.success('CSV exported successfully')
                             emit('update:visible', false)
@@ -618,6 +639,9 @@
                 termEnteredPill,
                 termLeftPill,
                 leftPill,
+                getLineagePath,
+                title,
+                asset,
             }
         },
     })

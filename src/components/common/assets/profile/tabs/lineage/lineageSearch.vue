@@ -1,9 +1,9 @@
 <template>
     <LineageImpactModal
-        v-if="hasImpactedAssets"
+        v-if="guidForImpactedAssets"
         v-model:visible="showImpactedAssets"
         :guid="guidForImpactedAssets"
-        :asset-name="'assetName'"
+        :is-base-on-graph="false"
         style="z-index: 600"
     />
     <div class="flex flex-col">
@@ -23,35 +23,18 @@
                         ></AtlanIcon>
                     </a-tooltip>
                 </div>
-                <!-- <div class="w-px bg-new-gray-200 h-9"></div> -->
-                <!-- <div
-                    class="mx-4"
-                    :class="
-                        hasImpactedAssets
-                            ? 'cursor-pointer'
-                            : 'cursor-not-allowed'
-                    "
-                    @click="controlImpactedAssets"
-                >
+                <div class="w-px bg-new-gray-200 h-9"></div>
+                <div class="mx-4 cursor-pointer" @click="controlImpactedAssets">
                     <a-tooltip placement="bottom" :mouse-enter-delay="0.4">
                         <template #title>
-                            <span>{{
-                                hasImpactedAssets
-                                    ? 'View Impacted Assets'
-                                    : 'No Impacted Assets'
-                            }}</span>
+                            <span> View Impacted Assets </span>
                         </template>
                         <AtlanIcon
                             icon="ImpactedAssets"
-                            :class="
-                                hasImpactedAssets
-                                    ? 'text-new-blue-400'
-                                    : 'text-new-gray-200'
-                            "
-                            class="outline-none"
+                            class="outline-none text-new-blue-400"
                         ></AtlanIcon>
                     </a-tooltip>
-                </div> -->
+                </div>
             </div>
 
             <div v-if="showSearch" class="search">
@@ -167,6 +150,9 @@
                 !selectedPortId.value
                     ? selectedNodeId.value || baseEntityGuid.value
                     : selectedPortId.value
+            )
+            const isBaseOnGraph = computed(
+                () => baseEntityGuid.value === guidForImpactedAssets.value
             )
             const searchItems = computed(() => {
                 const d = mergedLineageData.value
@@ -316,6 +302,7 @@
                 onEsc,
                 sourceImg,
                 controlImpactedAssets,
+                isBaseOnGraph,
             }
         },
     })

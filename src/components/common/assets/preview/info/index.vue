@@ -827,9 +827,23 @@
                 class="flex flex-col"
             >
                 <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 cursor-help"
                 >
-                    <span>Connection Admins</span>
+                    <a-tooltip color="#2A2F45">
+                        <template #title>
+                            <p class="font-bold">
+                                Connection Admin Permissions:
+                            </p>
+                            <p>1. View and edit all assets in the connection</p>
+                            <p>2. Edit connection preferences</p>
+                            <p>
+                                3. Edit persona based policies for the
+                                connection.
+                            </p>
+                        </template>
+                        <span>Connection Admins</span>
+                        <AtlanIcon icon="Info" class="mb-0.5 ml-1 mr-auto" />
+                    </a-tooltip>
                 </div>
 
                 <Admins
@@ -839,38 +853,6 @@
                     :edit-permission="editPermission"
                     @change="handleChangeAdmins"
                 />
-                <div
-                    class="flex flex-col p-3 mx-5 mt-3 rounded-md bg-primary-light"
-                >
-                    <div class="flex flex-col w-full">
-                        <div class="flex items-center justify-between mb-1">
-                            <div
-                                class="flex items-center text-gray-700 capitalize"
-                            >
-                                <AtlanIcon icon="Info" class="mb-0.5 mr-1" />
-                                <span>Connection Admin</span>
-                            </div>
-                        </div>
-
-                        <div class="text-gray-500 break-words">
-                            <p>
-                                Being a connection admin gives these permissions
-                            </p>
-                            <p>
-                                1. Access to read and edit all assets in that
-                                connection
-                            </p>
-                            <p>
-                                2. Access to edit the connection & its
-                                preferences
-                            </p>
-                            <p>
-                                3. Access to edit policies in personas for the
-                                connection
-                            </p>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div

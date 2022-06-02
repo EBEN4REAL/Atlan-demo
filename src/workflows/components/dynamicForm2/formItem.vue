@@ -29,7 +29,7 @@
                     :required="property.required"
                     :rules="property.ui.rules"
                 >
-                    <template #label>
+                    <template v-if="property.ui?.label" #label>
                         <AtlanIcon
                             icon="Lock2"
                             class="h-3 mr-1 text-yellow-500 mb-0.5"

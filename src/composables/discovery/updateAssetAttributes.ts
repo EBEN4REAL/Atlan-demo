@@ -269,8 +269,8 @@ export default function updateAssetAttributes(
                 localAdmins.value?.adminUsers?.sort().toString() &&
             adminGroups(selectedAsset.value)?.sort().toString() ===
                 localAdmins.value?.adminGroups?.sort().toString() &&
-            localAdmins.value?.adminRoles ===
-                selectedAsset.value?.attributes?.adminRoles
+            localAdmins.value?.adminRoles?.sort().toString() ===
+                selectedAsset.value?.attributes?.adminRoles?.sort().toString()
         ) {
             isChanged = false
         } else {
@@ -296,8 +296,8 @@ export default function updateAssetAttributes(
 
             // adminRoles
             if (
-                entity.value.attributes.adminRoles !==
-                localAdmins.value?.adminRoles
+                entity.value.attributes.adminRoles?.sort().toString() !==
+                localAdmins.value?.adminRoles?.sort().toString()
             ) {
                 entity.value.attributes.adminRoles =
                     localAdmins.value?.adminRoles

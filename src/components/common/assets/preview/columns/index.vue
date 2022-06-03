@@ -274,7 +274,7 @@
             )
 
             const body = ref({})
-            const { refresh } = useEvaluate(body, false, true) // true for secondaryEvaluations
+            const { refresh } = useEvaluate(body, false, false, true) // true for columnEvaluations
 
             debouncedWatch(
                 () => props.selectedAsset.attributes.qualifiedName,
@@ -335,7 +335,7 @@
                     body.value = {
                         entities: freshList.value.map((item) => ({
                             typeName: item.typeName,
-                            entityGuid: item.guid,
+                            entityId: item?.attributes?.qualifiedName,
                             action: 'ENTITY_UPDATE',
                         })),
                     }
@@ -356,12 +356,11 @@
             const shouldLoadMore = ref(true)
 
             watchOnce(columnlistRef, () => {
-                console.log('hellooooo ref', columnlistRef.value)
                 if (columnlistRef.value) {
                     const node = document.querySelector(
                         '.column-list-container'
                     )
-                    console.log('hellooooo node', node)
+
                     if (node) {
                         node.addEventListener('scroll', () => {
                             const perc =
@@ -369,12 +368,7 @@
                                     (node.scrollHeight - node.clientHeight)) *
                                 100
 
-                            console.log('hellooooo perc', perc)
-
                             if (perc >= 100) {
-                                console.log(
-                                    'Scrolling has reached bottom, loading more data...'
-                                )
                                 if (shouldLoadMore.value) {
                                     shouldLoadMore.value = false
                                     handleLoadMore()

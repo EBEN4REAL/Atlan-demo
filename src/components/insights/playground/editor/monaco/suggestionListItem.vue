@@ -22,7 +22,6 @@
                 ></AtlanIcon
                 ><span
                     class="text-sm truncate plex-mono-medium text-new-gray-700 parent-ellipsis-container-base"
-                    style="font-weight: 500"
                     v-html="suggestion.label"
                 ></span>
 
@@ -173,27 +172,12 @@
     })
 </script>
 <style lang="less">
-    @font-face {
-        font-family: Hack;
-        src: url('~/assets/fonts/hack/Hack-Regular.ttf');
-    }
-    .hack-font {
-        font-family: Hack;
-    }
-    @font-face {
-        font-family: PlexMono;
-        src: url('~/assets/fonts/ibmPlexMono/IBMPlexMono-Regular.ttf');
-    }
-    @font-face {
-        font-family: PlexMonoMedium;
-        src: url('~/assets/fonts/ibmPlexMono/IBMPlexMono-Medium.ttf');
-    }
-
     .plex-mono {
         font-family: PlexMono !important;
     }
     .plex-mono-medium {
-        font-family: PlexMonoMedium !important;
+        font-family: PlexMono !important;
+        font-weight: bold;
     }
 </style>
 <style lang="less" scoped>

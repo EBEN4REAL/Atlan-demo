@@ -111,13 +111,13 @@
                 style="min-width: 300px; padding-top: 5px; padding-bottom: 5px"
             >
                 <div
-                    class="px-1 text-xs border rounded suggestion-item bg-new-gray-100 border-new-gray-300 plex-mono"
+                    class="px-1 text-xs border rounded bg-new-gray-100 border-new-gray-300 plex-mono"
                 >
                     Enter
                 </div>
                 &nbsp;to accept, &nbsp;
                 <div
-                    class="px-1 text-xs border rounded suggestion-item bg-new-gray-100 border-new-gray-300 plex-mono"
+                    class="px-1 text-xs border rounded bg-new-gray-100 border-new-gray-300 plex-mono"
                 >
                     <span>shift</span> + Enter
                 </div>
@@ -253,13 +253,6 @@
     })
 </script>
 <style lang="less">
-    @font-face {
-        font-family: Hack;
-        src: url('~/assets/fonts/hack/Hack-Regular.ttf');
-    }
-    .suggestion-item {
-        font-family: Hack;
-    }
     @font-face {
         font-family: PlexMono;
         src: url('~/assets/fonts/ibmPlexMono/IBMPlexMono-Regular.ttf');

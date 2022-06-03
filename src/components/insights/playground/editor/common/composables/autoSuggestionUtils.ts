@@ -62,7 +62,7 @@ export function getSchemaAndDatabaseFromSqlQueryText(
 ) {
     let databaseName = connectorsInfo.databaseName,
         schemaName = connectorsInfo.schemaName
-    const sqlTextTokens = sqlText.replace(/\"/g, '').split(/[ ;]+/)
+    const sqlTextTokens = sqlText.replace(/\"/g, '').split(/[ ;\n]+/)
     sqlTextTokens.forEach((token) => {
         const _spliitedToken = token.split('.')
         const contexts = [

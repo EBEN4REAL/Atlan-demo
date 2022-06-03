@@ -67,6 +67,7 @@
         onUnmounted,
         provide,
         inject,
+        watch,
     } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
 
@@ -247,6 +248,24 @@
                 isComputeDone.value = false
                 if (Object.keys(graph.value).length) graph.value.dispose()
             })
+
+            watch(
+                selectedAsset,
+                () => {
+                    if (selectedAsset.value?.guid) {
+                        graphWidth.value = window.outerWidth - 420
+                        /*  if (Object.keys(graph.value).length)
+                            graph.value.dispose()
+                        initialize() */
+                    } else {
+                        graphWidth.value = window.outerWidth
+                        /*   if (Object.keys(graph.value).length)
+                            graph.value.dispose()
+                        initialize() */
+                    }
+                },
+                { deep: true }
+            )
 
             return {
                 lineage,

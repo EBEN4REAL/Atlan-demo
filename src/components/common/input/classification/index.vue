@@ -125,7 +125,6 @@
         toRefs,
         watch,
         defineAsyncComponent,
-        h
     } from 'vue'
     import {
         and,

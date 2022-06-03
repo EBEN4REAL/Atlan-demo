@@ -489,7 +489,7 @@
                     value: activeInlineTab.value.playground.editor.text,
                     theme: editorConfig.value.theme,
                     fontSize: 14,
-                    cursorStyle: 'block',
+                    cursorStyle: editorConfig.value.cursorStyle,
                     cursorWidth: 2,
                     letterSpacing: 0.1,
                     // cursorSmoothCaretAnimation: true,
@@ -830,14 +830,21 @@
                         true,
                         editor,
                         monaco,
-                        editor?.getPosition()
+                        editor?.getPosition(),
+                        editorConfig
                     )
                     setTimeout(() => {
                         hideAutoCompletion()
                     }, 150)
                 })
                 editor?.onDidFocusEditorWidget(() => {
-                    toggleGhostCursor(false, editor, monaco, editorPos)
+                    toggleGhostCursor(
+                        false,
+                        editor,
+                        monaco,
+                        editorPos,
+                        editorConfig
+                    )
                     setEditorFocusedState(true, editorFocused)
                 })
             })
@@ -895,7 +902,14 @@
                         // setDropdown()
                     })
                     editor?.onDidFocusEditorWidget(() => {
-                        toggleGhostCursor(false, editor, monaco, editorPos)
+                        toggleGhostCursor(
+                            false,
+                            editor,
+                            monaco,
+                            editorPos,
+                            editorConfig,
+                            editorConfig
+                        )
                         setEditorPos(editor?.getPosition(), editorPos)
                         setEditorFocusedState(true, editorFocused)
                     })
@@ -1124,10 +1138,38 @@
     .ghostCursor::after {
         position: absolute;
         content: '';
+        // width: 2px !important;
+        @apply bg-gray-400;
+        top: -10%;
+        height: 120%;
+    }
+    .ghostCurosr-block {
+        position: absolute;
+        width: 9px !important;
+        @apply bg-gray-400;
+        top: -10%;
+        height: 120%;
+        opacity: 0.5;
+        color: #fff !important;
+    }
+    .ghostCurosr-line {
+        position: absolute;
         width: 2px !important;
         @apply bg-gray-400;
         top: -10%;
         height: 120%;
+        opacity: 1;
+        color: #fff;
+    }
+    .ghostCurosr-underline {
+        position: absolute;
+        width: 8.5px !important;
+        height: 2px !important;
+        @apply bg-gray-400;
+        bottom: -10%;
+        height: 120%;
+        opacity: 1;
+        color: #fff;
     }
 
     .suggest-icon.codicon.codicon-symbol-keyword::before {

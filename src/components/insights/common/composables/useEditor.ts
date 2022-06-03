@@ -526,7 +526,8 @@ export function useEditor(
         editorPos: {
             column: number
             lineNumber: number
-        }
+        },
+        editorConfig: Ref<editorConfigInterface>
     ) => {
         const t = {
             range: new monacoInstance.Range(
@@ -542,6 +543,14 @@ export function useEditor(
                 cursorDecorations,
                 [t]
             )
+            setTimeout(() => {
+                const el = document.querySelector('.ghostCursor')
+                let newSpan = document.createElement('span')
+                newSpan.classList.add(
+                    `ghostCurosr-${editorConfig.value.cursorStyle}`
+                )
+                el?.appendChild(newSpan)
+            }, 500)
         } else {
             cursorDecorations = editorInstance?.deltaDecorations(
                 cursorDecorations,

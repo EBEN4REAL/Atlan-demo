@@ -245,7 +245,6 @@
     } from 'vue'
     import { useRouter, useRoute } from 'vue-router'
     import { useDebounceFn } from '@vueuse/core'
-    import { useDrop } from 'vue3-dnd'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -598,23 +597,6 @@
                 tabs.value.splice(dropIndex, 0, content)
             }
 
-            const [dropCollect, drop] = useDrop(() => ({
-                accept: 'Box',
-                drop: (item, monitor) => {
-                    const dropResult = monitor.getDropResult()
-                    
-                    console.log("OnDrop -> Item: ", item, "Drop Result: ", monitor);
-                    
-                    if (item && dropResult) {
-                        sortTabsOnDrop(item.key, dropResult.index)
-                    }
-                },
-                collect: (monitor) => ({
-                    isOver: monitor.isOver(),
-                    canDrop: monitor.canDrop(),
-                }),
-            }))
-
 
             return {
                 queryExecutionTime,
@@ -643,7 +625,6 @@
                 showContextMenu,
                 contentMenu,
                 sortTabsOnDrop,
-                drop
             }
         },
     })

@@ -56,15 +56,14 @@ export default function useCustomMetadata(assets) {
 
             let cmValueDN = v
 
+            if (isMultiValue) cmValueDN = v.join(', ')
+
             switch (primitiveType) {
                 case 'boolean':
                     cmValueDN = v ? 'Yes' : 'No'
                     break
                 case 'date':
                     cmValueDN = dayjs(v).format('DD/MM/YYYY')
-                    break
-                case 'string':
-                    if (isMultiValue) cmValueDN = v.join(', ')
                     break
                 default:
                     break

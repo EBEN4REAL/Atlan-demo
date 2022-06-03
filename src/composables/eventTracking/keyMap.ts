@@ -548,13 +548,13 @@ const keyMap = {
                             is_full_screen: props?.is_full_screen,
                             description_added: props?.description_added,
                         }
-                    } else {
+                    } 
                         return {
                             action: props.action,
                             query_tab_id: props?.query_tab_id,
                             is_full_screen: props?.is_full_screen,
                         }
-                    }
+                    
                 },
             },
             tab_switched: {
@@ -612,6 +612,26 @@ const keyMap = {
     },
     governance: {
         persona: {
+            cta_clicked: {
+                action: "governance_persona_cta_clicked",
+                 properties: (props) => (props),
+            },
+            home_tab: {
+                 action: 'governance_persona_sidebar_tab_changed',
+                properties: (props) => (props),
+            },
+            readme_expanded: {
+                action: 'governance_persona_sidebar_readme_viewed',
+                properties: (props) => (props),
+            },
+            home_card_asset: {
+                action: 'home_persona_card_view_assets_clicked',
+                properties: (props) => (props),
+            },
+            home_card: {
+                action: 'home_persona_card_clicked',
+                properties: (props) => (props),
+            },
             created: {
                 action: 'governance_persona_created',
                 properties: (props) => ({
@@ -677,6 +697,26 @@ const keyMap = {
             },
         },
         purpose: {
+            cta_clicked: {
+                action: "governance_purpose_cta_clicked",
+                 properties: (props) => (props),
+            },
+            home_tab: {
+                action: 'governance_purpose_sidebar_tab_changed',
+                properties: (props) => (props),
+            },
+            readme_expanded: {
+                action: 'governance_purpose_sidebar_readme_viewed',
+                properties: (props) => (props),
+            },
+            home_card_asset: {
+                action: 'home_purpose_card_view_assets_clicked',
+                properties: (props) => (props),
+            },
+            home_card: {
+                action: 'home_purpose_card_clicked',
+                properties: (props) => (props),
+            },
             created: {
                 action: 'governance_purpose_created',
                 properties: (props) => ({

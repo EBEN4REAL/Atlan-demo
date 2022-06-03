@@ -43,7 +43,7 @@
                     padding="compact"
                     @click="() => visible = false"
                 >
-                    {{ $t('Cancel') }}
+                    Cancel
                     
                 </AtlanBtn>
             </template>
@@ -54,7 +54,7 @@
                     padding="compact"
                     @click="handleRemove"
                 >
-                    {{ $t('Remove') }}
+                    Remove
                 </AtlanBtn>
             </template>
             <div

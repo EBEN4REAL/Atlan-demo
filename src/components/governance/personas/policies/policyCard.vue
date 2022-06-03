@@ -248,7 +248,7 @@
                             <div
                                 v-if="
                                     computedActions <
-                                    (type !== 'glossaryPolicy' ? 9 : 5)
+                                    (type !== 'glossaryPolicy' ? 9 : 6)
                                 "
                             >
                                 {{ computedActions }}
@@ -268,7 +268,7 @@
 
                             {{
                                 computedActions >=
-                                (type !== 'glossaryPolicy' ? 9 : 5)
+                                (type !== 'glossaryPolicy' ? 9 : 6)
                                     ? 'All'
                                     : computedActions
                             }}

@@ -225,7 +225,7 @@
                 class="text-new-gray-600"
             >
                 Loading <span class="font-bold">20</span> more...
-                <AtlanLoader class="h-4" />
+                <AtlanLoader class="h-4 mb-0.5" />
             </div>
         </div>
 

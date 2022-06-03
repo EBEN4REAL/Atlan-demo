@@ -77,11 +77,10 @@
         <!-- {{ list }} -->
         <AssetList
             v-else
-            ref="assetlistRef"
+            ref="columnlistRef"
             :list="list"
-            :is-load-more="isLoadMore"
-            :is-loading="isValidating"
-            @loadMore="handleLoadMore"
+            :is-load-more="false"
+            class="column-list-container"
         >
             <template #default="{ item }">
                 <ColumnItem
@@ -92,6 +91,13 @@
                 />
             </template>
         </AssetList>
+        <div
+            v-if="isValidating && list?.length !== 0"
+            class="flex items-center justify-center w-full mb-4 text-new-gray-600"
+        >
+            Loading<span class="mx-1 font-bold">20</span>more...
+            <AtlanLoader class="h-4 mb-0.5" />
+        </div>
     </div>
 </template>
 
@@ -104,7 +110,7 @@
         watch,
         PropType,
     } from 'vue'
-    import { debouncedWatch, useDebounceFn } from '@vueuse/core'
+    import { debouncedWatch, useDebounceFn, watchOnce } from '@vueuse/core'
 
     import ErrorView from '@common/error/discover.vue'
     import EmptyView from '@common/empty/index.vue'
@@ -287,11 +293,11 @@
                 quickChange()
             }
 
-            const handleLoadMore = () => {
+            const handleLoadMore = async () => {
                 if (isLoadMore.value) {
                     offset.value += limit.value
+                    await quickChange()
                 }
-                quickChange()
             }
 
             const handleSearchChange = useDebounceFn(() => {
@@ -346,6 +352,42 @@
                     quickSuggestionChange()
                 }
             )
+            const columnlistRef = ref(null)
+            const shouldLoadMore = ref(true)
+
+            watchOnce(columnlistRef, () => {
+                console.log('hellooooo ref', columnlistRef.value)
+                if (columnlistRef.value) {
+                    const node = document.querySelector(
+                        '.column-list-container'
+                    )
+                    console.log('hellooooo node', node)
+                    if (node) {
+                        node.addEventListener('scroll', () => {
+                            const perc =
+                                (node.scrollTop /
+                                    (node.scrollHeight - node.clientHeight)) *
+                                100
+
+                            console.log('hellooooo perc', perc)
+
+                            if (perc >= 100) {
+                                console.log(
+                                    'Scrolling has reached bottom, loading more data...'
+                                )
+                                if (shouldLoadMore.value) {
+                                    shouldLoadMore.value = false
+                                    handleLoadMore()
+
+                                    setTimeout(() => {
+                                        shouldLoadMore.value = true
+                                    }, 1000)
+                                }
+                            }
+                        })
+                    }
+                }
+            })
 
             return {
                 isLoading,
@@ -371,6 +413,7 @@
                 similarListByName,
                 columnWithLineageCount,
                 handleLineageFilterChange,
+                columnlistRef,
             }
         },
     })

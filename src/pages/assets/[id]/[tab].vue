@@ -9,11 +9,11 @@
             image-class="h-52"
             headline="Nothing to see here!"
             desc="Hmmm… we don't know how you landed here, but nothing exists here at the moment!"
-            button-text="Take me home"
+            button-text="Take me back to Assets"
             button-icon="ArrowRight"
-            button-icon-class="mr-2 transform rotate-180"
+            button-icon-class="mr-1 transform rotate-180"
             button-color="secondary"
-            button-class="mt-5 font-bold w-44"
+            button-class="w-56 mt-5 font-bold"
             @event="() => router.push('/assets')"
         ></EmptyView>
     </div>
@@ -153,6 +153,7 @@
                     localSelected.value = list.value[0]
 
                     handlePreview(list.value[0])
+                    showEmptyState.value = false
                 } else {
                     showEmptyState.value = true
                 }
@@ -165,12 +166,15 @@
             watch(
                 () => id.value,
                 () => {
-                    showEmptyState.value = false
-                    dependentKey.value = fetchKey.value
-                    facets.value = {
-                        guid: id.value,
+                    if (id.value) {
+                        showEmptyState.value = false
+
+                        dependentKey.value = fetchKey.value
+                        facets.value = {
+                            guid: id.value,
+                        }
+                        fetch()
                     }
-                    fetch()
                 }
             )
 
@@ -205,17 +209,13 @@
                 }
             )
 
-            watch(
-                showEmptyState,
-                () => {
-                    if (showEmptyState.value) {
-                        handlePreviewVisibility(false)
-                    } else {
-                        handlePreviewVisibility(true)
-                    }
-                },
-                { immediate: true }
-            )
+            watch(showEmptyState, () => {
+                if (showEmptyState.value) {
+                    handlePreviewVisibility(false)
+                } else {
+                    handlePreviewVisibility(true)
+                }
+            })
 
             return {
                 fetchKey,

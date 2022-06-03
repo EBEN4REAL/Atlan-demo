@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white rounded user-group-wrapper">
+    <div class="overflow-scroll bg-white rounded user-group-wrapper">
         <!-- START Error State -->
         <div
             v-if="errorUsersGroups"

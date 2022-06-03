@@ -122,8 +122,8 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { useSimilarList } from '~/composables/discovery/useSimilarList'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { getColumnCountWithLineage } from '~/components/common/assets/profile/tabs/lineage/util.js'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -312,7 +312,7 @@
             })
             const suggestionAggregations = ref(['name'])
 
-            const { quickChange: quickSuggestionChange, list: suggestionList } =
+            const { quickChange: quickSuggestionChange, similarListByName } =
                 useSimilarList({
                     limit: suggestionLimit,
                     offset: suggestionOffset,
@@ -321,18 +321,6 @@
                 })
 
             const { title } = useAssetInfo()
-
-            const similarListByName = (asset) => {
-                const suggestion = suggestionList.value.find(
-                    (item) => title(asset)?.toLowerCase() === item?.key
-                )
-
-                if (suggestion?.group_by_description?.buckets) {
-                    return suggestion?.group_by_description?.buckets
-                }
-
-                return []
-            }
 
             watch(
                 () => [...freshList.value],

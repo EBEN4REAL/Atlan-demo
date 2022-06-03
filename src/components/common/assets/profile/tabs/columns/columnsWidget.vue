@@ -554,25 +554,13 @@
             })
             const suggestionAggregations = ref(['name'])
 
-            const { quickChange: quickSuggestionChange, list: suggestionList } =
+            const { quickChange: quickSuggestionChange, similarListByName } =
                 useSimilarList({
                     limit: suggestionLimit,
                     offset: suggestionOffset,
                     facets: suggestionFacets,
                     aggregations: suggestionAggregations,
                 })
-
-            const similarListByName = (asset) => {
-                const suggestion = suggestionList.value.find(
-                    (item) => title(asset)?.toLowerCase() === item?.key
-                )
-
-                if (suggestion?.group_by_description?.buckets) {
-                    return suggestion?.group_by_description?.buckets
-                }
-
-                return []
-            }
 
             // rowClassName Antd
             const rowClassName = (record: { key: null }) =>

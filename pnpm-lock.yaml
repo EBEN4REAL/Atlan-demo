@@ -99,7 +99,7 @@ specifiers:
   short-unique-id: ^4.4.4
   smooth-scroll-into-view-if-needed: ^1.1.33
   splitpanes: ^3.1.1
-  sql-formatter: ^4.0.2
+  sql-formatter: 6.1.2
   sql-highlight: ^4.0.1
   squel: ^5.13.0
   store: ^2.0.12
@@ -199,7 +199,7 @@ dependencies:
   short-unique-id: 4.4.4
   smooth-scroll-into-view-if-needed: 1.1.33
   splitpanes: 3.1.1
-  sql-formatter: 4.0.2
+  sql-formatter: 6.1.2
   sql-highlight: 4.0.1
   squel: 5.13.0
   store: 2.0.12
@@ -7339,8 +7339,8 @@ packages:
     resolution: {integrity: sha512-VUkxDJfIGSvTM/fm/+OSrx8ha9URwE/9B8FPvfzoBuAxVELIHBWpsfnJXIXv77zVwuex//QQL4kTU9SDBPeHjA==}
     dev: false
 
-  /sql-formatter/4.0.2:
-    resolution: {integrity: sha512-R6u9GJRiXZLr/lDo8p56L+OyyN2QFJPCDnsyEOsbdIpsnDKL8gubYFo7lNR7Zx7hfdWT80SfkoVS0CMaF/DE2w==}
+  /sql-formatter/6.1.2:
+    resolution: {integrity: sha512-09AiPmA6zDq82IBXOj5kN33VeAqaV92enkoonlhJge0fmfTESiYs3pwsntGKxa1C89xj/9MoHlNeqMmCr23BJw==}
     hasBin: true
     dependencies:
       argparse: 2.0.1

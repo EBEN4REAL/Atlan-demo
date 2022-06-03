@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full p-5">
+    <div class="h-full p-5 overflow-scroll">
         <div class="flex items-center text-sm font-bold text-gray-500">
             <AtlanIcon icon="Link" class="mr-2" />Resources
         </div>

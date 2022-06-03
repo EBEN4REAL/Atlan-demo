@@ -1,5 +1,5 @@
 <template>
-    <div class="p-5">
+    <div class="p-5 overflow-scroll">
         <div class="flex items-center text-sm font-bold text-gray-500">
             <AtlanIcon icon="AssetsInactiveLight" class="mr-2" />Assets
         </div>

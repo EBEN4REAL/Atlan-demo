@@ -1,5 +1,5 @@
 <template>
-    <div class="p-5">
+    <div class="p-5 overflow-scroll">
         <div class="flex items-center text-sm font-bold text-gray-500">
             <AtlanIcon icon="Overview" class="h-4 mr-2 -mt-1" />
             Overview
@@ -347,7 +347,10 @@
                 const glossaryPolicies = item.value?.glossaryPolicies || []
                 let glossaries = []
                 glossaryPolicies.forEach((glossaryPolicy) => {
-                    glossaries = [...glossaries, ...glossaryPolicy.glossaryQualifiedNames]
+                    glossaries = [
+                        ...glossaries,
+                        ...glossaryPolicy.glossaryQualifiedNames,
+                    ]
                 })
 
                 const formated = glossaries.map((glossary) =>

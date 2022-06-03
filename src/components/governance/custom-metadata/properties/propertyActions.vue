@@ -1,11 +1,4 @@
 <template>
-    <a-button
-        class="px-1 py-0 border-0 shadow-none"
-        style="background: inherit"
-        @click="copyAPI(name, 'Name Copied!')"
-    >
-        <AtlanIcon icon="CopyOutlined" />
-    </a-button>
     <a-dropdown
         v-model:visible="dropdownVisible"
         :trigger="['click']"

@@ -269,6 +269,7 @@
             "
             tab-position="right"
             :destroy-inactive-tab-pane="true"
+            @tabClick="handleTabClick"
         >
             <template
                 v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
@@ -396,7 +397,12 @@
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
     import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
-
+    import Activity from './activity/activityTab.vue'
+    import Resources from '@/common/assets/preview/resources/resourcesWrapper.vue'
+    import Jira from '@/common/assets/preview/integrations/jira/jira.vue'
+    import SlackResources from '@/common/assets/preview/resources/slackResourcesWrapper.vue'
+    import CustomMetaData from './customMetadata/index.vue'
+    
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
     import {
@@ -413,7 +419,7 @@
 
     export default defineComponent({
         name: 'AssetPreview',
-        components: {
+       components: {
             PreviewTabsIcon,
             CertificateBadge,
             NoAccess,
@@ -427,9 +433,7 @@
             property: defineAsyncComponent(
                 () => import('./property/index.vue')
             ),
-            activity: defineAsyncComponent(
-                () => import('./activity/activityTab.vue')
-            ),
+            activity: Activity,
             queries: defineAsyncComponent(() => import('./queries/index.vue')),
             s3Objects: defineAsyncComponent(
                 () => import('./s3objects/index.vue')
@@ -437,31 +441,17 @@
             relations: defineAsyncComponent(
                 () => import('./relations/index.vue')
             ),
-            resources: defineAsyncComponent(
-                () =>
-                    import(
-                        '@/common/assets/preview/resources/resourcesWrapper.vue'
-                    )
-            ),
+            resources: Resources,
+            
             lineage: defineAsyncComponent(
                 () => import('./lineage/lineageTab.vue')
             ),
-            customMetadata: defineAsyncComponent(
-                () => import('./customMetadata/index.vue')
-            ),
+            customMetadata: CustomMetaData,
             linkedAssets: defineAsyncComponent(
                 () => import('./linkedAssets/linkedAssetsWrapper.vue')
             ),
-            Jira: defineAsyncComponent(
-                () =>
-                    import('@/common/assets/preview/integrations/jira/jira.vue')
-            ),
-            SlackResourcesTab: defineAsyncComponent(
-                () =>
-                    import(
-                        '@/common/assets/preview/resources/slackResourcesWrapper.vue'
-                    )
-            ),
+            Jira,
+            SlackResourcesTab: SlackResources,
             SlackAskButton,
         },
 
@@ -550,7 +540,8 @@
                 links,
             } = useAssetInfo()
 
-            const activeKey = ref(0)
+            const activeKey = ref(1)
+            const activeLabel = ref<string>('Overview')
 
             const route = useRoute()
             const isProfile = ref(false)
@@ -627,17 +618,40 @@
                 if (enableEditinCM) {
                     readOnlyInCm.value = false
                 }
-
                 const idx = getPreviewTabs(asset, isProfile.value).findIndex(
                     (tl) => tl.name === tabName
                 )
-                if (idx > -1) activeKey.value = idx
+
+                if (idx > -1) {
+                    activeKey.value = idx
+                } else {
+                    activeKey.value = 0
+                    activeLabel.value = 'Overview'
+                }
 
                 // After a while change back to read state as the same component is being used for other CM tabs
 
                 setTimeout(() => {
                     readOnlyInCm.value = true
                 }, 1000)
+            }
+
+            debouncedWatch(
+                selectedAsset,
+                () => {
+                    if (drawerActiveKey.value === 'Overview') {
+                        switchTab(selectedAsset.value, activeLabel.value)
+                    }
+                },
+                { debounce: 200, deep: true }
+            )
+
+            const handleTabClick = (tabIndex) => {
+                const getTab = getPreviewTabs(
+                    selectedAsset.value,
+                    isProfile.value
+                )[tabIndex]
+                activeLabel.value = getTab.name
             }
 
             provide('switchTab', switchTab)
@@ -709,8 +723,7 @@
                 window.open(URL, '_blank')?.focus()
             }
 
-            const onClickTabIcon = (tabObj: object) => {
-                console.log('onClickTabIcon', tabObj)
+            const onClickTabIcon = (tabObj) => {
                 if (!tabObj.analyticsKey) {
                     return
                 }
@@ -835,6 +848,7 @@
                 links,
                 slackResourceCount,
                 switchTab,
+                handleTabClick,
             }
         },
     })

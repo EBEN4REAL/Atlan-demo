@@ -3,7 +3,7 @@
         <div class="flex items-center gap-x-2">
             <PackageIcon :package="workflow" />
             <div class="truncate">
-                <router-link :to="`/workflows/profile/${wfName(workflow)}`">
+                <router-link :to="`/workflows/profile/${refName(workflow)}`">
                     <p
                         class="text-sm font-bold truncate text-new-gray-700 hover:underline"
                     >
@@ -86,6 +86,7 @@
                 cronString,
                 creatorUsername,
                 name: wfName,
+                refName,
             } = useWorkflowInfo()
 
             const { name, icon, emoji, type, identifier } = usePackageInfo()
@@ -115,6 +116,7 @@
                 cronString,
                 creatorUsername,
                 pkg,
+                refName,
             }
         },
     })

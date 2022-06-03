@@ -16,11 +16,16 @@ import { useAuthStore } from '~/store/auth'
 import { inputFocusDirective } from '~/utils/directives/input-focus'
 import { authDirective } from './utils/directives/auth'
 import { Tenant } from '~/services/service/tenant'
+import fetchConfigs from '~/composables/configs/fetchConfigs.ts'
 
 import {
     identifyGroup,
     identifyUser,
 } from './composables/eventTracking/useAddEvent'
+import page from './constant/accessControl/page'
+import useAuth from '~/composables/auth/useAuth'
+import usePermissions from '~/composables/auth/usePermissions'
+
 import useTenant from '~/composables/tenant/useTenant'
 
 const app = createApp(App)
@@ -116,12 +121,25 @@ keycloak
             }, 6000)
             inputFocusDirective(app)
             authDirective(app)
-            const { mutate } = useTenant(false)
-            await mutate()
+
+            // ? necessary API calls needed before app mounting
+            await fetchConfigs()
             app.use(router).mount('#app')
-            const redirectUrl = localStorage.getItem('redirectURL')
+
+            const redirectUrl = localStorage.getItem('redirectURL') // eg - "/admin/integrations"
             if (redirectUrl) {
-                router.push(redirectUrl)
+                const { checkAccess } = useAuth()
+                if (
+                    (redirectUrl.startsWith('/admin') && !checkAccess(page.PAGE_ADMIN, 'or'))
+                    ||
+                    (redirectUrl.startsWith('/workflows') && !checkAccess(page.PAGE_WORKFLOWS, 'or'))
+                    ||
+                    (redirectUrl.startsWith('/governance') && !checkAccess(page.PAGE_GOVERNANCE, 'or'))
+                )
+                    router.push('/')
+                else {
+                    router.push(redirectUrl)
+                }
                 localStorage.setItem('redirectURL', '')
             }
             identifyUser()
@@ -129,6 +147,8 @@ keycloak
         }
     })
     .catch(() => {
+        app.use(router).mount('#app')
+        router.push('/error')
         authStore.setFailed(true)
         authStore.setIsAuthenticated(false)
     })

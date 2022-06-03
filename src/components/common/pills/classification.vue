@@ -21,9 +21,10 @@
             :icon="icon"
             :color="shieldColour"
             :mouse-enter="mouseEnter"
+            :class-names="classIcon"
         />
 
-        <div class="ml-1 truncate overflow-ellipsis">
+        <div :class="`ml-1 overflow-ellipsis truncate ${classCopy}`">
             {{ displayName || name }}
         </div>
         <a-popconfirm
@@ -121,6 +122,16 @@
                 },
             },
             createdBy: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            classCopy: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            classIcon: {
                 type: String,
                 required: false,
                 default: '',

@@ -76,14 +76,24 @@
                     </span>
                     <AtlanButton2
                         :disabled="!isEdit"
-                        :label="hasEditPermission!==undefined && !hasEditPermission ? 'Request': 'Update'"
+                        :label="
+                            hasEditPermission !== undefined &&
+                            !hasEditPermission
+                                ? 'Request'
+                                : 'Update'
+                        "
                         @click="handleUpdate"
                     />
                 </div>
             </div>
         </div>
         <div
-            v-if="hasEditPermission!==undefined && !hasEditPermission && role !== 'Guest' && !viewOnly"
+            v-if="
+                hasEditPermission !== undefined &&
+                !hasEditPermission &&
+                role !== 'Guest' &&
+                !viewOnly
+            "
             class="px-3 py-2 mt-3 bg-gray-100"
         >
             You don't have edit access. Suggest your changes
@@ -108,7 +118,7 @@
             </div>
         </template>
 
-        <div class="flex flex-col flex-grow pl-5 pr-5 overflow-y-auto pt-4">
+        <div class="flex flex-col flex-grow pt-4 pl-5 pr-5 overflow-y-auto">
             <!-- showing non empty starts here -->
             <template v-if="readOnly">
                 <template
@@ -446,6 +456,8 @@
                 getApplicableAttributes,
                 getEnumOptions,
                 getHumanTypeName,
+                parseAttributeValueHelper,
+                attributeHasValue: hasValue,
             } = useCustomMetadataHelpers()
 
             // ? local attribute list , may consist of key - values required by this component only, (ex, boolean unsavedChanges )
@@ -467,39 +479,11 @@
 
             /**
              * @desc parses all the attached bm from the asset payload and
-             *  forms the initial attribute list
+             *  forms the initial attribute list && attaches value to the attribute list
              */
             const setAttributesList = () => {
                 initializeAttributesList()
-                if (asset.value?.attributes) {
-                    const bmAttributes = Object.keys(
-                        asset.value.attributes
-                    ).filter((attr) => attr.split('.').length > 1)
-
-                    if (bmAttributes.length)
-                        bmAttributes.forEach((ab) => {
-                            if (data.value.id === ab.split('.')[0]) {
-                                const attribute = ab.split('.')[1]
-
-                                const value = asset.value.attributes[ab]
-                                const attrIndex =
-                                    applicableList.value.findIndex(
-                                        (a) => a.name === attribute
-                                    )
-                                const options =
-                                    applicableList.value[attrIndex]?.options
-
-                                if (attrIndex > -1) {
-                                    if (options?.multiValueSelect === 'true') {
-                                        // value = JSON.parse(value)
-                                    }
-
-                                    applicableList.value[attrIndex].value =
-                                        value
-                                }
-                            }
-                        })
-                }
+                parseAttributeValueHelper(applicableList, asset, data)
             }
 
             const payloadConstructor = () => {
@@ -682,35 +666,6 @@
                 { immediate: true }
             ) */
 
-            const hasValue = (a) => {
-                const isMultivalued =
-                    a?.options?.multiValueSelect === 'true' ||
-                    a?.options?.multiValueSelect === true
-                const dataType = getDatatypeOfAttribute(a)
-
-                if (
-                    [
-                        'url',
-                        'text',
-                        'int',
-                        'float',
-                        'number',
-                        'decimal',
-                        'users',
-                        'groups',
-                        'enum',
-                    ].includes(dataType) &&
-                    isMultivalued
-                )
-                    return !!a.value?.length
-                if (
-                    ['url', 'text', 'users', 'groups', 'enum'].includes(
-                        dataType
-                    )
-                )
-                    return !!a.value
-                return !!formatDisplayValue(a.value?.toString() || '', dataType)
-            }
             const isProfile = inject('isProfile')
 
             const readOnlySort = (a, b) =>

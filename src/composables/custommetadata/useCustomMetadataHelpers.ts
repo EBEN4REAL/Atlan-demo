@@ -1,6 +1,8 @@
 import useTypedefData from '../typedefs/useTypedefData'
 import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
 import { formatDate } from '../../utils/date'
+import { data } from 'autoprefixer'
+import { Ref } from 'vue'
 
 const numberTypes = ['int', 'double', 'byte', 'short', 'long']
 
@@ -83,7 +85,7 @@ export default function useCustomMetadataHelpers() {
     const getApplicableAttributes = (BM, typeName) =>
         JSON.parse(
             JSON.stringify(
-                BM?.attributes.filter(
+                (BM?.attributes || BM?.attributeDefs).filter(
                     (a) =>
                         a.options.customApplicableEntityTypes &&
                         JSON.parse(
@@ -118,7 +120,86 @@ export default function useCustomMetadataHelpers() {
         return tName
     }
 
+    /**
+     * 
+     * @param attributeList final attribute list applicable to the asset
+     * @param asset asset object where values will be parse
+     * @desc extracts bm values from the asset and attaches to the provided attribute list
+     */
+    const parseAttributeValueHelper = (attributeList: Ref, asset: Ref, metadata: Ref) => {
+        if (asset.value?.attributes) {
+            const bmAttributes = Object.keys(
+                asset.value.attributes
+            ).filter((attr) => attr.split('.').length > 1)
+
+            if (bmAttributes.length)
+                bmAttributes.forEach((ab) => {
+                    // TODO ? @abstrekt BM object where modified when using in discover, id is present there not in admin,
+                    // !Refactor - @abstrekt all the bm in helper function to support unmodified object, and refactor discover to have fallback keys
+                    if ((metadata.value.id || metadata.value.name) === ab.split('.')[0]) {
+                        const attribute = ab.split('.')[1]
+
+                        const value = asset.value.attributes[ab]
+                        const attrIndex =
+                            attributeList.value.findIndex(
+                                (a) => a.name === attribute
+                            )
+                        const options =
+                            attributeList.value[attrIndex]?.options
+
+                        if (attrIndex > -1) {
+                            if (options?.multiValueSelect === 'true') {
+                                // value = JSON.parse(value)
+                            }
+
+                            attributeList.value[attrIndex].value =
+                                value
+                        }
+                    }
+                })
+        }
+    }
+
+    /**
+     * 
+     * @param a attribute object after parsing through @function parseAttributeValueHelper
+     * @returns {Boolean} if a value exists for this attribute 
+     */
+    const attributeHasValue = (a) => {
+        const isMultivalued =
+            a?.options?.multiValueSelect === 'true' ||
+            a?.options?.multiValueSelect === true
+        const dataType = getDatatypeOfAttribute(a)
+
+        if (
+            [
+                'url',
+                'text',
+                'int',
+                'float',
+                'number',
+                'decimal',
+                'users',
+                'groups',
+                'enum',
+            ].includes(dataType) &&
+            isMultivalued
+        )
+            return !!a.value?.length
+        if (
+            ['url', 'text', 'users', 'groups', 'enum'].includes(
+                dataType
+            )
+        )
+            return !!a.value
+        return !!formatDisplayValue(a.value?.toString() || '', dataType)
+    }
+
+
+
     return {
+        attributeHasValue,
+        parseAttributeValueHelper,
         getHumanTypeName,
         getDatatypeOfAttribute,
         isLink,

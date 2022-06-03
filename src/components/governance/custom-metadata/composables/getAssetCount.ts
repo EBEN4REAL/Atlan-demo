@@ -6,8 +6,7 @@ import { useTypedefStore } from '~/store/typedef'
 
 const getAssetCount = (selectedBM) => {
     const typedefStore = useTypedefStore()
-    const count = ref(0)
-
+    const assets = ref([])
 
     const body = {
         "dsl": {
@@ -39,15 +38,14 @@ const getAssetCount = (selectedBM) => {
         isReady
     } = Search.IndexSearch(body, { asyncOptions: { immediate: false } })
     watch(data, (v) => {
-        count.value = v?.approximateCount || 0
+        assets.value = data?.value?.entities || []
     })
 
     return {
         isReady,
+        assets,
         mutate,
-        data,
         error,
-        count,
         isLoading,
         isValidating,
     }

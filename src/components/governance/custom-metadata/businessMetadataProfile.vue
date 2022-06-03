@@ -2,8 +2,8 @@
     <LinkedAssetsModal
         v-model:visible="linkedAssetsVisible"
         :linked-assets="linkedAssets"
-        :assetCount="assetCount"
         :metadata="selectedBm"
+        @metadataRemove="handleMetadataRemove"
     />
     <div class="relative">
         <div
@@ -29,7 +29,7 @@
                     <MetadataHeaderButton
                         :metadata="localBm"
                         :allow-delete="allowDelete"
-                        :asset-count="assetCount"
+                        :asset-count="linkedAssets.length"
                     />
                 </div>
             </div>
@@ -42,12 +42,14 @@
                         :updated-by="localBm.updatedBy"
                     />
                 </div>
-                <span class="text-gray-300 p">•</span>
-                <span
-                    class="cursor-pointer hover:underline text-primary"
-                    @click="linkedAssetsVisible = true"
-                    >View linked assets</span
-                >
+                <template v-if="linkedAssets.length">
+                    <span class="text-gray-300 p">•</span>
+                    <span
+                        class="cursor-pointer hover:underline text-primary"
+                        @click="linkedAssetsVisible = true"
+                        >View linked assets</span
+                    >
+                </template>
             </div>
         </div>
 
@@ -203,7 +205,7 @@
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
     import Truncate from '@/common/ellipsis/index.vue'
-    import LinkedAssetsModal from '@/governance/custom-metadata/linkedAssetsModal.vue'
+    import LinkedAssetsModal from '@/governance/custom-metadata/linkedAssets/linkedAssetsModal.vue'
 
     export default defineComponent({
         components: {
@@ -331,17 +333,28 @@
             }
 
             const {
-                count: assetCount,
-                data: linkedAssets,
-                mutate,
+                assets: linkedAssets,
+                mutate: refreshLinkedAssets,
                 isReady,
             } = getAssetCount(localBm.value)
 
-            if (localBm.value.attributeDefs?.length) mutate()
+            const handleMetadataRemove = async (assetID) => {
+                // ? refresh idx search giving stale data
+                // await refreshLinkedAssets()
+
+                // ? hence removing locally
+                linkedAssets.value = linkedAssets.value.filter(
+                    (asset) => asset?.guid !== assetID
+                )
+                if (!linkedAssets.value.length)
+                    linkedAssetsVisible.value = false
+            }
+
+            if (localBm.value.attributeDefs?.length) refreshLinkedAssets()
 
             const allowDelete = computed(() => {
                 if (!localBm.value.attributeDefs?.length) return true
-                return !assetCount.value
+                return !linkedAssets.value.length
             })
 
             const selected = computed(() =>
@@ -408,12 +421,12 @@
                 addPropertyDrawer.value?.open(property, true)
             }
             return {
+                handleMetadataRemove,
                 openDirection,
                 linkedAssetsVisible,
                 selected,
                 openEdit,
                 allowDelete,
-                assetCount,
                 linkedAssets,
                 attrsearchText,
                 error,

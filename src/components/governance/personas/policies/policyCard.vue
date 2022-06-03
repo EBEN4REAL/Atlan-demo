@@ -79,7 +79,8 @@
                                                 <div>
                                                     Looks like the connection
                                                     used in this policy is
-                                                    deleted.  Feel free to delete the policy.
+                                                    deleted. Feel free to delete
+                                                    the policy.
                                                     <!--You can edit the
                                                     policy with a new connection
                                                     or delete it -->

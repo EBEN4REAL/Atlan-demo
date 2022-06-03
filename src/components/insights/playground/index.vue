@@ -110,55 +110,61 @@
                         </template>
 
                         <template #closeIcon>
-                            <AtlanIcon
-                                v-if="
-                                    tab.playground.resultsPane.result
-                                        .isQueryRunning === 'error' &&
-                                    tab.key !== activeInlineTabKey
-                                "
-                                icon="FailedQuery"
-                                class="absolute w-4 h-4 unsaved-dot right-2 top-1.5"
-                            />
-
-                            <AtlanIcon
-                                v-else-if="
-                                    tab.playground.resultsPane.result
-                                        .isQueryRunning === 'loading'
-                                "
-                                icon="RunningQuery"
-                                class="w-4 h-4 animate-spin unsaved-dot absolute right-2 top-1.5"
-                            />
-                            <AtlanIcon
-                                v-else-if="
-                                    tab.playground.resultsPane.result
-                                        .isQueryRunning === 'success' &&
-                                    tab.key !== activeInlineTabKey
-                                "
-                                icon="SuccessQuery"
-                                class="w-3 h-3 unsaved-dot absolute right-2.5 top-2"
-                            />
                             <div
-                                v-else-if="!tab.isSaved"
-                                class="flex items-center unsaved-dot"
-                            >
-                                <div
-                                    v-if="
-                                        tab?.playground?.editor?.text?.length >
-                                            0 || tab?.queryId
-                                    "
-                                    class="w-1.5 h-1.5 rounded-full bg-primary absolute right-3.5 top-2.5"
-                                ></div>
-                            </div>
-                            <AtlanIcon
-                                v-if="tabs.length >= 2"
-                                icon="Close"
-                                class="w-4 h-4 rounded-sm cross-hover"
                                 :style="{
-                                    opacity: tabHover === tab.key ? 1 : 0,
+
                                 }"
-                                @mouseenter="setTabHover(tab)"
-                                @mouseleave="setTabHover(null)"
-                            />
+                            >
+                                <AtlanIcon
+                                    v-if="
+                                        tab.playground.resultsPane.result
+                                            .isQueryRunning === 'error' &&
+                                        tab.key !== activeInlineTabKey
+                                    "
+                                    icon="FailedQuery"
+                                    class="absolute w-4 h-4 unsaved-dot right-2 top-1.5"
+                                />
+
+                                <AtlanIcon
+                                    v-else-if="
+                                        tab.playground.resultsPane.result
+                                            .isQueryRunning === 'loading'
+                                    "
+                                    icon="RunningQuery"
+                                    class="w-4 h-4 animate-spin unsaved-dot absolute right-2 top-1.5"
+                                />
+                                <AtlanIcon
+                                    v-else-if="
+                                        tab.playground.resultsPane.result
+                                            .isQueryRunning === 'success' &&
+                                        tab.key !== activeInlineTabKey
+                                    "
+                                    icon="SuccessQuery"
+                                    class="w-3 h-3 unsaved-dot absolute right-2.5 top-2"
+                                />
+                                <div
+                                    v-else-if="!tab.isSaved"
+                                    class="flex items-center unsaved-dot cross-hover"
+                                >
+                                    <div
+                                        v-if="
+                                            tab?.playground?.editor?.text?.length >
+                                                0 || tab?.queryId
+                                        "
+                                        class="w-1.5 h-1.5 rounded-full bg-primary absolute right-3.5 top-2.5"
+                                    ></div>
+                                </div>
+                                <AtlanIcon
+                                    v-if="tabs.length >= 2"
+                                    icon="Close"
+                                    class="w-4 h-4 rounded-sm cross-hover"
+                                    :style="{
+                                        opacity: tabHover === tab.key ? 1 : 0,
+                                    }"
+                                    @mouseenter="setTabHover(tab)"
+                                    @mouseleave="setTabHover(null)"
+                                />
+                            </div>
                         </template>
                     </a-tab-pane>
                 </a-tabs>

@@ -90,7 +90,6 @@
             'w-full': true, 
             'text-gray-700': true,
             'box-hover': isOver,
-            'bg-new-gray-100': true
         }"
     >
         <span

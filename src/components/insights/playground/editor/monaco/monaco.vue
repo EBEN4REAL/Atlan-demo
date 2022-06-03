@@ -141,11 +141,10 @@
                     })
             }
             const traverseUp = () => {
-                selectedSuggestionIndex.value =
-                    (selectedSuggestionIndex.value -
-                        1 +
-                        suggestions.value.length) %
-                    suggestions.value.length
+                if (selectedSuggestionIndex.value - 1 >= 0) {
+                    selectedSuggestionIndex.value =
+                        selectedSuggestionIndex.value - 1
+                }
                 scrollSuggestionList()
             }
             const traverseDown = () => {

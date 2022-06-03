@@ -101,7 +101,7 @@
         v-if="isActive && description(suggestion?.documentation?.entity)"
     >
         <span class="ml-6 text-sm truncate plex-mono text-new-gray-700">
-            {{ description(suggestion?.documentation?.entity) }}
+            {{ decodeURI(description(suggestion?.documentation?.entity)) }}
         </span>
     </div>
     <div

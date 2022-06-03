@@ -13,7 +13,11 @@
                 <span class="ml-2 font-medium text-gray-600">{{
                     title(asset)
                 }}</span>
-                <router-link :to="getLineagePath(asset)" target="_blank">
+                <router-link
+                    v-if="!portsTypeNames.includes(asset.typeName)"
+                    :to="getLineagePath(asset)"
+                    target="_blank"
+                >
                     <div
                         class="flex items-center ml-3 text-base cursor-pointer text-primary"
                     >
@@ -320,6 +324,7 @@
 
     /** UTILS */
     import {
+        portsTypeNames,
         getSource,
         getSchema,
     } from '@/common/assets/profile/tabs/lineage/util.js'
@@ -643,6 +648,7 @@
                 getLineagePath,
                 title,
                 asset,
+                portsTypeNames,
             }
         },
     })

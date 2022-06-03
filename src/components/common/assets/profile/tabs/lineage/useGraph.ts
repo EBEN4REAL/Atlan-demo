@@ -1,16 +1,14 @@
 /* eslint-disable no-nested-ternary */
 /** COMPOSABLES */
 import useAssetInfo from '~/composables/discovery/useAssetInfo'
-import {
-    featureEnabledMap,
-    LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE,
-} from '~/composables/labs/labFeatureList'
 
 /** CONSTANTS */
 import { dataTypeCategoryList } from '~/constant/dataType'
 
 /** UTILS */
 import {
+    nodePortsLabelMap,
+    nodeWithPorts,
     SQLAssets,
     getNodeSourceImage,
     getSource,
@@ -73,20 +71,6 @@ const certificateStatusIcons = {
     DEPRECATED: iconDeprecated,
 }
 
-const nodeWithPorts = [
-    'Table',
-    'View',
-    'MaterialisedView',
-    'TableauDatasource',
-    // 'LookerExplore',
-    // 'LookerView',
-]
-
-if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
-    nodeWithPorts.push('LookerExplore')
-    nodeWithPorts.push('LookerView')
-}
-
 const portDataTypeIcons = {
     array,
     boolean,
@@ -114,30 +98,13 @@ const biPortDataTypeIcons = {
     LookerField: lookerField,
 }
 
-if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE])
-    biPortDataTypeIcons.LookerField = lookerField
-
 const columnKeyTypeIcons = {
     isPrimary: iconPrimary,
     isForeign: iconForeign,
 }
 
-const portsLabelMap = {
-    Table: 'columns',
-    View: 'columns',
-    MaterialisedView: 'columns',
-    TableauDatasource: 'fields',
-    LookerExplore: 'fields',
-    LookerView: 'fields',
-}
-
-if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
-    portsLabelMap.LookerExplore = 'fields'
-    portsLabelMap.LookerView = 'fields'
-}
-
 const getPortsCTALabel = (typeName, portsCount) => {
-    const label = portsLabelMap[typeName]
+    const label = `${nodePortsLabelMap[typeName]}s`
     return portsCount || portsCount === 0
         ? `${portsCount} ${label}`
         : `view ${label}`
@@ -288,8 +255,8 @@ export default function useGraph(graph) {
                                 res += `
                                 <div isportshowmore="true" class="node-port flex justify-center text-new-blue-400 items-center pl-2">
                                     <span> Show more ${
-                                        portsLabelMap[typeName]
-                                    } </span>
+                                        nodePortsLabelMap[typeName]
+                                    }s </span>
                                     ${
                                         data?.portShowMoreLoading
                                             ? `<div class="w-5 h-5 ml-2">

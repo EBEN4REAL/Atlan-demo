@@ -1,7 +1,6 @@
 <template>
     <LineageImpactModal
         v-if="guidForImpactedAssets"
-        :key="guidForImpactedAssets"
         v-model:visible="showImpactedAssets"
         :guid="guidForImpactedAssets"
         :is-base-on-graph="false"

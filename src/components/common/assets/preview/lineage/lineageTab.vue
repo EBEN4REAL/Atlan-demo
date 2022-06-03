@@ -2,7 +2,6 @@
     <div class="flex flex-col h-full" style="height: calc(100% - 84px)">
         <LineageImpactModal
             v-if="guid"
-            :key="guid"
             v-model:visible="showImpactedAssets"
             :guid="guid"
             :is-base-on-graph="false"

@@ -170,11 +170,26 @@
                 selectedSuggestionIndex.value = 0
             }
 
+            function equalArray(a, b) {
+                if (a.length === b.length) {
+                    for (var i = 0; i < a.length; i++) {
+                        if (a[i]?.insertText !== b[i]?.insertText) {
+                            return false
+                        }
+                    }
+                    return true
+                } else {
+                    return false
+                }
+            }
+
             watch(
                 suggestions,
-                () => {
-                    if (suggestions?.value?.length) showAutoCompletion()
-                    else hideAutoCompletion(suggestions?.value?.length)
+                (newSuggestions, oldSuggestions) => {
+                    if (!equalArray(newSuggestions, oldSuggestions)) {
+                        if (suggestions?.value?.length) showAutoCompletion()
+                        else hideAutoCompletion(suggestions?.value?.length)
+                    } else hideAutoCompletion(suggestions?.value?.length)
                 },
                 { deep: true }
             )
@@ -305,11 +320,12 @@
                     stripQuotes = true
                 }
 
-                if (
-                    wordPosition?.endColumn &&
-                    wordPosition?.startColumn &&
-                    editorPosition?.lineNumber
-                ) {
+                const endColumn =
+                    wordPosition?.endColumn ?? editorPosition.column
+                const startColumn =
+                    wordPosition?.startColumn ?? editorPosition.column
+                const lineNumber = editorPosition.lineNumber
+                if (endColumn && startColumn && lineNumber) {
                     // edit the word at the position calculated above
                     editor?.getModel()?.pushEditOperations(
                         [],
@@ -317,11 +333,11 @@
                             {
                                 range: {
                                     endColumn: stripQuotes
-                                        ? wordPosition?.endColumn + 1
-                                        : wordPosition?.endColumn,
+                                        ? endColumn + 1
+                                        : endColumn,
                                     startColumn: stripQuotes
-                                        ? wordPosition.startColumn - 1
-                                        : wordPosition.startColumn,
+                                        ? startColumn - 1
+                                        : startColumn,
                                     startLineNumber: editorPosition.lineNumber,
                                     endLineNumber: editorPosition.lineNumber,
                                 },
@@ -360,11 +376,9 @@
                         editor?.setSelection(
                             new monaco.Selection(
                                 editorPosition.lineNumber,
-                                wordPosition.startColumn +
-                                    suggestion?.insertText?.length,
+                                startColumn + suggestion?.insertText?.length,
                                 editorPosition.lineNumber,
-                                wordPosition.startColumn +
-                                    suggestion?.insertText?.length
+                                startColumn + suggestion?.insertText?.length
                             )
                         )
                     }
@@ -677,7 +691,9 @@
                 }
                 // CUSTOM DROPDOWN: Add event to enable keyboard actions for autoSuggestions dropdown
                 editor?.onKeyDown((e) => {
+                    console.log(e, 'event')
                     if (e.keyCode === 9 && isAutoComplete.value) {
+                        debugger
                         hideAutoCompletion()
 
                         e.preventDefault()
@@ -701,6 +717,7 @@
                         !e.metaKey &&
                         !e.shiftKey
                     ) {
+                        debugger
                         // document.activeElement.blur()
                         e.preventDefault()
                         e.stopPropagation()

@@ -369,7 +369,7 @@
 
             /** This is a flag. We check if the guid has changed and
              * only then fetch the impacted assets. */
-            const updateNeeded = ref(true)
+            // const updateNeeded = ref(true)
 
             const getClassification = (ids: String[]) =>
                 classificationList.value.filter((clsf) =>
@@ -564,9 +564,9 @@
             })
 
             const getImpactedAssets = () => {
-                if (!guid.value || !updateNeeded.value) return
+                // if (!guid.value || !updateNeeded.value) return
                 mutateDownstream()
-                updateNeeded.value = false
+                // updateNeeded.value = false
             }
 
             const downloadImpactedAssets = () => {
@@ -607,9 +607,9 @@
                 )
             }
 
-            watch(guid, () => {
-                updateNeeded.value = true
-            })
+            // watch(guid, () => {
+            //     updateNeeded.value = true
+            // })
 
             whenever(error, () => {
                 if (error.value)

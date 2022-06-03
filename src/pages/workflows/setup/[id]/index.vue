@@ -89,7 +89,6 @@
             watch(data, () => {
                 if (data.value.data.config) {
                     try {
-                        console.log(data.value.data.config)
                         localConfig.value = JSON.parse(data.value.data.config)
                         emit('selectedconfig', localConfig)
                         // Add Schedule

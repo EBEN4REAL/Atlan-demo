@@ -11,13 +11,17 @@
                     <div
                         class="flex flex-wrap max-w-xs gap-2 mt-3 overflow-auto max-h-32"
                     >
-                        <div
+                        <router-link
                             v-for="persona in personas"
                             :key="persona.id"
-                            class="px-2 border border-gray-300 rounded-xl"
+                            :to="`/governance/personas/${persona.id}`"
                         >
-                            {{ persona.name }}
-                        </div>
+                            <div
+                                class="px-2 border border-gray-300 cursor-pointer rounded-xl"
+                            >
+                                {{ persona.name }}
+                            </div>
+                        </router-link>
                     </div>
                     <!-- <div
                         v-if="personasComputed.length < personas.length"

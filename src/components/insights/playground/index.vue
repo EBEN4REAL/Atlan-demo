@@ -6,7 +6,7 @@
         "
     >
         <div class="relative flex flex-col bg-new-gray-100">
-            <div class="flex w-full text-gray">
+            <div class="flex w-full">
                 <a-tabs
                     v-model:activeKey="activeInlineTabKey"
                     :class="$style.inline_tabs"
@@ -83,29 +83,15 @@
                                     @mouseenter="setTabHover(tab)"
                                     @mouseleave="setTabHover(null)"
                                     @contextmenu.prevent="showContextMenu"
+
                                 >
-                                    <div
-                                        class="flex items-center w-full text-gray-700"
-                                    >
-                                        <span
-                                            class="w-full text-sm truncate inline_tab_label"
-                                            :class="[
-                                                tab.key !== activeInlineTabKey
-                                                    ? tabHover === tab.key
-                                                        ? 'text-gray-700'
-                                                        : 'text-gray-500'
-                                                    : '',
-                                            ]"
-                                        >
-                                            <TabItem
-                                                :title="tab.label"
-                                                :index="tab.key"
-                                                :active-tab-key="activeInlineTabKey"
-                                                :tab-hover="tabHover"
-                                                @on-droped="sortTabsOnDrop"
-                                            />
-                                        </span>
-                                    </div>
+                                    <TabItem
+                                        :title="tab.label"
+                                        :index="tab.key"
+                                        :active-tab-key="activeInlineTabKey"
+                                        :tab-hover="tabHover"
+                                        @on-droped="sortTabsOnDrop"
+                                    />
                                 </div>
                                 <template #overlay>
                                     <a-menu>
@@ -259,6 +245,7 @@
     } from 'vue'
     import { useRouter, useRoute } from 'vue-router'
     import { useDebounceFn } from '@vueuse/core'
+    import { useDrop } from 'vue3-dnd'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -599,7 +586,6 @@
             })
 
             const sortTabsOnDrop = (currentKey: String, dropKey: String) => {
-                // debugger
                 const currIndex = tabs.value.findIndex(
                     (tab) => tab.key === currentKey
                 )
@@ -611,6 +597,24 @@
 
                 tabs.value.splice(dropIndex, 0, content)
             }
+
+            const [dropCollect, drop] = useDrop(() => ({
+                accept: 'Box',
+                drop: (item, monitor) => {
+                    const dropResult = monitor.getDropResult()
+                    
+                    console.log("OnDrop -> Item: ", item, "Drop Result: ", monitor);
+                    
+                    if (item && dropResult) {
+                        sortTabsOnDrop(item.key, dropResult.index)
+                    }
+                },
+                collect: (monitor) => ({
+                    isOver: monitor.isOver(),
+                    canDrop: monitor.canDrop(),
+                }),
+            }))
+
 
             return {
                 queryExecutionTime,
@@ -639,6 +643,7 @@
                 showContextMenu,
                 contentMenu,
                 sortTabsOnDrop,
+                drop
             }
         },
     })
@@ -662,7 +667,7 @@
             border-bottom: 0px !important;
             padding: 0 10px 0 0 !important;
             height: 28px !important;
-            @apply bg-gray-light !important;
+            @apply bg-new-gray-100 !important;
             transition: none !important;
 
             > div {

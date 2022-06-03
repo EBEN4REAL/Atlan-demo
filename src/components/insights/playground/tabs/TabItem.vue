@@ -82,49 +82,62 @@
 </script>
 
 <template>
-    <div :ref="drop" role="Box">
-        <div
-            :ref="drag"
-            :class="{
-                box: true,
-                'box-dragging': isDragging,
-                'box-hover': isOver,
-                'bg-gray-light': !isSelected && !isOutsideHover,
-                'bg-white' : isSelected,
-                'box-outside-hover' : isOutsideHover && !isSelected
-            }"
-            role="Box"
-            :style="{ opacity }"
+    <div 
+        :ref='drop' 
+        :class="{
+            flex: true,
+            'items-center': true, 
+            'w-full': true, 
+            'text-gray-700': true,
+            'box-hover': isOver,
+            'bg-new-gray-100': true
+        }"
+    >
+        <span
+            class="w-full text-sm truncate inline_tab_label"
+            :class="[
+                index !== activeInlineTabKey
+                    ? tabHover === index
+                        ? 'text-gray-700'
+                        : 'text-gray-500'
+                    : '',
+            ]"
         >
-          <Tooltip
-              clamp-percentage="99%"
-              :tooltip-text="title"
-              :rows="1"
-          />
-        </div>
+            <div
+                :ref="drag"
+                :class="{
+                    box: true,
+                    'box-dragging': isDragging,
+                    'bg-new-gray-100': !isSelected && !isOutsideHover,
+                    'bg-white' : isSelected,
+                    'box-outside-hover' : isOutsideHover && !isSelected
+                }"
+                role="Box"
+                :style="{ opacity }"
+            >
+                <Tooltip
+                    clamp-percentage="99%"
+                    :tooltip-text="title"
+                    :rows="1"
+                />
+            </div>
+        </span>
     </div>
 </template>
 
 <style scoped>
-    .layer {
-      background-color: 'blue';
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 100;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
     .drop-container {
         color: white;
         text-align: center;
         float: left;
     }
+    .inline_tab_label {
+        max-width: 78px;
+    }
     .box {
         width: 80px;
         padding: 5px 0px 5px 10px;  
-        cursor: move;
+        cursor: grab;
         float: left;
 
         &.dragging {
@@ -136,11 +149,12 @@
     }
     .box-dragging {
         color: rgb(124, 119, 185);
+        cursor: grabbing;
+
     }
     .box-hover {
         background-color: rgb(244, 246, 253);
-        color: grey;
-        cursor: move;
         float: left;
+        border-left: 1px solid blue;
     }
 </style>

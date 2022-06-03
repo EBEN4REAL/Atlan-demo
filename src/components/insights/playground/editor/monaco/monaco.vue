@@ -817,7 +817,7 @@
                         editor?.getPosition()
                     )
                     setTimeout(() => {
-                        // hideAutoCompletion()
+                        hideAutoCompletion()
                     }, 150)
                 })
                 editor?.onDidFocusEditorWidget(() => {

@@ -426,12 +426,6 @@
 
 <style lang="less" scoped>
     // regular-table
-    @font-face {
-        // font-family: Avenir;
-        // src: url('~/assets/fonts/avenir/Avenir-Roman.woff2');
-        font-family: IBMPlexSans;
-        src: url('~/assets/fonts/ibmPlexSans/IBMPlexSans-Regular.woff2');
-    }
     .table_height {
         height: 100% !important;
         position: relative;

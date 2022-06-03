@@ -1,5 +1,5 @@
 <template>
-    <div class="p-5">
+    <div class="h-full p-5">
         <div class="flex items-center text-sm font-bold text-gray-500">
             <AtlanIcon icon="Link" class="mr-2" />Resources
         </div>
@@ -20,7 +20,7 @@
                 />
             </div>
         </div>
-        <div v-else class="mt-5">
+        <div v-else class="flex items-center h-full">
             <div
                 class="flex flex-col items-center justify-center h-96 gap-y-10"
             >

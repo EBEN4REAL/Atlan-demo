@@ -146,6 +146,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import whoami from '~/composables/user/whoami.ts'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import {Modal} from "ant-design-vue"
 
     export default defineComponent({
         name: 'ClassificationWidget',
@@ -257,7 +258,7 @@
             }
 
             const handleDeleteClassification = (name) => {
-                localValue.value = localValue.value.filter(
+               localValue.value = localValue.value.filter(
                     (i) => i.typeName !== name || isPropagated(i)
                 )
                 selectedValue.value = {
@@ -266,6 +267,7 @@
                         .map((j) => j.typeName),
                 }
                 handleChange()
+                
             }
 
             const handleSelectedChange = () => {

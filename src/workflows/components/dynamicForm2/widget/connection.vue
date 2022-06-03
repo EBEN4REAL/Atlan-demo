@@ -310,6 +310,7 @@
                     'ownerGroups',
                     'adminUsers',
                     'adminGroups',
+                    'adminRoles',
                     'allowQuery',
                     'allowQueryPreview',
                     'certificateStatus',

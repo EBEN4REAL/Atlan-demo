@@ -19,6 +19,7 @@ export const CONNECTION_ATTRIBUTES = [
     'defaultDatabaseQualifiedName',
     'adminUsers',
     'adminGroups',
+    'adminRoles',
     ...InternalAttributes,
 ]
 

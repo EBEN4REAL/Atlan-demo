@@ -841,11 +841,11 @@
                         <span>Connection Admins</span>
                         <AtlanIcon icon="Info" class="mb-0.5 ml-1 mr-auto" />
                         <AtlanButton2
-                            v-if="!localAdmins.adminRoles"
+                            v-if="!localAdmins.adminRoles?.length"
                             label="Add all admins"
                             color="link"
                             class="h-6 ml-auto"
-                            @click="localAdmins.adminRoles = true"
+                            @click="setAllAdmins"
                         />
                     </div>
                 </a-tooltip>
@@ -859,14 +859,14 @@
                         @change="handleChangeAdmins"
                     >
                         <div
-                            v-if="localAdmins.adminRoles"
-                            class="flex items-center justify-between flex-none px-2 py-1 ml-2 border border-gray-200 rounded-full cursor-pointer text-new-gray-800 hover:bg-primary hover:text-white"
+                            v-if="localAdmins.adminRoles?.length"
+                            class="flex items-center justify-between flex-none px-2 py-1 border border-gray-200 rounded-full cursor-pointer text-new-gray-800 hover:bg-primary hover:text-white"
                         >
                             <span> All admins </span>
                             <AtlanIcon
                                 icon="Cross"
                                 class="h-3 ml-3 rotate-45"
-                                @click="localAdmins.adminRoles = false"
+                                @click="setAllAdmins(false)"
                             />
                         </div>
                     </Admins>
@@ -1405,6 +1405,11 @@
                 showUserPreview({ allowed: ['about', 'assets', 'groups'] })
             }
 
+            const setAllAdmins = (set = true) => {
+                localAdmins.value.adminRoles = set ? ['$admin'] : []
+                handleChangeAdmins()
+            }
+
             return {
                 localDescription,
                 selectedAsset,
@@ -1503,6 +1508,7 @@
                 aggregationMap,
                 handleApplySuggestion,
                 readmeGuid,
+                setAllAdmins,
             }
         },
     })

@@ -842,6 +842,7 @@ export default {
     Looker,
     Salesforce,
     S3,
+    GDS,
     SSO,
     SMTP,
     APIKey,

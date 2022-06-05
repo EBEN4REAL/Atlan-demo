@@ -385,4 +385,10 @@ export const summaryVariants = [
         components: ['ParentContext', 'Connection'],
         includes: ['S3Object'],
     },
+    {
+        id: 'dataStudioAsset',
+        label: 'Data Studio Asset',
+        components: ['Connection'],
+        includes: ['DataStudioAsset'],
+    },
 ]

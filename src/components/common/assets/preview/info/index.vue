@@ -422,6 +422,7 @@
                             'LookerQuery',
                             'SalesforceOrganization',
                             'S3Bucket',
+                            'DataStudioAsset',
                         ].includes(selectedAsset?.typeName)) ||
                     ['Schema', 'ColumnProcess', 'BIProcess'].includes(
                         selectedAsset?.typeName

@@ -698,4 +698,16 @@ export const assetTypeList: {
         groupOrder: 7,
         priorityOrder: 1,
     },
+    {
+        id: 'DataStudioAsset',
+        label: 'Data Studio Asset',
+        fullLabel: 'Data Studio Asset',
+        isDiscoverable: true,
+        image: 'GDS',
+        source: 'GoogleDataStudio',
+        categoryType: 'BI',
+        parents: [],
+        relationships: [],
+        groupOrder: 8,
+    },
 ]

@@ -13,6 +13,7 @@ import MSSQL from '~/assets/images/source/svg/MSSQL.svg?url'
 import S3 from '~/assets/images/source/svg/s3.svg?url'
 import Presto from '~/assets/images/source/svg/presto.svg?url'
 import Trino from '~/assets/images/source/svg/trino.svg?url'
+import GDS from '~/assets/images/source/svg/gds.svg?url'
 
 // FIXME: Add an SVG for glue
 import Glue from '~/assets/images/source/svg/glue.svg?url'
@@ -578,6 +579,14 @@ export const SourceList = [
         types: ['S3Bucket', 'S3Object'],
     },
     {
+        id: 'datastudio',
+        label: 'Data Studio',
+        image: GDS,
+        connectionCount: 0,
+        hierarchy: [],
+        types: ['DataStudioAsset'],
+    },
+    {
         id: 'trino',
         label: 'Trino',
         image: Trino,
@@ -680,5 +689,5 @@ export const SourceList = [
             'Query',
             'Folder',
         ],
-    }
+    },
 ]

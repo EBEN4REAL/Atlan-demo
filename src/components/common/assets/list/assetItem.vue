@@ -303,6 +303,16 @@
                                             "
                                             >(Published)</span
                                         >
+                                        <span
+                                            v-if="
+                                                ['DataStudioAsset'].includes(
+                                                    item.typeName
+                                                ) && dataStudioAssetType(item)
+                                            "
+                                            >({{
+                                                dataStudioAssetType(item)
+                                            }})</span
+                                        >
                                     </div>
                                 </div>
 
@@ -1687,6 +1697,7 @@
                 parentBucket,
                 s3BucketName,
                 hasLineage,
+                dataStudioAssetType,
             } = useAssetInfo()
 
             const icon = computed(() => {
@@ -1911,6 +1922,7 @@
                 s3BucketName,
                 hasLineage,
                 handleSwitchTabLineage,
+                dataStudioAssetType,
             }
         },
     })

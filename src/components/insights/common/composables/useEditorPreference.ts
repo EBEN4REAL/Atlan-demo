@@ -59,8 +59,6 @@ export function useEditorPreference() {
     const editorConfig: Ref<editorConfigInterface> = ref(
         getUserPereferenceFromLocalStorage()
     )
-    // FIXME: For removing the line one from customer instances from thier local storage
-    editorConfig.value.cursorStyle = 'block'
 
     const getThemeLabelFromName = (themeName: string) => {
         const theme = themes.find((theme) => theme.name === themeName)
@@ -71,7 +69,7 @@ export function useEditorPreference() {
         theme: 'AtlanLight',
         tabSpace: 3,
         fontSize: 14,
-        cursorStyle: 'block',
+        cursorStyle: 'line',
     })
     return {
         getThemeLabelFromName,

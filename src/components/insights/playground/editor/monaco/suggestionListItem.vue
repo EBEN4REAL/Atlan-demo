@@ -21,7 +21,7 @@
                     :class="suggestion.iconClass"
                 ></AtlanIcon
                 ><span
-                    class="text-sm truncate plex-mono-medium text-new-gray-700 parent-ellipsis-container-base"
+                    class="text-sm truncate plex-mono text-new-gray-700 parent-ellipsis-container-base"
                     v-html="suggestion.label"
                 ></span>
 

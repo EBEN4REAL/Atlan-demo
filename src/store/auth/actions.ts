@@ -156,11 +156,11 @@ export const actions: Actions = {
                     `${i.entityId || i.entityIdEnd2}_${i.action}`
                 ) >= 0
         )
-        if (this.columnEvaluations.length + uniqueArray.length > 2000) {
+        if (this.columnEvaluations.length + uniqueArray.length > 1000) {
             this.columnEvaluations.splice(0, uniqueArray.length)
         }
         this.columnEvaluations.push(...uniqueArray)
-        if (this.columnEvaluations.length + uniqueArray.length > 2000) {
+        if (this.columnEvaluations.length + uniqueArray.length > 1000) {
             value.forEach((el) => {
                 const found = this.columnEvaluations.find(
                     (i) =>

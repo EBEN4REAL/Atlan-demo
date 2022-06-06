@@ -134,7 +134,7 @@
                         index !== activeInlineTabKey
                     "
                     icon="FailedQuery"
-                    class="absolute w-4 h-4 right-1 top-1"
+                    class="absolute w-4 h-4 right-1 top-1.5"
                     :class="{
                         'unsaved-dot': tabHover===index
                     }"

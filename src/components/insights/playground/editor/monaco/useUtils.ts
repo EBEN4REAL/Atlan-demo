@@ -38,6 +38,9 @@ export function getSuggestionsListIcon(suggestion: any) {
     if (suggestion.kind === 'snippet') {
         return 'Snippet'
     }
+    if (suggestion.kind === 'alias') {
+        return 'Nut'
+    }
     if (type) {
         if (type === 'Function') {
             icon = type
@@ -76,6 +79,9 @@ export function getSuggestionsListType(suggestion: any) {
     }
     if (suggestion.kind === 'snippet') {
         return 'Snippet'
+    }
+    if (suggestion.kind === 'alias') {
+        return 'Alias'
     }
     return ''
 }

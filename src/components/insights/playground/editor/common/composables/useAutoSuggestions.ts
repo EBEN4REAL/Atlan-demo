@@ -805,6 +805,14 @@ async function getSuggestionsUsingType(
     }
 }
 
+function getAliasStructure(keyword: any) {
+    return {
+        label: keyword,
+        kind: 'alias',
+        insertText: keyword,
+    }
+}
+
 export async function useAutoSuggestions(
     changes: any,
     editorInstance: any,
@@ -916,6 +924,7 @@ export async function useAutoSuggestions(
                 }
         }
     }
+    debugger
     if (subquery) {
         ///////////////////////////////////////////////////////////
         let subQueryleftSideStringFromCurPos = editorText
@@ -955,6 +964,7 @@ export async function useAutoSuggestions(
         }
         return _str
     }
+    debugger
 
     let leftSideStringFromCurPos = removeSubQueries(
         editorTextTillCursorPos.replace(/\"/g, '')
@@ -999,8 +1009,26 @@ export async function useAutoSuggestions(
         t = !token.match(/[-[\]{};/\n()*+?'"\\/^$|#\s\t]/g) && token !== ''
         return t
     })
+    debugger
     // tokens.push(' ')
+    let exceptionCase = false // when used as "table"."columnName"
     let currentWord = tokens[tokens.length - 1]
+
+    let previousWord
+    if (tokens.length > 1) previousWord = tokens[tokens.length - 2]
+    if (previousWord === '.') {
+        contextStore.value.left.forEach((context) => {
+            if (
+                tokens.length > 2 &&
+                context.name === tokens[tokens.length - 3]
+            ) {
+                exceptionCase = true
+            }
+        })
+        tokens.splice(tokens.length - 2, 2, `.${currentWord}`)
+        currentWord = `.${currentWord}`
+    }
+
     // TABLE[DOT]  // check if previous is [dot]
     if (currentWord === '.' || currentWord.includes('.')) {
         let aliasMode = false
@@ -1109,12 +1137,7 @@ export async function useAutoSuggestions(
                                 )
                                 let AliasesKeywordsMap = AliasesKeys.map(
                                     (keyword) => {
-                                        return {
-                                            label: keyword,
-                                            kind: monaco.languages
-                                                .CompletionItemKind.Function,
-                                            insertText: keyword,
-                                        }
+                                        return getAliasStructure(keyword)
                                     }
                                 )
                                 let _suggestions = [
@@ -1176,12 +1199,7 @@ export async function useAutoSuggestions(
                                 )
                                 let AliasesKeywordsMap = AliasesKeys.map(
                                     (keyword) => {
-                                        return {
-                                            label: keyword,
-                                            kind: monaco.languages
-                                                .CompletionItemKind.Function,
-                                            insertText: keyword,
-                                        }
+                                        return getAliasStructure(keyword)
                                     }
                                 )
 
@@ -1242,14 +1260,7 @@ export async function useAutoSuggestions(
                             )
                             let AliasesKeywordsMap = AliasesKeys.map(
                                 (keyword) => {
-                                    return {
-                                        label: keyword,
-                                        kind:
-                                            1 ||
-                                            monaco.languages.CompletionItemKind
-                                                .Keyword,
-                                        insertText: keyword,
-                                    }
+                                    return getAliasStructure(keyword)
                                 }
                             )
 
@@ -1283,6 +1294,7 @@ export async function useAutoSuggestions(
                     )
                     return new Promise((resolve, reject) => {
                         suggestionsPromise.then((value) => {
+                            debugger
                             const AliasesKeys: string[] = []
                             Object.keys(aliasesMap.value).forEach(
                                 (key: any) => {
@@ -1293,12 +1305,7 @@ export async function useAutoSuggestions(
                             )
                             let AliasesKeywordsMap = AliasesKeys.map(
                                 (keyword) => {
-                                    return {
-                                        label: keyword,
-                                        kind: monaco.languages
-                                            .CompletionItemKind.Keyword,
-                                        insertText: keyword,
-                                    }
+                                    return getAliasStructure(keyword)
                                 }
                             )
 

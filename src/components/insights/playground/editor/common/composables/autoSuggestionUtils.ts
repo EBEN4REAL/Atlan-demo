@@ -32,7 +32,9 @@ export function extractTablesFromContext(
                 let tableName = tokens[i + 1]
                 if (tokens[i + 1].split('.').length >= 2) {
                     let _temp = tokens[i + 1].split('.').filter((e) => e !== '')
-                    tableName = _temp[_temp.length - 1]
+                    let index = _temp.length - 1
+                    if (_temp.length > 3) index = 2 // assign only table
+                    tableName = _temp[index]
                 }
                 // take first match always
                 tokensPosMap.push({

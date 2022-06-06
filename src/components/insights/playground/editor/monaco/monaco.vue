@@ -185,9 +185,21 @@
             watch(
                 suggestions,
                 (newSuggestions, oldSuggestions) => {
-                    if (!equalArray(newSuggestions, oldSuggestions)) {
-                        if (suggestions?.value?.length) showAutoCompletion()
-                        else hideAutoCompletion(suggestions?.value?.length)
+                    if (suggestions?.value?.length) {
+                        // FIXME: Exception case when there is alias with single character ( length ==1)
+                        if (
+                            newSuggestions[newSuggestions.length - 1]?.kind ===
+                                'alias' &&
+                            oldSuggestions[newSuggestions.length - 1]?.kind ===
+                                'alias' &&
+                            newSuggestions[newSuggestions.length - 1]?.label
+                                ?.length === 1 &&
+                            oldSuggestions[newSuggestions.length - 1]?.label
+                                ?.length === 1
+                        ) {
+                            hideAutoCompletion()
+                            return
+                        } else showAutoCompletion()
                     } else hideAutoCompletion(suggestions?.value?.length)
                 },
                 { deep: true }
@@ -265,7 +277,6 @@
             }
 
             const handleApplySuggestion = (suggestion) => {
-                debugger
                 // get current cursor position
                 const editorPosition = editor?.getPosition() as monaco.IPosition
                 // use current cursor position to get position of the word to be replaced
@@ -347,7 +358,6 @@
                     )
 
                     if (suggestion?.kind && suggestion?.kind === 'snippet') {
-                        debugger
                         // debugger
                         const position: any =
                             editor?.getPosition() as monaco.IPosition
@@ -692,7 +702,6 @@
                 editor?.onKeyDown((e) => {
                     console.log(e, 'event')
                     if (e.keyCode === 9 && isAutoComplete.value) {
-                        debugger
                         hideAutoCompletion()
 
                         e.preventDefault()
@@ -716,7 +725,6 @@
                         !e.metaKey &&
                         !e.shiftKey
                     ) {
-                        debugger
                         // document.activeElement.blur()
                         e.preventDefault()
                         e.stopPropagation()

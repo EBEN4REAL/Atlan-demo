@@ -88,7 +88,6 @@ export const actions: Actions = {
     getCustomMetadataListProjectionsByName(cmName, includeArchive = false) {
         const reqBmAttrNames: string[] = []
         const BMList = includeArchive ? this.getCustomMetadataList : this.activeCustomMetadataList
-        debugger
         BMList?.forEach((bm) => {
             if (
                 bm?.attributeDefs &&

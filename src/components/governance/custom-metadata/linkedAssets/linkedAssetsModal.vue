@@ -15,7 +15,7 @@
                     </span>
                 </div>
 
-                <span class="text-xs text-gray-500">
+                <span class="text-gray-500">
                     {{ linkedAssets.length }} Assets linked to
                     {{ metadata.displayName }}
                 </span>

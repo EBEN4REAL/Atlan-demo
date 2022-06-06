@@ -2,7 +2,7 @@
     <div>
         <div class="flex">
             <div class="flex-grow">
-                <div class="flex">
+                <div class="flex mb-2">
                     <div class="flex-grow">
                         <div class="flex items-center">
                             <AssetTitle :asset="asset" />
@@ -22,7 +22,8 @@
                 <div class="space-y-2 text-xs">
                     <template v-for="a in applicableList" :key="a.name">
                         <div
-                            class="flex items-center font-normal text-gray-500"
+                            class="flex items-center text-gray-500"
+                            style="font-size: 14px"
                         >
                             <div
                                 class="flex"
@@ -32,7 +33,7 @@
                                     :tooltip-text="a.displayName"
                                     :rows="1"
                                     placement="left"
-                                    classes="text-gray-500"
+                                    classes="text-gray-500 "
                                 />
                                 <a-tooltip>
                                     <template #title>
@@ -49,7 +50,10 @@
                                 <span>: </span>
                             </div>
                             <div class="flex-grow">
-                                <ReadOnly :attribute="a" class="ml-2" />
+                                <ReadOnly
+                                    :attribute="a"
+                                    class="ml-2 text-gray-700"
+                                />
                             </div>
                         </div>
                     </template>

@@ -700,11 +700,11 @@ export const assetTypeList: {
     },
     {
         id: 'DataStudioAsset',
-        label: 'Data Studio Asset',
+        label: 'Asset',
         fullLabel: 'Data Studio Asset',
         isDiscoverable: true,
         image: 'GDS',
-        source: 'GoogleDataStudio',
+        source: 'DataStudio',
         categoryType: 'BI',
         parents: [],
         relationships: [],

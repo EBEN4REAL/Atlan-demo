@@ -1357,6 +1357,30 @@ export default function useAssetInfo() {
     const s3ObjectVersionId = (asset: assetInterface) =>
         attributes(asset)?.s3ObjectVersionId || '-'
 
+    const googleService = (asset: assetInterface) =>
+        attributes(asset)?.googleService || '-'
+
+    const googleProjectName = (asset: assetInterface) =>
+        attributes(asset)?.googleProjectName || '-'
+
+    const googleProjectId = (asset: assetInterface) =>
+        attributes(asset)?.googleProjectId || '-'
+
+    const googleProjectNumber = (asset: assetInterface) =>
+        attributes(asset)?.googleProjectNumber || '-'
+
+    const dataStudioAssetType = (asset: assetInterface) =>
+        attributes(asset)?.dataStudioAssetType || '-'
+
+    const dataStudioAssetTitle = (asset: assetInterface) =>
+        attributes(asset)?.dataStudioAssetTitle || '-'
+
+    const dataStudioAssetOwner = (asset: assetInterface) =>
+        attributes(asset)?.dataStudioAssetOwner || '-'
+
+    const isTrashedDataStudioAsset = (asset: assetInterface) =>
+        !!attributes(asset)?.isTrashedDataStudioAsset
+
     return {
         attributes,
         title,
@@ -1537,5 +1561,13 @@ export default function useAssetInfo() {
         s3ObjectVersionId,
         columnUpdatePermission,
         hasLineage,
+        googleService,
+        googleProjectName,
+        googleProjectId,
+        googleProjectNumber,
+        dataStudioAssetType,
+        dataStudioAssetTitle,
+        dataStudioAssetOwner,
+        isTrashedDataStudioAsset,
     }
 }

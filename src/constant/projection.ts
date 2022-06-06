@@ -147,6 +147,14 @@ export const AssetAttributes = [
     'awsOwnerName',
     'awsTags',
     's3ObjectVersionId',
+    'googleService',
+    'googleProjectName',
+    'googleProjectId',
+    'googleProjectNumber',
+    'dataStudioAssetType',
+    'dataStudioAssetTitle',
+    'dataStudioAssetOwner',
+    'isTrashedDataStudioAsset',
 ]
 
 export const SQLAttributes = [

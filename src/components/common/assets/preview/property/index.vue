@@ -213,8 +213,64 @@
                 </div>
             </div>
 
+            <div
+                v-if="['DataStudioAsset'].includes(selectedAsset.typeName)"
+                class="flex flex-col w-full gap-y-5"
+            >
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Google Service</span>
+
+                    <span class="text-gray-700">{{
+                        googleService(selectedAsset)
+                    }}</span>
+                </div>
+
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Google Project Name</span>
+
+                    <span class="text-gray-700">{{
+                        googleProjectName(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <div class="flex items-center mb-1 text-gray-500">
+                        <span>Google Project ID</span>
+                        <a-tooltip title="Copy">
+                            <div
+                                @click="
+                                    handleCopyValue(
+                                        googleProjectId(selectedAsset),
+                                        'Google Project ID'
+                                    )
+                                "
+                            >
+                                <AtlanIcon
+                                    icon="CopyOutlined"
+                                    class="w-auto ml-1 cursor-pointer mb-0.5"
+                                /></div
+                        ></a-tooltip>
+                    </div>
+                    <span class="text-gray-700">{{
+                        googleProjectId(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500"
+                        >Google Project Number</span
+                    >
+
+                    <span class="text-gray-700">{{
+                        googleProjectNumber(selectedAsset)
+                    }}</span>
+                </div>
+            </div>
+
             <a-divider
-                v-if="['S3Object', 'S3Bucket'].includes(selectedAsset.typeName)"
+                v-if="
+                    ['S3Object', 'S3Bucket', 'DataStudioAsset'].includes(
+                        selectedAsset.typeName
+                    )
+                "
                 dashed
                 class="my-0 border-gray-500"
             ></a-divider>
@@ -526,6 +582,10 @@
                 awsOwnerName,
                 awsTags,
                 s3BucketVersioningEnabled,
+                googleService,
+                googleProjectName,
+                googleProjectId,
+                googleProjectNumber,
             } = useAssetInfo()
 
             const { role } = whoami()
@@ -581,6 +641,10 @@
                 awsOwnerName,
                 awsTags,
                 s3BucketVersioningEnabled,
+                googleService,
+                googleProjectName,
+                googleProjectId,
+                googleProjectNumber,
                 map,
                 role,
             }

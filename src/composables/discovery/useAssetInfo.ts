@@ -873,7 +873,8 @@ export default function useAssetInfo() {
         return (
             assetType(asset)?.includes('Tableau') ||
             assetType(asset)?.includes('BI') ||
-            assetType(asset)?.includes('Looker')
+            assetType(asset)?.includes('Looker') ||
+            assetType(asset)?.includes('DataStudio')
         )
     }
     const isSaasAsset = (asset: assetInterface) => {

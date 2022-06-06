@@ -119,6 +119,7 @@
         >
             <div
                 class="inner-box justify-between"
+                :style="{ 'padding-top': 1 }"
                 role="Box"
             >
                 <Tooltip
@@ -181,7 +182,7 @@
                     <AtlanIcon
                         v-if="length >= 2"
                         icon="Close"
-                        class="w-4 h-4 absolute right-1 top-1 rounded-sm cross-hover"
+                        class="w-4 h-4 absolute right-1 top-1.5 rounded-sm cross-hover"
                         :style="{
                             opacity: tabHover === index ? 1 : 0,
                         }"

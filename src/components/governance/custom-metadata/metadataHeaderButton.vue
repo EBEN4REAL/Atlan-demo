@@ -181,12 +181,13 @@
                         content: 'deleted.',
                         duration: 2,
                     } as any)
-                    resetSelection()
+
                     useAddEvent('governance', 'custom_metadata', 'deleted', {
                         title: props.metadata.displayName,
                     })
                     // reloadTable()
                     store.removeCustomMetadataByName(props.metadata.name)
+                    resetSelection()
                 } else if (error && error.value) {
                     // ? error getting handled in the composable (useDeleteTypedefs)
                 }

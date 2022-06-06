@@ -123,7 +123,7 @@
             })
 
             // Control
-            const control = (type, item = null) => {
+            const control = (type, item = '') => {
                 if (type === 'selectedAsset') selectedAsset.value = item
             }
 

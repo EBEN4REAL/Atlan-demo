@@ -607,6 +607,42 @@
             </div>
 
             <div
+                v-if="['DataStudioAsset'].includes(selectedAsset.typeName)"
+                class="flex flex-col px-5 gap-y-4"
+            >
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Asset Type</span>
+
+                    <span class="text-gray-700">{{
+                        dataStudioAssetType(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Asset Title</span>
+
+                    <span class="text-gray-700">{{
+                        dataStudioAssetTitle(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Asset Owner</span>
+
+                    <span class="text-gray-700">{{
+                        dataStudioAssetOwner(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500"
+                        >Trashed Data Studio Asset</span
+                    >
+
+                    <span class="text-gray-700">{{
+                        isTrashedDataStudioAsset(selectedAsset) ? 'Yes' : 'No'
+                    }}</span>
+                </div>
+            </div>
+
+            <div
                 v-if="
                     isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
                     externalLocation(selectedAsset)
@@ -1285,6 +1321,10 @@
                 s3ObjectCount,
                 s3ObjectContentType,
                 readmeGuid,
+                dataStudioAssetType,
+                dataStudioAssetTitle,
+                dataStudioAssetOwner,
+                isTrashedDataStudioAsset,
             } = useAssetInfo()
 
             const {
@@ -1500,6 +1540,10 @@
                 aggregationMap,
                 handleApplySuggestion,
                 readmeGuid,
+                dataStudioAssetType,
+                dataStudioAssetTitle,
+                dataStudioAssetOwner,
+                isTrashedDataStudioAsset,
             }
         },
     })

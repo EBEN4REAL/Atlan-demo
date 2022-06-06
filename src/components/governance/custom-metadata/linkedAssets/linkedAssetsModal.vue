@@ -1,8 +1,13 @@
 <template>
-    <a-modal v-model:visible="visible" :footer="null" :width="700">
+    <a-modal v-model:visible="visible" :width="700">
         <template #closeIcon></template>
+        <template #footer>
+            <div class="flex justify-end pb-1.5">
+                <AtlanButton2 label="Done" @click="visible = false" />
+            </div>
+        </template>
         <div
-            class="flex flex-col py-6 space-y-3 overflow-hidden linkedAssetModal"
+            class="flex flex-col pt-4 pb-1 space-y-3 overflow-hidden linkedAssetModal"
         >
             <div class="px-6">
                 <div class="flex items-center gap-x-2">

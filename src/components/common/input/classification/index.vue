@@ -26,13 +26,38 @@
                     can review your request.
                 </div>
 
-                <div>
+                <div class="relative">
                     <ClassificationFacet
                         ref="classificationFacetRef"
                         v-model="selectedValue"
                         :show-none="false"
                         @change="handleSelectedChange"
                     ></ClassificationFacet>
+                    <!-- <div class="pb-4" v-if="parentAssetChildren?.length">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div> -->
+                    <!-- <div class="absolute w-full p-2 mx-auto mt-1 mt-5 bg-white rounded top-full assets-info" :style="{background: '#F4F6FD'}" 
+                        v-if="parentAssetChildren?.length">
+                        <div class="flex ">
+                            <div class="mr-2">
+                                <AtlanIcon
+                                    icon="Overview"
+                                />
+                            </div>
+                            <div class="text-sm text-gray-500">Classifications attached to a {{selectedAsset?.typeName}} will propagate to all 
+                                <span 
+                                    style="text-decoration: underline dotted"  
+                                    @mouseover="showChildrenAsset = true"
+                                    @mouseleave="showChildrenAsset = false">
+                                    children assets.
+                                </span>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="absolute w-10/12 p-2 pt-3 mx-auto mt-6 text-white rounded-md top-24 left-5" style="background: #2A2F45" 
+                        v-if="showChildrenAsset && parentAssetChildren?.length" >
+                        {{parentAssetChildren}}
+                    </div>
                 </div>
                 <div
                     v-if="!editPermission && role !== 'Guest'"
@@ -103,6 +128,7 @@
                         :name="classification.name"
                         :display-name="classification?.displayName"
                         :is-propagated="isPropagated(classification)"
+                        :count="classification?.count"
                         :allow-delete="
                             allowDelete && !isPropagated(classification)
                         "
@@ -146,6 +172,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import whoami from '~/composables/user/whoami.ts'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import {assetParentChildHierachy} from '~/constant/assetParentChildHierachy'
 
     export default defineComponent({
         name: 'ClassificationWidget',
@@ -206,8 +233,23 @@
         emits: ['change', 'update:modelValue', 'popoverActive'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
-
-            const { guid, editPermission, selectedAsset } = toRefs(props)
+           
+            const { guid, editPermission, selectedAsset, allowDelete } = toRefs(props)
+            
+            const parentAssetChildren = ref<string>()
+            const showChildrenAsset = ref<boolean>(false)
+            
+            const parentAssets = assetParentChildHierachy.map((asset: {
+                parent: string;
+                children: string[];
+            }) => asset.parent)
+            
+            if(parentAssets.includes(selectedAsset.value?.typeName)) {
+                const findAssetTypeChildren = assetParentChildHierachy.find(asset => asset?.parent === selectedAsset.value?.typeName)
+                parentAssetChildren.value = findAssetTypeChildren.children.join(", ")
+                console.log("CHILDREN => 230" , findAssetTypeChildren)
+            }
+            
             const localValue = ref(modelValue.value)
             const { role } = whoami()
 
@@ -246,7 +288,31 @@
                     'typeName'
                 )
 
-                return matchingIdsResult
+                const classList = matchingIdsResult.reduce((acc: any, cur:any, i: number) => {
+                    if(!acc.length) {
+                        acc.push({
+                            ...cur,
+                            count: 1,
+                            propagated: isPropagated(cur)
+                        })
+                    }else if(acc.length && i > 0) {
+                        const classIndex = acc.findIndex(cl => cl.displayName === cur?.displayName && (isPropagated(cur) && cl?.propagated))
+                        if(classIndex > -1) {
+                            acc[classIndex].count += 1
+                        }else {
+                            acc.push({
+                                ...cur,
+                                count: 1,
+                                propagated: isPropagated(cur)
+                            })
+                        }
+                    }
+                    
+                    return acc
+                
+                }, [])
+
+                return classList
             })
 
             const handleChange = () => {
@@ -395,6 +461,30 @@
             }
             const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
 
+            // const classList = list.value.reduce((acc: any, cur:any, i: number) => {
+                //     if(!acc.length) {
+                //         acc.push({
+                //             ...cur,
+                //             count: 1,
+                //             propagated: isPropagated(cur)
+                //         })
+                //     }else if(acc.length && i > 0) {
+                //         const classIndex = acc.findIndex(cl => cl.displayName === cur?.displayName && (isPropagated(cur) && cl?.propagated))
+                //         if(classIndex > -1) {
+                //             acc[classIndex].count += 1
+                //         }else {
+                //             acc.push({
+                //                 ...cur,
+                //                 count: 1,
+                //                 propagated: isPropagated(cur)
+                //             })
+                //         }
+                //     }
+                    
+                //     return acc
+                
+                // }, [])
+
             return {
                 localValue,
                 isPropagated,
@@ -414,6 +504,8 @@
                 requestLoading,
                 mouseEnterDelay,
                 enteredPill,
+                parentAssetChildren,
+                showChildrenAsset,
             }
         },
     })
@@ -425,4 +517,10 @@
             width: 250px !important;
         }
     }
+    .assets-info {
+        mix-blend-mode: normal;
+        box-shadow: 0px 5px 16px rgba(0, 0, 0, 0.1);
+        border-radius: 6px;
+    }
+   
 </style>

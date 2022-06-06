@@ -26,6 +26,7 @@
                             classes="
                                    font-bold cursor-pointer text-md text-primary hover:underline  "
                             @click="showColumnDrawer = true"
+                            :mouseEnterDelay="0.5"
                         />
                         <CertificateBadge
                             v-if="certificateStatus(item)"

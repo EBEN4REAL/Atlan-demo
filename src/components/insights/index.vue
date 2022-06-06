@@ -1,5 +1,7 @@
 <template>
     <div id="fullScreenId" class="flex h-full overflow-x-hidden">
+        <div class="plex-mono"></div>
+        <div class="plex-mono-medium"></div>
         <div ref="splitpaneRef" :class="$style.splitpane_insights">
             <splitpanes
                 class="parent_splitpanes"
@@ -939,6 +941,15 @@
     }
 </style>
 
+<style lang="less">
+    .plex-mono {
+        font-family: PlexMono !important;
+    }
+    .plex-mono-medium {
+        font-family: PlexMono !important;
+        font-weight: bold;
+    }
+</style>
 <style lang="less" scoped>
     // .placeholder {
     //     background-color: #f4f4f4;

@@ -64,15 +64,11 @@
         >
             <template v-if="!allowDelete" #title>
                 <span class="text-gray-700" style="">
-                    {{
-                        !allowDelete
-                            ? `${metadata.displayName} is linked with ${assetCount} assets. You'll have to remove them before archiving. `
-                            : ''
-                    }}
+                    <b>{{ metadata.displayName }}</b> is linked with
+                    {{ assetCount }} assets. You'll have to remove them before
+                    archiving.
                 </span>
-
                 <span
-                    v-if="assetCount"
                     class="inline-block cursor-pointer hover:underline text-primary"
                     @click="$emit('viewAssets')"
                     >View linked assets</span
@@ -95,6 +91,7 @@
                     icon="TrashAlt"
                 />
             </AtlanButton>
+
             <a-modal
                 v-model:visible="deleteConfirm"
                 :width="340"
@@ -275,7 +272,7 @@
 <style lang="less" module>
     .copyDropdown {
         :global(.ant-dropdown-menu) {
-            @apply shadow-none !important;
+            @apply shadow-none overflow-hidden !important;
         }
     }
 </style>

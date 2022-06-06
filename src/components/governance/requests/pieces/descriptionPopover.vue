@@ -3,7 +3,7 @@
         <a-popover
             v-model:visible="visible"
             trigger="hover"
-            placement="topLeft"
+            :placement="placement"
         >
             <template #title>
                 <div
@@ -20,10 +20,7 @@
 
             <template #content>
                 <div
-                    class="flex flex-col px-4 pt-4 -mb-2 text-sm text-gray"
-                    :class="{
-                        'pb-4': !showActions,
-                    }"
+                    class="flex flex-col px-4 py-4 -mb-6 text-sm text-gray"
                     :style="{
                         width: '400px',
                     }"
@@ -32,7 +29,7 @@
                         class="w-full p-2 py-2.5 bg-gray-100 border-l-2 rounded-md border-primary"
                     >
                         <h2 class="font-normal text-gray-500">
-                            Newer description
+                            New description
                         </h2>
 
                         <div class="w-full mt-2 overflow-x-scroll desc-wrapper">
@@ -73,7 +70,7 @@
                     </div>
                 </div>
 
-                <div v-if="showActions">
+                <div v-if="showActions" v-auth="[map.APPROVE_REQUEST]">
                     <a-divider />
 
                     <div class="w-full pb-4 -mt-2">
@@ -82,8 +79,12 @@
                             :request="request"
                             :loading="loading"
                             :is-approval-loading="isApprovalLoading"
-                            @accept="$emit('accept')"
-                            @reject="$emit('reject')"
+                            @accept="
+                                (message) => $emit('accept', message || '')
+                            "
+                            @reject="
+                                (message) => $emit('reject', message || '')
+                            "
                         />
                     </div>
                 </div>
@@ -102,6 +103,8 @@
     import Avatar from '~/components/common/avatar/index.vue'
     import RequestActions from '../requestActions.vue'
 
+    import map from '~/constant/accessControl/map'
+
     export default defineComponent({
         components: {
             Avatar,
@@ -119,6 +122,10 @@
                 type: Boolean,
                 default: false,
             },
+            placement: {
+                type: String,
+                default: 'topLeft',
+            },
         },
 
         emits: ['switchUpdatePopover', 'accept', 'reject'],
@@ -133,7 +140,7 @@
                 emit('switchUpdatePopover', newVal)
             })
 
-            return { visible, imageUrl }
+            return { visible, imageUrl, map }
         },
     })
 </script>

@@ -65,8 +65,8 @@
                                 $emit('switchPopover', val)
                             }
                         "
-                        @accept="$emit('accept')"
-                        @reject="$emit('reject')"
+                        @accept="(message) => $emit('accept', message || '')"
+                        @reject="(message) => $emit('reject', message || '')"
                     />
                 </div>
             </span>

@@ -1,7 +1,9 @@
 <template>
     <div id="fullScreenId" class="flex h-full overflow-x-hidden">
-        <div class="plex-mono"></div>
-        <div class="plex-mono-medium"></div>
+        <div class="absolute">
+            <div class="text-transparent plex-mono">s</div>
+            <div class="text-transparent plex-mono-medium">s</div>
+        </div>
         <div ref="splitpaneRef" :class="$style.splitpane_insights">
             <splitpanes
                 class="parent_splitpanes"

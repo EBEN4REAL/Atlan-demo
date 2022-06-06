@@ -25,9 +25,7 @@ const getAssetCount = (selectedBM) => {
                 }
             }
         },
-        attributes: [...typedefStore.getCustomMetadataListProjectionsByName(
-            selectedBM.name
-        ), ...attributes],
+        attributes: [...typedefStore.getCustomMetadataListProjectionsByName(selectedBM.name, true), ...attributes],
         suppressLogs: true
     }
 

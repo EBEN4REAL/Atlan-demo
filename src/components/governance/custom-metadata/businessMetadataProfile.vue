@@ -43,14 +43,6 @@
                         :updated-by="localBm.updatedBy"
                     />
                 </div>
-                <!-- <template v-if="linkedAssets.length">
-                    <span class="text-gray-300 p">•</span>
-                    <span
-                        class="cursor-pointer hover:underline text-primary"
-                        @click="linkedAssetsVisible = true"
-                        >View linked assets</span
-                    >
-                </template> -->
             </div>
         </div>
 

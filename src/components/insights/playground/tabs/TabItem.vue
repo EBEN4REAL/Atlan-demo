@@ -177,7 +177,7 @@
                         class="w-1.5 h-1.5 rounded-full bg-primary absolute right-2 top-2.5"
                     ></div>
                 </div>
-                <div @click="callOnEdit">
+                <div @click.stop="callOnEdit">
                     <AtlanIcon
                         v-if="length >= 2"
                         icon="Close"
@@ -199,7 +199,7 @@
         float: left;
     }
     .inline_tab_label {
-        max-width: 100px;
+        max-width: 110px;
         padding-right: 5px;
     }
     .box {
@@ -211,8 +211,8 @@
         }
     }
     .inner-box {
-        padding: 5px 0px 5px 10px;  
-        width: 80px;
+        padding: 5px 0px 5px 5px;  
+        width: 85px;
         display: flex;
     }
     .box-outside-hover {

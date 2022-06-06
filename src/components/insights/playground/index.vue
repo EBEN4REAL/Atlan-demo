@@ -30,7 +30,7 @@
                                     >
                                         <div
                                             class="flex items-center pl-2 newTabDropdownOption newTabDropdownOption1"
-                                            @click="() => handleAdd(false)"
+                                            @click="handleAdd(false)"
                                         >
                                             <AtlanIcon
                                                 icon="Query24"
@@ -42,7 +42,7 @@
                                         </div>
                                         <div
                                             class="flex items-center pl-2 mt-2 newTabDropdownOption newTabDropdownOption2"
-                                            @click="() => handleAdd(true)"
+                                            @click="handleAdd(true)"
                                         >
                                             <AtlanIcon
                                                 icon="Vqb24"
@@ -226,10 +226,6 @@
             TabItem,
         },
         props: {
-            activeInlineTabKey: {
-                type: String,
-                required: true,
-            },
             refreshQueryTree: {
                 type: Function,
             },
@@ -334,6 +330,7 @@
             }
 
             const onTabClick = (activeKey) => {
+                debugger;
                 setActiveTabKey(activeKey, activeInlineTabKey)
                 pushGuidToURL(activeInlineTab.value?.queryId)
 
@@ -348,6 +345,7 @@
                 //         false
                 // }
             }
+
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
                 console.log('edit triggered: ')
                 
@@ -356,6 +354,7 @@
                 if (action === 'add') {
                     handleAdd(false)
                 } else {
+                    debugger;
                     /* For closing the tab */
                     console.log(targetKey)
                     let crossedTabState: boolean = false
@@ -366,6 +365,7 @@
                     })
                     /* If it is unsaved then show popover confirm */
                     if (!crossedTabState) {
+                        debugger;
                         /* If content is empty */
                         const tab = tabs.value.find(
                             (tabItem) => tabItem.key === targetKey
@@ -382,13 +382,17 @@
                                 pushGuidToURL
                             )
                         }
+                        debugger;
                     } else {
+                        debugger;
                         inlineTabRemove(
                             targetKey as string,
                             tabs,
                             activeInlineTabKey,
                             pushGuidToURL
                         )
+
+                        debugger;
                     }
                 }
             }
@@ -713,8 +717,8 @@
         height: calc(100vh - 19rem);
     }
     .inline_tab {
-        max-width: 100px;
-        width: 100px;
+        max-width: 110px;
+        width: 110px;
         min-width: 100px;
         overflow: hidden;
         height: 28px !important;

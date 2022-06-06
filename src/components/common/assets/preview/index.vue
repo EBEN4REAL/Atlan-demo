@@ -574,15 +574,15 @@
             const authStore = useAuthStore()
 
             const slackResourceCount = () =>
-                links(selectedAsset?.value) ??
-                [].filter((l) => getDomain(l.attributes.link) === 'slack.com')
-                    .length
+                links(selectedAsset.value).filter(
+                    (l) => getDomain(l.attributes.link) === 'slack.com'
+                )?.length
 
             const getCount = (tab) => {
                 if (tab?.toLowerCase() === 'resources') {
                     return (
-                        links(selectedAsset?.value)?.length ??
-                        0 - slackResourceCount()
+                        links(selectedAsset.value)?.length -
+                        slackResourceCount()
                     )
                 } else if (tab?.toLowerCase() === 'slack') {
                     return slackResourceCount()

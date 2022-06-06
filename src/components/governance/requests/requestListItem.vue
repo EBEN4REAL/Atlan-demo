@@ -175,7 +175,7 @@
                 :is-approval-loading="state.isApprovalLoading"
                 @accept="handleApproval"
                 @reject="handleRejection"
-                @switchUpdatePopover="
+                @switch-popover="
                     (val) => {
                         updatePopoverActive = val
                     }

@@ -125,7 +125,11 @@
                 </template>
 
             </a-tooltip> -->
+            <template v-if="user.username === currentUserUsername">
+                {{ user?.role_object?.name || '' }}
+            </template>
             <ChangeRole
+                v-else
                 :user="user"
                 :selected-user="selectedUser"
                 :role-list="roleList"
@@ -614,6 +618,7 @@
             }
 
             return {
+                currentUserUsername,
                 roleList,
                 userColumns,
                 nameCase,

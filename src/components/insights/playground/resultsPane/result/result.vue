@@ -1,4 +1,7 @@
 <template>
+    <div class="absolute">
+        <div class="text-transparent ibm-ples-sans">s</div>
+    </div>
     <div
         class="h-full overflow-y-hidden"
         v-if="!insights_Store.activePreviewGuid || isQueryRunning === 'loading'"
@@ -280,6 +283,11 @@
     })
 </script>
 
+<style lang="less">
+    .ibm-ples-sans {
+        font-family: IBMPlexSans !important;
+    }
+</style>
 <style lang="less" scoped>
     .button-shadow {
         box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.12);

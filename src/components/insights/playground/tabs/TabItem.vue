@@ -24,9 +24,17 @@
             tabHover: {
               type: String,
               required: true,
+            },
+            tab:{
+                type: Object,
+                required: true,
+            },
+            length: {
+                type: Number,
+                required: true,
             }
         },
-        emits: { onDroped: null },
+        emits: [ "onDroped", "onEdit"],
         setup(props, context) {
             const [dropCollect, drop] = useDrop(() => ({
                 accept: 'Box',
@@ -64,6 +72,10 @@
                 }),
             }))
 
+            const callOnEdit = () => {
+                context.emit('onEdit', props.tab.key, 'remove')
+            }
+
             const isDragging = computed(() => collect.value.isDragging)
             const opacity = computed(() => (unref(isDragging) ? 1 : 1))
 
@@ -75,7 +87,8 @@
                 isDragging,
                 isSelected,
                 opacity,
-                isOutsideHover
+                isOutsideHover,
+                callOnEdit
             }
         },
     })
@@ -89,36 +102,91 @@
             'items-center': true, 
             'w-full': true, 
             'text-gray-700': true,
-            'box-hover': isOver,
+            'drop': !isOver,
+            'drop-hover': isOver,
         }"
     >
         <span
+            :ref="drag"
             class="w-full text-sm truncate inline_tab_label"
-            :class="[
-                index !== activeInlineTabKey
-                    ? tabHover === index
-                        ? 'text-gray-700'
-                        : 'text-gray-500'
-                    : '',
-            ]"
+            :class="{
+                'box-dragging': isDragging,
+                'bg-new-gray-100': !isSelected && !isOutsideHover,
+                'bg-white' : isSelected,
+                'box-outside-hover' : isOutsideHover && !isSelected
+            }"
+            :style="{ opacity }"
         >
             <div
-                :ref="drag"
-                :class="{
-                    box: true,
-                    'box-dragging': isDragging,
-                    'bg-new-gray-100': !isSelected && !isOutsideHover,
-                    'bg-white' : isSelected,
-                    'box-outside-hover' : isOutsideHover && !isSelected
-                }"
+                class="inner-box justify-between"
                 role="Box"
-                :style="{ opacity }"
             >
                 <Tooltip
                     clamp-percentage="99%"
                     :tooltip-text="title"
                     :rows="1"
                 />
+                <AtlanIcon
+                    v-if="
+                        tab.playground.resultsPane.result
+                            .isQueryRunning === 'error' &&
+                        index !== activeInlineTabKey
+                    "
+                    icon="FailedQuery"
+                    class="absolute w-4 h-4 right-1 top-1"
+                    :class="{
+                        'unsaved-dot': tabHover===index
+                    }"
+                />
+
+                <AtlanIcon
+                    v-else-if="
+                        tab.playground.resultsPane.result
+                            .isQueryRunning === 'loading'
+                    "
+                    icon="RunningQuery"
+                    class="w-4 h-4 animate-spin absolute right-1 top-1.5"
+                    :class="{
+                        'unsaved-dot': tabHover===index
+                    }"
+                />
+                <AtlanIcon
+                    v-else-if="
+                        tab.playground.resultsPane.result
+                            .isQueryRunning === 'success' &&
+                        index !== activeInlineTabKey
+                    "
+                    icon="SuccessQuery"
+                    class="w-3 h-3 absolute right-2 top-2"
+                    :class="{
+                        'unsaved-dot': tabHover===index
+                    }"
+                />
+                <div
+                    v-else-if="!tab.isSaved"
+                    class="flex items-center cross-hover"
+                    :class="{
+                        'unsaved-dot': tabHover===index
+                    }"
+                >
+                    <div
+                        v-if="
+                            tab?.playground?.editor?.text?.length >
+                                0 || tab?.queryId
+                        "
+                        class="w-1.5 h-1.5 rounded-full bg-primary absolute right-2 top-2.5"
+                    ></div>
+                </div>
+                <div @click="callOnEdit">
+                    <AtlanIcon
+                        v-if="length >= 2"
+                        icon="Close"
+                        class="w-4 h-4 absolute right-1 top-1 rounded-sm cross-hover"
+                        :style="{
+                            opacity: tabHover === index ? 1 : 0,
+                        }"
+                    />
+                </div>
             </div>
         </span>
     </div>
@@ -131,17 +199,21 @@
         float: left;
     }
     .inline_tab_label {
-        max-width: 78px;
+        max-width: 100px;
+        padding-right: 5px;
     }
     .box {
-        width: 80px;
-        padding: 5px 0px 5px 10px;  
-        cursor: grab;
+        cursor: pointer;
         float: left;
 
         &.dragging {
-          opacity: 0.4;
+          opacity: 0.1;
         }
+    }
+    .inner-box {
+        padding: 5px 0px 5px 10px;  
+        width: 80px;
+        display: flex;
     }
     .box-outside-hover {
       background-color: #fafafa
@@ -149,11 +221,23 @@
     .box-dragging {
         color: rgb(124, 119, 185);
         cursor: grabbing;
-
     }
-    .box-hover {
+    .drop {
+        border-left: 2px solid transparent;
+    }
+    .drop-hover {
         background-color: rgb(244, 246, 253);
         float: left;
-        border-left: 1px solid blue;
+        border-left: 2px solid rgb(82, 119, 215);
+    }
+    .unsaved-dot {
+        visibility: hidden !important;
+    }
+    .cross-hover {
+        margin-left: 2px;
+        z-index: 4;
+    }
+    .cross-hover:hover {
+        background: #ededed;
     }
 </style>

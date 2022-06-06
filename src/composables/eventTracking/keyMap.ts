@@ -608,6 +608,12 @@ const keyMap = {
             closed: {
                 action: 'insights_tab_closed',
             },
+            dragged: {
+                action: 'insights_tab_dragged',
+                properties: (props) => ({
+                    total_tab_count: props?.tab_count,
+                }),
+            }
         },
     },
     governance: {

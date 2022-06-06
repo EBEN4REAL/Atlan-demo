@@ -14,7 +14,6 @@
                     type="editable-card"
                     class="insights-tabs"
                     @change="onTabClick"
-                    @edit="onEdit"
                 >
                     <template #rightExtra>
                         <div class="inline-flex items-center ml-1 mr-2">
@@ -31,7 +30,7 @@
                                     >
                                         <div
                                             class="flex items-center pl-2 newTabDropdownOption newTabDropdownOption1"
-                                            @click="handleAdd(false)"
+                                            @click="() => handleAdd(false)"
                                         >
                                             <AtlanIcon
                                                 icon="Query24"
@@ -43,7 +42,7 @@
                                         </div>
                                         <div
                                             class="flex items-center pl-2 mt-2 newTabDropdownOption newTabDropdownOption2"
-                                            @click="handleAdd(true)"
+                                            @click="() => handleAdd(true)"
                                         >
                                             <AtlanIcon
                                                 icon="Vqb24"
@@ -62,7 +61,7 @@
                     <a-tab-pane
                         v-for="tab in tabs"
                         :key="tab.key"
-                        :closable="true"
+                        :closable="false"
                     >
                         <template #tab>
                             <a-dropdown
@@ -90,7 +89,10 @@
                                         :index="tab.key"
                                         :active-tab-key="activeInlineTabKey"
                                         :tab-hover="tabHover"
+                                        :tab="tab"
+                                        :length="tabs.length"
                                         @on-droped="sortTabsOnDrop"
+                                        @on-edit="onEdit"
                                     />
                                 </div>
                                 <template #overlay>
@@ -107,64 +109,6 @@
                                     </a-menu>
                                 </template>
                             </a-dropdown>
-                        </template>
-
-                        <template #closeIcon>
-                            <div
-                                :style="{
-
-                                }"
-                            >
-                                <AtlanIcon
-                                    v-if="
-                                        tab.playground.resultsPane.result
-                                            .isQueryRunning === 'error' &&
-                                        tab.key !== activeInlineTabKey
-                                    "
-                                    icon="FailedQuery"
-                                    class="absolute w-4 h-4 unsaved-dot right-2 top-1.5"
-                                />
-
-                                <AtlanIcon
-                                    v-else-if="
-                                        tab.playground.resultsPane.result
-                                            .isQueryRunning === 'loading'
-                                    "
-                                    icon="RunningQuery"
-                                    class="w-4 h-4 animate-spin unsaved-dot absolute right-2 top-1.5"
-                                />
-                                <AtlanIcon
-                                    v-else-if="
-                                        tab.playground.resultsPane.result
-                                            .isQueryRunning === 'success' &&
-                                        tab.key !== activeInlineTabKey
-                                    "
-                                    icon="SuccessQuery"
-                                    class="w-3 h-3 unsaved-dot absolute right-2.5 top-2"
-                                />
-                                <div
-                                    v-else-if="!tab.isSaved"
-                                    class="flex items-center unsaved-dot cross-hover"
-                                >
-                                    <div
-                                        v-if="
-                                            tab?.playground?.editor?.text?.length >
-                                                0 || tab?.queryId
-                                        "
-                                        class="w-1.5 h-1.5 rounded-full bg-primary absolute right-3.5 top-2.5"
-                                    ></div>
-                                </div>
-                                <AtlanIcon
-                                    v-if="tabs.length >= 2"
-                                    icon="Close"
-                                    class="w-4 h-4 rounded-sm cross-hover"
-                                    :style="{
-                                        opacity: tabHover === tab.key ? 1 : 0,
-                                    }"
-                                    @mouseenter="setTabHover(tab)"
-                                    @mouseleave="setTabHover(null)"
-                                />
-                            </div>
                         </template>
                     </a-tab-pane>
                 </a-tabs>
@@ -251,6 +195,7 @@
     } from 'vue'
     import { useRouter, useRoute } from 'vue-router'
     import { useDebounceFn } from '@vueuse/core'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -405,6 +350,9 @@
             }
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
                 console.log('edit triggered: ')
+                
+                debugger;
+
                 if (action === 'add') {
                     handleAdd(false)
                 } else {
@@ -420,7 +368,7 @@
                     if (!crossedTabState) {
                         /* If content is empty */
                         const tab = tabs.value.find(
-                            (tab) => tab.key === targetKey
+                            (tabItem) => tabItem.key === targetKey
                         )
                         if (tab?.playground?.editor?.text?.length > 0) {
                             unsavedPopover.value.key = targetKey as string
@@ -591,6 +539,10 @@
             })
 
             const sortTabsOnDrop = (currentKey: String, dropKey: String) => {
+                useAddEvent('insights', 'tab', 'dragged', {
+                    tab_count: tabs.value.length,
+                });
+
                 const currIndex = tabs.value.findIndex(
                     (tab) => tab.key === currentKey
                 )
@@ -652,7 +604,7 @@
             border-right: 0px !important;
             border-top: 0px !important;
             border-bottom: 0px !important;
-            padding: 0 10px 0 0 !important;
+            padding: 0 0px 0 0 !important;
             height: 28px !important;
             @apply bg-new-gray-100 !important;
             transition: none !important;
@@ -761,9 +713,9 @@
         height: calc(100vh - 19rem);
     }
     .inline_tab {
-        max-width: 73px;
-        width: 73px;
-        min-width: 73px;
+        max-width: 100px;
+        width: 100px;
+        min-width: 100px;
         overflow: hidden;
         height: 28px !important;
         // min-width: 3rem

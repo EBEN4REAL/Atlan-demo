@@ -55,94 +55,15 @@
                                 <div
                                     class="flex items-center flex-grow overflow-hidden"
                                 >
-                                    <a-tooltip
-                                        v-if="connectorName(item)"
-                                        placement="left"
-                                    >
-                                        <template #title>
-                                            <span
-                                                >{{ connectorName(item) }}
-                                            </span>
-                                            <span v-if="connectionName(item)">{{
-                                                `/${connectionName(item)}`
-                                            }}</span>
-                                        </template>
-                                        <img
-                                            :src="getConnectorImage(item)"
-                                            class="h-4 mr-1 mb-0.5"
-                                        />
-                                    </a-tooltip>
-                                    <div
-                                        v-if="
-                                            ['column'].includes(
-                                                item.typeName?.toLowerCase()
-                                            )
-                                        "
-                                        class="flex items-center mr-1"
-                                    >
-                                        <component
-                                            :is="dataTypeCategoryImage(item)"
-                                            class="h-4 mb-1 text-gray-500"
-                                        />
-                                    </div>
-
-                                    <Tooltip
-                                        v-if="
-                                            [
-                                                'process',
-                                                'columnprocess',
-                                                'biprocess',
-                                            ].includes(
-                                                item.typeName?.toLowerCase()
-                                            )
-                                        "
-                                        :clamp-percentage="
+                                    <AssetTitle
+                                        :asset="item"
+                                        :asset-name-truncate-percentage="
                                             assetNameTruncatePercentage
                                         "
-                                        :tooltip-text="`${title(item)}`"
-                                        :classes="
-                                            isScrubbed(item)
-                                                ? 'mb-0 font-semibold text-gray-500 opacity-80 tracking-wide'
-                                                : 'font-bold mb-0 text-gray-500 tracking-wide'
-                                        "
-                                    />
-
-                                    <Tooltip
-                                        v-else
-                                        :clamp-percentage="
-                                            assetNameTruncatePercentage
-                                        "
-                                        :tooltip-text="`${title(item)}`"
-                                        :route-to="getProfilePath(item)"
-                                        :classes="
-                                            isScrubbed(item)
-                                                ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 tracking-wide'
-                                                : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline tracking-wide '
-                                        "
-                                        :should-open-in-new-tab="
+                                        :open-asset-profile-in-new-tab="
                                             openAssetProfileInNewTab
                                         "
-                                        @click="(e) => e.stopPropagation()"
                                     />
-
-                                    <CertificateBadge
-                                        v-if="certificateStatus(item)"
-                                        :status="certificateStatus(item)"
-                                        :username="certificateUpdatedBy(item)"
-                                        :timestamp="certificateUpdatedAt(item)"
-                                        class="mb-1 ml-1"
-                                    ></CertificateBadge>
-
-                                    <a-tooltip placement="right"
-                                        ><template #title
-                                            >Limited Access</template
-                                        >
-                                        <AtlanIcon
-                                            v-if="isScrubbed(item)"
-                                            icon="Lock"
-                                            class="h-4 mb-1 ml-2 text-gray-500"
-                                        ></AtlanIcon
-                                    ></a-tooltip>
                                 </div>
                                 <div class="flex gap-x-1">
                                     <a-tooltip :title="announcementType(item)">
@@ -1476,7 +1397,6 @@
     import { defineComponent, ref, toRefs, computed, PropType } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import CertificateBadge from '@/common/badge/certificate/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
@@ -1492,12 +1412,13 @@
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import AssetTitle from '@/common/assets/list/assetTitle.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
+            AssetTitle,
             TermPill,
-            CertificateBadge,
             ClassificationPill,
             PopoverClassification,
             AssetDrawer,
@@ -1621,7 +1542,6 @@
             const selectedAssetDrawerGuid = ref('')
 
             const {
-                title,
                 getConnectorImage,
                 assetType,
                 rowCount,
@@ -1640,8 +1560,6 @@
                 isPartition,
                 isPrimary,
                 certificateStatus,
-                certificateUpdatedAt,
-                certificateUpdatedBy,
                 certificateStatusMessage,
                 description,
                 assetTypeLabel,
@@ -1650,7 +1568,6 @@
                 categories,
                 parentCategory,
                 classifications,
-                getProfilePath,
                 isUserDescription,
                 isScrubbed,
                 meaningRelationships,
@@ -1825,7 +1742,6 @@
                 isReady,
                 termError,
                 isSelected,
-                title,
                 getConnectorImage,
                 termIcon,
                 assetType,
@@ -1843,8 +1759,6 @@
                 isPartition,
                 isPrimary,
                 certificateStatus,
-                certificateUpdatedAt,
-                certificateUpdatedBy,
                 certificateStatusMessage,
                 tableName,
                 viewName,
@@ -1860,7 +1774,6 @@
                 isPropagated,
                 clsfList,
                 classifications,
-                getProfilePath,
                 showAssetSidebarDrawer,
                 selectedAssetDrawerGuid,
                 handleCloseDrawer,

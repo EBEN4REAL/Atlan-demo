@@ -1,4 +1,5 @@
 import { ref, watch } from 'vue'
+import { MinimalAttributes } from '~/constant/projection'
 import { Search } from '~/services/meta/search'
 import { useTypedefStore } from '~/store/typedef'
 
@@ -7,6 +8,7 @@ import { useTypedefStore } from '~/store/typedef'
 const getAssetCount = (selectedBM) => {
     const typedefStore = useTypedefStore()
     const assets = ref([])
+    const attributes = [...MinimalAttributes]
 
     const body = {
         "dsl": {
@@ -23,9 +25,9 @@ const getAssetCount = (selectedBM) => {
                 }
             }
         },
-        attributes: typedefStore.getCustomMetadataListProjectionsByName(
+        attributes: [...typedefStore.getCustomMetadataListProjectionsByName(
             selectedBM.name
-        ),
+        ), ...attributes],
         suppressLogs: true
     }
 

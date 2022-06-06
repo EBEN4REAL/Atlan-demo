@@ -286,6 +286,8 @@ export const MinimalAttributes = [
     's3BucketName',
 ]
 
+
+
 export const BasicSearchAttributes = [
     '__timestamp',
     '__modificationTimestamp',

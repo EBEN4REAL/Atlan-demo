@@ -1,42 +1,11 @@
 <template>
     <div>
-        <div class="">
-            <a-tooltip v-if="connectorName(asset)" placement="left">
-                <template #title>
-                    <span>{{ connectorName(asset) }} </span>
-                    <span v-if="connectionName(asset)">{{
-                        `/${connectionName(asset)}`
-                    }}</span>
-                </template>
-                <img :src="getConnectorImage(asset)" class="h-4 mr-1 mb-0.5" />
-            </a-tooltip>
-            <div
-                v-if="['column'].includes(asset.typeName?.toLowerCase())"
-                class="flex items-center mr-1"
-            >
-                <component
-                    :is="dataTypeCategoryImage(asset)"
-                    class="h-4 mb-1 text-gray-500"
-                />
-            </div>
-        </div>
         <div class="flex">
             <div class="flex-grow">
                 <div class="flex">
                     <div class="flex-grow">
-                        <div class="flex">
-                            <Tooltip
-                                :tooltip-text="`${title(asset)}`"
-                                :route-to="getProfilePath(asset)"
-                                :classes="
-                                    isScrubbed(asset)
-                                        ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 tracking-wide'
-                                        : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline tracking-wide '
-                                "
-                                :should-open-in-new-tab="true"
-                                class="mb-1"
-                                @click="(e) => e.stopPropagation()"
-                            />
+                        <div class="flex items-center">
+                            <AssetTitle :asset="asset" />
                         </div>
                     </div>
                     <div class="">
@@ -79,7 +48,7 @@
                                 </a-tooltip>
                                 <span>: </span>
                             </div>
-                            <div class="flex-shrink">
+                            <div class="flex-grow">
                                 <ReadOnly :attribute="a" class="ml-2" />
                             </div>
                         </div>
@@ -98,6 +67,7 @@
     import Tooltip from '@/common/ellipsis/index.vue'
     import ReadOnly from '@/common/assets/preview/customMetadata/readOnly.vue'
     import { removeProperty } from '@/governance/custom-metadata/linkedAssets/removeProperty'
+    import AssetTitle from '@/common/assets/list/assetTitle.vue'
 
     const props = defineProps({
         asset: {

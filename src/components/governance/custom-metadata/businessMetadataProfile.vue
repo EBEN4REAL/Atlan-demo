@@ -28,6 +28,7 @@
                 <div class="flex items-center">
                     <MetadataHeaderButton
                         :metadata="localBm"
+                        @viewAssets="linkedAssetsVisible = true"
                         :allow-delete="allowDelete"
                         :asset-count="linkedAssets.length"
                     />
@@ -42,14 +43,14 @@
                         :updated-by="localBm.updatedBy"
                     />
                 </div>
-                <template v-if="linkedAssets.length">
+                <!-- <template v-if="linkedAssets.length">
                     <span class="text-gray-300 p">•</span>
                     <span
                         class="cursor-pointer hover:underline text-primary"
                         @click="linkedAssetsVisible = true"
                         >View linked assets</span
                     >
-                </template>
+                </template> -->
             </div>
         </div>
 

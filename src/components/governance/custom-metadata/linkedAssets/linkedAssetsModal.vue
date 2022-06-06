@@ -49,6 +49,8 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import LinkedAssetItem from '@/governance/custom-metadata/linkedAssets/linkedAssetItem.vue'
 
+    // TODO add pagination
+
     const props = defineProps({
         visible: {
             type: Boolean,

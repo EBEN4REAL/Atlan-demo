@@ -56,14 +56,28 @@
         </AtlanButton>
 
         <a-tooltip
-            :title="
-                !allowDelete
-                    ? `${metadata.displayName} is linked with ${assetCount} assets. You'll have to remove them before archiving.`
-                    : ''
-            "
             :mouse-enter-delay="0"
             placement="left"
+            color="white"
+            :width="1000"
+            :overlayStyle="{ 'min-width': '350px' }"
         >
+            <template v-if="!allowDelete" #title>
+                <span class="text-gray-700" style="">
+                    {{
+                        !allowDelete
+                            ? `${metadata.displayName} is linked with ${assetCount} assets. You'll have to remove them before archiving. `
+                            : ''
+                    }}
+                </span>
+
+                <span
+                    v-if="assetCount"
+                    class="inline-block cursor-pointer hover:underline text-primary"
+                    @click="$emit('viewAssets')"
+                    >View linked assets</span
+                >
+            </template>
             <AtlanButton
                 v-if="!viewOnly"
                 v-auth="map.DELETE_BUSINESS_METADATA"

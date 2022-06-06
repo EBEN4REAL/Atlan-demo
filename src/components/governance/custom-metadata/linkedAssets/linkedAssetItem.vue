@@ -35,18 +35,6 @@
                                     placement="left"
                                     classes="text-gray-500 "
                                 />
-                                <a-tooltip>
-                                    <template #title>
-                                        <span>{{ a.options.description }}</span>
-                                    </template>
-                                    <div class="">
-                                        <AtlanIcon
-                                            v-if="a.options.description"
-                                            class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
-                                            icon="Info"
-                                        />
-                                    </div>
-                                </a-tooltip>
                                 <span>: </span>
                             </div>
                             <div class="flex-grow">
@@ -72,6 +60,7 @@
     import ReadOnly from '@/common/assets/preview/customMetadata/readOnly.vue'
     import { removeProperty } from '@/governance/custom-metadata/linkedAssets/removeProperty'
     import AssetTitle from '@/common/assets/list/assetTitle.vue'
+    import { message } from 'ant-design-vue'
 
     const props = defineProps({
         asset: {
@@ -137,10 +126,22 @@
 
     const handleClear = async () => {
         try {
+            message.loading({
+                key: 'clear',
+                content: 'Clearing Custom Metadata ...',
+            })
             await mutate()
             emit('success', asset.value.guid)
+            message.success({
+                key: 'clear',
+                content: 'Custom Metadata has been cleared.',
+            })
         } catch (e) {
             emit('error')
+            message.error({
+                key: 'clear',
+                content: 'Errror clearing Custom Metadata.',
+            })
         }
     }
 

@@ -1,30 +1,15 @@
 import {
     InternalAttributes,
-    BasicSearchAttributes,
+    SQLAttributes,
+    AssetRelationAttributes,
+    AssetAttributes,
 } from '~/constant/projection'
 
 export const attributes = [
-    'sizeBytes',
-    'name',
-    'displayName',
-    'dataType',
-    'isPrimary',
-    'isForeign',
-    'isPartition',
-    'name',
-    'displayName',
-    'typeName',
-    'dataType',
-    'description',
-    'userDescription',
-    'certificateStatus',
-    'ownerUsers',
-    'ownerGroups',
-    'classifications',
-    'tableCount',
-    'viewCount',
-    'columnCount',
-    'connectorName',
     ...InternalAttributes,
-    ...BasicSearchAttributes,
+    ...AssetAttributes,
+    ...SQLAttributes,
 ]
+
+// AssetRelationAttributes
+// AssetAttributes

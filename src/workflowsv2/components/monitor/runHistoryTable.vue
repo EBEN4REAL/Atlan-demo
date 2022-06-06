@@ -138,7 +138,7 @@
             const queryText = ref('')
 
             const workflowStore = useWorkflowStore()
-            const { workflowTemplateName, name } = useWorkflowInfo()
+            const { workflowTemplateName, refName } = useWorkflowInfo()
 
             const facets = computed(() => ({
                 workflowTemplate: filters.value?.workflowId,
@@ -252,6 +252,7 @@
                         'metadata.annotations.package.argoproj.io/name',
                         'metadata.annotations.orchestration.atlan.com/schedule',
                         'metadata.annotations.orchestration.atlan.com/timezone',
+                        'metadata.annotations.orchestration.atlan.com/atlanName',
                         'spec.templates',
                     ],
                 }),
@@ -274,7 +275,7 @@
 
             watch(wfList, () => {
                 wfList.value.forEach((wf) => {
-                    workflowMap.set(name(wf), wf)
+                    workflowMap.set(refName(wf), wf)
                 })
             })
 

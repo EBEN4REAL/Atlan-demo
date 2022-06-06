@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center p-3 pl-3 pr-0 gap-x-2 bg-primary-light">
+    <div class="flex items-center gap-x-2" :class="[classes]">
         <RequestDropdown
             :type="'reject'"
             :is-loading="loading"
@@ -81,6 +81,11 @@
                 type: Boolean,
                 required: false,
                 default: false,
+            },
+            classes: {
+                type: String,
+                required: false,
+                default: 'bg-primary-light p-3 pl-3 pr-0',
             },
         },
         emits: ['accept', 'reject', 'more'],

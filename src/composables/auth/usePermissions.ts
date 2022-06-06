@@ -5,15 +5,14 @@ import { Access } from '~/services/service/access'
 
 import { useAuthStore } from '~/store/auth'
 
-export default function usePermissions() {
-    const { data } = Access.WhoAmI({
-        cacheKey: 'DEFAULT_PERMISSIONS',
-        cacheOptions: {
-            shouldRetryOnError: false,
-            revalidateOnFocus: false,
-            cache: new LocalStorageCache(),
-            dedupingInterval: 1,
-        },
+export default function usePermissions(immediate = true) {
+    const { data, mutate } = Access.WhoAmI({
+        asyncOptions: {
+            immediate,
+            onError: (e) => {
+                throw e
+            },
+        }
     })
     const authStore = useAuthStore()
     watch(data, () => {
@@ -25,6 +24,6 @@ export default function usePermissions() {
         authStore.setPurposes(data.value?.purposes)
     })
     return {
-        data,
+        data, mutate
     }
 }

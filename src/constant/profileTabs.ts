@@ -8,14 +8,14 @@ export const profileTabs = [
         tooltip: 'Overview',
         scrubbed: false,
     },
-    /* {
+    {
         id: 'columns',
         label: 'Columns',
         component: 'columns',
         includes: ['Table', 'View', 'MaterialisedView', 'PartitionTable'],
         icon: 'Columns',
         tooltip: 'Columns',
-    }, */
+    },
     {
         id: 'lineage',
         label: 'Lineage',

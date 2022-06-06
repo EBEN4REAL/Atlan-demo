@@ -11,7 +11,11 @@ import { Entity } from '~/services/meta/entity/index'
 import { assetInterface } from '~/types/assets/asset.interface'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
-export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
+export default function updateAssetAttributes(
+    selectedAsset,
+    isDrawer = false,
+    isColumnList = false
+) {
     const {
         title,
         description,
@@ -749,11 +753,15 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
             localSeeAlso.value = seeAlso(selectedAsset.value)
         }
 
-        message.error(
-            `${error.value?.response?.data?.errorCode} ${
-                error.value?.response?.data?.errorMessage.split(':')[0]
-            }` ?? 'Something went wrong'
-        )
+        if (error.value?.response?.data?.errorCode) {
+            message.error(
+                `${error.value?.response?.data?.errorCode} ${
+                    error.value?.response?.data?.errorMessage.split(':')[0]
+                }`
+            )
+        } else {
+            message.error('Something went wrong')
+        }
     })
 
     whenever(isReady, () => {
@@ -765,14 +773,19 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
 
     const updateList = inject('updateList')
     const updateDrawerList = inject('updateDrawerList')
+    const updateColumnList = inject('updateColumnList')
 
     whenever(isUpdateReady, () => {
-        if (!isDrawer && updateList) {
+        if (!isDrawer && !isColumnList && updateList) {
             updateList(asset.value)
-        } else {
+        } else if (isDrawer) {
             shouldDrawerUpdate.value = true
             if (typeof updateDrawerList === 'function' && updateDrawerList) {
                 updateDrawerList(asset.value)
+            }
+        } else if (isColumnList) {
+            if (typeof updateColumnList === 'function' && updateColumnList) {
+                updateColumnList(asset.value)
             }
         }
         isConfetti.value = false
@@ -790,7 +803,7 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         mutate: mutateClassification,
         isLoading: isLoadingClassification,
         isReady: isReadyClassification,
-        error: isErrorClassification,
+        error: errorClassification,
     } = useSetClassifications(classificationBody)
 
     const arrayEquals = (a, b) =>
@@ -826,13 +839,16 @@ export default function updateAssetAttributes(selectedAsset, isDrawer = false) {
         mutateUpdate()
     })
 
-    whenever(isErrorClassification, () => {
+    whenever(errorClassification, () => {
         localClassifications.value = classifications(selectedAsset.value)
-        message.error(
-            `${error.value?.response?.data?.errorCode} ${
-                error.value?.response?.data?.errorMessage.split(':')[0]
-            }` ?? 'Something went wrong'
-        )
+        if (errorClassification.value?.response?.data?.errorCode) {
+            message.error(
+                `${errorClassification.value?.response?.data?.errorMessage}`,
+                10
+            )
+        } else {
+            message.error('Something went wrong')
+        }
     })
 
     return {

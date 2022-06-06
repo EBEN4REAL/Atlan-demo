@@ -229,8 +229,14 @@
             const isDrawerVisible = ref(false)
             const selectedConnectionId = ref(undefined)
             const { item, mode } = toRefs(props)
-            const { displayName, packageType, packageName, connectorGuid } =
-                useWorkflowInfo()
+            const {
+                displayName,
+                packageType,
+                packageName,
+                connectorGuid,
+                name,
+                refName,
+            } = useWorkflowInfo()
 
             if (mode.value === 'workflow') {
                 activeKey.value = 'workflow'
@@ -291,6 +297,7 @@
                         'metadata.name',
                         'metadata.annotations.package.argoproj.io/name',
                         'metadata.annotations.orchestration.atlan.com/schedule',
+                        'metadata.annotations.orchestration.atlan.com/atlanName',
                     ],
                 }),
                 preference: ref({
@@ -300,12 +307,9 @@
 
             const previousConnectors = computed(() =>
                 list.value.map((workflow) => ({
-                    id: workflow.metadata.name,
-                    connector: connectorGuid(
-                        item.value,
-                        workflow.metadata.name
-                    ),
-                    label: displayName(item.value, workflow.metadata.name),
+                    id: refName(workflow),
+                    connector: connectorGuid(item.value, name(workflow)),
+                    label: displayName(item.value, name(workflow)),
                 }))
             )
 

@@ -4,7 +4,11 @@
 
         <template #overlay>
             <a-menu class="" mode="vertical">
-                <EditResource :link="link" :is-edit="true">
+                <EditResource
+                    v-if="actions.includes('edit')"
+                    :link="link"
+                    :is-edit="true"
+                >
                     <template #trigger>
                         <a-menu-item key="edit">
                             <div class="flex items-center cursor-pointer">
@@ -17,7 +21,12 @@
                         </a-menu-item>
                     </template>
                 </EditResource>
-                <a-menu-item key="copyLink" class="py-2" @click="handleCopy">
+                <a-menu-item
+                    v-if="actions.includes('copy')"
+                    key="copyLink"
+                    class="py-2"
+                    @click="handleCopy"
+                >
                     <div class="flex items-center">
                         <AtlanIcon
                             icon="CopyOutlined"
@@ -26,7 +35,7 @@
                         <span class="text-sm">Copy link</span>
                     </div>
                 </a-menu-item>
-                <DeleteResource :link="link">
+                <DeleteResource v-if="actions.includes('delete')" :link="link">
                     <template #trigger>
                         <a-menu-item key="delete">
                             <div
@@ -58,6 +67,11 @@
         link: {
             type: Object as PropType<Link>,
             required: true,
+        },
+        actions: {
+            type: Array,
+            required: false,
+            default: ['edit', 'copy', 'delete'],
         },
     })
     const handleCopy = async () => {

@@ -30,6 +30,7 @@ export const InternalAttributes = [
     '__customAttributes',
     '__labels',
     '__businessAttributes',
+    '__hasLineage',
     'anchor',
 ]
 

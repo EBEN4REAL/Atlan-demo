@@ -6,6 +6,9 @@
         :mode="multiple ? 'multiple' : null"
         @change="handleChange"
     >
+        <template #suffixIcon>
+            <AtlanIcon icon="CaretDown" />
+        </template>
         <a-select-option
             v-for="(item, x) in enumSelected?.elementDefs"
             :key="x"
@@ -70,4 +73,3 @@
         },
     })
 </script>
-

@@ -60,6 +60,7 @@
                 </a-form-item> -->
                 <a-form-item label="Values">
                     <MultiInput
+                        :key="dirtyKey"
                         placeholder='Enter values separated by a  ";" or "↵"'
                         :disabled="!isEditing"
                         :value="enumValues"
@@ -105,6 +106,7 @@
             // Component state essentials
             const localEnum = reactive({ ...props.selectedEnum })
             const isEditing = ref(props.isNew || false)
+            const dirtyKey = ref(new Date().getTime())
             const viewOnly = ref(
                 props.selectedEnum.options?.isLocked === 'true'
             )
@@ -113,7 +115,7 @@
             //     accessStore.checkPermission('UPDATE_BUSINESS_METADATA')
             // )
             const enumValues = computed((): string[] =>
-                localEnum.elementDefs.map((e) => e.value)
+                localEnum.elementDefs.map((e) => e.value).sort()
             )
 
             function timeAgo(time: string) {
@@ -126,10 +128,12 @@
             }
 
             function handleChange(values: String[]) {
-                localEnum.elementDefs = values.map((value, ordinal) => ({
-                    value,
-                    ordinal,
-                }))
+                localEnum.elementDefs = JSON.parse(JSON.stringify(values))
+                    .sort() // save in sorted order
+                    .map((value, ordinal) => ({
+                        value,
+                        ordinal,
+                    }))
             }
 
             // Enum Updation flow
@@ -146,6 +150,7 @@
                 useAddEvent('governance', 'options', 'updated', {
                     title: updatedEnum.name,
                 })
+                dirtyKey.value = new Date().getTime()
             }
 
             // FIXME: May be simplified
@@ -168,6 +173,7 @@
                 showUserPreview({ allowed: ['about'] })
             }
             return {
+                dirtyKey,
                 viewOnly,
                 isEditing,
                 isReady,

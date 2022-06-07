@@ -19,6 +19,7 @@ const actions = {
             }),
             facets: ref({
                 ui: true,
+                verified: true,
             }),
             aggregations: ref(['package']),
         })

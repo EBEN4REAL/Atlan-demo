@@ -338,9 +338,12 @@
                                 found ||
                                 users.some((user) => [username].includes(user))
                         }
+
                         found =
                             found ||
-                            groups.some((group) => groupName.includes(group))
+                            groupsData.some((group) =>
+                                groupName.includes(group)
+                            )
                         if (isAllUsers) {
                             found = isAllUsers
                         }

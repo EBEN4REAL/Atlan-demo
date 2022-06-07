@@ -36,15 +36,15 @@
                     <!-- <div class="pb-4" v-if="parentAssetChildren?.length">
                         <div class="w-full border-t border-gray-300"></div>
                     </div> -->
-                    <!-- <div class="absolute w-full p-2 mx-auto mt-1 mt-5 bg-white rounded top-full assets-info" :style="{background: '#F4F6FD'}" 
-                        v-if="parentAssetChildren?.length">
+                    <div class="absolute w-full p-2 mx-auto mt-1 mt-5 bg-white rounded-md mix-blend-normal" :style="{background: '#F4F6FD'}" style="box-shadow: 0px 5px 16px rgba(0, 0, 0, 0.1);"  :class="[!editPermission && role !== 'Guest' ? 'top-60 !important' : '']"
+                        v-if="parentAssetChildren?.length" >
                         <div class="flex ">
                             <div class="mr-2">
                                 <AtlanIcon
                                     icon="Overview"
                                 />
                             </div>
-                            <div class="text-sm text-gray-500">Classifications attached to a {{selectedAsset?.typeName}} will propagate to all 
+                            <div class="text-sm text-gray-500" >Classifications attached to a {{selectedAsset?.typeName}} will propagate to all 
                                 <span 
                                     style="text-decoration: underline dotted"  
                                     @mouseover="showChildrenAsset = true"
@@ -53,9 +53,9 @@
                                 </span>
                             </div>
                         </div>
-                    </div> -->
-                    <div class="absolute w-10/12 p-2 pt-3 mx-auto mt-6 text-white rounded-md top-24 left-5" style="background: #2A2F45" 
-                        v-if="showChildrenAsset && parentAssetChildren?.length" >
+                    </div>
+                    <div class="absolute z-10 w-10/12 p-2 pt-3 mx-auto mt-6 text-white rounded-md left-5"  style="background: #2A2F45;" 
+                        v-if="showChildrenAsset && parentAssetChildren?.length" :class="[!editPermission && role !== 'Guest' ? 'top-80 !important' : 'top-36 !important']">
                         {{parentAssetChildren}}
                     </div>
                 </div>
@@ -90,7 +90,8 @@
                     action="set classification"
                     placement="left"
                     :edit-permission="editPermission && showShortcut"
-                >
+                > 
+                
                     <a-button
                         shape="circle"
                         :disabled="role === 'Guest' && !editPermission"
@@ -173,6 +174,9 @@
     import whoami from '~/composables/user/whoami.ts'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import {assetParentChildHierachy} from '~/constant/assetParentChildHierachy'
+    import { usePropagatedVia } from '~/composables/classification/usePropagatedVia'
+    import { ClassificationInterface } from '~/types/classifications/classification.interface'
+
 
     export default defineComponent({
         name: 'ClassificationWidget',
@@ -293,23 +297,24 @@
                         acc.push({
                             ...cur,
                             count: 1,
-                            propagated: isPropagated(cur)
+                            propagated: isPropagated(cur),
+                            entityParents: [cur]
                         })
                     }else if(acc.length && i > 0) {
                         const classIndex = acc.findIndex(cl => cl.displayName === cur?.displayName && (isPropagated(cur) && cl?.propagated))
                         if(classIndex > -1) {
                             acc[classIndex].count += 1
+                            acc[classIndex].entityParents.push(cur)
                         }else {
                             acc.push({
                                 ...cur,
                                 count: 1,
-                                propagated: isPropagated(cur)
+                                propagated: isPropagated(cur),
+                                entityParents: [cur]
                             })
                         }
                     }
-                    
                     return acc
-                
                 }, [])
 
                 return classList
@@ -461,29 +466,7 @@
             }
             const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
 
-            // const classList = list.value.reduce((acc: any, cur:any, i: number) => {
-                //     if(!acc.length) {
-                //         acc.push({
-                //             ...cur,
-                //             count: 1,
-                //             propagated: isPropagated(cur)
-                //         })
-                //     }else if(acc.length && i > 0) {
-                //         const classIndex = acc.findIndex(cl => cl.displayName === cur?.displayName && (isPropagated(cur) && cl?.propagated))
-                //         if(classIndex > -1) {
-                //             acc[classIndex].count += 1
-                //         }else {
-                //             acc.push({
-                //                 ...cur,
-                //                 count: 1,
-                //                 propagated: isPropagated(cur)
-                //             })
-                //         }
-                //     }
-                    
-                //     return acc
-                
-                // }, [])
+           
 
             return {
                 localValue,
@@ -514,13 +497,8 @@
     .classificationPopover {
         :global(.ant-popover-inner-content) {
             @apply px-0 py-3 !important;
-            width: 250px !important;
+            width: 250px !important; 
         }
+        @apply p-3;
     }
-    .assets-info {
-        mix-blend-mode: normal;
-        box-shadow: 0px 5px 16px rgba(0, 0, 0, 0.1);
-        border-radius: 6px;
-    }
-   
 </style>

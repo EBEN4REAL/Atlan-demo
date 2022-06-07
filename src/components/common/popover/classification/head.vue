@@ -1,15 +1,15 @@
 <template>
     <div
-        class="w-full px-4 py-3 border-b border-gray-300 bg-gray-100"
+        class="relative w-full px-4 py-3 bg-gray-100 border-b border-gray-300"
         style="min-width: 374px"
     >
         <div
             v-if="isLoading"
-            class="flex justify-center items-center content-center"
+            class="flex items-center content-center justify-center"
         >
             <AtlanLoader class="h-10 animate-spin" />
         </div>
-        <div v-else class="flex w-full align-center items-center">
+        <div v-else class="flex items-center w-full align-center">
             <ClassificationIcon
                 :classification="classification"
                 :entity-guid="guid"
@@ -21,7 +21,7 @@
                 "
             />
             <p
-                class="text-lg font-gray-700 font-bold max-w-xs truncate mr-1 ml-2"
+                class="max-w-xs ml-2 mr-1 text-lg font-bold truncate font-gray-700"
             >
                 {{ classification.displayName }}
             </p>
@@ -42,12 +42,41 @@
             <span class="text-gray-500">{{ linkedAt }}</span>
         </div>
         <div
-            v-else-if="isPropagated && Object.keys(propagatedVia).length > 0"
+            v-else-if="isPropagated && Object.prototype.toString.call(propagatedVia) === '[object Object]' &&  Object.keys(propagatedVia)?.length"
             class="flex gap-1 mt-1.5 text-sm content-center items-center text-gray-500 flex-wrap break-all"
         >
-            Propagated via <AtlanIcon :icon="propagatedViaIcon" />
-            <span class="text-gray-700">{{ propagatedVia.displayText }}</span>
+            
+            Propagated via <AtlanIcon icon="Term" />
+            <span class="text-gray-700">
+            {{ computeDisplayText(propagatedVia) }}
+            </span>
             {{ linkedAt }}
+        </div>
+        <div
+            v-else-if="isPropagated && propagatedVia?.length"
+            class="flex gap-1 mt-1.5 text-sm content-center items-center text-gray-500 flex-wrap break-all"
+        >
+           
+            Propagated via <AtlanIcon :icon="getIcon(propagatedVia)" />
+            <span class="text-gray-700"  
+                @mouseover="() => remainingClassifications = true"
+                @mouseleave="remainingClassifications = false">
+                {{ computeDisplayText(propagatedVia) }}
+            </span>
+            {{ linkedAt }}
+        </div>
+        <div class="absolute right-0 p-2 bg-white rounded-md x-auto w-52 mix-blend-normal top-12" :style="{background: '#F4F6FD'}" style="box-shadow: 0px 0px 4px rgba(55, 65, 81, 0.06), 0px 2px 6px rgba(55, 65, 81, 0.1);left: 365px"
+            v-if="propagatedVia?.length && remainingClassifications" >
+            <div class="flex items-center " v-for="(pv,i) in propagatedVia.slice(1)" :key="i">
+                <div class="mr-1">
+                    <AtlanIcon
+                        :icon="detailedPropagatedViaIcon(pv)"
+                    />
+                </div>
+                <div class="text-sm text-gray-500" >
+                    {{pv?.displayText}}
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -94,6 +123,7 @@
             const classification = ref<ClassificationInterface>(
                 props.classification
             )
+            const remainingClassifications = ref<boolean>(false)
             const guid = ref(props.entityGuid)
 
             const isPropagated = computed(() => {
@@ -117,6 +147,56 @@
 
             const isLoading = and(isAuditLoading, isAssetLoading)
 
+            const propagateByIcon = item => {
+                if (Object.keys(item)?.length > 0) {
+                    const typeOfEntity = item.typeName.replace(
+                        'AtlasGlossary',
+                        ''
+                    )
+                    if (item?.attributes?.certificateStatus) {
+                        switch (item?.attributes?.certificateStatus) {
+                            case 'DRAFT': {
+                                return `${typeOfEntity}Draft`
+                            }
+        
+                            case 'VERIFIED': {
+                                return `${typeOfEntity}Verified`
+                            }
+        
+                            case 'DEPRECATED': {
+                                return `${typeOfEntity}Deprecated`
+                            }
+        
+                            default: {
+                                return `${typeOfEntity}`
+                            }
+                        }
+                    } else {
+                        return `${typeOfEntity}`
+                    }
+                }
+            }
+
+            const computeDisplayText = progatedVia => {
+                if(progatedVia?.length) {
+                    progatedVia.forEach((el) => {
+                        // eslint-disable-next-line no-param-reassign
+                        progatedVia.icon = propagateByIcon(el)
+                    })
+                    return `${progatedVia[0]?.displayText} and ${progatedVia.slice(1).length} ${progatedVia.slice(1).length > 1 ? "others" : "other"}`
+                }
+                return progatedVia?.displayText
+            }
+
+            const getIcon = progatedVia => {
+                if(progatedVia?.length) {
+                    return propagateByIcon(progatedVia[0])
+                }
+                return propagatedViaIcon
+            }
+
+            const detailedPropagatedViaIcon = progatedViaObj =>  propagateByIcon(progatedViaObj)
+
             return {
                 linkedUser,
                 linkedAt,
@@ -125,6 +205,10 @@
                 propagatedVia,
                 propagatedViaIcon,
                 isLoading,
+                computeDisplayText,
+                getIcon,
+                detailedPropagatedViaIcon,
+                remainingClassifications
             }
         },
     })

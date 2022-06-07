@@ -9,6 +9,7 @@ export interface ClassificationInterface {
     updateTime: Date
     description?: string
     attributeDefs: Array<any>
+    entityParents: Array<any>
     typeName: string
     isAutoClassification: boolean
     propagate: boolean

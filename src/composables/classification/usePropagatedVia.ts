@@ -1,3 +1,4 @@
+import { lchownSync } from 'fs'
 import { computed, Ref, ref, watch } from 'vue'
 import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
 import { ClassificationInterface } from '~/types/classifications/classification.interface'
@@ -14,12 +15,13 @@ import { ClassificationInterface } from '~/types/classifications/classification.
 export function usePropagatedVia(classification: Ref<ClassificationInterface>) {
     const dependentKey = ref('CLASSIFICATION_ACCESS_LOG')
     const propagatedVia = ref({})
+
     const assetFetchData = {
         queryText: ref(''),
-        limit: ref(1),
+        limit: ref(200),
         offset: ref(0),
         facets: computed(() => ({
-            guid: classification.value.entityGuid,
+            guidList: classification.value?.entityParents ? classification.value?.entityParents.map(el => el.entityGuid) : [classification.value?.entityGuid]
         })),
         postFacets: ref({}),
         aggregations: ref([]),
@@ -33,38 +35,46 @@ export function usePropagatedVia(classification: Ref<ClassificationInterface>) {
 
     watch(isLoading, () => {
         if (!isLoading.value && list.value && list.value.length > 0) {
-            propagatedVia.value = { ...list.value[0] }
+            if(list.value.length === 1) {
+                propagatedVia.value = { ...list.value[0] }
+            }else {
+                propagatedVia.value = list.value
+            }
         }
     })
 
     const propagatedViaIcon = computed(() => {
-        if (Object.keys(propagatedVia).length > 0) {
-            const typeOfEntity = propagatedVia.value.typeName.replace(
-                'AtlasGlossary',
-                ''
-            )
-            if (propagatedVia.value?.attributes?.certificateStatus) {
-                switch (propagatedVia.value?.attributes?.certificateStatus) {
-                    case 'DRAFT': {
-                        return `${typeOfEntity}Draft`
+        if(list.value.length === 1) {
+            if (Object.keys(propagatedVia.value).length > 0) {
+                const typeOfEntity = propagatedVia.value.typeName.replace(
+                    'AtlasGlossary',
+                    ''
+                )
+                if (propagatedVia.value?.attributes?.certificateStatus) {
+                    switch (propagatedVia.value?.attributes?.certificateStatus) {
+                        case 'DRAFT': {
+                            return `${typeOfEntity}Draft`
+                        }
+    
+                        case 'VERIFIED': {
+                            return `${typeOfEntity}Verified`
+                        }
+    
+                        case 'DEPRECATED': {
+                            return `${typeOfEntity}Deprecated`
+                        }
+    
+                        default: {
+                            return `${typeOfEntity}`
+                        }
                     }
-
-                    case 'VERIFIED': {
-                        return `${typeOfEntity}Verified`
-                    }
-
-                    case 'DEPRECATED': {
-                        return `${typeOfEntity}Deprecated`
-                    }
-
-                    default: {
-                        return `${typeOfEntity}`
-                    }
+                } else {
+                    return `${typeOfEntity}`
                 }
-            } else {
-                return `${typeOfEntity}`
             }
         }
+       
+        
         return ''
     })
 

@@ -15,6 +15,7 @@
                             v-for="persona in personas"
                             :key="persona.id"
                             :to="`/governance/personas/${persona.id}`"
+                            target="_blank"
                         >
                             <div
                                 class="px-2 border border-gray-300 cursor-pointer rounded-xl"

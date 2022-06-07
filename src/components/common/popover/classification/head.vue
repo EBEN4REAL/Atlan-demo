@@ -57,7 +57,7 @@
             class="flex gap-1 mt-1.5 text-sm content-center items-center text-gray-500 flex-wrap break-all"
         >
            
-            Propagated via <AtlanIcon :icon="getIcon(propagatedVia)" />
+            Propagated via <AtlanIcon :icon="progatedIcon(propagatedVia)" />
             <span class="text-gray-700"  
                 @mouseover="() => remainingClassifications = true"
                 @mouseleave="remainingClassifications = false">
@@ -65,7 +65,7 @@
             </span>
             {{ linkedAt }}
         </div>
-        <div class="absolute right-0 p-2 bg-white rounded-md x-auto w-52 mix-blend-normal top-12" :style="{background: '#F4F6FD'}" style="box-shadow: 0px 0px 4px rgba(55, 65, 81, 0.06), 0px 2px 6px rgba(55, 65, 81, 0.1);left: 365px"
+        <div class="absolute right-0 p-2 bg-white rounded-md x-auto w-52 mix-blend-normal top-12 propagated-tooltip" :style="{background: '#F4F6FD'}" style=""
             v-if="propagatedVia?.length && remainingClassifications" >
             <div class="flex items-center " v-for="(pv,i) in propagatedVia.slice(1)" :key="i">
                 <div class="mr-1">
@@ -188,7 +188,7 @@
                 return progatedVia?.displayText
             }
 
-            const getIcon = progatedVia => {
+            const progatedIcon = progatedVia => {
                 if(progatedVia?.length) {
                     return propagateByIcon(progatedVia[0])
                 }
@@ -206,10 +206,17 @@
                 propagatedViaIcon,
                 isLoading,
                 computeDisplayText,
-                getIcon,
+                progatedIcon,
                 detailedPropagatedViaIcon,
                 remainingClassifications
             }
         },
     })
 </script>
+
+<style scoped>
+    .propagated-tooltip {
+        box-shadow: 0px 0px 4px rgba(55, 65, 81, 0.06), 0px 2px 6px rgba(55, 65, 81, 0.1);
+        left: 365px
+    }
+</style>

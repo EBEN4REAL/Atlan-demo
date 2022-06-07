@@ -4,7 +4,7 @@
         <a-popover
             v-model:visible="isEdit"
             placement="leftTop"
-            :overlay-class-name="$style.classificationPopover"
+            :overlay-class-name="!editPermission && role !== 'Guest'  ? $style.classificationPopover_2 : $style.classificationPopover"
             :trigger="['click']"
             :destroy-tooltip-on-hide="destroyTooltipOnHide"
             @visibleChange="handleVisibleChange"
@@ -55,7 +55,8 @@
                         </div>
                     </div>
                     <div class="absolute z-10 w-10/12 p-2 pt-3 mx-auto mt-6 text-white rounded-md left-5"  style="background: #2A2F45;" 
-                        v-if="showChildrenAsset && parentAssetChildren?.length" :class="[!editPermission && role !== 'Guest' ? 'top-80 !important' : 'top-36 !important']">
+                        v-if="showChildrenAsset && parentAssetChildren?.length"
+                        :style="[{top:  !editPermission && role !== 'Guest' && parentAssetChildren?.length > 0  ?  '320px !important' : !editPermission && role !== 'Guest' ? '295px !important'  :   '270px !important'}]">
                         {{parentAssetChildren}}
                     </div>
                 </div>
@@ -500,5 +501,14 @@
             width: 250px !important; 
         }
         @apply p-3;
+        top: 250px !important;
+    }
+    .classificationPopover_2 {
+        :global(.ant-popover-inner-content) {
+            @apply px-0 py-3 !important;
+            width: 250px !important; 
+        }
+        @apply p-3;
+        top: 50px !important;
     }
 </style>

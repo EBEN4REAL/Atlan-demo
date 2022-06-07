@@ -32,7 +32,7 @@
                                 selectedSuggestionIndex === index
                             "
                             :item="suggestion?.documentation?.entity"
-                            placement="right"
+                            placement="rightTop"
                             :mouseEnterDelay="0.3"
                             v-model:assetPopoverVisible="
                                 autosuggestionPopoverActive

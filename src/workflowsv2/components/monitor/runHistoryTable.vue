@@ -142,45 +142,24 @@
 
             const facets = computed(() => ({
                 workflowTemplate: filters.value?.workflowId,
+                workflowTemplates: filters.value?.packageId
+                    ? //If Package is selected, filter wf templates by that package
+                      Object.values(workflowStore.verifiedWorkflows)
+                          .filter(
+                              (wf) =>
+                                  wf.metadata.annotations[
+                                      'package.argoproj.io/name'
+                                  ] === filters.value?.packageId
+                          )
+                          .map((wf) => wf.metadata.name)
+                    : //Else filter by all wf templates in pinia
+                      Object.keys(workflowStore.verifiedWorkflows),
+
                 prefix: workflowStore.packageMeta?.[filters.value?.packageId]
                     ?.metadata?.name,
                 dateRange: filters.value?.dateRange,
                 status: filters.value?.status,
                 creators: filters.value?.creators,
-                excludePrefix: [
-                    'atlan-gtc-bulk-upload-',
-                    'atlan-schedule-query-',
-                    'asq-',
-                    // ? if filtering by BQ package, then exclude miner as both has same prefix
-                    ...(workflowStore.packageMeta?.[filters.value?.packageId]
-                        ?.metadata?.name === 'atlan-bigquery'
-                        ? ['atlan-bigquery-miner']
-                        : []),
-                    // ? if filtering by Snowflake package, then exclude miner as both has same prefix
-                    ...(workflowStore.packageMeta?.[filters.value?.packageId]
-                        ?.metadata?.name === 'atlan-snowflake'
-                        ? ['atlan-snowflake-miner']
-                        : []),
-                    // ? if filtering by Redshift package, then exclude miner as both has same prefix
-                    ...(workflowStore.packageMeta?.[filters.value?.packageId]
-                        ?.metadata?.name === 'atlan-redshift'
-                        ? ['atlan-redshift-miner']
-                        : []),
-                ],
-                filterOut: [
-                    'atlan-typedef-seeder',
-                    'atlan', // atlan-upadate
-                    'cloud-es-log-policy',
-                    'cloud-backups',
-                    'fantastic-octopus',
-                    'atlan-metastore-migrations-haslineage',
-                    'atlan-gtc-bulk-upload',
-                    'atlan-schedule-query',
-                    'atlan-init',
-                    'atlan-atlas',
-                    'atlan-atlas-reset',
-                    'cloud-atlan-bootstrap',
-                ],
             }))
 
             const preference = ref({
@@ -199,6 +178,7 @@
                 offset,
                 queryText,
                 preference,
+                immediate: false,
             })
 
             const totalRuns = computed(
@@ -278,6 +258,13 @@
                     workflowMap.set(refName(wf), wf)
                 })
             })
+
+            const init = async () => {
+                await workflowStore.fetchVerifiedWorkflows()
+                quickChange()
+            }
+
+            init()
 
             return {
                 filters,

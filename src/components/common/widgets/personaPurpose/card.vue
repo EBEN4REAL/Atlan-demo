@@ -93,13 +93,18 @@
                 </div>
             </div>
             <div class="flex items-center h-6 px-4">
-                <div v-for="(user, index) in users" :key="user.id">
+                <div v-for="(user, index) in users.slice(0, 3)" :key="user.id">
                     <a-tooltip v-if="user.username !== 'all-users'">
                         <template #title>
                             {{ user.username }}
                         </template>
                         <Avatar
-                            :avatar-bg-class="'bg-primary-light border-white border border-3 uppercase'"
+                            :class="`${
+                                user.type === 'group'
+                                    ? 'avatar-group-purple'
+                                    : ''
+                            }`"
+                            :avatar-bg-class="`bg-primary-light border-white border border-3 uppercase`"
                             :initial-name="user.username[0]"
                             :image-url="imageUrl(user.username)"
                             :avatar-size="26"
@@ -124,20 +129,12 @@
                         <div class="truncate display-name">All users</div>
                     </div>
                 </div>
-                <a-tooltip
-                    v-if="
-                        (type === 'persona'
-                            ? item.users?.length
-                            : users.length) > 3 && users.length
-                    "
-                >
+                <a-tooltip v-if="users.length > 3 && users.length">
                     <template #title>
-                        +{{
+                        {{
                             type === 'persona'
-                                ? `${item.users?.length - 3} ${
-                                      item.users?.length > 1 ? 'users' : 'user'
-                                  }`
-                                : `${users.length - 3} ${
+                                ? morePersonaUserGroup
+                                : `+${users.length - 3} ${
                                       users.length - 3 ? 'users' : 'user'
                                   }`
                         }}
@@ -149,11 +146,7 @@
                             transform: `translateX(-24px)`,
                         }"
                     >
-                        +{{
-                            (type === 'persona'
-                                ? item.users?.length
-                                : users.length) - 3
-                        }}
+                        +{{ users.length - 3 }}
                     </div>
                 </a-tooltip>
             </div>
@@ -203,6 +196,10 @@
                 type: Number,
                 required: true,
             },
+            groupList: {
+                type: Array,
+                required: true,
+            },
         },
         emits: ['viewAssets', 'overView'],
         setup(props) {
@@ -210,7 +207,7 @@
             const { logoUrl } = toRefs(tenantStore)
             const { classificationList } = useTypedefData()
             const { getConnectorImageMap } = useAssetInfo()
-            const { item, type, userList } = toRefs(props)
+            const { item, type, userList, groupList } = toRefs(props)
             const getUniqueTypeIcons = () => {
                 const displayImages = {
                     connectors: [],
@@ -253,6 +250,19 @@
                 })
                 return arr
             })
+
+            const findData = (id) => {
+                const user = userList.value.find((el) => el.id === id)
+                if (user) {
+                    return { ...user, type: 'user' }
+                }
+                const group = groupList.value.find((el) => el.id === id)
+                if (group) {
+                    return { ...group, type: 'group', username: group.alias }
+                }
+                return {}
+                // arr.find((item: any) => item?.id === id) || {}
+            }
             const users = computed(() => {
                 if (type.value === 'purpose') {
                     let isAllUser = false
@@ -284,16 +294,18 @@
                     }
                     return [{ username: 'all-users' }]
                 }
-                if (!userList?.value.length) return []
+                if (!userList?.value.length && item.value?.users.length)
+                    return []
+                if (!groupList?.value.length && item.value?.groups.length)
+                    return []
                 if (type.value === 'persona') {
-                    const usersSliced = item.value?.users?.slice(0, 3) || []
-                    const personaUsers = usersSliced.map(
-                        (user) =>
-                            userList?.value?.find(
-                                (item: any) => item?.id === user
-                            ) || user
-                    )
-                    return personaUsers
+                    const mergedArr = [
+                        ...item.value?.users,
+                        ...item.value?.groups,
+                    ]
+                    const dataSliced = mergedArr || []
+                    const personaUsersGroups = dataSliced.map(findData)
+                    return personaUsersGroups
                 }
                 return []
             })
@@ -325,6 +337,24 @@
                 }
                 return false
             })
+            const morePersonaUserGroup = computed(() => {
+                const usersCount = item.value.users?.length || 0
+                const groupsCount = item.value.groups?.length || 0
+
+                const restUsers = usersCount - 3
+                const restGroups = restUsers
+                    ? groupsCount
+                    : restUsers + groupsCount
+                return `${
+                    restUsers
+                        ? `+${restUsers} user${restUsers > 1 ? 's' : ''}`
+                        : ''
+                }${restUsers && restGroups ? ', ' : ''}${
+                    restGroups
+                        ? `+${restGroups} group${restGroups > 1 ? 's' : ''}`
+                        : ''
+                }`
+            })
             return {
                 connection,
                 users,
@@ -334,6 +364,7 @@
                 logoUrl,
                 displayName,
                 haveGlossary,
+                morePersonaUserGroup,
             }
         },
     })
@@ -353,6 +384,14 @@
     }
 </style>
 <style lang="less">
+    .avatar-group-purple {
+        .ant-avatar-circle {
+            background: rgba(239, 239, 251, 1) !important;
+        }
+        .initial-text {
+            color: rgba(109, 109, 218, 1);
+        }
+    }
     .icon-all-users {
         transform: scale(0.8);
     }

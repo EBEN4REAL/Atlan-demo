@@ -223,6 +223,7 @@
                     :active="item.id === selectedItem.id"
                     :user-list="userList"
                     :i="i"
+                    :group-list="groupList"
                     @viewAssets="handleViewAssets"
                     @overView="handleOverView"
                 />
@@ -254,6 +255,7 @@
     import useAssetStore from '~/store/asset'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { useAuthStore } from '~/store/auth'
+    import useGroups from '~/composables/group/useGroups'
 
     export default defineComponent({
         name: 'WidgetPersonaPurpose',
@@ -273,7 +275,17 @@
                 purpose: true,
             })
             const params = ref({ filter: { $or: [] } })
+            const paramsGroup = ref({ filter: { $or: [] } })
             const { userList, mutate } = useUsers(params, false)
+            const { groupList, getGroupList } = useGroups(
+                paramsGroup,
+                '',
+                {},
+                null,
+                {
+                    immediate: false,
+                }
+            )
             const personaStore = usePersonaStore()
             const purposeStore = usePurposeStore()
             const personas = computed(
@@ -298,15 +310,26 @@
                         return found
                     }) || []
             )
+            const calculateUserGroup = () => {
+                let userIds = []
+                let groupIds = []
+                personas.value.forEach((el) => {
+                    userIds = [...userIds, ...el.users]
+                    groupIds = [...groupIds, ...el.groups]
+                })
+                userIds = [...new Set(userIds)]
+                groupIds = [...new Set(groupIds)]
+
+                const filter = userIds.map((el) => ({ id: el }))
+                const filterGroup = groupIds.map((el) => ({ id: el }))
+                params.value = { filter: { $or: filter } }
+                paramsGroup.value = { filter: { $or: filterGroup } }
+                mutate()
+                getGroupList()
+            }
             watch(personas, (newVal) => {
                 if (newVal.length && !userList?.value?.length) {
-                    let userIds = []
-                    personas.value.forEach((el) => {
-                        userIds = [...userIds, ...el.users]
-                    })
-                    userIds = [...new Set(userIds)]
-                    const filter = userIds.map((el) => ({ id: el }))
-                    params.value = { filter: { $or: filter } }
+                    calculateUserGroup()
                 }
             })
             const purposes = computed(
@@ -387,7 +410,18 @@
                 selectedItem.value = {}
             }
             onMounted(() => {
-                mutate()
+                if (params.value.filter.$or.length) {
+                    mutate()
+                }
+                if (paramsGroup.value.filter.$or.length) {
+                    getGroupList()
+                }
+                if (
+                    !paramsGroup.value.filter.$or.length &&
+                    !params.value.filter.$or.length
+                ) {
+                    calculateUserGroup()
+                }
             })
             const CarouselRef = ref()
 
@@ -427,6 +461,7 @@
                 handleNext,
                 activeCard,
                 afterChange,
+                groupList,
             }
         },
     })

@@ -402,7 +402,7 @@
     import Jira from '@/common/assets/preview/integrations/jira/jira.vue'
     import SlackResources from '@/common/assets/preview/resources/slackResourcesWrapper.vue'
     import CustomMetaData from './customMetadata/index.vue'
-    
+
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
     import {
@@ -419,7 +419,7 @@
 
     export default defineComponent({
         name: 'AssetPreview',
-       components: {
+        components: {
             PreviewTabsIcon,
             CertificateBadge,
             NoAccess,
@@ -442,7 +442,7 @@
                 () => import('./relations/index.vue')
             ),
             resources: Resources,
-            
+
             lineage: defineAsyncComponent(
                 () => import('./lineage/lineageTab.vue')
             ),
@@ -540,7 +540,7 @@
                 links,
             } = useAssetInfo()
 
-            const activeKey = ref(1)
+            const activeKey = ref(0)
             const activeLabel = ref<string>('Overview')
 
             const route = useRoute()
@@ -564,15 +564,14 @@
             const authStore = useAuthStore()
 
             const slackResourceCount = () =>
-                links(selectedAsset?.value) ??
-                [].filter((l) => getDomain(l.attributes.link) === 'slack.com')
-                    .length
-
+                links(selectedAsset.value)?.filter(
+                    (l) => getDomain(l.attributes.link) === 'slack.com'
+                )?.length
             const getCount = (tab) => {
                 if (tab?.toLowerCase() === 'resources') {
                     return (
-                        links(selectedAsset?.value)?.length ??
-                        0 - slackResourceCount()
+                        links(selectedAsset.value)?.length -
+                        slackResourceCount()
                     )
                 } else if (tab?.toLowerCase() === 'slack') {
                     return slackResourceCount()

@@ -218,6 +218,7 @@
                                                 'column',
                                                 'schema',
                                                 'query',
+                                                'datastudioasset',
                                             ].includes(
                                                 item.typeName?.toLowerCase()
                                             )

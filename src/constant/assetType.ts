@@ -700,7 +700,7 @@ export const assetTypeList: {
     },
     {
         id: 'DataStudioAsset',
-        label: 'Asset',
+        label: 'Data Studio Asset',
         fullLabel: 'Data Studio Asset',
         isDiscoverable: true,
         image: 'GDS',

@@ -527,6 +527,9 @@ export const SourceList = [
             'PowerBITile',
             'PowerBIPage',
             'PowerBIDatasource',
+            'PowerBITable',
+            'PowerBIColumn',
+            'PowerBIMeasure',
         ],
     },
     {

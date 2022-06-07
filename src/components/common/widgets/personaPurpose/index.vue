@@ -253,6 +253,7 @@
     import { useUsers } from '~/composables/user/useUsers'
     import useAssetStore from '~/store/asset'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { useAuthStore } from '~/store/auth'
 
     export default defineComponent({
         name: 'WidgetPersonaPurpose',
@@ -262,6 +263,7 @@
             const activeCard = ref(0)
             const router = useRouter()
             const { id, username } = useUserData()
+            const { groups } = useAuthStore()
             const activeTab = ref('persona')
             const loadingChange = ref(false)
             const visible = ref(false)
@@ -279,6 +281,8 @@
                     personaStore.list.filter((persona) => {
                         if (!persona.enabled) return false
                         const users = persona?.users || []
+                        const userGroups = groups || []
+                        const groupId = userGroups.map((el) => el.id)
                         // const groups = persona?.groups || []
                         let found = false
                         if (id) {
@@ -286,10 +290,11 @@
                                 found ||
                                 users.some((user) => [id].includes(user))
                         }
-                        // if (ownerGroups && ownerGroups.length) {
-                        //     found =
-                        //         found || groups.some((group) => ownerGroups.includes(group))
-                        // }
+                        found =
+                            found ||
+                            groupId.some((group) =>
+                                persona.groups.includes(group)
+                            )
                         return found
                     }) || []
             )
@@ -312,14 +317,16 @@
                         const dataPolicies = purpose?.dataPolicies || []
                         const policies = [...metadataPolicies, ...dataPolicies]
                         const users = []
-                        const groups = []
+                        const groupsData = []
+                        const userGroups = groups || []
+                        const groupName = userGroups.map((el) => el.name)
                         let isAllUsers = false
                         policies.forEach((policy) => {
                             if (policy.users.length) {
                                 users.push(...policy.users)
                             }
                             if (policy.groups.length) {
-                                groups.push(...policy.groups)
+                                groupsData.push(...policy.groups)
                             }
                             if (policy?.allUsers) {
                                 isAllUsers = true
@@ -331,6 +338,9 @@
                                 found ||
                                 users.some((user) => [username].includes(user))
                         }
+                        found =
+                            found ||
+                            groups.some((group) => groupName.includes(group))
                         if (isAllUsers) {
                             found = isAllUsers
                         }

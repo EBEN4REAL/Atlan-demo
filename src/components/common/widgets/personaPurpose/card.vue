@@ -131,13 +131,7 @@
                 </div>
                 <a-tooltip v-if="users.length > 3 && users.length">
                     <template #title>
-                        {{
-                            type === 'persona'
-                                ? morePersonaUserGroup
-                                : `+${users.length - 3} ${
-                                      users.length - 3 ? 'users' : 'user'
-                                  }`
-                        }}
+                        {{ moreUserGroup }}
                     </template>
                     <div
                         class="flex items-center justify-center text-gray-500 bg-gray-200 rounded-full card-avatar-size"
@@ -164,7 +158,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, computed, toRefs } from 'vue'
+    import { defineComponent, computed, toRefs, ref } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import Avatar from '~/components/common/avatar/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
@@ -208,6 +202,10 @@
             const { classificationList } = useTypedefData()
             const { getConnectorImageMap } = useAssetInfo()
             const { item, type, userList, groupList } = toRefs(props)
+            const usersGroupsPurpose = ref({
+                groups: 0,
+                users: 0,
+            })
             const getUniqueTypeIcons = () => {
                 const displayImages = {
                     connectors: [],
@@ -263,33 +261,55 @@
                 return {}
                 // arr.find((item: any) => item?.id === id) || {}
             }
+            const setUsersGroupsPurpose = (val) => {
+                usersGroupsPurpose.value = val
+            }
             const users = computed(() => {
                 if (type.value === 'purpose') {
                     let isAllUser = false
-                    let userPurposes = []
+                    let usersPurpose = []
+                    let groupsPurpose = []
                     const { metadataPolicies, dataPolicies } = item.value
                     dataPolicies.forEach((dataPolicy) => {
                         if (dataPolicy.allUsers) {
                             isAllUser = true
                         }
-                        userPurposes = [...userPurposes, ...dataPolicy.users]
+                        usersPurpose = [...usersPurpose, ...dataPolicy.users]
+                        groupsPurpose = [...groupsPurpose, ...dataPolicy.groups]
                     })
                     metadataPolicies.forEach((metadataPolicy) => {
                         if (metadataPolicy.allUsers) {
                             isAllUser = true
                         }
-                        userPurposes = [
-                            ...userPurposes,
+                        usersPurpose = [
+                            ...usersPurpose,
                             ...metadataPolicy.users,
                         ]
+                        groupsPurpose = [
+                            ...groupsPurpose,
+                            ...metadataPolicy.groups,
+                        ]
                     })
-                    if (!userPurposes.includes('all-users') && !isAllUser) {
-                        const result = [...new Set(userPurposes)].map(
+                    if (!usersPurpose.includes('all-users') && !isAllUser) {
+                        const resultGroups = [...new Set(groupsPurpose)].map(
                             (el, i) => ({
                                 username: el,
                                 id: i,
+                                type: 'group',
                             })
                         )
+                        const resultUsers = [...new Set(usersPurpose)].map(
+                            (el, i) => ({
+                                username: el,
+                                id: i,
+                                type: 'user',
+                            })
+                        )
+                        const result = [...resultUsers, ...resultGroups]
+                        setUsersGroupsPurpose({
+                            groups: resultGroups.length,
+                            users: resultUsers.length,
+                        })
                         return result
                     }
                     return [{ username: 'all-users' }]
@@ -337,9 +357,15 @@
                 }
                 return false
             })
-            const morePersonaUserGroup = computed(() => {
-                const usersCount = item.value.users?.length || 0
-                const groupsCount = item.value.groups?.length || 0
+            const moreUserGroup = computed(() => {
+                const usersCount =
+                    type.value === 'persona'
+                        ? item.value.users?.length || 0
+                        : usersGroupsPurpose.value.users
+                const groupsCount =
+                    type.value === 'persona'
+                        ? item.value.groups?.length || 0
+                        : usersGroupsPurpose.value.groups
 
                 const restUsers = usersCount - 3
                 const restGroups = restUsers
@@ -364,7 +390,7 @@
                 logoUrl,
                 displayName,
                 haveGlossary,
-                morePersonaUserGroup,
+                moreUserGroup,
             }
         },
     })

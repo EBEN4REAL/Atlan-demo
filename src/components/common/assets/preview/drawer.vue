@@ -21,10 +21,15 @@
             >
                 <AtlanIcon icon="Add" class="text-white" />
             </div>
-            <DrawerNavigator
-                v-if="showDrawerNavigator"
-                @close="$emit('closeDrawer')"
-            />
+
+            <div
+                v-if="showCollapseButton && visible"
+                class="collapse-btn"
+                @click="() => $emit('closeDrawer')"
+            >
+                <AtlanIcon icon="CaretRight" class="w-auto h-4" />
+            </div>
+
             <transition name="fade">
                 <div
                     v-if="deferredLoading"
@@ -115,6 +120,11 @@
                 required: false,
                 default: false,
             },
+            showCollapseButton: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
         emits: ['closeDrawer', 'update'],
 
@@ -190,9 +200,13 @@
                 }
             })
 
-            watch(data, () => {
-                drawerData.value = data.value
-            })
+            watch(
+                data,
+                () => {
+                    drawerData.value = data.value
+                },
+                { deep: true }
+            )
 
             watch(isLoading, () => {
                 if (isLoading.value) {
@@ -247,5 +261,11 @@
         right: 430px;
         top: 60px;
         cursor: pointer;
+    }
+
+    .collapse-btn {
+        @apply p-1 border-t border-b border-l fixed cursor-pointer bg-white rounded-l-md border-gray-300 shadow-sm;
+        right: 420px;
+        top: 90px;
     }
 </style>

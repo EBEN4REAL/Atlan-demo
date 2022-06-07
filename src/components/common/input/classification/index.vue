@@ -1,5 +1,6 @@
 <template>
-    <div data-test-id="classification-popover">
+    <div data-test-id="classification-popover" class="relative">
+        <div v-if="isEdit" class="freeze-clicks-outside-popover"></div>
         <a-popover
             v-model:visible="isEdit"
             placement="leftTop"
@@ -74,7 +75,17 @@
                             editPermission:
                                 'hover:bg-primary-light hover:border-primary',
                         }"
-                        @click="handleOpenPopover"
+                        @click="
+                            (e) => {
+                                e.stopPropagation()
+                                handleOpenPopover()
+                            }
+                        "
+                        @dblclick.native="
+                            (e) => {
+                                e.stopPropagation()
+                            }
+                        "
                     >
                         <span
                             ><AtlanIcon icon="Add" class="h-3"></AtlanIcon
@@ -135,6 +146,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import whoami from '~/composables/user/whoami.ts'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import {Modal} from "ant-design-vue"
 
     export default defineComponent({
         name: 'ClassificationWidget',
@@ -192,7 +204,7 @@
                 required: true,
             },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'popoverActive'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
 
@@ -246,7 +258,7 @@
             }
 
             const handleDeleteClassification = (name) => {
-                localValue.value = localValue.value.filter(
+               localValue.value = localValue.value.filter(
                     (i) => i.typeName !== name || isPropagated(i)
                 )
                 selectedValue.value = {
@@ -255,6 +267,7 @@
                         .map((j) => j.typeName),
                 }
                 handleChange()
+                
             }
 
             const handleSelectedChange = () => {
@@ -380,6 +393,7 @@
             const handleOpenPopover = () => {
                 isEdit.value = true
                 requestLoading.value = false
+                emit('popoverActive')
             }
             const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
 

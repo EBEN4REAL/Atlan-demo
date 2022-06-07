@@ -55,7 +55,7 @@
                     ? workflowStore.packageMeta?.[packageName.value]
                     : {}
             )
-            const { displayName } = useWorkflowInfo()
+            const { displayName, name, refName } = useWorkflowInfo()
             const { type } = usePackageInfo()
 
             const placeholder = computed(() =>
@@ -78,6 +78,7 @@
                         'metadata.name',
                         'metadata.annotations.package.argoproj.io/name',
                         'metadata.annotations.orchestration.atlan.com/schedule',
+                        'metadata.annotations.orchestration.atlan.com/atlanName',
                         'spec.templates',
                     ],
                 }),
@@ -89,10 +90,10 @@
 
             whenever(list, () => {
                 workflowList.value = list.value.map((workflow) => ({
-                    id: workflow.metadata.name,
+                    id: refName(workflow),
                     label: displayName(
                         pkg.value,
-                        workflow.metadata.name,
+                        name(workflow),
                         workflow?.spec
                     ),
                 }))

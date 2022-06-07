@@ -137,7 +137,9 @@
             </template>
             <template v-else-if="isMultivalued && attribute.value?.length">
                 <div
-                    v-for="e in attribute.value"
+                    v-for="e in JSON.parse(
+                        JSON.stringify(attribute.value)
+                    ).sort()"
                     :key="e"
                     class="px-2 py-1 border rounded-full"
                     :style="{ 'max-width': '100%' }"

@@ -1,5 +1,22 @@
 <template>
     <Loader v-if="isLoading || isReadmeLoading"></Loader>
+    <div
+        v-else-if="showEmptyState"
+        class="flex items-center justify-center h-full"
+    >
+        <EmptyView
+            empty-screen="EmptyAssetProfile"
+            image-class="h-52"
+            headline="Nothing to see here!"
+            desc="Hmmm… we don't know how you landed here, but nothing exists here at the moment!"
+            button-text="Take me back to Assets"
+            button-icon="ArrowRight"
+            button-icon-class="mr-1 transform rotate-180"
+            button-color="secondary"
+            button-class="w-56 mt-5 font-bold"
+            @event="() => router.push('/assets')"
+        ></EmptyView>
+    </div>
     <AssetProfile
         v-else
         :asset="localSelected"
@@ -19,7 +36,7 @@
         provide,
     } from 'vue'
     import { useHead } from '@vueuse/head'
-    import { useRoute } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
 
     import { whenever } from '@vueuse/core'
     import AssetProfile from '@/common/assets/profile/index.vue'
@@ -36,11 +53,13 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
     import { useAssetAttributes } from '~/composables/discovery/useCurrentUpdate'
+    import EmptyView from '@common/empty/index.vue'
 
     export default defineComponent({
         components: {
             AssetProfile,
             Loader,
+            EmptyView,
         },
         emits: ['preview'],
         setup(props, { emit }) {
@@ -49,9 +68,12 @@
             const localSelected = ref()
             const localReadmeAsset = ref()
             const route = useRoute()
+            const router = useRouter()
+
             const id = computed(() => route?.params?.id || null)
             const profileActiveTab = computed(() => route?.params?.tab)
             const handlePreview = inject('preview')
+            const showEmptyState = ref(false)
 
             if (selectedAsset.value?.guid === id.value) {
                 localSelected.value = selectedAsset.value
@@ -131,6 +153,9 @@
                     localSelected.value = list.value[0]
 
                     handlePreview(list.value[0])
+                    showEmptyState.value = false
+                } else {
+                    showEmptyState.value = true
                 }
             })
 
@@ -141,11 +166,15 @@
             watch(
                 () => id.value,
                 () => {
-                    dependentKey.value = fetchKey.value
-                    facets.value = {
-                        guid: id.value,
+                    if (id.value) {
+                        showEmptyState.value = false
+
+                        dependentKey.value = fetchKey.value
+                        facets.value = {
+                            guid: id.value,
+                        }
+                        fetch()
                     }
-                    fetch()
                 }
             )
 
@@ -173,6 +202,21 @@
                 }
             })
 
+            const handlePreviewVisibility = inject(
+                'handlePreviewVisibility',
+                (args) => {
+                    console.log(args)
+                }
+            )
+
+            watch(showEmptyState, () => {
+                if (showEmptyState.value) {
+                    handlePreviewVisibility(false)
+                } else {
+                    handlePreviewVisibility(true)
+                }
+            })
+
             return {
                 fetchKey,
                 isLoading,
@@ -181,6 +225,8 @@
                 handlePreview,
                 isReadmeLoading,
                 localReadmeAsset,
+                showEmptyState,
+                router,
             }
         },
     })

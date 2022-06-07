@@ -26,6 +26,8 @@ import {
 
 /** UTILS */
 import {
+    nodePortsLabelMap,
+    portsTypeNames,
     getFilteredRelations,
     getCyclicRelations,
     controlCyclicEdges,
@@ -170,15 +172,7 @@ export default function useEventGraph({
     // getPortLabel
     const getNodePortLabel = (node) => {
         const { typeName } = node.store.data.entity
-        const portsLabelMap = {
-            Table: 'column',
-            View: 'column',
-            MaterialisedView: 'column',
-            TableauDatasource: 'field',
-            LookerExplore: 'field',
-            LookerView: 'field',
-        }
-        return portsLabelMap[typeName]
+        return nodePortsLabelMap[typeName]
     }
 
     // getEventPath
@@ -289,15 +283,7 @@ export default function useEventGraph({
         graph.value.getNodes().some((x) => x.hasPort(portId))
 
     // isPortTypeName
-    const isPortTypeName = (typeName) => {
-        const typeNames = [
-            'Column',
-            'TableauDatasourceField',
-            'TableauCalculatedField',
-            'LookerField',
-        ]
-        return typeNames.includes(typeName)
-    }
+    const isPortTypeName = (typeName) => portsTypeNames.includes(typeName)
 
     // isPortEdgesPresent
     const isPortEdgesPresent = () =>

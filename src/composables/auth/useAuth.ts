@@ -6,7 +6,7 @@ export default function useAuth() {
     const isAccess = ref(false)
     const authStore = useAuthStore()
     const currentRoute = useRoute()
-    const getCurrentPermissions = currentRoute.meta.permissions
+    const getCurrentPermissions = currentRoute?.meta?.permissions ?? []
 
     watch(
         () => authStore.permissions,

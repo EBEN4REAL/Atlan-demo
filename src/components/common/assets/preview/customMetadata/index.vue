@@ -76,14 +76,24 @@
                     </span>
                     <AtlanButton2
                         :disabled="!isEdit"
-                        :label="hasEditPermission!==undefined && !hasEditPermission ? 'Request': 'Update'"
+                        :label="
+                            hasEditPermission !== undefined &&
+                            !hasEditPermission
+                                ? 'Request'
+                                : 'Update'
+                        "
                         @click="handleUpdate"
                     />
                 </div>
             </div>
         </div>
         <div
-            v-if="hasEditPermission!==undefined && !hasEditPermission && role !== 'Guest' && !viewOnly"
+            v-if="
+                hasEditPermission !== undefined &&
+                !hasEditPermission &&
+                role !== 'Guest' &&
+                !viewOnly
+            "
             class="px-3 py-2 mt-3 bg-gray-100"
         >
             You don't have edit access. Suggest your changes
@@ -108,7 +118,7 @@
             </div>
         </template>
 
-        <div class="flex flex-col flex-grow pl-5 pr-5 overflow-y-auto pt-4">
+        <div class="flex flex-col flex-grow pt-4 pl-5 pr-5 overflow-y-auto">
             <!-- showing non empty starts here -->
             <template v-if="readOnly">
                 <template
@@ -131,11 +141,17 @@
                                 />
                                 <a-tooltip>
                                     <template #title>
-                                        <span>{{ a.options.description }}</span>
+                                        <span>{{
+                                            a.description ||
+                                            a.options.description
+                                        }}</span>
                                     </template>
                                     <div class="">
                                         <AtlanIcon
-                                            v-if="a.options.description"
+                                            v-if="
+                                                a.description ||
+                                                a.options.description
+                                            "
                                             class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
                                             icon="Info"
                                         />
@@ -189,12 +205,16 @@
                                     <a-tooltip>
                                         <template #title>
                                             <span>{{
+                                                a.description ||
                                                 a.options.description
                                             }}</span>
                                         </template>
                                         <div class="">
                                             <AtlanIcon
-                                                v-if="a.options.description"
+                                                v-if="
+                                                    a.description ||
+                                                    a.options.description
+                                                "
                                                 class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
                                                 icon="Info"
                                             />
@@ -294,11 +314,16 @@
                             />
                             <a-tooltip>
                                 <template #title>
-                                    <span>{{ a.options.description }}</span>
+                                    <span>{{
+                                        a.description || a.options.description
+                                    }}</span>
                                 </template>
                                 <div class="">
                                     <AtlanIcon
-                                        v-if="a.options.description"
+                                        v-if="
+                                            a.description ||
+                                            a.options.description
+                                        "
                                         class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
                                         icon="Info"
                                     />

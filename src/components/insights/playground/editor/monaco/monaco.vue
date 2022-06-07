@@ -897,7 +897,7 @@
                 } else {
                     editor?.focus()
 
-                    if (!editorStates.get(newKey).viewState) {
+                    if (!editorStates.get(newKey)?.viewState) {
                         setEditorFocusedState(false, editorFocused)
                         setEditorPos(editor?.getPosition(), editorPos)
                     }
@@ -959,15 +959,15 @@
                     const index = tabs.value.findIndex(
                         (tab) => tab.key === newKey
                     )
-                    if (!editorStates.get(tabs.value[index].key)?.model) {
+                    if (!editorStates.get(tabs.value[index]?.key)?.model) {
                         const newModel = monaco.editor.createModel(
                             String(
-                                toRaw(tabs.value)[index].playground.editor.text
+                                toRaw(tabs.value)[index]?.playground.editor.text
                             ),
                             'atlansql'
                         )
 
-                        updateEditorModel(editorStates, tabs.value[index].key, {
+                        updateEditorModel(editorStates, tabs.value[index]?.key, {
                             model: newModel,
                             viewState: {},
                         })
@@ -977,7 +977,7 @@
                         setEditorPos(editor?.getPosition(), editorPos)
                     } else {
                         editor?.setModel(
-                            editorStates.get(tabs.value[index].key).model
+                            editorStates.get(tabs.value[index]?.key).model
                         )
 
                         const newViewState = editorStates.get(
@@ -1016,7 +1016,7 @@
             )
 
             watch(
-                () => tabs.value[_index.value].playground.editor,
+                () => tabs.value[_index.value]?.playground.editor,
                 () => {
                     if (activeInlineTab.value) {
                         if (tabs.value[_index.value]?.playground?.isVQB) return

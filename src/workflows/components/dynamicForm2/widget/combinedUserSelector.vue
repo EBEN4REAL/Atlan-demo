@@ -113,7 +113,7 @@
             const allAdmins = ref(
                 formState[
                     `${baseKey.value}.${fieldMappings.value.allAdmins}`
-                ] || []
+                ] || ['$admin']
             )
 
             const handleOwnersChange = () => {

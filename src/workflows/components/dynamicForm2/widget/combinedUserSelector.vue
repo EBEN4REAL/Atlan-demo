@@ -35,20 +35,20 @@
             ></template>
             <template #users>
                 <div
-                    v-if="allAdmins"
+                    v-if="allAdmins?.length"
                     class="flex items-center justify-between flex-none px-2 py-1 ml-2 border border-gray-200 rounded-full cursor-pointer text-new-gray-800 hover:bg-primary hover:text-white"
                 >
                     <span> All admins </span>
                     <AtlanIcon
                         icon="Cross"
                         class="h-3 ml-3 rotate-45"
-                        @click="allAdmins = false"
+                        @click="toggleAllAdmin(false)"
                     />
                 </div>
             </template>
         </Owners>
         <AtlanButton2
-            v-if="!allAdmins"
+            v-if="!allAdmins.length"
             label="Include all admins"
             color="link"
             class="pb-1 ml-3"
@@ -113,7 +113,7 @@
             const allAdmins = ref(
                 formState[
                     `${baseKey.value}.${fieldMappings.value.allAdmins}`
-                ] || true
+                ] || []
             )
 
             const handleOwnersChange = () => {
@@ -127,8 +127,8 @@
                 emit('change', { ...selectedOwnersData, allAdmins })
             }
 
-            const toggleAllAdmin = () => {
-                allAdmins.value = !allAdmins.value
+            const toggleAllAdmin = (set = true) => {
+                allAdmins.value = set ? ['$admin'] : []
                 handleOwnersChange()
             }
 

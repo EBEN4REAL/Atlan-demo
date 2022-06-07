@@ -66,7 +66,7 @@
                 <span class="text-gray-700" style="">
                     <b>{{ metadata.displayName }}</b> is linked with
                     {{ assetCount }} assets. You'll have to remove them before
-                    archiving.
+                    deleting.
                 </span>
                 <span
                     class="inline-block cursor-pointer hover:underline text-primary"

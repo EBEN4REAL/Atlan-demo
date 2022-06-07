@@ -253,7 +253,6 @@
                 filterByColumnsWithLineage.value = e.target.checked
                 facets.value['__hasLineage'] = {
                     value: !!filterByColumnsWithLineage.value,
-                    operand: '__hasLineage',
                 }
 
                 quickChange()

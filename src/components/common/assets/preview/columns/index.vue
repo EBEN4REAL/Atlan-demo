@@ -21,16 +21,12 @@
                 class=""
                 @change="handleSearchChange"
             >
-                <template #postFilter>
-                    <div class="flex items-center justify-between py-1 rounded">
-                        <p class="mr-4 text-sm text-gray-500">Sort By</p>
-
-                        <Sorting
-                            v-model="preference.sort"
-                            asset-type="Column"
-                            @change="handleChangeSort"
-                        ></Sorting>
-                    </div>
+                <template #sort>
+                    <Sorting
+                        v-model="preference.sort"
+                        asset-type="Column"
+                        @change="handleChangeSort"
+                    ></Sorting>
                 </template>
             </SearchAdvanced>
         </div>
@@ -116,7 +112,7 @@
     import EmptyView from '@common/empty/index.vue'
 
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
-    import Sorting from '@/common/select/sorting.vue'
+    import Sorting from '@/common/dropdown/sorting.vue'
 
     import AssetList from '@/common/assets/list/index.vue'
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
@@ -166,7 +162,7 @@
             })
             const aggregations = ref([aggregationAttributeName])
             const postFacets = ref({})
-            const dependentKey = ref('DEFAULT_COLUMNS')
+            const dependentKey = ref('DEFAULT_COLUMNS_SIDEBAR_TAB')
             const filterByColumnsWithLineage = ref(false)
             const columnWithLineageCount = ref(null)
             const columnAttributes = ref([
@@ -305,6 +301,8 @@
             }, 150)
 
             const handleChangeSort = () => {
+                list.value = []
+                offset.value = 0
                 quickChange()
             }
 
@@ -354,7 +352,9 @@
             const columnlistRef = ref(null)
             const shouldLoadMore = ref(true)
 
-            watchOnce(columnlistRef, () => {
+            // Tried watchOnce and it was not working in the case of change sort function
+            // TODO: try making watchOnce work instead of using a watcher
+            watch(columnlistRef, () => {
                 if (columnlistRef.value) {
                     const node = document.querySelector(
                         '.column-list-container'

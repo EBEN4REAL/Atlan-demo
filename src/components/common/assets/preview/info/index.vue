@@ -861,7 +861,10 @@
                         <span>Connection Admins</span>
                         <AtlanIcon icon="Info" class="mb-0.5 ml-1 mr-auto" />
                         <AtlanButton2
-                            v-if="!localAdmins.adminRoles?.length"
+                            v-if="
+                                !localAdmins.adminRoles?.length &&
+                                editPermission
+                            "
                             label="Add all admins"
                             color="link"
                             class="h-6 ml-auto"

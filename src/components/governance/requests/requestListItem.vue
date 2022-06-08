@@ -173,8 +173,8 @@
                 :value-array="request?.destinationValueArray"
                 :loading="state.isLoading"
                 :is-approval-loading="state.isApprovalLoading"
-                @accept="handleApproval"
-                @reject="handleRejection"
+                @accept="(message) => handleApproval(message || '')"
+                @reject="(message) => handleRejection(message || '')"
                 @switch-popover="
                     (val) => {
                         updatePopoverActive = val

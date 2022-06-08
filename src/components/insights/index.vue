@@ -1,5 +1,9 @@
 <template>
     <div id="fullScreenId" class="flex h-full overflow-x-hidden">
+        <div class="absolute">
+            <div class="text-transparent plex-mono">s</div>
+            <div class="text-transparent plex-mono-medium">s</div>
+        </div>
         <div ref="splitpaneRef" :class="$style.splitpane_insights">
             <splitpanes
                 class="parent_splitpanes"
@@ -501,6 +505,7 @@
                 setUserPreferenceToLocalStorage(editorConfig.value)
             })
             const _keyListener = (e) => {
+                // debugger
                 if (e.key === 'b') {
                     if (e.metaKey || e.ctrlKey) {
                         e.preventDefault()
@@ -524,6 +529,9 @@
                         }
                     }
                     // prevent the default action
+                }
+                if (e.key === 'ArrowDown') {
+                    console.log('ARROW DOWNNNNNNN')
                 }
             }
 
@@ -935,6 +943,15 @@
     }
 </style>
 
+<style lang="less">
+    .plex-mono {
+        font-family: PlexMono !important;
+    }
+    .plex-mono-medium {
+        font-family: PlexMono !important;
+        font-weight: bold;
+    }
+</style>
 <style lang="less" scoped>
     // .placeholder {
     //     background-color: #f4f4f4;

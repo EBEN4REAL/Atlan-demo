@@ -15,7 +15,7 @@
         <div class="flex flex-col w-full h-56 mt-8 preview-illustration">
             <div
                 v-if="feature.key"
-                class="items-center justify-center w-full h-full overflow-hidden rounded-md"
+                class="items-center justify-center w-full h-full overflow-hidden bg-white rounded-md"
             >
                 <img class="w-full h-full" :src="feature.illustration" alt="" />
             </div>

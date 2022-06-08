@@ -424,7 +424,7 @@
                 )
             )
 
-            /*  const scrollToTop = () => {
+            const scrollToTop = () => {
                 const tableRow = document.querySelector(
                     `tr[data-row-key="${columnsList.value[0]?.attributes?.order}"]`
                 )
@@ -436,7 +436,7 @@
                         behavior: 'smooth',
                     })
                 }
-            } */
+            }
 
             const handleCloseColumnSidebar = () => {
                 if (!preventClick.value) {
@@ -509,8 +509,11 @@
                 quickChange()
             }
 
-            const handleChangeSort = () => {
-                quickChange()
+            const handleChangeSort = async () => {
+                list.value = []
+                await scrollToTop()
+                offset.value = 0
+                await quickChange()
             }
 
             // customRow Antd

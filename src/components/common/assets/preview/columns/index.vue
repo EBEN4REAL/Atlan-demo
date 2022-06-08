@@ -162,7 +162,7 @@
             })
             const aggregations = ref([aggregationAttributeName])
             const postFacets = ref({})
-            const dependentKey = ref('DEFAULT_COLUMNS')
+            const dependentKey = ref('DEFAULT_COLUMNS_SIDEBAR_TAB')
             const filterByColumnsWithLineage = ref(false)
             const columnWithLineageCount = ref(null)
             const columnAttributes = ref([
@@ -302,6 +302,7 @@
 
             const handleChangeSort = () => {
                 list.value = []
+                offset.value = 0
                 quickChange()
             }
 
@@ -351,7 +352,9 @@
             const columnlistRef = ref(null)
             const shouldLoadMore = ref(true)
 
-            watchOnce(columnlistRef, () => {
+            // Tried watchOnce and it was not working in the case of change sort function
+            // TODO: try making watchOnce work instead of using a watcher
+            watch(columnlistRef, () => {
                 if (columnlistRef.value) {
                     const node = document.querySelector(
                         '.column-list-container'

@@ -188,6 +188,7 @@
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import { initAnnounceKit } from '~/composables/announceKIT/index'
     import WIDGETS from '~/constant/integrations/announceKIT.constant'
+    import { loadScript } from 'vue-plugin-load-script'
 
     export default defineComponent({
         name: 'Navigation Menu',
@@ -337,21 +338,40 @@
             )
 
             onMounted(() => {
-                const { WHATS_NEW } = WIDGETS
-                initAnnounceKit(
-                    '.announcekit-widget',
-                    WHATS_NEW.widgetId,
-                    WHATS_NEW.name
-                )
-                if (window?.announcekit)
-                    window.announcekit.on('widget-init', ({ widget }) => {
-                        // Called for each widget after the widget has been successfully loaded.
-                        // Widget  object is passed to the handler.
-                        if (
-                            widget.conf.name === WHATS_NEW.name &&
-                            currentRoute.fullPath === '/?whatsnew'
+                loadScript('https://cdn.announcekit.app/widget-v2.js')
+                    .then(() => {
+                        window.announcekit = window.announcekit || {
+                            queue: [],
+                            on(n, x) {
+                                window.announcekit.queue.push([n, x])
+                            },
+                            push(x) {
+                                window.announcekit.queue.push(x)
+                            },
+                        }
+                        // Script is loaded, do something
+                        const { WHATS_NEW } = WIDGETS
+                        initAnnounceKit(
+                            '.announcekit-widget',
+                            WHATS_NEW.widgetId,
+                            WHATS_NEW.name
                         )
-                            widget.open()
+                        if (window?.announcekit)
+                            window.announcekit.on(
+                                'widget-init',
+                                ({ widget }) => {
+                                    // Called for each widget after the widget has been successfully loaded.
+                                    // Widget  object is passed to the handler.
+                                    if (
+                                        widget.conf.name === WHATS_NEW.name &&
+                                        currentRoute.fullPath === '/?whatsnew'
+                                    )
+                                        widget.open()
+                                }
+                            )
+                    })
+                    .catch(() => {
+                        // Failed to fetch script
                     })
             })
 

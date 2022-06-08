@@ -226,6 +226,7 @@
                     sameTargetCount,
                     nodes,
                     edges,
+                    showDrawer,
                     onSelectAsset,
                     onCloseDrawer,
                     addSubGraph,

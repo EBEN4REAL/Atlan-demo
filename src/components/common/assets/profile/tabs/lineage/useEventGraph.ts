@@ -45,6 +45,7 @@ export default function useEventGraph({
     sameTargetCount,
     nodes,
     edges,
+    showDrawer,
     onSelectAsset,
     onCloseDrawer,
     addSubGraph,
@@ -1866,6 +1867,10 @@ export default function useEventGraph({
     })
 
     /** WATCHERS */
+    watch(showDrawer, (newVal) => {
+        if (!newVal) resetState()
+    })
+
     watch(
         portToSelect,
         (newVal) => {

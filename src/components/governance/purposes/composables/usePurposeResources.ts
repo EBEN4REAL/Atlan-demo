@@ -1,12 +1,10 @@
-
 import { defineComponent, PropType, ref, toRefs, h, watch } from 'vue'
 import { handleUpdateList } from '@/governance/purposes/composables/usePurposeList'
 import { savePersona } from '@/governance/purposes/composables/useEditPurpose'
-import { getDomain } from '~/utils/url';
+import { getDomain } from '~/utils/url'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
 const usePersonaResources = (purpose) => {
-
     // The `handleAddResource` function is a helper function that makes network request to store a resource link to the
     // purpose.
     const addStatus = ref('')
@@ -22,14 +20,9 @@ const usePersonaResources = (purpose) => {
             body.readme = body.readme ?? '' // TODO
             await savePersona(body)
             handleUpdateList(body)
-            useAddEvent(
-                'governance',
-                'purpose',
-                'resource_created',
-                {
-                    domain: getDomain(r.attributes.link),
-                }
-            )
+            useAddEvent('governance', 'purpose', 'resource_created', {
+                resource_url_domain: r.attributes.link.split('/')[2],
+            })
             addStatus.value = 'success'
         } catch (e) {
             addStatus.value = 'error'
@@ -49,14 +42,9 @@ const usePersonaResources = (purpose) => {
             body.readme = body.readme ?? '' // TODO
             await savePersona(body)
             handleUpdateList(body)
-            useAddEvent(
-                'governance',
-                'purpose',
-                'resource_updated',
-                {
-                    domain: getDomain(r.attributes.link),
-                }
-            )
+            useAddEvent('governance', 'purpose', 'resource_updated', {
+                resource_url_domain: r.attributes.link.split('/')[2],
+            })
             updateStatus.value = 'success'
         } catch (error) {
             updateStatus.value = 'error'
@@ -75,12 +63,7 @@ const usePersonaResources = (purpose) => {
             await savePersona(body)
             removeStatus.value = 'success'
             handleUpdateList(body)
-            useAddEvent(
-                'governance',
-                'purpose',
-                'resource_deleted',
-                {}
-            )
+            useAddEvent('governance', 'purpose', 'resource_deleted', {})
         } catch (e) {
             removeStatus.value = 'error'
         }
@@ -92,7 +75,7 @@ const usePersonaResources = (purpose) => {
         removeStatus,
         handleAddResource,
         handleUpdateResource,
-        handleRemoveResource
+        handleRemoveResource,
     }
 }
 

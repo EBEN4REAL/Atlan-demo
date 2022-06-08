@@ -6,7 +6,9 @@ import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.inter
 import { useConnector } from '~/components/insights/common/composables/useConnector'
 import { triggerCharacters } from '~/components/insights/playground/editor/monaco/triggerCharacters'
 import { getDialectInfo } from '~/components/insights/common/composables/getDialectInfo'
+import { capitalizeFirstLetter } from '~/utils/string'
 import {
+    getSnippetKeywords,
     createAliasesMap,
     extractTablesFromContext,
     getSchemaAndDatabaseFromSqlQueryText,
@@ -209,7 +211,8 @@ export function entitiesToEditorKeyword(
         attributeName: string
         attributeValue: string
     },
-    isDotBased: boolean = false // wether to include table with column or not T.C
+    isDotBased: boolean = false, // wether to include table with column or not T.C,
+    kind: number = 3
 ) {
     const { getConnectorName } = useConnector()
     // for assetQuote Info of different sources
@@ -296,7 +299,9 @@ export function entitiesToEditorKeyword(
                             // detail: `${entityType}`, // TABLE,
                             label: label,
                             detail: `${entityType}`,
-                            kind: monaco.languages.CompletionItemKind.Field,
+                            kind:
+                                kind ||
+                                monaco.languages.CompletionItemKind.Field,
                             documentation: {
                                 value: generateMarkdown(
                                     turndownService,
@@ -330,7 +335,9 @@ export function entitiesToEditorKeyword(
                             // detail: `${type}: ${tableName}`, // COLUMN - TABLE_NAME,
                             label: entities[i].attributes.name,
                             detail: `${tableName}`, // COLUMN - TABLE_NAME,
-                            kind: monaco.languages.CompletionItemKind.Field,
+                            kind:
+                                kind ||
+                                monaco.languages.CompletionItemKind.Field,
                             documentation: {
                                 value: generateMarkdown(
                                     turndownService,
@@ -364,12 +371,58 @@ export function entitiesToEditorKeyword(
     })
 }
 
-function getLocalSQLSugggestions(currWrd: string) {
+function getLocalSQLSugggestions(currWrd: string, withPromise = true) {
     let currentWord = currWrd?.toUpperCase()
     const sqlKeywords = getSqlKeywords()
     let suggestions = sqlKeywords.filter((keyword) =>
         keyword.label.includes(currentWord?.toUpperCase())
     )
+    const snippetWords = getSnippetKeywords()
+    snippetWords.forEach((snippetWord) => {
+        if (
+            snippetWord.word.toUpperCase().includes(currentWord.toUpperCase())
+        ) {
+            suggestions = [
+                ...suggestions,
+                {
+                    label: `${capitalizeFirstLetter(snippetWord.word)} snippet`,
+                    kind: 'snippet',
+                    insertText: snippetWord.text,
+                    selectionColumnStart: snippetWord.selectionColumnStart,
+                    selectionColumnEnd: snippetWord.selectionColumnEnd,
+                },
+            ]
+        }
+    })
+    if (!withPromise) return suggestions
+
+    return Promise.resolve({
+        suggestions: suggestions,
+        incomplete: true,
+    })
+}
+function getLocalSnippetSugggestions(currWrd: string, withPromise = true) {
+    let currentWord = currWrd?.toUpperCase()
+    const snippetWords = getSnippetKeywords()
+    let suggestions = []
+    snippetWords.forEach((snippetWord) => {
+        if (
+            snippetWord.word.toUpperCase().includes(currentWord.toUpperCase())
+        ) {
+            suggestions = [
+                ...suggestions,
+                {
+                    label: `${capitalizeFirstLetter(snippetWord.word)} snippet`,
+                    kind: 'snippet',
+                    insertText: snippetWord.text,
+                    selectionColumnStart: snippetWord.selectionColumnStart,
+                    selectionColumnEnd: snippetWord.selectionColumnEnd,
+                },
+            ]
+        }
+    })
+    if (!withPromise) return suggestions
+
     return Promise.resolve({
         suggestions: suggestions,
         incomplete: true,
@@ -408,6 +461,7 @@ export function getLastMappedKeyword(
 }
 
 const attributes = [
+    'sizeBytes',
     'name',
     'displayName',
     'typeName',
@@ -426,9 +480,16 @@ const attributes = [
     'columnCount',
     'tableCount',
     'certificateStatus',
+    'updatedBy',
+    'updatedAt',
     '__guid',
     'qualifiedName',
     'connectionName',
+    'announcementMessage',
+    'announcementTitle',
+    'announcementType',
+    'announcementUpdatedAt',
+    'announcementUpdatedBy',
 ]
 const body = ref()
 
@@ -551,7 +612,8 @@ async function getSuggestionsUsingType(
     context: {
         attributeName: string
         attributeValue: string
-    }
+    },
+    kind: number = 3
 ) {
     refreshBody()
     if (connectorsInfo.schemaName) {
@@ -612,7 +674,9 @@ async function getSuggestionsUsingType(
                     type,
                     currentWord,
                     connectorsInfo,
-                    context
+                    context,
+                    false,
+                    kind
                 )
                 // console.log('connector: ', connectorsInfo)
 
@@ -720,7 +784,9 @@ async function getSuggestionsUsingType(
                     type,
                     currentWord,
                     connectorsInfo,
-                    context
+                    context,
+                    false,
+                    kind
                 )
 
                 return suggestionsPromise
@@ -737,6 +803,14 @@ async function getSuggestionsUsingType(
         }
         default:
             return []
+    }
+}
+
+function getAliasStructure(keyword: any) {
+    return {
+        label: keyword,
+        kind: 'alias',
+        insertText: keyword,
     }
 }
 
@@ -851,6 +925,7 @@ export async function useAutoSuggestions(
                 }
         }
     }
+    debugger
     if (subquery) {
         ///////////////////////////////////////////////////////////
         let subQueryleftSideStringFromCurPos = editorText
@@ -890,6 +965,7 @@ export async function useAutoSuggestions(
         }
         return _str
     }
+    debugger
 
     let leftSideStringFromCurPos = removeSubQueries(
         editorTextTillCursorPos.replace(/\"/g, '')
@@ -923,6 +999,8 @@ export async function useAutoSuggestions(
     )
     databaseName = _databaseName
     schemaName = _schemaName
+    connectorsInfo.databaseName = _databaseName
+    connectorsInfo.schemaName = _schemaName
 
     let tokens = editorTextTillCursorPos.split(/[ ,\n;"')(]+/gm)
     // console.log(tokens, 'tokk')
@@ -932,8 +1010,26 @@ export async function useAutoSuggestions(
         t = !token.match(/[-[\]{};/\n()*+?'"\\/^$|#\s\t]/g) && token !== ''
         return t
     })
+    debugger
     // tokens.push(' ')
+    let exceptionCase = false // when used as "table"."columnName"
     let currentWord = tokens[tokens.length - 1]
+
+    let previousWord
+    if (tokens.length > 1) previousWord = tokens[tokens.length - 2]
+    if (previousWord === '.') {
+        contextStore.value.left.forEach((context) => {
+            if (
+                tokens.length > 2 &&
+                context.name === tokens[tokens.length - 3]
+            ) {
+                exceptionCase = true
+            }
+        })
+        tokens.splice(tokens.length - 2, 2, `.${currentWord}`)
+        currentWord = `.${currentWord}`
+    }
+
     // TABLE[DOT]  // check if previous is [dot]
     if (currentWord === '.' || currentWord.includes('.')) {
         let aliasMode = false
@@ -997,7 +1093,6 @@ export async function useAutoSuggestions(
             return suggestionsPromise
         }
     }
-    debugger
     /* If it is a first/nth character of first word */
     if (tokens.length < 2) {
         return getLocalSQLSugggestions(currentWord)
@@ -1043,19 +1138,24 @@ export async function useAutoSuggestions(
                                 )
                                 let AliasesKeywordsMap = AliasesKeys.map(
                                     (keyword) => {
-                                        return {
-                                            label: keyword,
-                                            kind: monaco.languages
-                                                .CompletionItemKind.Keyword,
-                                            insertText: keyword,
-                                        }
+                                        return getAliasStructure(keyword)
                                     }
                                 )
-
                                 let _suggestions = [
                                     ...value.suggestions,
                                     ...AliasesKeywordsMap,
                                 ]
+                                const localSuggestions =
+                                    getLocalSnippetSugggestions(
+                                        currentWord,
+                                        false
+                                    )
+
+                                _suggestions = [
+                                    ..._suggestions,
+                                    ...localSuggestions,
+                                ]
+
                                 resolve({
                                     suggestions: _suggestions,
                                     incomplete: true,
@@ -1081,7 +1181,7 @@ export async function useAutoSuggestions(
                                         return {
                                             label: keyword,
                                             kind: monaco.languages
-                                                .CompletionItemKind.Keyword,
+                                                .CompletionItemKind.Function,
                                             insertText: keyword,
                                         }
                                     }
@@ -1100,12 +1200,7 @@ export async function useAutoSuggestions(
                                 )
                                 let AliasesKeywordsMap = AliasesKeys.map(
                                     (keyword) => {
-                                        return {
-                                            label: keyword,
-                                            kind: monaco.languages
-                                                .CompletionItemKind.Keyword,
-                                            insertText: keyword,
-                                        }
+                                        return getAliasStructure(keyword)
                                     }
                                 )
 
@@ -1113,6 +1208,16 @@ export async function useAutoSuggestions(
                                     ...value.suggestions,
                                     ...suggestions,
                                     ...AliasesKeywordsMap,
+                                ]
+                                const localSuggestions =
+                                    getLocalSnippetSugggestions(
+                                        currentWord,
+                                        false
+                                    )
+
+                                _suggestions = [
+                                    ..._suggestions,
+                                    ...localSuggestions,
                                 ]
 
                                 resolve({
@@ -1140,7 +1245,7 @@ export async function useAutoSuggestions(
                                     return {
                                         label: keyword,
                                         kind: monaco.languages
-                                            .CompletionItemKind.Keyword,
+                                            .CompletionItemKind.Function,
                                         insertText: `${keyword}()`,
                                     }
                                 }
@@ -1156,12 +1261,7 @@ export async function useAutoSuggestions(
                             )
                             let AliasesKeywordsMap = AliasesKeys.map(
                                 (keyword) => {
-                                    return {
-                                        label: keyword,
-                                        kind: monaco.languages
-                                            .CompletionItemKind.Keyword,
-                                        insertText: keyword,
-                                    }
+                                    return getAliasStructure(keyword)
                                 }
                             )
 
@@ -1169,6 +1269,13 @@ export async function useAutoSuggestions(
                                 ...value.suggestions,
                                 ...filterKeywordsMap,
                                 ...AliasesKeywordsMap,
+                            ]
+                            const localSuggestions =
+                                getLocalSnippetSugggestions(currentWord, false)
+
+                            _suggestions = [
+                                ..._suggestions,
+                                ...localSuggestions,
                             ]
                             resolve({
                                 suggestions: _suggestions,
@@ -1188,6 +1295,7 @@ export async function useAutoSuggestions(
                     )
                     return new Promise((resolve, reject) => {
                         suggestionsPromise.then((value) => {
+                            debugger
                             const AliasesKeys: string[] = []
                             Object.keys(aliasesMap.value).forEach(
                                 (key: any) => {
@@ -1198,12 +1306,7 @@ export async function useAutoSuggestions(
                             )
                             let AliasesKeywordsMap = AliasesKeys.map(
                                 (keyword) => {
-                                    return {
-                                        label: keyword,
-                                        kind: monaco.languages
-                                            .CompletionItemKind.Keyword,
-                                        insertText: keyword,
-                                    }
+                                    return getAliasStructure(keyword)
                                 }
                             )
 

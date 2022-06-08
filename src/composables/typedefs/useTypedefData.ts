@@ -17,6 +17,7 @@ export default function useTypedefData() {
     )
 
     const customMetadataList = computed(() => typedefStore.customMetadataList)
+    const activeCustomMetadataList = computed(() => typedefStore.activeCustomMetadataList)
 
     const customMetadataProjections =
         typedefStore.getCustomMetadataListProjections
@@ -38,6 +39,7 @@ export default function useTypedefData() {
     return {
         classificationList,
         customMetadataList,
+        activeCustomMetadataList,
         enumList,
         customMetadataProjections,
     }

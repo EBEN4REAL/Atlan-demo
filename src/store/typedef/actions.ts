@@ -87,7 +87,7 @@ export const actions: Actions = {
 
     getCustomMetadataListProjectionsByName(cmName) {
         const reqBmAttrNames: string[] = []
-        this.customMetadataList?.forEach((bm) => {
+        this.activeCustomMetadataList?.forEach((bm) => {
             if (
                 bm?.attributeDefs &&
                 bm?.attributeDefs?.length &&

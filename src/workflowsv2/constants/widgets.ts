@@ -109,6 +109,7 @@ export const Metadata: WidgetData[] = [
                         },
                         ticks: {
                             maxTicksLimit: 12,
+                            maxRotation: 5,
                         },
                     },
                     y: {

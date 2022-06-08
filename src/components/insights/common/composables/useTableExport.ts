@@ -77,6 +77,25 @@ export const useTableExport = (name, columnList, rows) => {
         }
     }
 }
+export const useSlackTableExport = (columnList, rows) => {
+    let filename = `atlan-analysis-${dayjs().format(
+        'YYYY-MM-DD'
+    )}-at-${dayjs().format('hh:mm A')}.csv`
+
+    // list all the headers in array
+    let headers = columnList.map((el) => el.title)
+
+    var csvData = ''
+    csvData += formatHeaders(headers, ',')
+    for (var i = 0; i < rows.length; i++) {
+        csvData += formatColumns(rows[i], i, ',')
+    }
+
+    return {
+        file: new Blob([csvData], { type: 'text/csv;charset=utf-8;' }),
+        filename: filename,
+    }
+}
 
 export const useCopy = (columnList, rows) => {
     let headers = columnList.map((el) => el.title)

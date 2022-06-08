@@ -68,7 +68,14 @@
                     </a-select-option>
                 </a-select>
             </a-form-item>
+            <div v-if="readOnly" class="space-y-2">
+                <div class="text-gray-500">Description</div>
+                <div v-if="internal" class="text-gray-700">
+                    {{ form.options.description || '-' }}
+                </div>
+            </div>
             <a-form-item
+                v-else
                 label="Description"
                 :name="['description']"
                 class="col-span-2 mb-0 ant-form-undo-flex-direction"
@@ -96,6 +103,7 @@
         form: { type: Object, required: true },
         internal: { type: Boolean, default: false },
         editing: { type: Boolean, required: true },
+        readOnly: { type: Boolean, default: false },
     })
     const emit = defineEmits([])
 

@@ -24,7 +24,7 @@ const usePersonaResources = (persona) => {
             await savePersona(body)
             handleUpdateList(personaRaw) // updating list locally on sucess
             useAddEvent('governance', 'persona', 'resource_created', {
-                domain: getDomain(r.attributes.link),
+                resource_url_domain: r.attributes.link.split('/')[2],
             })
             addStatus.value = 'success'
         } catch (e) {
@@ -49,7 +49,7 @@ const usePersonaResources = (persona) => {
             await savePersona(body)
             handleUpdateList(personaRaw) // updating list locally on sucess
             useAddEvent('governance', 'persona', 'resource_updated', {
-                domain: getDomain(r.attributes.link),
+                resource_url_domain: r.attributes.link.split('/')[2],
                 asset_type: 'persona',
             })
             updateStatus.value = 'success'

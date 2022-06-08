@@ -103,6 +103,7 @@ import KebabMenuHorizontal from '~/assets/images/icons/kebab-menu.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import OverviewActive from '~/assets/images/icons/overview_active.svg'
 import Lineage from '~/assets/images/icons/lineage.svg'
+import LineageNew from '~/assets/images/icons/lineage-new.svg'
 import LineageSmall from '~/assets/images/icons/lineage-small.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
@@ -233,6 +234,7 @@ import Policy from '~/assets/images/icons/policy.svg'
 import PolicyAlt from '~/assets/images/icons/policy-alt.svg'
 import Key from '~/assets/images/icons/key.svg'
 import EmptyDiscover from '~/assets/images/illustrations/empty_discover.svg'
+import EmptyAssetProfile from '~/assets/images/icons/empty_asset_profile.svg'
 import EmptyLineage from '~/assets/images/illustrations/empty_lineage.svg'
 import EmptyLineageTab from '~/assets/images/illustrations/empty_lineage_tab.svg'
 import Property from '~/assets/images/icons/property.svg'
@@ -246,6 +248,11 @@ import CollapseControl from '~/assets/images/icons/collapse-control.svg'
 import ColumnGray from '~/assets/images/icons/column-gray.svg'
 import MaterialisedView from '~/assets/images/icons/materialised-view.svg'
 import TablePartition from '~/assets/images/icons/table-partition.svg'
+
+// autosuggetions
+import Function from '~/assets/images/insights/autocomplete/function.svg'
+import Nut from '~/assets/images/insights/autocomplete/nut.svg'
+import Snippet from '~/assets/images/insights/autocomplete/snippet.svg'
 
 import Gdoc from '~/assets/images/admin/integrations/gDoc.svg'
 
@@ -416,7 +423,8 @@ import Vqb24 from '~/assets/images/icons/vqb_24.svg'
 import SidebarSwitch from '~/assets/images/icons/sidebar.svg'
 import InteractiveVariableIllustration from '~/assets/images/illustrations/illustration-interactive-param.svg'
 import EmptyRequest from '~/assets/images/illustrations/empty-request.svg'
-
+import IllustrationPersonaDemo from '~/assets/images/illustrations/illustration-persona-demo.svg'
+import IllustrationPurposeDemo from '~/assets/images/illustrations/illustration-purpose-demo.svg'
 import Vqb from '~/assets/images/icons/Vqb.svg'
 import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
 import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
@@ -443,6 +451,7 @@ import Atlan from '~/assets/images/icons/atlan.svg'
 import Gear from '~/assets/images/icons/gear.svg'
 import SafariLock from '~/assets/images/icons/safari-lock.svg'
 import SlackToken from '~/assets/images/admin/integrations/slackToken.svg'
+import SlackAddApp from '~/assets/images/admin/integrations/SlackAddApp.svg'
 import Integrations from '~/assets/images/icons/integrations.svg'
 import IntegrationsActive from '~/assets/images/icons/integrations-active.svg'
 import QueryTime from '~/assets/images/icons/query_time.svg'
@@ -490,6 +499,9 @@ import CSVLogo from '~/assets/images/icons/csv-logo.svg'
 import PaperClip from '~/assets/images/icons/paper-clip.svg'
 
 export default {
+    Function,
+    Nut,
+    Snippet,
     Gift,
     NoSearchResultsQuery,
     SlackTabEmpty,
@@ -520,6 +532,7 @@ export default {
     Integrations,
     Jira,
     SlackToken,
+    SlackAddApp,
     SafariLock,
     Gear,
     Atlan,
@@ -610,6 +623,7 @@ export default {
     Overview,
     Pin,
     Lineage,
+    LineageNew,
     LineageSmall,
     Activity,
     Columns,
@@ -769,6 +783,7 @@ export default {
     Policy,
     Key,
     EmptyDiscover,
+    EmptyAssetProfile,
     Property,
     PropertyActive,
     OverviewActive,
@@ -958,4 +973,6 @@ export default {
     CommonError4,
     CSVLogo,
     PaperClip,
+    IllustrationPersonaDemo,
+    IllustrationPurposeDemo
 }

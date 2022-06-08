@@ -13,10 +13,15 @@
                 </div>
                 <div style="width: 130px"></div>
             </div>
+            <!-- TODO height based on hasArchived  - learn a better way to do this -->
             <div
                 id="drag-container"
                 class="overflow-y-auto bg-white rounded-b-lg"
-                style="max-height: calc(100vh - 18.6rem)"
+                :style="
+                    hasArchived
+                        ? 'max-height: calc(100vh - 25rem)'
+                        : 'max-height: calc(100vh - 19rem)'
+                "
             >
                 <div
                     v-for="(property, index) in properties"
@@ -49,13 +54,11 @@
                         <div
                             class="leading-none cursor-pointer align-center"
                             style="width: 248px"
-                            @click="
-                                $emit('openEditDrawer', { property, index })
-                            "
+                            @click="$emit('openEditDrawer', { property })"
                         >
                             <div class="flex items-center">
                                 <Truncate
-                                    :tooltipText="property.displayName"
+                                    :tooltip-text="property.displayName"
                                     classes="text-primary"
                                     :rows="2"
                                 />
@@ -101,60 +104,12 @@
                     </div>
 
                     <div style="width: 130px">
-                        <a-button
-                            class="px-1 py-0 border-0"
-                            style="background: inherit"
-                            @click="
-                                copyAPI(property.displayName, 'Name Copied!')
-                            "
-                        >
-                            <AtlanIcon icon="CopyOutlined" />
-                        </a-button>
-                        <a-dropdown :trigger="['click']">
-                            <a-button
-                                class="border-0 rounded"
-                                size="small"
-                                style="background: inherit"
-                            >
-                                <AtlanIcon icon="KebabMenu"></AtlanIcon>
-                            </a-button>
-                            <template #overlay>
-                                <a-menu
-                                    ><a-menu-item
-                                        @click="
-                                            copyAPI(
-                                                property.displayName,
-                                                'Name Copied!'
-                                            )
-                                        "
-                                    >
-                                        <AtlanIcon
-                                            icon="CopyOutlined"
-                                            class="mr-2"
-                                        />Copy Name</a-menu-item
-                                    >
-                                    <a-menu-item
-                                        @click="
-                                            copyAPI(
-                                                property.name,
-                                                'GUID Copied!'
-                                            )
-                                        "
-                                    >
-                                        <AtlanIcon
-                                            icon="CopyOutlined"
-                                            class="mr-2"
-                                        />Copy GUID</a-menu-item
-                                    >
-                                </a-menu></template
-                            >
-                        </a-dropdown>
-                        <!-- <a-button
-                            class="px-1 py-0 border-0"
-                            @click="handleRemoveProperty(index, property)"
-                        >
-                            <AtlanIcon class="inline mr-2" icon="Trash" />
-                        </a-button> -->
+                        <PropertyActions
+                            :name="property.displayName"
+                            :guid="property.name"
+                            :internal="metadata.options?.isLocked === 'true'"
+                            @delete="handleArchiveProperty(property.name)"
+                        />
                     </div>
                 </div>
                 <div
@@ -180,7 +135,6 @@
         nextTick,
     } from 'vue'
     import { message, Modal } from 'ant-design-vue'
-    import { copyToClipboard } from '~/utils/clipboard'
     import { Types } from '~/services/meta/types'
     import { useTypedefStore } from '~/store/typedef'
     import { ATTRIBUTE_TYPES } from '~/constant/businessMetadataTemplate'
@@ -188,8 +142,12 @@
     import useAuth from '~/composables/auth/useAuth'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import Truncate from '@/common/ellipsis/index.vue'
+    import PropertyActions from '@/governance/custom-metadata/properties/propertyActions.vue'
+    import whoami from '~/composables/user/whoami'
+    import { getAnalyticsProperties } from '@/governance/custom-metadata/properties/properties.utils'
 
     export default defineComponent({
+        components: { Truncate, PropertyActions },
         props: {
             metadata: {
                 type: Object,
@@ -204,9 +162,12 @@
                 type: Object,
                 default: () => {},
             },
+            hasArchived: {
+                type: Boolean,
+                default: false,
+            },
         },
-        components: { Truncate },
-        emits: ['openEditDrawer', 'removeProperty'],
+        emits: ['openEditDrawer', 'archiveProperty'],
         setup(props, { emit }) {
             const store = useTypedefStore()
             const { metadata, properties } = toRefs(props)
@@ -247,39 +208,55 @@
                     property.typeName
                 )
             }
+            const { username } = whoami()
+            // residue code to delete
+            const handleArchiveProperty = (guid) => {
+                const timestamp = new Date().getTime()
+                const tempBM = JSON.parse(JSON.stringify(metadata.value))
+                const index = tempBM.attributeDefs.findIndex(
+                    (attr) => attr.name === guid
+                )
+                tempBM.attributeDefs[
+                    index
+                ].displayName += `-archived-${timestamp}`
+                tempBM.attributeDefs[index].options.archivedAt = timestamp
+                tempBM.attributeDefs[index].options.archivedBy = username.value
+                tempBM.attributeDefs[index].options.isArchived = true
 
-            const copyAPI = (text: string, theMessage: String) => {
-                copyToClipboard(text)
-                message.success({
-                    content: theMessage,
-                } as any)
-            }
-
-            const handleRemoveProperty = (index, property) => {
-                Modal.confirm({
-                    title: 'Delete property',
-                    content: `Are you sure you want delete ${property.displayName} ?`,
-                    okText: 'Yes',
-                    okType: 'danger',
-                    onOk() {
-                        emit('removeProperty', index)
-                        const tempBM = { ...metadata.value }
-                        tempBM.attributeDefs.splice(index, 1)
-                        const { data, error, isReady } =
-                            Types.updateCustomMetadata({
-                                businessMetadataDefs: [tempBM],
-                            })
-                        watch([data, isReady, error], () => {
-                            if (isReady && !error.value) {
-                                message.success('Property deleted.')
-                                // reloadTable()
-                            } else if (error && error.value) {
-                                message.error(
-                                    'Unable to delete property, please try again'
-                                )
-                            }
+                const { data, error, isReady } = Types.updateCustomMetadata({
+                    businessMetadataDefs: [tempBM],
+                })
+                message.loading({
+                    content: 'Deleting property...',
+                    key: 'archive',
+                })
+                watch([data, isReady, error], () => {
+                    if (isReady && !error.value) {
+                        message.success({
+                            content: 'Property deleted.',
+                            key: 'archive',
                         })
-                    },
+                        emit(
+                            'archiveProperty',
+                            index,
+                            tempBM.attributeDefs[index]
+                        )
+                        useAddEvent(
+                            'governance',
+                            'custom_metadata',
+                            'property_deleted',
+                            getAnalyticsProperties(
+                                tempBM.attributeDefs[index],
+                                tempBM.displayName
+                            )
+                        )
+                    } else if (error && error.value) {
+                        message.error({
+                            content:
+                                'Unable to delete property, please try again',
+                            key: 'archive',
+                        })
+                    }
                 })
             }
 
@@ -398,8 +375,7 @@
             })
 
             return {
-                copyAPI,
-                handleRemoveProperty,
+                handleArchiveProperty,
                 isSorting,
                 sortedProperties,
                 reInitializeDragSort,

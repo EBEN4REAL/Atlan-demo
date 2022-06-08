@@ -3,7 +3,7 @@
         <h2 class="mb-1 font-bold">Workflows alert channel</h2>
         <span class="text-sm text-gray-500"> {{ workflow_description }} </span>
     </div>
-    <div v-if="workflowChannel" class="flex items-center h-12">
+    <div v-if="workflowChannel" class="flex items-center h-12 col-span-2">
         <Chip
             :key="workflowChannel"
             :content="workflowChannel"

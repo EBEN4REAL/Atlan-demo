@@ -179,6 +179,7 @@
     import EmptyState from '@/common/empty/index.vue'
     import MemberPopover from '@/admin/groups/groupPreview/memberPopover.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { useGroupPreview } from '~/composables/group/showGroupPreview'
 
     export default defineComponent({
         name: 'GroupMembers',
@@ -211,6 +212,7 @@
             const limit = ref(10)
             const offset = ref(0)
             const filter = ref({})
+            const { lastUpdate } = useGroupPreview()
             const memberListParams = computed(() => ({
                 groupId: selectedGroup.value.id,
                 params: {
@@ -260,7 +262,6 @@
             watch(
                 () => props.selectedGroup.id,
                 (v) => {
-                    console.log(v)
                     selectedGroup.value.id = v
                     getGroupMembersList()
                 }
@@ -368,6 +369,7 @@
                                         duration: 1.5,
                                         key: messageKey,
                                     })
+                                    lastUpdate.value = new Date()
                                 } else if (error && error.value) {
                                     message.error({
                                         content: `Failed to remove ${getUserName(

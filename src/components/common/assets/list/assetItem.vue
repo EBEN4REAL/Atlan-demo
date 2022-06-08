@@ -144,11 +144,37 @@
                                         ></AtlanIcon
                                     ></a-tooltip>
                                 </div>
-                                <div class>
+                                <div class="flex gap-x-1">
                                     <a-tooltip :title="announcementType(item)">
                                         <AtlanIcon
                                             :icon="icon"
                                             class="outline-none"
+                                        ></AtlanIcon>
+                                    </a-tooltip>
+                                    <a-tooltip v-if="hasLineage(item)">
+                                        <template #title>
+                                            <div
+                                                class="flex items-center gap-x-1"
+                                            >
+                                                View Lineage
+                                                <a-button
+                                                    shape="circle"
+                                                    type="dashed"
+                                                    v-if="page === 'assets'"
+                                                    @click="
+                                                        handleSwitchTabLineage(
+                                                            item
+                                                        )
+                                                    "
+                                                    ><AtlanIcon
+                                                        icon="Search"
+                                                    ></AtlanIcon
+                                                ></a-button>
+                                            </div>
+                                        </template>
+                                        <AtlanIcon
+                                            icon="Lineage"
+                                            class="text-primary-500"
                                         ></AtlanIcon>
                                     </a-tooltip>
                                 </div>
@@ -224,7 +250,7 @@
                                             )
                                         "
                                         icon="Category"
-                                        class="h-4 mr-1"
+                                        class="h-4 mr-1 mb-0.5"
                                     ></AtlanIcon>
                                     <AtlanIcon
                                         v-if="
@@ -233,7 +259,7 @@
                                             )
                                         "
                                         icon="Term"
-                                        class="h-4 mr-1"
+                                        class="h-4 mr-1 mb-0.5"
                                     ></AtlanIcon>
                                     <AtlanIcon
                                         v-if="
@@ -313,7 +339,7 @@
                                     >
                                         <AtlanIcon
                                             icon="Glossary"
-                                            class="h-4 mr-1"
+                                            class="h-4 mr-1 mb-0.5"
                                         ></AtlanIcon>
                                         {{ getAnchorName(item) }}
                                     </div>
@@ -1200,22 +1226,34 @@
                                             item.typeName?.toLowerCase()
                                         )
                                     "
-                                    class="flex mr-2 text-sm text-gray-500 gap-x-2"
+                                    class="flex mr-2 text-sm text-gray-500"
                                 >
                                     <a-tooltip placement="bottomLeft">
                                         <div
-                                            v-if="s3BucketName(item)"
+                                            v-if="
+                                                parentBucket(item)?.attributes
+                                                    ?.name
+                                            "
                                             class="flex items-center text-gray-500"
                                         >
                                             <span class="tracking-tight">
-                                                in
-                                                {{ s3BucketName(item) }}
+                                                <AtlanIcon
+                                                    icon="S3Bucket"
+                                                    class="self-center text-gray-500 mb-0.5"
+                                                ></AtlanIcon>
+                                                {{
+                                                    parentBucket(item)
+                                                        ?.attributes?.name
+                                                }}
                                             </span>
                                         </div>
                                         <template #title>
                                             <span
                                                 >Parent Bucket -
-                                                {{ s3BucketName(item) }}</span
+                                                {{
+                                                    parentBucket(item)
+                                                        ?.attributes?.name
+                                                }}</span
                                             >
                                         </template>
                                     </a-tooltip>
@@ -1562,6 +1600,7 @@
             'preview',
             'updateDrawer',
             'browseAsset',
+            'switch',
         ],
         setup(props, { emit }) {
             const {
@@ -1645,7 +1684,9 @@
                 connectionQualifiedName,
                 parentTable,
                 parentView,
+                parentBucket,
                 s3BucketName,
+                hasLineage,
             } = useAssetInfo()
 
             const icon = computed(() => {
@@ -1671,6 +1712,11 @@
                 } else {
                     emit('preview', item, itemIndex.value)
                 }
+            }
+
+            const handleSwitchTabLineage = (item) => {
+                handlePreview(item)
+                emit('switch', { asset: item, tab: 'Lineage' })
             }
 
             const handleCloseDrawer = () => {
@@ -1861,7 +1907,10 @@
                 getEntityStatusIcon,
                 parentTable,
                 parentView,
+                parentBucket,
                 s3BucketName,
+                hasLineage,
+                handleSwitchTabLineage,
             }
         },
     })

@@ -9,7 +9,10 @@
         "
         :width="modalWidth"
         :destroyOnClose="true"
+        class="relative"
     >
+        <slot name="topHeader"> </slot>
+
         <template #title>
             <div class="flex items-center justify-between w-full">
                 <slot name="leftHeader"></slot>

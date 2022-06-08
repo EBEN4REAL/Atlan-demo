@@ -37,6 +37,7 @@ export default function useFacetUsers(
         params.value.append('columns', 'username')
         params.value.append('columns', 'id')
         params.value.append('columns', 'emailVerified')
+        params.value.append('columns', 'enabled')
     }
     if (!config.showInvitedUsers) {
         params.value.append('filter', '{"$and":[{"emailVerified":true}]}')

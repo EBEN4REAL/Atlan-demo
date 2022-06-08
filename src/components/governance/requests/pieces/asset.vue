@@ -42,7 +42,7 @@
             />
         </div>
         <div v-else class="flex items-center text-xs">
-            <img class="mb-0.5" :src="assetIcon" />
+            <img class="mb-0.5 h-4" :src="assetIcon" />
             <span
                 class="ml-1 overflow-hidden text-gray-500 overflow-ellipsis"
                 >{{ entityType.toUpperCase() }}</span

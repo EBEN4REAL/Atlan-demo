@@ -164,7 +164,7 @@
 
             const runFacets = computed(() => ({
                 workflowTemplates: list.value
-                    .map((wft) => name(wft))
+                    .map((wft) => wft.metadata.name)
                     .slice(offset.value),
             }))
 

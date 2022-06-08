@@ -1,5 +1,7 @@
 <template>
     <div>
+        <div v-if="isEdit" class="freeze-clicks-outside-popover"></div>
+
         <a-popover
             v-model:visible="isEdit"
             placement="leftTop"
@@ -13,7 +15,7 @@
                     class="px-3 py-2 mx-4 mb-3 bg-gray-100"
                 >
                     You don't have edit access. Suggest Terms and
-                    <span class="text-primary cursor-pointer">
+                    <span class="cursor-pointer text-primary">
                         <a-popover placement="rightBottom">
                             <template #content>
                                 <AdminList></AdminList>
@@ -64,7 +66,17 @@
                         editPermission:
                             'hover:bg-primary-light hover:border-primary',
                     }"
-                    @click="() => (isEdit = true)"
+                    @click="
+                        (e) => {
+                            e.stopPropagation()
+                            isEdit = true
+                        }
+                    "
+                    @dblclick.native="
+                        (e) => {
+                            e.stopPropagation()
+                        }
+                    "
                 >
                     <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
                 ></a-button>
@@ -169,7 +181,7 @@
             },
         },
         // emits: ['update:selectedAsset'],
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'popoverActive'],
         setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
@@ -359,6 +371,12 @@
                 enteredPill: termEnteredPill,
                 leftPill: termLeftPill,
             } = useMouseEnterDelay()
+
+            watch(isEdit, () => {
+                if (isEdit.value) {
+                    emit('popoverActive')
+                }
+            })
 
             return {
                 getFetchedTerm,

@@ -1,5 +1,5 @@
 <template>
-    <Loader v-if="isLoading"></Loader>
+    <Loader v-if="isLoading || isReadmeLoading"></Loader>
     <GlossaryProfile
         v-else
         :asset="localSelected"
@@ -8,9 +8,18 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs, watch, inject } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        toRefs,
+        watch,
+        inject,
+        provide,
+    } from 'vue'
     import { useHead } from '@vueuse/head'
     import { useRoute } from 'vue-router'
+    import { whenever } from '@vueuse/core'
 
     import GlossaryProfile from '@/common/assets/profile/index.vue'
     import Loader from '@/common/loaders/page.vue'
@@ -25,6 +34,7 @@
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import { useTrackPage } from '~/composables/eventTracking/useAddEvent'
     import useGlossaryStore from '~/store/glossary'
+    import { useAssetAttributes } from '~/composables/discovery/useCurrentUpdate'
 
     export default defineComponent({
         name: 'GlossaryIdPage',
@@ -44,6 +54,8 @@
             })
             const { selectedAsset } = toRefs(props)
             const localSelected = ref()
+            const localReadmeAsset = ref()
+
             const route = useRoute()
             const id = computed(() => route?.params?.id || null)
             const handlePreview = inject('preview')
@@ -87,6 +99,26 @@
                 attributes: defaultAttributes,
                 relationAttributes,
             })
+
+            const readmeAttribute = ref(['readme'])
+
+            const {
+                asset: readmeAsset,
+                mutate: mutateReadme,
+                isReady: isReadmeReady,
+                isLoading: isReadmeLoading,
+            } = useAssetAttributes({
+                id,
+                attributes: readmeAttribute,
+            })
+
+            mutateReadme()
+
+            whenever(isReadmeReady, () => {
+                localReadmeAsset.value = readmeAsset.value
+            })
+
+            provide('readmeAsset', localReadmeAsset)
 
             const sendPageEvent = () => {
                 let name = 'glossary'
@@ -160,6 +192,8 @@
                 id,
                 facets,
                 dependentKey,
+                isReadmeLoading,
+                localReadmeAsset,
             }
         },
     })

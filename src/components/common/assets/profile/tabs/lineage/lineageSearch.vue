@@ -1,14 +1,15 @@
 <template>
     <LineageImpactModal
-        v-if="hasImpactedAssets"
+        v-if="guidForImpactedAssets"
+        :key="guidForImpactedAssets"
         v-model:visible="showImpactedAssets"
         :guid="guidForImpactedAssets"
-        :asset-name="'assetName'"
+        :is-base-on-graph="false"
         style="z-index: 600"
     />
     <div class="flex flex-col">
         <div class="flex items-center">
-            <div class="flex items-center px-4x control-itemx">
+            <div class="flex items-center h-9">
                 <div
                     class="mx-4 cursor-pointer"
                     @click="showSearch = !showSearch"
@@ -24,31 +25,14 @@
                     </a-tooltip>
                 </div>
                 <div class="w-px bg-new-gray-200 h-9"></div>
-                <div
-                    class="mx-4"
-                    :class="
-                        hasImpactedAssets
-                            ? 'cursor-pointer'
-                            : 'cursor-not-allowed'
-                    "
-                    @click="controlImpactedAssets"
-                >
+                <div class="mx-4 cursor-pointer" @click="controlImpactedAssets">
                     <a-tooltip placement="bottom" :mouse-enter-delay="0.4">
                         <template #title>
-                            <span>{{
-                                hasImpactedAssets
-                                    ? 'View Impacted Assets'
-                                    : 'No Impacted Assets'
-                            }}</span>
+                            <span> View Impacted Assets </span>
                         </template>
                         <AtlanIcon
                             icon="ImpactedAssets"
-                            :class="
-                                hasImpactedAssets
-                                    ? 'text-new-blue-400'
-                                    : 'text-new-gray-200'
-                            "
-                            class="outline-none"
+                            class="outline-none text-new-blue-400"
                         ></AtlanIcon>
                     </a-tooltip>
                 </div>
@@ -124,6 +108,7 @@
 
     /** STORE */
     import useLineageStore from '~/store/lineage'
+    import useAssetStore from '~/store/asset'
 
     export default defineComponent({
         name: 'LineageSearch',
@@ -132,6 +117,7 @@
         setup(_, { emit }) {
             /** INITIALIZE */
             const lineageStore = useLineageStore()
+            const assetStore = useAssetStore()
 
             /** DATA */
             const query = ref('')
@@ -149,13 +135,8 @@
             const mergedLineageData = computed(() =>
                 lineageStore.getMergedLineageData()
             )
-            const currentPortLineageData = computed(() => {
-                const selectedPortId = lineageStore.getSelectedPortId()
-                const data = lineageStore.getPortsLineage(selectedPortId)
-                return data
-            })
             const baseEntityGuid = computed(
-                () => mergedLineageData.value.baseEntityGuid
+                () => assetStore.getSelectedAsset.guid
             )
             const selectedNodeId = computed(() =>
                 lineageStore.getSelectedNodeId()
@@ -167,6 +148,9 @@
                 !selectedPortId.value
                     ? selectedNodeId.value || baseEntityGuid.value
                     : selectedPortId.value
+            )
+            const isBaseOnGraph = computed(
+                () => baseEntityGuid.value === guidForImpactedAssets.value
             )
             const searchItems = computed(() => {
                 const d = mergedLineageData.value
@@ -186,6 +170,8 @@
             })
 
             /** METHODS */
+
+            /** EVENT DEFINITION */
             // searchEvent
             const sendSearchEvent = useDebounceFn(() => {
                 useAddEvent('lineage', 'search', 'changed', {
@@ -252,21 +238,20 @@
             }
 
             // checkImpactedAsset
-            const checkImpactedAsset = () => {
-                const guid = guidForImpactedAssets.value
-                const type = !selectedPortId.value ? 'node' : 'port'
-                const { childrenCounts } =
-                    type === 'node'
-                        ? mergedLineageData.value
-                        : currentPortLineageData.value
-                const hasDownstreamAssets = childrenCounts[guid].OUTPUT
-                if (hasDownstreamAssets) hasImpactedAssets.value = true
-                else hasImpactedAssets.value = false
-            }
+            // const checkImpactedAsset = () => {
+            //     const guid = guidForImpactedAssets.value
+            //     const type = !selectedPortId.value ? 'node' : 'port'
+            //     const { childrenCounts } =
+            //         type === 'node'
+            //             ? mergedLineageData.value
+            //             : currentPortLineageData.value
+            //     const hasDownstreamAssets = childrenCounts[guid].OUTPUT
+            //     if (hasDownstreamAssets) hasImpactedAssets.value = true
+            //     else hasImpactedAssets.value = false
+            // }
 
             // controlImpactedAssets
             const controlImpactedAssets = () => {
-                if (!hasImpactedAssets.value) return
                 showImpactedAssets.value = !showImpactedAssets.value
             }
 
@@ -276,23 +261,12 @@
                 else showResults.value = false
             })
 
-            watch(selectedNodeId, () => {
-                checkImpactedAsset()
-            })
-
-            watch(currentPortLineageData, (newVal) => {
-                if (newVal?.childrenCounts) checkImpactedAsset()
-            })
-
             whenever(showSearch, async () => {
                 await nextTick()
                 searchBar.value?.focus()
             })
 
             /** LIFECYCLE */
-            onMounted(async () => {
-                checkImpactedAsset()
-            })
 
             return {
                 query,
@@ -314,6 +288,7 @@
                 onEsc,
                 sourceImg,
                 controlImpactedAssets,
+                isBaseOnGraph,
             }
         },
     })

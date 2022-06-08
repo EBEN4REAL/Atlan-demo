@@ -32,7 +32,9 @@ export function extractTablesFromContext(
                 let tableName = tokens[i + 1]
                 if (tokens[i + 1].split('.').length >= 2) {
                     let _temp = tokens[i + 1].split('.').filter((e) => e !== '')
-                    tableName = _temp[_temp.length - 1]
+                    let index = _temp.length - 1
+                    if (_temp.length > 3) index = 2 // assign only table
+                    tableName = _temp[index]
                 }
                 // take first match always
                 tokensPosMap.push({
@@ -62,7 +64,7 @@ export function getSchemaAndDatabaseFromSqlQueryText(
 ) {
     let databaseName = connectorsInfo.databaseName,
         schemaName = connectorsInfo.schemaName
-    const sqlTextTokens = sqlText.replace(/\"/g, '').split(/[ ;]+/)
+    const sqlTextTokens = sqlText.replace(/\"/g, '').split(/[ ;\n]+/)
     sqlTextTokens.forEach((token) => {
         const _spliitedToken = token.split('.')
         const contexts = [
@@ -150,4 +152,15 @@ export function createAliasesMap(text: string) {
         }
     }
     return aliasMap
+}
+export function getSnippetKeywords() {
+    const words = [
+        {
+            word: 'select',
+            text: 'Select * from {asset name} limit 100',
+            selectionColumnStart: 15,
+            selectionColumnEnd: 27,
+        },
+    ]
+    return words
 }

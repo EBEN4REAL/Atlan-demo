@@ -62,7 +62,6 @@
                     v-if="selectedBm"
                     :key="selectedBm && selectedBm.guid"
                     :selected-bm="selectedBm"
-                    @update="onUpdate"
                 />
                 <template v-else>
                     <EmptyView
@@ -162,7 +161,6 @@
                 selectedBm,
                 searchText,
                 handleSelectBm,
-                onUpdate,
                 error,
                 isLoading,
                 searchedBusinessMetadataList,
@@ -199,7 +197,6 @@
                 searchedBusinessMetadataList,
                 selectedBm,
                 addMetaDataModal,
-                onUpdate,
                 handleSelectBm,
                 sortedSearchedBM,
                 map,

@@ -32,8 +32,12 @@ export function useSmtp() {
         Object.keys(config).forEach(k => {
             const type = smtp_form.find(f => f.id === k)?.type
             if (type && ['integer', 'switch', 'number'].includes(type) && isString(config[k]))
-                config[k] = JSON.parse(config[k])
-
+                try {
+                    config[k] = JSON.parse(config[k])
+                } catch (e) {
+                    console.error(e)
+                    /* A comment. */
+                }
         })
         return config
     }
@@ -75,18 +79,23 @@ export function useSmtp() {
         })
         return config
     }
-    const body = computed(() => ({
+    const body = ref({
         ...tenantRaw.value,
         smtpServer: objtoString(smtpFormModal.value)
-    }))
+    })
 
     const { data, isLoading, error, isReady, mutate } = Tenant.UpdateTenant(body, { asyncOptions: { immediate: false } })
     const errorMessage = ref('')
 
-    const saveSmtpConfig = async (cb = () => {}) => {
+    const saveSmtpConfig = async (cb = () => { }) => {
         formRef.value
             .validate()
             .then(async () => {
+                body.value = {
+                    ...tenantRaw.value,
+                    smtpServer: objtoString(smtpFormModal.value)
+                }
+
                 await mutate()
                 cb()
                 watch([error, data], () => {

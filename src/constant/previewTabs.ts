@@ -93,16 +93,7 @@ export const previewTabs = [
         analyticsKey: 'linkedAssets',
         includes: ['AtlasGlossaryTerm'],
     },
-    {
-        name: 'Activity',
-        component: 'activity',
-        excludes: ['Folder'],
-        icon: 'ActivityLogs',
-        tooltip: 'Activity',
-        scrubbed: true,
-        requiredInProfile: true,
-        analyticsKey: 'activity',
-    },
+
     {
         name: 'Queries',
         component: 'queries',
@@ -133,6 +124,16 @@ export const previewTabs = [
         scrubbed: false,
         requiredInProfile: true,
         analyticsKey: 'request',
+    },
+    {
+        name: 'Activity',
+        component: 'activity',
+        excludes: ['Folder'],
+        icon: 'ActivityLogs',
+        tooltip: 'Activity',
+        scrubbed: true,
+        requiredInProfile: true,
+        analyticsKey: 'activity',
     },
     {
         name: 'Property',

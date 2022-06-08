@@ -66,7 +66,7 @@
                 </div>
             </div>
             <div v-if="!readOnly">
-                <CardActions v-bind="props">
+                <CardActions :actions="actions" v-bind="props">
                     <div>
                         <AtlanIcon
                             icon="KebabMenu"
@@ -100,6 +100,10 @@
             required: false,
             default: '',
         },
+        actions: {
+            type: Array,
+            required: false,
+        },
     })
 
     const defaultIcon = ref(false)
@@ -109,7 +113,7 @@
     const openLink = (url) => {
         if (url) window.open(url)
         useAddEvent('discovery', 'resource', 'clicked', {
-            domain: getDomain(url),
+            resource_url_domain: url.split('/')[2],
             asset_type: props.assetType,
         })
     }

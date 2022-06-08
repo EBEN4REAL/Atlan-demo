@@ -50,7 +50,7 @@ const getUserPersona = (user: any) => {
     return personas
 }
 
-const getUserRole = (user: any) => {
+export const getUserRole = (user: any) => {
     const { roles, defaultRoles } = user
     let atlanRoles: string[] = []
     const atlanRole = { name: '', code: '' }

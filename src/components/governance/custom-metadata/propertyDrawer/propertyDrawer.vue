@@ -19,7 +19,11 @@
                 </div>
                 <div class="flex-grow font-bold">
                     <Truncate
-                        :tooltip-text="form.displayName || 'New Property'"
+                        :tooltip-text="
+                            (isArchived && form.displayName + ' (deleted)') ||
+                            form.displayName ||
+                            'New Property'
+                        "
                         class=""
                         :rows="2"
                     />
@@ -35,14 +39,12 @@
             :model="form"
             :validate-trigger="['click', 'submit']"
         >
-            <div
-                style="height: calc(100vh - 8.15rem)"
-                class="p-4 space-y-4 overflow-y-auto bg-gray-100"
-            >
+            <div class="flex-grow p-4 space-y-4 overflow-y-auto bg-gray-100">
                 <Overview
                     ref="overviewRef"
                     v-model:form="form"
-                    :internal="viewOnly"
+                    :readOnly="isArchived"
+                    :internal="viewOnly || isArchived"
                     :editing="isEdit"
                 />
 
@@ -50,25 +52,27 @@
                     v-if="[true, 'true'].includes(form.options.isEnum)"
                     ref="optionsRef"
                     v-model:form="form"
-                    :internal="viewOnly"
+                    :internal="viewOnly || isArchived"
                     :editing="isEdit"
                 />
 
                 <ApplicableTypes
                     v-model:form="form"
-                    :internal="viewOnly"
+                    :internal="viewOnly || isArchived"
                     :editing="isEdit"
                 />
 
                 <Configurations
                     v-model:form="form"
                     :internal="viewOnly"
+                    :readOnly="isArchived"
                     :editing="isEdit"
                 />
             </div>
         </a-form>
 
         <Header
+            v-if="!isArchived"
             v-model:createMore="createMore"
             :title="form.displayName || undefined"
             :editing="isEdit"
@@ -76,6 +80,18 @@
             @close="handleClose"
             @update="handleUpdateProperty"
         />
+        <Shortcut
+            v-else
+            shortcut-key="esc"
+            action="close"
+            placement="left"
+            :delay="0"
+            :edit-permission="true"
+        >
+            <div class="close-btn-sidebar" @click="handleClose">
+                <AtlanIcon icon="Add" class="text-white outline-none" />
+            </div>
+        </Shortcut>
     </a-drawer>
 </template>
 
@@ -90,6 +106,7 @@
         provide,
     } from 'vue'
     import { message } from 'ant-design-vue'
+    import v from 'event-source-polyfill'
     import { onKeyStroke } from '@vueuse/core'
     import {
         ATTRIBUTE_INPUT_VALIDATION_RULES,
@@ -110,6 +127,7 @@
     import Options from '@/governance/custom-metadata/propertyDrawer/options/options.vue'
     import ApplicableTypes from '@/governance/custom-metadata/propertyDrawer/applicableTypes/applicableTypes.vue'
     import Configurations from '@/governance/custom-metadata/propertyDrawer/configurations/configurations.vue'
+    import { getAnalyticsProperties } from '@/governance/custom-metadata/properties/properties.utils'
 
     import {
         executeCreateEnum,
@@ -131,7 +149,7 @@
                 default: () => {},
             },
         },
-        emits: ['addedProperty', 'openIndex'],
+        emits: ['addedProperty', 'openDirection'],
         setup(props, { emit }) {
             const { getDefaultAttributeTemplate } = useBusinessMetadata()
             const initializeForm = (): CMA => getDefaultAttributeTemplate()
@@ -143,10 +161,10 @@
             const optionsRef = ref()
             const loading = ref<boolean>(false)
             const isEdit = ref<boolean>(false)
+            const isArchived = ref<boolean>(false)
 
             const formRef = ref()
             const newEnumFormRef = ref(null)
-            const propertyIndex = ref(-1)
             const typeTreeSelect = ref(null)
 
             const viewOnly = computed(
@@ -167,39 +185,79 @@
             )
 
             // methods
-            const open = (theProperty, makeEdit, index) => {
+            const open = (property, makeEdit) => {
                 // when open we send the property value and if is undefined, means we creating new prioperty
-                if (theProperty) {
-                    const { customApplicableEntityTypes } = theProperty.options
-                    if (customApplicableEntityTypes) {
-                        if (typeof customApplicableEntityTypes === 'string') {
-                            // eslint-disable-next-line no-param-reassign
-                            theProperty.options.customApplicableEntityTypes =
-                                JSON.parse(customApplicableEntityTypes)
-                        }
-                    }
-                    form.value = { ...theProperty }
-                } else {
+                if (!property) {
                     form.value = initializeForm()
+                } else {
+                    const localProperty = JSON.parse(JSON.stringify(property))
+                    if (localProperty) {
+                        // ? parse customApplicableEntityTypes string
+                        const { customApplicableEntityTypes } =
+                            localProperty.options
+                        if (customApplicableEntityTypes) {
+                            if (
+                                typeof customApplicableEntityTypes === 'string'
+                            ) {
+                                // eslint-disable-next-line no-param-reassign
+                                localProperty.options.customApplicableEntityTypes =
+                                    JSON.parse(customApplicableEntityTypes)
+                            }
+                        }
+
+                        // ? check for isArchived
+                        isArchived.value = ['true', true].includes(
+                            localProperty?.options?.isArchived
+                        )
+
+                        // ? parse configuraton options
+                        localProperty.options.allowFiltering = [
+                            true,
+                            'true',
+                        ].includes(localProperty.options.allowFiltering)
+                        localProperty.options.allowSearch = [
+                            true,
+                            'true',
+                        ].includes(localProperty.options.allowSearch)
+                        localProperty.options.showInOverview = [
+                            true,
+                            'true',
+                        ].includes(localProperty.options.showInOverview)
+                        localProperty.options.multiValueSelect = [
+                            true,
+                            'true',
+                        ].includes(localProperty.options.multiValueSelect)
+
+                        form.value = localProperty
+                    }
                 }
 
-                propertyIndex.value = index
                 isEdit.value = makeEdit
                 visible.value = true
             }
 
-            const openPrev = (i) => {
-                emit('openIndex', i - 1)
-            }
-            const openNext = (i) => {
-                emit('openIndex', i + 1)
+            const openPrev = (name) => {
+                emit('openDirection', {
+                    name,
+                    direction: 'previous',
+                    isArchived: isArchived.value,
+                })
             }
 
+            const openNext = (name) => {
+                emit('openDirection', {
+                    name,
+                    direction: 'next',
+                    isArchived: isArchived.value,
+                })
+            }
+
+            // FIXME remove indexing logic
             onKeyStroke(['ArrowUp', 'ArrowDown'], (e) => {
                 if (!visible.value) return
-                if (e.key === 'ArrowUp') openPrev(propertyIndex.value)
+                if (e.key === 'ArrowUp') openPrev(form.value.name)
 
-                if (e.key === 'ArrowDown') openNext(propertyIndex.value)
+                if (e.key === 'ArrowDown') openNext(form.value.name)
             })
 
             const handleUpdateError = (error) => {
@@ -211,23 +269,6 @@
                 }
                 message.error('Error occured, try again')
                 return null
-            }
-
-            const getAnalyticsProperties = (tempForm) => {
-                let dataType = tempForm?.typeName
-                if (tempForm?.options.isEnum) {
-                    dataType = 'enum'
-                } else if (tempForm?.options.customType) {
-                    dataType = tempForm?.options.customType
-                }
-                const properties = {
-                    title: tempForm.displayName,
-                    data_type: dataType,
-                    multi_value: tempForm?.options.multiValueSelect,
-                    allow_filtering: tempForm?.options.allowFiltering,
-                    show_in_overview: tempForm?.options.showInOverview,
-                }
-                return properties
             }
 
             const handleUpdateProperty = async () => {
@@ -272,7 +313,10 @@
 
                 // api call
                 if (isEdit.value) {
-                    tempBM.attributeDefs[propertyIndex.value] = tempForm
+                    const propertyIndex = tempBM.attributeDefs.findIndex(
+                        (attr) => attr.name === tempForm.name
+                    )
+                    tempBM.attributeDefs[propertyIndex] = tempForm
                     const { data, error, isReady } = Types.updateCustomMetadata(
                         {
                             businessMetadataDefs: [tempBM],
@@ -302,7 +346,10 @@
                                 'governance',
                                 'custom_metadata',
                                 'property_updated',
-                                getAnalyticsProperties(tempForm)
+                                getAnalyticsProperties(
+                                    tempForm,
+                                    metadata.value.displayName
+                                )
                             )
                         }
                         if (newError) {
@@ -327,7 +374,6 @@
                         if (newValue) {
                             message.success('Attribute added')
                             loading.value = false
-
                             emit(
                                 'addedProperty',
                                 data.value.businessMetadataDefs[0].attributeDefs
@@ -339,7 +385,10 @@
                                 'governance',
                                 'custom_metadata',
                                 'property_added',
-                                getAnalyticsProperties(tempForm)
+                                getAnalyticsProperties(
+                                    tempForm,
+                                    metadata.value.displayName
+                                )
                             )
                         }
                         if (newError) {
@@ -405,6 +454,7 @@
                 form,
                 attributesTypes,
                 isEdit,
+                isArchived,
                 loading,
                 rules,
                 typeTreeSelect,
@@ -421,6 +471,9 @@
 
 <style lang="less">
     .propertyDrawer {
+        .ant-form {
+            @apply flex flex-col flex-grow overflow-hidden;
+        }
         .ant-form-undo-flex-direction.ant-form-item {
             flex-direction: unset !important;
         }

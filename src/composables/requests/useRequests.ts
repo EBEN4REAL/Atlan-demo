@@ -28,7 +28,7 @@ function generateRequestListFilters(
     const payload = { $and: [{ isDuplicate: false }] }
     if (Object.keys(filter)?.length) {
         payload.$and.push({
-            ...filter
+            ...filter,
         })
     }
 
@@ -51,7 +51,7 @@ export function useRequestList(
 
     const debouncedMutation = useDebounceFn(() => {
         mutate()
-        useAddEvent('governance', 'requests', 'searched')
+        if (searchTerm.value) useAddEvent('governance', 'requests', 'searched')
     }, 400)
 
     watch([filters, searchTerm], debouncedMutation, {

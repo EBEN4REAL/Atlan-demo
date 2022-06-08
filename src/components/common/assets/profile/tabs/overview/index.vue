@@ -187,6 +187,7 @@
         toRefs,
         ref,
         watch,
+        inject,
     } from 'vue'
 
     import { useConfirmDialog, onClickOutside, until } from '@vueuse/core'
@@ -231,8 +232,10 @@
 
             const { selectedAsset } = toRefs(props)
 
+            const readmeAsset = inject('readmeAsset', {})
+
             const { localReadmeContent, handleUpdateReadme, isLoading } =
-                updateAssetAttributes(selectedAsset)
+                updateAssetAttributes(readmeAsset)
 
             const handleSave = (editorContent: string) => {
                 handleUpdateReadme()

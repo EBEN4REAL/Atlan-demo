@@ -8,7 +8,7 @@ const groupAlias = ref('')
 const uniqueAttribute = ref('')
 const defaultTab = ref('about')
 const toogleEdit = ref(false)
-
+const lastUpdate = ref(new Date())
 const blacklistedTabs = ref([])
 const allowedTabs = ref([])
 const finalTabs = computed(() => {
@@ -36,15 +36,11 @@ export function useGroupPreview() {
 
 
     const setGroupAlias = (id: string) => {
-        console.log('setting user id', id)
         groupAlias.value = id
-        console.log('done', groupAlias.value)
     }
 
     const setGroupId = (id: string) => {
-        console.log('setting user id', id)
         groupId.value = id
-        console.log('done', groupId.value)
     }
 
     const setGroupUniqueAttribute = (value, key = 'id') => {
@@ -90,6 +86,7 @@ export function useGroupPreview() {
         defaultTab,
         setDefaultTab,
         changeTogleEdit,
-        toogleEdit
+        toogleEdit,
+        lastUpdate
     }
 }

@@ -4,6 +4,7 @@
         style="min-width: 125px"
         v-model:value="localValue"
         :allowClear="false"
+        :dropdownMatchSelectWidth="false"
         :showSearch="false"
         @change="handleChange"
         :get-popup-container="(target) => target.parentNode"

@@ -12,6 +12,7 @@ import { IndexSearchResponse } from '~/services/meta/search/index'
 import { useAPIPromise } from '~/services/api/useAPIPromise'
 import { map } from '~/services/meta/search/key'
 import { attributes } from '~/components/insights/playground/editor/vqb/composables/VQBattributes'
+import { AssetRelationAttributes } from '~/constant/projection'
 
 import { useBody } from './useBody'
 
@@ -56,6 +57,7 @@ const useLoadTreeData = (
             dsl,
             attributes,
             suppressLogs: true,
+            relationAttributes: [...AssetRelationAttributes],
         }
     }
 

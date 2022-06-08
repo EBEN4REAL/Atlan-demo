@@ -7,7 +7,7 @@
             <!-- header -->
             <div class="flex">
                 <span
-                    class="mb-0 font-bold cursor-pointer ant-typography ant-typography-ellipsis ant-typography-single-line text-md text-primary hover:underline"
+                    class="mb-0 font-bold truncate cursor-pointer text-md text-primary hover:underline"
                     >{{ purpose?.displayName }}</span
                 >
             </div>
@@ -81,12 +81,12 @@
     } from 'vue'
     import { storeToRefs } from 'pinia'
     import { useRoute, useRouter } from 'vue-router'
+    import { useTimeAgo } from '@vueuse/core'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import { useTimeAgo } from '@vueuse/core'
+
     export default defineComponent({
         name: 'PurposeCard',
-        emits: ['select'],
         components: { AtlanIcon },
         props: {
             purpose: {
@@ -94,13 +94,15 @@
                 required: true,
             },
         },
+        emits: ['select'],
         setup(props) {
             const { purpose } = toRefs(props)
-            const lastUpdate = computed(() => {
-                return useTimeAgo(
-                    purpose.value.updatedAt || purpose.value.createdAt
-                ).value
-            })
+            const lastUpdate = computed(
+                () =>
+                    useTimeAgo(
+                        purpose.value.updatedAt || purpose.value.createdAt
+                    ).value
+            )
             return { lastUpdate }
         },
     })

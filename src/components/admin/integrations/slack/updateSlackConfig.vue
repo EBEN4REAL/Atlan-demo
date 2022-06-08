@@ -60,6 +60,10 @@
                     :invalid="workflowChannel.invalid"
                     @change="handleWorkflowChannelChange"
                 />
+                <AddQueryOutputChannel
+                    v-model:queryOutputChannels="queryOutputChannels"
+                    @change="handleQueryOutputChannelChange"
+                />
             </section>
         </template>
         <template v-if="activeTabKey === 'overview'">
@@ -73,6 +77,7 @@
             v-model:unsavedChanges="unsavedChanges"
             :workflow-channel="workflowChannel"
             :channels="channels"
+            v-model:queryOutputChannels="queryOutputChannels"
             @handleFailedChannels="handleFailed"
         />
     </section>
@@ -98,6 +103,7 @@
     import SlackOverview from '@/admin/integrations/slack/overview.vue'
     import Footer from '@/admin/integrations/slack/integrationCardFooter.vue'
     import AddWorkflowChannel from '@/admin/integrations/slack/misc/addWorkflowChannel.vue'
+    import AddQueryOutputChannel from '@/admin/integrations/slack/misc/addQueryOutputChannel.vue'
     import Chip from '@/UI/chip.vue'
 
     export default defineComponent({
@@ -108,6 +114,7 @@
             Footer,
             SlackOverview,
             AddWorkflowChannel,
+            AddQueryOutputChannel,
         },
         setup() {
             const unsavedChanges = ref(false)
@@ -153,6 +160,9 @@
 
             const channelValue = ref([])
             const workflowChannel = ref({ name: '', invalid: false })
+            const queryOutputChannels: Ref<
+                { name: string; invalid?: boolean }[]
+            > = ref([])
 
             const handleFailed = (failedC) => {
                 failedC.forEach((c) => {
@@ -161,8 +171,16 @@
                     const index = channels.value.findIndex(
                         (ch) => ch.name === c
                     )
+                    const _queryOutputIndex =
+                        queryOutputChannels.value.findIndex(
+                            (ch) => ch.name === c
+                        )
                     if (index > -1) {
                         channels.value[index].invalid = true
+                    }
+                    if (_queryOutputIndex > -1) {
+                        queryOutputChannels.value[_queryOutputIndex].invalid =
+                            true
                     }
                 })
             }
@@ -187,16 +205,28 @@
                 unsavedChanges.value = true
                 if (!v) workflowChannel.value = { name: '', invalid: false }
             }
+            const handleQueryOutputChannelChange = (v) => {
+                unsavedChanges.value = true
+            }
 
             onMounted(() => {
                 activeTabKey.value = 'configuration'
-
                 channels.value = tenantSlackStatus.value.channels as any
                 workflowChannel.value.name =
                     tenantSlackStatus.value?.alertsWorkflowChannel?.name || ''
+                queryOutputChannels.value =
+                    tenantSlackStatus.value?.queryOutputChannels.map(
+                        (channel) => {
+                            return {
+                                atlanBotAdded: true,
+                                ...channel,
+                            }
+                        }
+                    ) || []
             })
 
             return {
+                queryOutputChannels,
                 channelValue,
                 workflowChannel,
                 channels,
@@ -205,6 +235,7 @@
                 handleFailed,
                 addChannel,
                 removeChannel,
+                handleQueryOutputChannelChange,
                 handleWorkflowChannelChange,
                 avatarURL,
                 openKeys,

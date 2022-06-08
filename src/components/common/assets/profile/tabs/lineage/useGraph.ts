@@ -7,9 +7,13 @@ import { dataTypeCategoryList } from '~/constant/dataType'
 
 /** UTILS */
 import {
+    nodePortsLabelMap,
+    nodeWithPorts,
+    SQLAssets,
     getNodeSourceImage,
     getSource,
     getSchema,
+    getDatabase,
     getNodeTypeText,
 } from './util.js'
 import {
@@ -47,7 +51,7 @@ import {
     percent,
     tableauCalculatedField,
     tableauDatasourceField,
-    // lookerField,
+    lookerField,
 } from './icons'
 
 interface EdgeStyle {
@@ -91,7 +95,7 @@ const portDataTypeIcons = {
 const biPortDataTypeIcons = {
     TableauCalculatedField: tableauCalculatedField,
     TableauDatasourceField: tableauDatasourceField,
-    // LookerField: lookerField,
+    LookerField: lookerField,
 }
 
 const columnKeyTypeIcons = {
@@ -99,17 +103,8 @@ const columnKeyTypeIcons = {
     isForeign: iconForeign,
 }
 
-const portsLabelMap = {
-    Table: 'columns',
-    View: 'columns',
-    MaterialisedView: 'columns',
-    TableauDatasource: 'fields',
-    // LookerExplore: 'fields',
-    // LookerView: 'fields',
-}
-
 const getPortsCTALabel = (typeName, portsCount) => {
-    const label = portsLabelMap[typeName]
+    const label = `${nodePortsLabelMap[typeName]}s`
     return portsCount || portsCount === 0
         ? `${portsCount} ${label}`
         : `view ${label}`
@@ -127,17 +122,12 @@ export default function useGraph(graph) {
         const displayText = title(entity)
         const source = getSource(entity)
         const schemaName = getSchema(entity)
+        const databaseName = getDatabase(entity)
         const img = getNodeSourceImage[source]
         const isBase = guid === baseEntityGuid
         const isVpNode = typeName === 'vpNode'
-        const isNodeWithPorts = [
-            'Table',
-            'View',
-            'MaterialisedView',
-            'TableauDatasource',
-            // 'LookerExplore',
-            // 'LookerView',
-        ].includes(typeName)
+        const isSQLNode = SQLAssets.includes(typeName)
+        const isNodeWithPorts = nodeWithPorts.includes(typeName)
 
         const computedData = {
             id: guid,
@@ -164,6 +154,9 @@ export default function useGraph(graph) {
             ctaLeftId: '',
             ctaLeftLoading: false,
             disableCta: false,
+            showDatabase: true,
+            showSchema: true,
+            showAnnouncement: true,
             ...dataObj,
         }
 
@@ -243,7 +236,7 @@ export default function useGraph(graph) {
                                                 : ''
                                         }
                                         ${
-                                            aType
+                                            aType && data?.showAnnouncement
                                                 ? `<span class="ml-2 node-announcement">
                                                     ${announcementTypeIcons[aType]}
                                                    </span>`
@@ -262,8 +255,8 @@ export default function useGraph(graph) {
                                 res += `
                                 <div isportshowmore="true" class="node-port flex justify-center text-new-blue-400 items-center pl-2">
                                     <span> Show more ${
-                                        portsLabelMap[typeName]
-                                    } </span>
+                                        nodePortsLabelMap[typeName]
+                                    }s </span>
                                     ${
                                         data?.portShowMoreLoading
                                             ? `<div class="w-5 h-5 ml-2">
@@ -314,12 +307,15 @@ export default function useGraph(graph) {
                                                 ? 'w-0 hidden'
                                                 : 'flex-none ml-1'
                                         }">${status}</span>
-                                        <span class=" node-announcement ${
-                                            !flag
-                                                ? 'w-0 hidden'
-                                                : 'flex-none ml-1'
-                                        }">${flag}</span>
-
+                                        ${
+                                            data?.showAnnouncement && flag
+                                                ? `<span class=" node-announcement ${
+                                                      !flag
+                                                          ? 'w-0 hidden'
+                                                          : 'flex-none ml-1'
+                                                  }">${flag}</span>`
+                                                : ''
+                                        }                                        
                                     </div>
                                 </div>
                                 <div class="node-meta">
@@ -327,17 +323,44 @@ export default function useGraph(graph) {
                                     <div class="truncate node-meta__text isTypename">
                                         ${typeNameComputed}
                                     </div>
-                                    <div class="node-meta__text node-schema">
+                                    <div class="node-meta__text">
                                         ${
-                                            isNodeWithPorts && schemaName
+                                            isSQLNode &&
+                                            ((data?.showDatabase &&
+                                                databaseName) ||
+                                                (data?.showSchema &&
+                                                    schemaName))
                                                 ? 'in'
                                                 : ''
                                         }
                                     </div>
-                                    <div class="node-meta__text node-schema text-gray  truncate 
-                                        ${isNodeWithPorts ? '' : 'hidden'}">
-                                        ${schemaName || ''}
-                                    </div>
+                                      ${
+                                          data?.showDatabase &&
+                                          databaseName &&
+                                          isSQLNode
+                                              ? `<div title="Database: ${databaseName}" class="node-meta__text node-database text-gray truncate">
+                                                    ${databaseName || ''} 
+                                               </div>`
+                                              : ''
+                                      }
+                                    ${
+                                        data?.showDatabase &&
+                                        databaseName &&
+                                        data?.showSchema &&
+                                        schemaName &&
+                                        isSQLNode
+                                            ? '<div>/</div>'
+                                            : ''
+                                    }
+                                    ${
+                                        data?.showSchema &&
+                                        schemaName &&
+                                        isSQLNode
+                                            ? `<div title="Schema: ${schemaName}" class="node-meta__text node-schema text-gray truncate">
+                                                  ${schemaName || ''}
+                                                </div>`
+                                            : ''
+                                    }
                                 </div>  
                             </div>
                             <div class="lineage-node__ports 

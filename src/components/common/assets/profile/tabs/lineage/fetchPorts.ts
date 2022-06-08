@@ -17,17 +17,18 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
         View: 'Column',
         MaterialisedView: 'Column',
         TableauDatasource: ['TableauDatasourceField', 'TableauCalculatedField'],
-        // LookerExplore: 'LookerField',
-        // LookerView: 'LookerField',
+        LookerExplore: 'LookerField',
+        LookerView: 'LookerField',
     }
     const nodeTypeNameMap = {
         Table: 'table',
         View: 'view',
         MaterialisedView: 'view',
         TableauDatasource: 'datasource',
-        // LookerExplore: 'lookerExplore',
-        // LookerView: 'lookerView',
+        LookerExplore: 'lookerExplore',
+        LookerView: 'lookerView',
     }
+
     const base = bodybuilder()
     const attributes = LineageAttributesPortLevel
     const facets = [
@@ -45,12 +46,19 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
             type: 'must',
             prop: Array.isArray(portTypeNameMap[typeName]) ? 'terms' : 'term',
         },
+        // {
+        //     id: 'haslineage',
+        //     key: 'field',
+        //     value: '__hasLineage',
+        //     type: 'must',
+        //     prop: 'exists',
+        // },
         {
             id: 'haslineage',
-            key: 'field',
-            value: '__hasLineage',
+            key: '__hasLineage',
+            value: 'true',
             type: 'must',
-            prop: 'exists',
+            prop: 'term',
         },
         {
             id: 'parent',

@@ -269,6 +269,7 @@
             "
             tab-position="right"
             :destroy-inactive-tab-pane="true"
+            @tabClick="handleTabClick"
         >
             <template
                 v-for="(tab, index) in getPreviewTabs(selectedAsset, isProfile)"
@@ -285,30 +286,41 @@
                     :class="index === activeKey ? 'flex flex-col' : ''"
                 >
                     <template #tab>
-                        <div class="flex flex-col">
-                            <PreviewTabsIcon
-                                :title="tab.tooltip"
-                                :icon="tab.icon"
-                                :image="tab.image"
-                                :emoji="tab.emoji"
-                                height="h-5"
-                                width="w-5"
-                                :active-icon="tab.activeIcon"
-                                :is-active="activeKey === index"
-                                :is-scrubbed="
-                                    isScrubbed(selectedAsset) && tab.scrubbed
-                                "
-                                @click="onClickTabIcon(tab)"
-                            >
-                                <template #label>
-                                    <span
-                                        class="tracking-tight text-gray-500 leading-none mt-0.5"
-                                        style="font-size: 11px"
-                                        >{{ trimText(tab.name) }}
-                                    </span></template
-                                ></PreviewTabsIcon
-                            >
-                        </div>
+                        <a-badge
+                            :count="getCount(tab.name)"
+                            :offset="[-8, 5]"
+                            class="small"
+                            :number-style="{
+                                background:
+                                    'linear-gradient(132.26deg, #0575E6 7.86%, #0029C4 89.25%)',
+                                color: '#fff',
+                            }"
+                        >
+                            <div class="flex flex-col" style="width: 45px">
+                                <PreviewTabsIcon
+                                    :title="tab.tooltip"
+                                    :icon="tab.icon"
+                                    :image="tab.image"
+                                    :emoji="tab.emoji"
+                                    height="h-5"
+                                    width="w-5"
+                                    :active-icon="tab.activeIcon"
+                                    :is-active="activeKey === index"
+                                    :is-scrubbed="
+                                        isScrubbed(selectedAsset) &&
+                                        tab.scrubbed
+                                    "
+                                    @click="onClickTabIcon(tab)"
+                                >
+                                </PreviewTabsIcon>
+
+                                <span
+                                    class="tracking-tight text-gray-500 leading-none mt-0.5"
+                                    style="font-size: 11px"
+                                    >{{ trimText(tab.name) }}
+                                </span>
+                            </div>
+                        </a-badge>
                     </template>
                     <NoAccess
                         v-if="isScrubbed(selectedAsset) && tab.scrubbed"
@@ -385,6 +397,11 @@
     import useCollectionInfo from '~/components/insights/explorers/queries/composables/useCollectionInfo'
     import QueryDropdown from '@/common/query/queryDropdown.vue'
     import SlackAskButton from '~/components/common/assets/misc/slackAskButton.vue'
+    import Activity from './activity/activityTab.vue'
+    import Resources from '@/common/assets/preview/resources/resourcesWrapper.vue'
+    import Jira from '@/common/assets/preview/integrations/jira/jira.vue'
+    import SlackResources from '@/common/assets/preview/resources/slackResourcesWrapper.vue'
+    import CustomMetaData from './customMetadata/index.vue'
 
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
@@ -398,6 +415,7 @@
         featureEnabledMap,
         INSIGHT_WORKSPACE_LEVEL_TAB,
     } from '~/composables/labs/labFeatureList'
+    import { getDomain } from '~/utils/url'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -415,9 +433,7 @@
             property: defineAsyncComponent(
                 () => import('./property/index.vue')
             ),
-            activity: defineAsyncComponent(
-                () => import('./activity/activityTab.vue')
-            ),
+            activity: Activity,
             queries: defineAsyncComponent(() => import('./queries/index.vue')),
             s3Objects: defineAsyncComponent(
                 () => import('./s3objects/index.vue')
@@ -425,31 +441,17 @@
             relations: defineAsyncComponent(
                 () => import('./relations/index.vue')
             ),
-            resources: defineAsyncComponent(
-                () =>
-                    import(
-                        '@/common/assets/preview/resources/resourcesWrapper.vue'
-                    )
-            ),
+            resources: Resources,
+
             lineage: defineAsyncComponent(
                 () => import('./lineage/lineageTab.vue')
             ),
-            customMetadata: defineAsyncComponent(
-                () => import('./customMetadata/index.vue')
-            ),
+            customMetadata: CustomMetaData,
             linkedAssets: defineAsyncComponent(
                 () => import('./linkedAssets/linkedAssetsWrapper.vue')
             ),
-            Jira: defineAsyncComponent(
-                () =>
-                    import('@/common/assets/preview/integrations/jira/jira.vue')
-            ),
-            SlackResourcesTab: defineAsyncComponent(
-                () =>
-                    import(
-                        '@/common/assets/preview/resources/slackResourcesWrapper.vue'
-                    )
-            ),
+            Jira,
+            SlackResourcesTab: SlackResources,
             SlackAskButton,
         },
 
@@ -484,6 +486,7 @@
         setup(props, { emit }) {
             const { selectedAsset, isDrawer, page, drawerActiveKey } =
                 toRefs(props)
+
             const { getAllowedActions, getAssetEvaluationsBody } =
                 useAssetEvaluate()
             const actions = computed(() =>
@@ -494,6 +497,7 @@
             provide('actions', actions)
             provide('selectedAsset', selectedAsset)
             provide('sidebarPage', page)
+            provide('isDrawer', isDrawer)
 
             const {
                 collectionInfo,
@@ -533,9 +537,11 @@
                 selectedAssetUpdatePermission,
                 isCustom,
                 isPublished,
+                links,
             } = useAssetInfo()
 
             const activeKey = ref(0)
+            const activeLabel = ref<string>('Overview')
 
             const route = useRoute()
             const isProfile = ref(false)
@@ -556,6 +562,21 @@
 
             const body = ref({})
             const authStore = useAuthStore()
+
+            const slackResourceCount = () =>
+                links(selectedAsset.value)?.filter(
+                    (l) => getDomain(l.attributes.link) === 'slack.com'
+                )?.length
+            const getCount = (tab) => {
+                if (tab?.toLowerCase() === 'resources') {
+                    return (
+                        links(selectedAsset.value)?.length -
+                        slackResourceCount()
+                    )
+                } else if (tab?.toLowerCase() === 'slack') {
+                    return slackResourceCount()
+                }
+            }
 
             const { refresh, isLoading: isEvaluating } = useEvaluate(
                 body,
@@ -597,17 +618,40 @@
                 if (enableEditinCM) {
                     readOnlyInCm.value = false
                 }
-
                 const idx = getPreviewTabs(asset, isProfile.value).findIndex(
                     (tl) => tl.name === tabName
                 )
-                if (idx > -1) activeKey.value = idx
+
+                if (idx > -1) {
+                    activeKey.value = idx
+                } else {
+                    activeKey.value = 0
+                    activeLabel.value = 'Overview'
+                }
 
                 // After a while change back to read state as the same component is being used for other CM tabs
 
                 setTimeout(() => {
                     readOnlyInCm.value = true
                 }, 1000)
+            }
+
+            debouncedWatch(
+                selectedAsset,
+                () => {
+                    if (drawerActiveKey.value === 'Overview') {
+                        switchTab(selectedAsset.value, activeLabel.value)
+                    }
+                },
+                { debounce: 200, deep: true }
+            )
+
+            const handleTabClick = (tabIndex) => {
+                const getTab = getPreviewTabs(
+                    selectedAsset.value,
+                    isProfile.value
+                )[tabIndex]
+                activeLabel.value = getTab.name
             }
 
             provide('switchTab', switchTab)
@@ -679,8 +723,7 @@
                 window.open(URL, '_blank')?.focus()
             }
 
-            const onClickTabIcon = (tabObj: object) => {
-                console.log('onClickTabIcon', tabObj)
+            const onClickTabIcon = (tabObj) => {
                 if (!tabObj.analyticsKey) {
                     return
                 }
@@ -801,6 +844,11 @@
                 isCustom,
                 isPublished,
                 trimText,
+                getCount,
+                links,
+                slackResourceCount,
+                switchTab,
+                handleTabClick,
             }
         },
     })
@@ -846,6 +894,25 @@
             :global(.ant-tabs-content-holder) {
                 @apply h-full !important;
             }
+        }
+    }
+</style>
+
+<style lang="less">
+    .small {
+        .ant-badge-count {
+            height: 16px;
+            font-size: 10px;
+            line-height: 18px;
+            min-width: 16px;
+        }
+
+        .ant-scroll-number-only {
+            height: 16px;
+        }
+
+        .ant-scroll-number-only > p.ant-scroll-number-only-unit {
+            height: 16px;
         }
     }
 </style>

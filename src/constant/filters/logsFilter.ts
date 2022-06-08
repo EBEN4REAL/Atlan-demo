@@ -1,6 +1,6 @@
 // import { confidenceScore } from '~/constant/confidenceScore'
 import { computed } from 'vue'
-import { statusRequest, assetTypes } from '~/constant/statusRequest'
+import { statusRequest, assetTypes , requestType} from '~/constant/statusRequest'
 import { statusPersona } from '~/constant/statusPersona'
 import { personaScopeList } from '~/components/governance/personas/composables/useScopeService'
 import useGlossaryStore from '~/store/glossary'
@@ -187,7 +187,7 @@ export const requestFilter = [
     },
     {
         id: 'statusRequest',
-        label: 'STATUS',
+        label: 'Status',
         component: 'CheckBoxOption',
         overallCondition: 'OR',
         attributes: [],
@@ -197,6 +197,20 @@ export const requestFilter = [
         class: 'bg-transparent',
         data: statusRequest,
     },
+  {
+        id: 'requestType',
+        label: 'Request Type',
+        component: 'CheckBoxOption',
+        overallCondition: 'OR',
+        attributes: [],
+        isDeleted: false,
+        isDisabled: false,
+        exclude: false,
+        class: 'bg-transparent',
+        data: requestType,
+    },
+
+
     // {
     //     id: 'terms',
     //     label: 'Terms',

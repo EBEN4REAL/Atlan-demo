@@ -1,3 +1,18 @@
+/** VUE */
+import { ref } from 'vue'
+import { watchOnce } from '@vueuse/core'
+
+/** COMPOSABLES */
+import fetchPorts from '~/components/common/assets/profile/tabs/lineage/fetchPorts'
+import {
+    featureEnabledMap,
+    LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE,
+} from '~/composables/labs/labFeatureList'
+
+/** STORE */
+import useLineageStore from '~/store/lineage'
+
+/** ICONS */
 import {
     snowflake,
     tableau,
@@ -14,10 +29,10 @@ import {
     salesforce,
 } from './icons'
 
-/** STORE */
-import useLineageStore from '~/store/lineage'
-
 const lineageStore = useLineageStore()
+
+/* A list of the SQL assets that we are interested in. */
+export const SQLAssets = ['Table', 'View', 'MaterialisedView']
 
 /* This is a mapping of the asset types. */
 export const getNodeTypeText = {
@@ -85,6 +100,39 @@ export const getNodeSourceImage = {
     salesforce,
 }
 
+/* A list of the types of ports that we are interested in. */
+export const portsTypeNames = [
+    'Column',
+    'TableauDatasourceField',
+    'TableauCalculatedField',
+]
+if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE])
+    portsTypeNames.push('LookerField')
+
+/* A list of the types of nodes that have ports. */
+export const nodeWithPorts = [
+    'Table',
+    'View',
+    'MaterialisedView',
+    'TableauDatasource',
+]
+if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
+    nodeWithPorts.push('LookerExplore')
+    nodeWithPorts.push('LookerView')
+}
+
+/* A mapping of the node type to the label of the ports. */
+export const nodePortsLabelMap = {
+    Table: 'column',
+    View: 'column',
+    MaterialisedView: 'column',
+    TableauDatasource: 'field',
+}
+if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
+    nodePortsLabelMap.LookerExplore = 'field'
+    nodePortsLabelMap.LookerView = 'field'
+}
+
 /**
  * Given an entity, return the source of the entity
  * @param entity - The entity object.
@@ -104,17 +152,46 @@ export const getSource = (entity) => {
 /**
  * Given an entity, return the schema name of the entity
  * @param entity - The entity object.
- * @returns The schema name of the table or view.
+ * @returns The schema name of the entity.
  */
 export const getSchema = (entity) => {
-    // TODO:
-    const allowedTypes = ['Table', 'View']
-    if (!allowedTypes.includes(entity.typeName)) return null
+    if (!SQLAssets.includes(entity.typeName)) return null
     const item =
         entity.attributes?.qualifiedName?.split('/') ||
         entity.uniqueAttributes?.qualifiedName?.split('/')
     if (item[0] === 'default') return item[4]
     return item[3]
+}
+
+/**
+ * Given an entity, return the database name of the entity
+ * @param entity - The entity object.
+ * @returns The database name of the entity.
+ */
+export const getDatabase = (entity) => {
+    if (!SQLAssets.includes(entity.typeName)) return null
+    const item =
+        entity.attributes?.qualifiedName?.split('/') ||
+        entity.uniqueAttributes?.qualifiedName?.split('/')
+    if (item[0] === 'default') return item[3]
+    return item[2]
+}
+
+/**
+ * It takes an asset and a columnWithLineageCount, and then it fetches the ports of the asset, and then
+ * it watches the count of the ports, and then it sets the columnWithLineageCount to the new value of
+ * the count
+ * @param asset - The asset object that you want to get the column count for.
+ * @param columnWithLineageCount - This is the variable that will be updated with the count of columns
+ * with lineage.
+ */
+export const getColumnCountWithLineage = (asset, columnWithLineageCount) => {
+    const { typeName, attributes: attr } = asset
+    const { qualifiedName } = attr
+    const { count } = fetchPorts(typeName, qualifiedName, 0, 999999999)
+    watchOnce(count, (newVal) => {
+        columnWithLineageCount.value = newVal
+    })
 }
 
 /**
@@ -171,7 +248,7 @@ export const getGroupedRelations = (relations) => {
     })
 
     Object.entries(res).forEach(([k, v]) => {
-        if (v < 2) delete res[k]
+        if (v.length < 2) delete res[k]
     })
     return res
 }
@@ -231,11 +308,11 @@ export const controlGroupedEdges = (graph, relations, mode = 'node') => {
         if (!edge) return
         const count = processIds.length
 
-        edge.updateData({ isGroupEdge: true, groupCount: count })
+        edge.updateData({ isGroupEdge: true, groupCount: count, processIds })
         edge.setLabels({
             attrs: {
                 label: {
-                    // text: `grouped process (${count})`,
+                    // text: `grouped-processes (${count})`,
                     text: `grouped-processes`,
                 },
             },

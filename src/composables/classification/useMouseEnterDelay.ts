@@ -1,7 +1,7 @@
 import { Ref, ref } from 'vue'
 
 const FIRST_TOOLTIP_DELAY = 1.5
-const ADJACENT_TOOLTIP_DELAY = 0.2
+const ADJACENT_TOOLTIP_DELAY = 1
 
 interface UseMouseEnterDelayReturn {
     mouseEnterDelay: Ref<number>

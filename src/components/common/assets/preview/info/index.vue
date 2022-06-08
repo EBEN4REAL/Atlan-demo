@@ -34,6 +34,7 @@
                     isGTC(selectedAsset) ||
                     selectedAsset.typeName === 'Connection' ||
                     selectedAsset.typeName === 'Process' ||
+                    selectedAsset.typeName === 'ColumnProcess' ||
                     selectedAsset.typeName === 'Query' ||
                     selectedAsset.typeName === 'Collection'
                 "
@@ -149,13 +150,32 @@
                     @click="switchTab(selectedAsset, 'Columns')"
                 >
                     <span class="mb-1 text-sm text-gray-500">Columns</span>
-                    <span class="font-semibold text-primary">{{
-                        columnCount(selectedAsset)
-                    }}</span>
+                    <span class="inline-flex items-center">
+                        <span class="font-semibold text-primary"
+                            >{{ columnCount(selectedAsset) }}
+                        </span>
+                        <a-tooltip
+                            placement="bottom"
+                            :title="`${columnWithLineageCount} out of ${columnCount(
+                                selectedAsset
+                            )} columns have lineage`"
+                        >
+                            <span
+                                v-if="columnWithLineageCount"
+                                class="inline-flex items-center px-1 ml-3 border rounded-full border-new-gray-200 text-new-gray-600"
+                            >
+                                <AtlanIcon
+                                    icon="LineageNew"
+                                    class="mb-0.5 mr-2"
+                                />
+                                <span>{{ columnWithLineageCount }}</span>
+                            </span>
+                        </a-tooltip>
+                    </span>
                 </div>
                 <div
                     v-if="sizeBytes(selectedAsset) !== '0'"
-                    class="flex flex-col text-sm cursor-pointer"
+                    class="flex flex-col text-sm"
                 >
                     <span class="mb-1 text-sm text-gray-500">Size</span>
                     <span class="text-gray-700">{{
@@ -732,7 +752,7 @@
 
                 <transition
                     v-if="
-                        similarList('description').length > 0 &&
+                        descriptionSimilarList('description').length > 0 &&
                         !localDescription
                     "
                     name="fade"
@@ -743,7 +763,7 @@
                         :button-between="false"
                         :asset="selectedAsset"
                         :edit-permission="editPermission"
-                        :list="similarList('description')"
+                        :list="descriptionSimilarList('description')"
                     ></Suggestion>
                 </transition>
             </div>
@@ -759,6 +779,7 @@
                     >No SQL data available</span
                 >
             </div>
+
             <div v-if="selectedAsset?.typeName === 'LookerQuery'">
                 <SQLSnippet
                     class="mx-4 rounded-lg"
@@ -1026,6 +1047,27 @@
                 </RelatedTerms>
             </div>
 
+            <div
+                v-if="
+                    selectedAsset.typeName === 'Column' ||
+                    readmeGuid(selectedAsset)
+                "
+                class="flex flex-col px-5"
+            >
+                <p class="mb-1 text-sm text-gray-500">Readme</p>
+                <ReadmeCTA
+                    :asset="selectedAsset"
+                    :edit-permission="
+                        selectedAssetUpdatePermission(
+                            selectedAsset,
+                            isDrawer,
+                            'RELATIONSHIP_ADD',
+                            'Readme'
+                        ) && assetPermission('CREATE_README')
+                    "
+                />
+            </div>
+
             <CustomMetadataPreview
                 v-if="
                     readPermission &&
@@ -1091,6 +1133,7 @@
     import RelatedTerms from '@/common/input/relatedTerms/relatedTerms.vue'
     import Connection from './connection.vue'
     import Suggestion from './suggestion.vue'
+    import ReadmeCTA from './readme/readmeCTA.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import SourceCreated from '@/common/widgets/summary/types/sourceCreated.vue'
@@ -1109,6 +1152,7 @@
     import PopOverUser from '@/common/popover/user/user.vue'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import { useSimilarList } from '~/composables/discovery/useSimilarList'
+    import { getColumnCountWithLineage } from '~/components/common/assets/profile/tabs/lineage/util.js'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -1130,6 +1174,7 @@
             Categories,
             Categories2,
             RelatedTerms,
+            ReadmeCTA,
             SourceCreated,
             SourceUpdated,
             Admins,
@@ -1186,6 +1231,7 @@
             const { isDrawer } = toRefs(props)
 
             const sampleDataVisible = ref<boolean>(false)
+            const columnWithLineageCount = ref(null)
 
             const {
                 getConnectorImage,
@@ -1211,6 +1257,7 @@
                 isGTC,
                 isUserDescription,
                 selectedAssetUpdatePermission,
+                assetPermission,
                 tableName,
                 viewName,
                 attributes,
@@ -1236,6 +1283,7 @@
                 s3ObjectSize,
                 s3ObjectCount,
                 s3ObjectContentType,
+                readmeGuid,
             } = useAssetInfo()
 
             const {
@@ -1276,19 +1324,23 @@
                 similarity: title(selectedAsset.value),
                 orExists: ['description', 'userDescription'],
             })
-            const aggregations = ref(['description'])
+            const aggregations = ref(['description', 'userDescription'])
 
-            const { quickChange, similarList, aggregationMap } = useSimilarList(
-                {
+            const { quickChange, descriptionSimilarList, aggregationMap } =
+                useSimilarList({
                     limit,
                     offset,
                     facets,
                     aggregations,
-                }
-            )
+                })
             if (!localDescription.value) {
                 quickChange()
             }
+
+            getColumnCountWithLineage(
+                selectedAsset.value,
+                columnWithLineageCount
+            )
 
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
                 if (
@@ -1361,6 +1413,7 @@
                 sizeBytes,
                 dataType,
                 columnCount,
+                columnWithLineageCount,
                 localOwners,
                 dataTypeCategoryImage,
                 isDist,
@@ -1406,6 +1459,7 @@
                 localViewers,
                 handleChangeViewers,
                 selectedAssetUpdatePermission,
+                assetPermission,
                 localSQLQuery,
                 handleSQLQueryUpdate,
                 tableName,
@@ -1441,9 +1495,10 @@
                 title,
                 offset,
                 aggregations,
-                similarList,
+                descriptionSimilarList,
                 aggregationMap,
                 handleApplySuggestion,
+                readmeGuid,
             }
         },
     })

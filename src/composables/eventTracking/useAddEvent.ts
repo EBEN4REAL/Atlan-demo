@@ -11,6 +11,7 @@ import { watchOnce } from '@vueuse/core'
 import { useConnectionStore } from '~/store/connection'
 import useGlossaryStore from '~/store/glossary'
 import { featureEnabledMap } from '~/composables/labs/labFeatureList'
+import { getUserRole } from '~/composables/user/useUsers'
 
 const useAddEvent = (category, obj, action, props = {}) => {
     if (!window.analytics || !window.analytics.track) {
@@ -61,9 +62,10 @@ export const identifyUser = async () => {
     const authStore = useAuthStore()
     if ((window as any).analytics) {
         if ((window as any).analytics.identify) {
-            const userWorkspaceRole = (authStore.roles || []).find((role) => {
-                const roleName = role?.name?.startsWith('$')
-                return roleName
+            const roleNames = authStore.roles.map((roleObj) => roleObj?.name)
+            const userWorkspaceRole = getUserRole({
+                roles: roleNames,
+                defaultRoles: authStore.defaultRoles,
             })
             ;(window as any).analytics.identify(authStore?.id, {
                 name: authStore.name || '',
@@ -71,7 +73,7 @@ export const identifyUser = async () => {
                 lastName: authStore.lastName,
                 email: authStore.email || '',
                 username: authStore.username || '',
-                role: userWorkspaceRole?.name?.slice(1) || '',
+                role: userWorkspaceRole?.name?.toLowerCase() || '',
                 domain: window.location.host,
                 persona_count: authStore.personas
                     ? authStore.personas.length

@@ -185,8 +185,9 @@
     import { helpCenterList } from '~/constant/navigation/helpCentre'
     import { usePersonaStore } from '~/store/persona'
     import { usePurposeStore } from '~/store/purpose'
-    import whoami from '~/composables/user/whoami'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { initAnnounceKit } from '~/composables/announceKIT/index'
+    import WIDGETS from '~/constant/integrations/announceKIT.constant'
 
     export default defineComponent({
         name: 'Navigation Menu',
@@ -259,7 +260,7 @@
                     purposeStore.list,
                 ],
                 ([newValue, persona, purpose]) => {
-                    let payload = newValue
+                    const payload = newValue
                     if (payload[0] === 'persona') {
                         const finded = persona.find(
                             (el) => el.id === payload[1]
@@ -334,21 +335,23 @@
                         (listItem) => listItem.id === 'documentation'
                     )?.link ?? ''
             )
-            const { username, email, userId } = whoami()
 
             onMounted(() => {
+                const { WHATS_NEW } = WIDGETS
+                initAnnounceKit(
+                    '.announcekit-widget',
+                    WHATS_NEW.widgetId,
+                    WHATS_NEW.name
+                )
                 if (window?.announcekit)
-                    window.announcekit.push({
-                        widget: 'https://announcekit.co/widgets/v2/1JYrEk',
-                        selector: '.announcekit-widget',
-                        lang: 'en',
-                        user: {
-                            id: userId.value,
-                        },
-                        data: {
-                            domain: window.location.hostname,
-                            username: username.value,
-                        },
+                    window.announcekit.on('widget-init', ({ widget }) => {
+                        // Called for each widget after the widget has been successfully loaded.
+                        // Widget  object is passed to the handler.
+                        if (
+                            widget.conf.name === WHATS_NEW.name &&
+                            currentRoute.fullPath === '/?whatsnew'
+                        )
+                            widget.open()
                     })
             })
 

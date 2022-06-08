@@ -14,6 +14,7 @@ import useTransformGraph from './useTransformGraph'
 
 /** UTILS */
 import {
+    portsTypeNames,
     getFilteredRelations,
     controlCyclicEdges,
     controlGroupedEdges,
@@ -35,6 +36,13 @@ export default async function useComputeGraph({
     lineageStore.mergedLineageData = {}
     lineageStore.nodesPortsList = {}
     lineageStore.portLineage = {}
+    lineageStore.preferences = {
+        showArrow: true,
+        showSchema: true,
+        showDatabase: true,
+        showAnnouncement: true,
+        showLegend: false,
+    }
 
     const model = ref(null)
     const edges = ref([])
@@ -46,7 +54,7 @@ export default async function useComputeGraph({
 
     mergedLineageData.value = { ...lineage.value }
     lineageStore.setMergedLineageData(mergedLineageData.value)
-    lineageStore.setSelectedNodeId(mergedLineageData.value.baseEntityGuid)
+    // lineageStore.setSelectedNodeId(baseEntityGuid.value)
 
     model.value = null
     edges.value = []
@@ -54,15 +62,7 @@ export default async function useComputeGraph({
 
     /* Nodes */
     const portIds = []
-    const isPortTypeName = (typeName) => {
-        const typeNames = [
-            'Column',
-            'TableauDatasourceField',
-            'TableauCalculatedField',
-            // 'LookerField',
-        ]
-        return typeNames.includes(typeName)
-    }
+    const isPortTypeName = (typeName) => portsTypeNames.includes(typeName)
 
     const sameSourceCount = ref({})
     const sameTargetCount = ref({})

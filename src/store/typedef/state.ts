@@ -1,3 +1,4 @@
+import { CUSTOM_METADATA_ATTRIBUTE as CMA } from '~/types/typedefs/customMetadata.interface'
 export interface Typedef {
   guid: string
   name: string
@@ -8,6 +9,7 @@ export interface Typedef {
   createTime: Date
   updateTime: Date
   description?: string
+  attributeDefs?: CMA[]
 }
 
 export interface State {

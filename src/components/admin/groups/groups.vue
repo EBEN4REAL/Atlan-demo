@@ -397,6 +397,7 @@
                 setDefaultTab,
                 closePreview,
                 groupId,
+                lastUpdate,
             } = useGroupPreview()
 
             const showGroupPreviewDrawer = (
@@ -414,6 +415,9 @@
             }
             watch(showPreview, () => {
                 if (!showPreview.value) getGroupList()
+            })
+            watch(lastUpdate, () => {
+                getGroupList()
             })
             // END: GROUP PREVIEW
 

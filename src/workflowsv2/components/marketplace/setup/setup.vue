@@ -651,14 +651,25 @@
                     })
 
                     const seconds = Math.round(new Date().getTime() / 1000)
-                    let workflowName = workflowTemplate.value.metadata.name
+                    const pkgName = workflowTemplate.value.metadata.name
+                    let workflowName: string
+                    let workflowRef: string
+
                     if (connectionQualifiedName) {
-                        workflowName = `${workflowName}-${connectionQualifiedName}`
+                        workflowName = `${pkgName}-${connectionQualifiedName}`
+                        workflowRef = `${pkgName}-${connectionQualifiedName
+                            .split('-')
+                            .pop()}`
                     } else {
-                        workflowName = `${workflowName}-${seconds.toString()}`
+                        workflowName = `${pkgName}-${seconds.toString()}`
+                        workflowRef = workflowName
                     }
 
-                    body.value.metadata.name = workflowName.replaceAll('/', '-')
+                    body.value.metadata.annotations[
+                        'orchestration.atlan.com/atlanName'
+                    ] = workflowName // Old Format
+                    body.value.metadata.name = workflowRef //New Format
+
                     body.value.metadata.namespace = 'default'
                     const credentialBody = getCredentialBody(
                         configMap.value,

@@ -105,6 +105,7 @@
     import ConnectionSelector from './widget/connectionSelector.vue'
     import Alias from './widget/alias.vue'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
+    import { useRoute } from 'vue-router'
 
     export default defineComponent({
         name: 'DynamicForm',
@@ -158,6 +159,7 @@
 
             const staticWidgets = ['header', 'divider']
             const compoundWidgets = ['credential', 'nested', 'connection']
+            const route = useRoute()
 
             const componentName = (property) => {
                 if (!property.ui?.widget) {
@@ -225,6 +227,11 @@
                                 }
                             }
                         )
+
+                        Object.keys(route.query).forEach((key) => {
+                            if (getName(key) in formState)
+                                formState[getName(key)] = route.query[key]
+                        })
                     }
                 }
             }

@@ -19,6 +19,7 @@ export default function useFetchAssetList({
     attributes,
     relationAttributes,
     suppressLogs,
+    globalState = []
 }) {
     const defaultBody = ref({})
     const generateBody = () => {
@@ -29,7 +30,8 @@ export default function useFetchAssetList({
             facets?.value,
             postFacets?.value,
             aggregations?.value,
-            preference?.value
+            preference?.value,
+            globalState?.value
         )
         defaultBody.value = {
             dsl,

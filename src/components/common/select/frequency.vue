@@ -31,7 +31,7 @@
     import { frequency } from '~/constant/frequency'
 
     export default defineComponent({
-        name: 'Timezone Select',
+        name: 'TimezoneSelect',
         props: {
             queryText: {
                 type: String,

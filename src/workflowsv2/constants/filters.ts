@@ -81,20 +81,20 @@ export const runStatuses = [
 
 export const dateRanges = [
     {
-        label: 'Last 24 Hours',
+        label: 'Last 24H',
         value: { gt: dayjs().subtract(1, 'day').valueOf() },
-        hint:
-            `Runs created since/${dayjs().subtract(1, 'day').format('D MMM YYYY HH:mm [(GMT] Z[)]')}`,
+        hint: `Runs created since/${dayjs()
+            .subtract(1, 'day')
+            .format('D MMM YYYY HH:mm [(GMT] Z[)]')}`,
     },
     {
         label: 'Last 2D',
         value: {
             gt: dayjs().subtract(2, 'day').valueOf(),
         },
-        hint:
-            `Runs created since/${dayjs()
-                .subtract(2, 'day')
-                .format('D MMM YYYY HH:mm [(GMT] Z[)]')}`,
+        hint: `Runs created since/${dayjs()
+            .subtract(2, 'day')
+            .format('D MMM YYYY HH:mm [(GMT] Z[)]')}`,
     },
     {
         label: 'Last 7D',

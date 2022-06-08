@@ -6,7 +6,7 @@
         "
     >
         <div class="relative flex flex-col bg-new-gray-100">
-            <div class="flex w-full text-gray">
+            <div class="flex w-full">
                 <a-tabs
                     v-model:activeKey="activeInlineTabKey"
                     :class="$style.inline_tabs"
@@ -14,7 +14,6 @@
                     type="editable-card"
                     class="insights-tabs"
                     @change="onTabClick"
-                    @edit="onEdit"
                 >
                     <template #rightExtra>
                         <div class="inline-flex items-center ml-1 mr-2">
@@ -30,8 +29,8 @@
                                         class="p-2 mt-2 bg-white newTabDropdown"
                                     >
                                         <div
-                                            @click="handleAdd(false)"
                                             class="flex items-center pl-2 newTabDropdownOption newTabDropdownOption1"
+                                            @click="handleAdd(false)"
                                         >
                                             <AtlanIcon
                                                 icon="Query24"
@@ -42,8 +41,8 @@
                                             </span>
                                         </div>
                                         <div
-                                            @click="handleAdd(true)"
                                             class="flex items-center pl-2 mt-2 newTabDropdownOption newTabDropdownOption2"
+                                            @click="handleAdd(true)"
                                         >
                                             <AtlanIcon
                                                 icon="Vqb24"
@@ -62,7 +61,7 @@
                     <a-tab-pane
                         v-for="tab in tabs"
                         :key="tab.key"
-                        :closable="true"
+                        :closable="false"
                     >
                         <template #tab>
                             <a-dropdown
@@ -83,27 +82,18 @@
                                     @mouseenter="setTabHover(tab)"
                                     @mouseleave="setTabHover(null)"
                                     @contextmenu.prevent="showContextMenu"
+
                                 >
-                                    <div
-                                        class="flex items-center w-full text-gray-700"
-                                    >
-                                        <span
-                                            class="w-full text-sm truncate inline_tab_label"
-                                            :class="[
-                                                tab.key !== activeInlineTabKey
-                                                    ? tabHover === tab.key
-                                                        ? 'text-gray-700'
-                                                        : 'text-gray-500'
-                                                    : '',
-                                            ]"
-                                        >
-                                            <Tooltip
-                                                clamp-percentage="99%"
-                                                :tooltip-text="tab.label"
-                                                :rows="1"
-                                            />
-                                        </span>
-                                    </div>
+                                    <TabItem
+                                        :title="tab.label"
+                                        :index="tab.key"
+                                        :active-tab-key="activeInlineTabKey"
+                                        :tab-hover="tabHover"
+                                        :tab="tab"
+                                        :length="tabs.length"
+                                        @on-droped="sortTabsOnDrop"
+                                        @on-edit="onEdit"
+                                    />
                                 </div>
                                 <template #overlay>
                                     <a-menu>
@@ -119,58 +109,6 @@
                                     </a-menu>
                                 </template>
                             </a-dropdown>
-                        </template>
-
-                        <template #closeIcon>
-                            <AtlanIcon
-                                v-if="
-                                    tab.playground.resultsPane.result
-                                        .isQueryRunning === 'error' &&
-                                    tab.key !== activeInlineTabKey
-                                "
-                                icon="FailedQuery"
-                                class="absolute w-4 h-4 unsaved-dot right-2 top-1.5"
-                            />
-
-                            <AtlanIcon
-                                v-else-if="
-                                    tab.playground.resultsPane.result
-                                        .isQueryRunning === 'loading'
-                                "
-                                icon="RunningQuery"
-                                class="w-4 h-4 animate-spin unsaved-dot absolute right-2 top-1.5"
-                            />
-                            <AtlanIcon
-                                v-else-if="
-                                    tab.playground.resultsPane.result
-                                        .isQueryRunning === 'success' &&
-                                    tab.key !== activeInlineTabKey
-                                "
-                                icon="SuccessQuery"
-                                class="w-3 h-3 unsaved-dot absolute right-2.5 top-2"
-                            />
-                            <div
-                                v-else-if="!tab.isSaved"
-                                class="flex items-center unsaved-dot"
-                            >
-                                <div
-                                    v-if="
-                                        tab?.playground?.editor?.text?.length >
-                                            0 || tab?.queryId
-                                    "
-                                    class="w-1.5 h-1.5 rounded-full bg-primary absolute right-3.5 top-2.5"
-                                ></div>
-                            </div>
-                            <AtlanIcon
-                                v-if="tabs.length >= 2"
-                                icon="Close"
-                                class="w-4 h-4 rounded-sm cross-hover"
-                                :style="{
-                                    opacity: tabHover === tab.key ? 1 : 0,
-                                }"
-                                @mouseenter="setTabHover(tab)"
-                                @mouseleave="setTabHover(null)"
-                            />
                         </template>
                     </a-tab-pane>
                 </a-tabs>
@@ -228,13 +166,13 @@
 
         <!-- <NoActiveInlineTab @handleAdd="handleAdd(false)" v-else /> -->
         <SaveQueryModal
-            v-model:showSaveQueryModal="showSaveQueryModal"
-            :saveQueryLoading="saveQueryLoading"
             :ref="
                 (el) => {
                     saveModalRef = el
                 }
             "
+            v-model:showSaveQueryModal="showSaveQueryModal"
+            :saveQueryLoading="saveQueryLoading"
             :connector="
                 activeInlineTab?.explorer?.queries?.connectors?.connector
             "
@@ -252,7 +190,12 @@
         Ref,
         inject,
         ref,
+        provide,
+        unref,
     } from 'vue'
+    import { useRouter, useRoute } from 'vue-router'
+    import { useDebounceFn } from '@vueuse/core'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import Editor from '~/components/insights/playground/editor/index.vue'
     import ResultsPane from '~/components/insights/playground/resultsPane/index.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
@@ -263,12 +206,11 @@
     import UnsavedPopover from '~/components/insights/common/unsavedPopover/index.vue'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
     import ResultPaneFooter from '~/components/insights/playground/resultsPane/result/resultPaneFooter.vue'
-    import { useRouter, useRoute } from 'vue-router'
     import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
     import { useSpiltPanes } from '~/components/insights/common/composables/useSpiltPanes'
-    import { useDebounceFn } from '@vueuse/core'
     import Tooltip from '@/common/ellipsis/index.vue'
     import insightsStore from '~/store/insights/index'
+    import TabItem from '~/components/insights/playground/tabs/TabItem.vue'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
@@ -281,12 +223,9 @@
             SaveQueryModal,
             ResultPaneFooter,
             Tooltip,
+            TabItem,
         },
         props: {
-            activeInlineTabKey: {
-                type: String,
-                required: true,
-            },
             refreshQueryTree: {
                 type: Function,
             },
@@ -301,11 +240,15 @@
             const saveCloseTabKey = ref()
             const saveQueryLoading = ref(false)
             const saveModalRef = ref()
+            const slackSharePopoverVisible = ref(false)
             const saveQueryData = ref()
             const limitRows = inject('limitRows') as Ref<{
                 checked: boolean
                 rowsCount: number
             }>
+
+            provide('showSaveQueryModal', showSaveQueryModal)
+            provide('slackSharePopoverVisible', slackSharePopoverVisible)
 
             const { getFirstQueryConnection } = useUtils()
             const { horizontalPaneResize, horizontalPaneAnimation } =
@@ -387,6 +330,7 @@
             }
 
             const onTabClick = (activeKey) => {
+                debugger;
                 setActiveTabKey(activeKey, activeInlineTabKey)
                 pushGuidToURL(activeInlineTab.value?.queryId)
 
@@ -401,11 +345,16 @@
                 //         false
                 // }
             }
+
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
                 console.log('edit triggered: ')
+                
+                debugger;
+
                 if (action === 'add') {
                     handleAdd(false)
                 } else {
+                    debugger;
                     /* For closing the tab */
                     console.log(targetKey)
                     let crossedTabState: boolean = false
@@ -416,9 +365,10 @@
                     })
                     /* If it is unsaved then show popover confirm */
                     if (!crossedTabState) {
+                        debugger;
                         /* If content is empty */
                         const tab = tabs.value.find(
-                            (tab) => tab.key === targetKey
+                            (tabItem) => tabItem.key === targetKey
                         )
                         if (tab?.playground?.editor?.text?.length > 0) {
                             unsavedPopover.value.key = targetKey as string
@@ -432,13 +382,17 @@
                                 pushGuidToURL
                             )
                         }
+                        debugger;
                     } else {
+                        debugger;
                         inlineTabRemove(
                             targetKey as string,
                             tabs,
                             activeInlineTabKey,
                             pushGuidToURL
                         )
+
+                        debugger;
                     }
                 }
             }
@@ -469,7 +423,11 @@
                 assetClassification: any
             ) => {
                 saveQueryData.value = saveQueryDataParam
-                const key = saveCloseTabKey.value
+                let key = saveCloseTabKey.value
+                if (!key) {
+                    key = activeInlineTab.value.key
+                }
+
                 let tabData: activeInlineTabInterface | undefined
                 tabs.value.forEach((tab) => {
                     if (tab.key === key) {
@@ -549,6 +507,7 @@
             }
 
             let tabHover = ref(null)
+
             const setTabHover = (val) => {
                 // console.log('tab: ', val)
                 if (val) {
@@ -583,6 +542,24 @@
                     ?.executionTime
             })
 
+            const sortTabsOnDrop = (currentKey: String, dropKey: String) => {
+                useAddEvent('insights', 'tab', 'dragged', {
+                    tab_count: tabs.value.length,
+                });
+
+                const currIndex = tabs.value.findIndex(
+                    (tab) => tab.key === currentKey
+                )
+                const dropIndex = tabs.value.findIndex(
+                    (tab) => tab.key === dropKey
+                )
+                const content = tabs.value[currIndex]
+                tabs.value.splice(currIndex, 1)
+
+                tabs.value.splice(dropIndex, 0, content)
+            }
+
+
             return {
                 queryExecutionTime,
                 onHorizontalResize,
@@ -609,6 +586,7 @@
                 isSaving,
                 showContextMenu,
                 contentMenu,
+                sortTabsOnDrop,
             }
         },
     })
@@ -630,9 +608,9 @@
             border-right: 0px !important;
             border-top: 0px !important;
             border-bottom: 0px !important;
-            padding: 0 12px !important;
+            padding: 0 0px 0 0 !important;
             height: 28px !important;
-            @apply bg-gray-light !important;
+            @apply bg-new-gray-100 !important;
             transition: none !important;
 
             > div {
@@ -739,9 +717,9 @@
         height: calc(100vh - 19rem);
     }
     .inline_tab {
-        max-width: 73px;
-        width: 73px;
-        min-width: 73px;
+        max-width: 110px;
+        width: 110px;
+        min-width: 100px;
         overflow: hidden;
         height: 28px !important;
         // min-width: 3rem

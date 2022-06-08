@@ -223,6 +223,7 @@
                     :active="item.id === selectedItem.id"
                     :user-list="userList"
                     :i="i"
+                    :group-list="groupList"
                     @viewAssets="handleViewAssets"
                     @overView="handleOverView"
                 />
@@ -253,6 +254,8 @@
     import { useUsers } from '~/composables/user/useUsers'
     import useAssetStore from '~/store/asset'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { useAuthStore } from '~/store/auth'
+    import useGroups from '~/composables/group/useGroups'
 
     export default defineComponent({
         name: 'WidgetPersonaPurpose',
@@ -262,6 +265,7 @@
             const activeCard = ref(0)
             const router = useRouter()
             const { id, username } = useUserData()
+            const { groups } = useAuthStore()
             const activeTab = ref('persona')
             const loadingChange = ref(false)
             const visible = ref(false)
@@ -271,7 +275,17 @@
                 purpose: true,
             })
             const params = ref({ filter: { $or: [] } })
+            const paramsGroup = ref({ filter: { $or: [] } })
             const { userList, mutate } = useUsers(params, false)
+            const { groupList, getGroupList } = useGroups(
+                paramsGroup,
+                '',
+                {},
+                null,
+                {
+                    immediate: false,
+                }
+            )
             const personaStore = usePersonaStore()
             const purposeStore = usePurposeStore()
             const personas = computed(
@@ -279,6 +293,8 @@
                     personaStore.list.filter((persona) => {
                         if (!persona.enabled) return false
                         const users = persona?.users || []
+                        const userGroups = groups || []
+                        const groupId = userGroups.map((userGroup) => userGroup.id)
                         // const groups = persona?.groups || []
                         let found = false
                         if (id) {
@@ -286,22 +302,34 @@
                                 found ||
                                 users.some((user) => [id].includes(user))
                         }
-                        // if (ownerGroups && ownerGroups.length) {
-                        //     found =
-                        //         found || groups.some((group) => ownerGroups.includes(group))
-                        // }
+                        found =
+                            found ||
+                            groupId.some((group) =>
+                                persona.groups.includes(group)
+                            )
                         return found
                     }) || []
             )
+            const calculateUserGroup = () => {
+                let userIds = []
+                let groupIds = []
+                personas.value.forEach((persona) => {
+                    userIds = [...userIds, ...persona.users]
+                    groupIds = [...groupIds, ...persona.groups]
+                })
+                userIds = [...new Set(userIds)]
+                groupIds = [...new Set(groupIds)]
+
+                const filter = userIds.map((userId) => ({ id: userId }))
+                const filterGroup = groupIds.map((groupId) => ({ id: groupId }))
+                params.value = { filter: { $or: filter } }
+                paramsGroup.value = { filter: { $or: filterGroup } }
+                mutate()
+                getGroupList()
+            }
             watch(personas, (newVal) => {
                 if (newVal.length && !userList?.value?.length) {
-                    let userIds = []
-                    personas.value.forEach((el) => {
-                        userIds = [...userIds, ...el.users]
-                    })
-                    userIds = [...new Set(userIds)]
-                    const filter = userIds.map((el) => ({ id: el }))
-                    params.value = { filter: { $or: filter } }
+                    calculateUserGroup()
                 }
             })
             const purposes = computed(
@@ -312,14 +340,16 @@
                         const dataPolicies = purpose?.dataPolicies || []
                         const policies = [...metadataPolicies, ...dataPolicies]
                         const users = []
-                        const groups = []
+                        const groupsData = []
+                        const userGroups = groups || []
+                        const groupName = userGroups.map((userGroup) => userGroup.name)
                         let isAllUsers = false
                         policies.forEach((policy) => {
                             if (policy.users.length) {
                                 users.push(...policy.users)
                             }
                             if (policy.groups.length) {
-                                groups.push(...policy.groups)
+                                groupsData.push(...policy.groups)
                             }
                             if (policy?.allUsers) {
                                 isAllUsers = true
@@ -331,6 +361,12 @@
                                 found ||
                                 users.some((user) => [username].includes(user))
                         }
+
+                        found =
+                            found ||
+                            groupsData.some((group) =>
+                                groupName.includes(group)
+                            )
                         if (isAllUsers) {
                             found = isAllUsers
                         }
@@ -374,7 +410,18 @@
                 selectedItem.value = {}
             }
             onMounted(() => {
-                mutate()
+                if (params.value.filter.$or.length) {
+                    mutate()
+                }
+                if (paramsGroup.value.filter.$or.length) {
+                    getGroupList()
+                }
+                if (
+                    !paramsGroup.value.filter.$or.length &&
+                    !params.value.filter.$or.length
+                ) {
+                    calculateUserGroup()
+                }
             })
             const CarouselRef = ref()
 
@@ -414,6 +461,7 @@
                 handleNext,
                 activeCard,
                 afterChange,
+                groupList,
             }
         },
     })

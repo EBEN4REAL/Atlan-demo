@@ -13,17 +13,11 @@
         </h2>
 
         <div class="flex flex-col w-full h-56 mt-8 preview-illustration">
-            <div
-                v-if="feature.key"
-                class="items-center justify-center w-full h-full overflow-hidden bg-white rounded-md"
-            >
+            <div v-if="feature.key" class="preview-box">
                 <img class="w-full h-full" :src="feature.illustration" alt="" />
             </div>
 
-            <div
-                v-else
-                class="flex flex-col items-center justify-center w-full h-full bg-white rounded-md"
-            >
+            <div v-else class="preview-box">
                 <component :is="DefaultIllustration" class="w-full" />
             </div>
         </div>
@@ -57,3 +51,10 @@
         methods: {},
     })
 </script>
+
+<style scoped>
+    .preview-box {
+        box-shadow: 0px 8px 24px rgba(25, 32, 56, 0.04);
+        @apply flex flex-col items-center justify-center w-full h-full overflow-hidden bg-white rounded-md;
+    }
+</style>

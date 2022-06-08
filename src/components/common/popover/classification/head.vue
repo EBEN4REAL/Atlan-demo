@@ -47,8 +47,8 @@
         >
             
             Propagated via <AtlanIcon icon="Term" />
-            <span class="text-gray-700">
-            {{ computeDisplayText(propagatedVia) }}
+            <span class="text-gray-700 cursor-pointer" >
+                {{ computeDisplayText(propagatedVia) }}
             </span>
             {{ linkedAt }}
         </div>
@@ -58,25 +58,29 @@
         >
            
             Propagated via <AtlanIcon :icon="progatedIcon(propagatedVia)" />
-            <span class="text-gray-700"  
-                @mouseover="() => remainingClassifications = true"
-                @mouseleave="remainingClassifications = false">
-                {{ computeDisplayText(propagatedVia) }}
-            </span>
+            <a-popover 
+                placement="rightTop" >
+                <template #content>
+                    <div class="py-3 pl-3 bg-white rounded-md w-52">
+                        <div class="flex items-center " v-for="(pv,i) in propagatedVia.slice(1)" :key="i">
+                            <div class="mr-1">
+                                <AtlanIcon
+                                    :icon="detailedPropagatedViaIcon(pv)"
+                                />
+                            </div>
+                            <div class="text-sm text-gray-500 cursor-pointer">
+                                <a :href="`/assets/${pv.guid.trim() + ''}`" target="_blank">
+                                    {{pv?.displayText}}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <span class="text-gray-700 cursor-pointer" style="text-decoration: underline dotted">
+                    {{ computeDisplayText(propagatedVia) }}
+                </span>
+            </a-popover>
             {{ linkedAt }}
-        </div>
-        <div class="absolute right-0 p-2 bg-white rounded-md x-auto w-52 mix-blend-normal top-12 propagated-tooltip" :style="{background: '#F4F6FD'}" style=""
-            v-if="propagatedVia?.length && remainingClassifications" >
-            <div class="flex items-center " v-for="(pv,i) in propagatedVia.slice(1)" :key="i">
-                <div class="mr-1">
-                    <AtlanIcon
-                        :icon="detailedPropagatedViaIcon(pv)"
-                    />
-                </div>
-                <div class="text-sm text-gray-500" >
-                    {{pv?.displayText}}
-                </div>
-            </div>
         </div>
     </div>
 </template>
@@ -214,9 +218,16 @@
     })
 </script>
 
-<style scoped>
+
+<style lang="less" scoped>
     .propagated-tooltip {
         box-shadow: 0px 0px 4px rgba(55, 65, 81, 0.06), 0px 2px 6px rgba(55, 65, 81, 0.1);
-        left: 365px
+        left: 93px;
+    }
+    .propagated-class-tooltip {
+        .ant-popover-inner-content {
+            @apply p-4 !important;
+        }
+        
     }
 </style>

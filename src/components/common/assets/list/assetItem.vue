@@ -124,7 +124,7 @@
                                         "
                                         @click="(e) => e.stopPropagation()"
                                     />
-
+                                    
                                     <CertificateBadge
                                         v-if="certificateStatus(item)"
                                         :status="certificateStatus(item)"
@@ -1273,7 +1273,7 @@
                                     <template
                                         v-for="classification in clsfList"
                                         :key="classification.guid"
-                                    >
+                                    > 
                                         <PopoverClassification
                                             :classification="classification"
                                             :entity-guid="item.guid"
@@ -1289,6 +1289,7 @@
                                                 :is-propagated="
                                                     isPropagated(classification)
                                                 "
+                                                :count="classification?.count"
                                                 :allow-delete="false"
                                                 :color="
                                                     classification.options?.color?.toLowerCase()
@@ -1492,6 +1493,7 @@
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import {groupClassifications} from "~/utils/groupClassifications"
 
     export default defineComponent({
         name: 'AssetListItem',
@@ -1748,7 +1750,8 @@
                     'name',
                     'typeName'
                 )
-                return matchingIdsResult
+                const groupedClassifications = groupClassifications(matchingIdsResult, isPropagated)
+                return groupedClassifications
             })
 
             const terms = computed(() => meanings(item.value))

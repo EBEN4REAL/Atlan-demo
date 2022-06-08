@@ -1,42 +1,68 @@
 <template>
-    <a-modal v-model:visible="visible" :width="700">
+    <a-modal
+        v-model:visible="visible"
+        :width="700"
+        :class="$style.linkedAssetsModal"
+    >
         <template #closeIcon></template>
         <template #footer>
-            <div class="flex justify-end pb-1.5">
+            <div class="flex justify-end pb-1.5 bg-new-gray-100">
                 <AtlanButton2 label="Done" @click="visible = false" />
             </div>
         </template>
         <div
-            class="flex flex-col pt-4 pb-1 space-y-3 overflow-hidden linkedAssetModal"
+            class="absolute flex items-center w-full p-3 text-sm rounded-lg gap-x-1 bg-new-yellow-100 text-new-yellow-700"
+            style="top: -3.2rem"
         >
-            <div class="px-6">
-                <div class="flex items-center gap-x-2">
-                    <CustomMetadataAvatar
-                        class="overflow-hidden rounded cm-avatar hover:bg-gray-100"
-                        :metadata="metadata"
-                    />
-                    <span class="text-lg font-bold">
+            <AtlanIcon icon="Info" />
+            <span>
+                You will be able to archive Airflow, once all linked assets are
+                removed from Airflow
+            </span>
+        </div>
+        <div class="flex flex-col overflow-hidden linkedAssetModal">
+            <header
+                class="p-6 mb-3 space-y-1 border-b rounded-t-lg border-new-gray-200 bg-new-gray-100"
+            >
+                <div class="text-lg font-bold">Remove Linked Assets</div>
+                <div
+                    class="flex items-center text-sm gap-x-2 text-new-gray-600"
+                >
+                    <div class="flex items-center gap-x-2">
+                        <CustomMetadataAvatar
+                            class="overflow-hidden rounded cm-avatar hover:bg-gray-100"
+                            :metadata="metadata"
+                        />
+                        <span class="">
+                            {{ metadata.displayName }}
+                        </span>
+                    </div>
+                    <span class="text-gray-300">•</span>
+                    <span class="text-gray-500">
+                        {{ linkedAssets.length }} Assets linked to
                         {{ metadata.displayName }}
                     </span>
                 </div>
+            </header>
 
-                <span class="text-gray-500">
-                    {{ linkedAssets.length }} Assets linked to
-                    {{ metadata.displayName }}
-                </span>
-            </div>
-            <section class="px-6 space-y-2.5 overflow-y-auto">
-                <div
-                    v-for="asset in linkedAssets"
-                    :key="asset.guid"
-                    class="border-b pb-2.5 last:border-0"
+            <section class="space-y-2.5 overflow-y-auto mb-3">
+                <a-menu
+                    v-model:selectedKeys="selectedKeys"
+                    :open-keys="openKeys"
+                    mode="inline"
+                    :class="{
+                        [$style.menu]: true,
+                    }"
+                    class="px-3"
+                    @openChange="onOpenChange"
                 >
-                    <LinkedAssetItem
-                        :asset="asset"
+                    <LinkedAssetsSubMenu
+                        @metadataRemove="(id) => emit('metadataRemove', id)"
+                        :linked-assets="linkedAssets"
                         :metadata="metadata"
-                        @success="(assetID) => emit('metadataRemove', assetID)"
+                        :open-keys="openKeys"
                     />
-                </div>
+                </a-menu>
             </section>
         </div>
     </a-modal>
@@ -44,10 +70,9 @@
 
 <script setup lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { computed, toRefs } from 'vue'
+    import { computed, toRefs, ref, PropType } from 'vue'
     import CustomMetadataAvatar from '@/governance/custom-metadata/CustomMetadataAvatar.vue'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import LinkedAssetItem from '@/governance/custom-metadata/linkedAssets/linkedAssetItem.vue'
+    import LinkedAssetsSubMenu from '@/governance/custom-metadata/linkedAssets/linkedAssetSubMenuWrapper.vue'
 
     // TODO add pagination
 
@@ -57,7 +82,7 @@
             required: true,
         },
         linkedAssets: {
-            type: Object,
+            type: Object as PropType<any>,
             required: true,
         },
         assetCount: {
@@ -73,14 +98,72 @@
 
     const { visible } = useVModels(props, emit)
     const { linkedAssets } = toRefs(props)
+
+    const openKeys = ref([])
+    const selectedKeys = ref([])
+
+    const onOpenChange = (key: string[]) => {
+        openKeys.value = [key[key.length - 1]]
+    }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
     .linkedAssetModal {
-        max-height: calc(100vh - 13rem);
+        min-height: calc(100vh - 25rem);
+        max-height: calc(100vh - 15rem);
     }
 
     .cm-avatar {
         @apply cursor-default !important;
+    }
+</style>
+
+<style lang="less" module>
+    .linkedAssetsModal {
+        :global(.ant-modal-content) {
+            @apply rounded-lg  !important;
+        }
+        :global(.ant-modal-footer) {
+            @apply p-4 bg-new-gray-100 border-t border-new-gray-200 rounded-b-lg !important;
+        }
+    }
+    .menu {
+        div {
+            line-height: normal;
+            @apply whitespace-normal;
+        }
+        @apply border-none  !important;
+        :global(.ant-menu-submenu-title) {
+            @apply h-full p-0 m-0 !important;
+            :global(.ant-menu-submenu-arrow) {
+                @apply hidden !important;
+            }
+        }
+
+        :global(.ant-menu-title-content) {
+            @apply cursor-default;
+        }
+
+        :global(.ant-menu-item) {
+            @apply h-full  bg-white px-0 !important;
+        }
+
+        :global(.ant-menu-submenu-title:active) {
+            @apply bg-transparent;
+        }
+
+        :global(.ant-menu-inline) {
+            @apply bg-white overflow-hidden !important;
+        }
+
+        :global(.ant-menu-item-selected) {
+            @apply text-gray-700;
+        }
+        :global(.ant-menu-item:hover) {
+            @apply text-gray-700;
+        }
+    }
+    :global(.ant-menu-item::after) {
+        @apply border-r-0 !important;
     }
 </style>

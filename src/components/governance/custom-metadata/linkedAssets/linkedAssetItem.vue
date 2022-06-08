@@ -2,45 +2,26 @@
     <div>
         <div class="flex">
             <div class="flex-grow">
-                <div class="flex mb-2">
-                    <div class="flex-grow">
-                        <div class="flex items-center">
-                            <AssetTitle :asset="asset" />
-                        </div>
-                    </div>
-                    <div class="">
-                        <AtlanButton2
-                            label="Clear"
-                            :loading="isLoading"
-                            size="small"
-                            color="secondary"
-                            class="h-6 px-3 py-0"
-                            @click="handleClear"
-                        />
-                    </div>
-                </div>
-                <div class="space-y-2 text-xs">
+                <div
+                    class="p-3 space-y-2 space-y-3 text-xs bg-gray-100 rounded-lg"
+                >
                     <template v-for="a in applicableList" :key="a.name">
                         <div
-                            class="flex items-center text-gray-500"
+                            class="flex flex-col text-gray-500 gap-y-1"
                             style="font-size: 14px"
                         >
-                            <div
-                                class="flex"
-                                style="max-width: 10rem; white-space: pre"
-                            >
+                            <div class="flex flex-grow" qwsA>
                                 <Tooltip
                                     :tooltip-text="a.displayName"
                                     :rows="1"
                                     placement="left"
                                     classes="text-gray-500 "
                                 />
-                                <span>: </span>
                             </div>
                             <div class="flex-grow">
                                 <ReadOnly
                                     :attribute="a"
-                                    class="ml-2 text-gray-700"
+                                    class="text-gray-700"
                                 />
                             </div>
                         </div>
@@ -52,15 +33,12 @@
 </template>
 
 <script setup lang="ts">
-    import { onMounted, computed, PropType, ref, toRefs } from 'vue'
+    import { onMounted, PropType, ref, toRefs, computed } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetInterface } from '~/types/assets/asset.interface'
     import useCustomMetadataHelpers from '~/composables/custommetadata/useCustomMetadataHelpers'
     import Tooltip from '@/common/ellipsis/index.vue'
     import ReadOnly from '@/common/assets/preview/customMetadata/readOnly.vue'
-    import { removeProperty } from '@/governance/custom-metadata/linkedAssets/removeProperty'
-    import AssetTitle from '@/common/assets/list/assetTitle.vue'
-    import { message } from 'ant-design-vue'
 
     const props = defineProps({
         asset: {
@@ -72,8 +50,6 @@
             required: true,
         },
     })
-
-    const emit = defineEmits(['success', 'error'])
 
     const { metadata, asset } = toRefs(props)
     /**
@@ -91,7 +67,7 @@
         parseAttributeValueHelper,
     } = useCustomMetadataHelpers()
 
-    const applicableList = ref()
+    const applicableList: any = ref([])
 
     const initializeAttributesList = () => {
         applicableList.value = []
@@ -115,35 +91,15 @@
         filterAttributeList()
     }
 
+    const count = computed(() => applicableList.value.length)
+
+    defineExpose({
+        count,
+    })
+
     onMounted(() => {
         setAttributesList()
     })
-
-    const { error, isReady, isLoading, mutate } = removeProperty(
-        asset.value,
-        metadata.value
-    )
-
-    const handleClear = async () => {
-        try {
-            message.loading({
-                key: 'clear',
-                content: 'Clearing Custom Metadata ...',
-            })
-            await mutate()
-            emit('success', asset.value.guid)
-            message.success({
-                key: 'clear',
-                content: 'Custom Metadata has been cleared.',
-            })
-        } catch (e) {
-            emit('error')
-            message.error({
-                key: 'clear',
-                content: 'Errror clearing Custom Metadata.',
-            })
-        }
-    }
 
     const {
         title,

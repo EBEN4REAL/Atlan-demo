@@ -294,7 +294,7 @@
                         if (!persona.enabled) return false
                         const users = persona?.users || []
                         const userGroups = groups || []
-                        const groupId = userGroups.map((el) => el.id)
+                        const groupId = userGroups.map((userGroup) => userGroup.id)
                         // const groups = persona?.groups || []
                         let found = false
                         if (id) {
@@ -313,15 +313,15 @@
             const calculateUserGroup = () => {
                 let userIds = []
                 let groupIds = []
-                personas.value.forEach((el) => {
-                    userIds = [...userIds, ...el.users]
-                    groupIds = [...groupIds, ...el.groups]
+                personas.value.forEach((persona) => {
+                    userIds = [...userIds, ...persona.users]
+                    groupIds = [...groupIds, ...persona.groups]
                 })
                 userIds = [...new Set(userIds)]
                 groupIds = [...new Set(groupIds)]
 
-                const filter = userIds.map((el) => ({ id: el }))
-                const filterGroup = groupIds.map((el) => ({ id: el }))
+                const filter = userIds.map((userId) => ({ id: userId }))
+                const filterGroup = groupIds.map((groupId) => ({ id: groupId }))
                 params.value = { filter: { $or: filter } }
                 paramsGroup.value = { filter: { $or: filterGroup } }
                 mutate()
@@ -342,7 +342,7 @@
                         const users = []
                         const groupsData = []
                         const userGroups = groups || []
-                        const groupName = userGroups.map((el) => el.name)
+                        const groupName = userGroups.map((userGroup) => userGroup.name)
                         let isAllUsers = false
                         policies.forEach((policy) => {
                             if (policy.users.length) {

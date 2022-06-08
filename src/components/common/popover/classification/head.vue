@@ -77,7 +77,13 @@
                     </div>
                 </template>
                 <span class="text-gray-700 cursor-pointer" style="text-decoration: underline dotted">
-                    {{ computeDisplayText(propagatedVia) }}
+                    <a :href="`/assets/${propagatedVia[0].guid.trim() + ''}`" target="_blank" v-if="propagatedVia?.length > 0">
+                        {{ computeDisplayText(propagatedVia) }}
+                    </a>
+                    <span v-else>
+                        {{ computeDisplayText(propagatedVia) }}
+                    </span>
+                    
                 </span>
             </a-popover>
             {{ linkedAt }}

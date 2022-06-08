@@ -12,7 +12,7 @@
                     :is="componentName(property)"
                     v-model="formState[property.id]"
                     :property="property"
-                    :is-edit="isEdit"
+                    :isEdit="isEdit"
                 />
 
                 <Component
@@ -29,7 +29,7 @@
                     :required="property.required"
                     :rules="property.ui.rules"
                 >
-                    <template v-if="property.ui?.label" #label>
+                    <template #label>
                         <AtlanIcon
                             icon="Lock2"
                             class="h-3 mr-1 text-yellow-500 mb-0.5"
@@ -56,11 +56,11 @@
                     <Component
                         :is="componentName(property)"
                         v-model="formState[property.id]"
-                        :base-key="baseKey"
+                        :baseKey="baseKey"
                         :property="property"
-                        :config-map="configMap"
-                        :is-edit="isEdit"
-                    />
+                        :configMap="configMap"
+                        :isEdit="isEdit"
+                    ></Component>
                 </a-form-item>
             </div>
         </template>
@@ -103,7 +103,6 @@
     import GroupMultiple from './widget/groupMultiple.vue'
     import Schedule from './widget/schedule.vue'
     import ConnectionSelector from './widget/connectionSelector.vue'
-    import CombinedUserSelector from './widget/combinedUserSelector.vue'
     import Alias from './widget/alias.vue'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
     import { useRoute } from 'vue-router'
@@ -134,7 +133,6 @@
             Datetime,
             Apitree,
             Date,
-            CombinedUserSelector,
         },
         props: {
             configMap: {

@@ -126,6 +126,39 @@ export const summaryVariants = [
         includes: ['PowerBITile'],
     },
     {
+        id: 'powerBITable',
+        label: 'Table',
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
+        includes: ['PowerBITable'],
+    },
+    {
+        id: 'powerBIColumn',
+        label: 'Column',
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
+        includes: ['PowerBIColumn'],
+    },
+    {
+        id: 'powerBIMeasure',
+        label: 'Measure',
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
+        includes: ['PowerBIMeasure'],
+    },
+    {
         id: 'site',
         label: 'Site',
         components: ['Connection', 'SourceCreated', 'SourceUpdated'],

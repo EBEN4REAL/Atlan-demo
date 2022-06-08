@@ -260,6 +260,20 @@
                 >{{ parentBucket(asset)?.attributes?.name }}</span
             >
         </div>
+        <div
+            v-if="
+                ['PowerBIColumn', 'PowerBIMeasure'].includes(asset?.typeName) &&
+                parentTable(asset)?.guid
+            "
+            class="flex flex-col text-sm"
+        >
+            <span class="mb-1 text-sm text-gray-500">Table</span>
+            <span
+                class="font-bold truncate cursor-pointer text-primary hover:underline"
+                @click="handleOpenDrawer(parentTable(asset)?.guid)"
+                >{{ parentTable(asset)?.attributes?.name }}</span
+            >
+        </div>
     </div>
     <AssetDrawer
         :show-drawer="drawerVisible"
@@ -304,6 +318,7 @@
                 parentObject,
                 parentProcess,
                 parentBucket,
+                parentTable,
             } = useAssetInfo()
 
             const drawerVisible = ref(false)
@@ -336,6 +351,7 @@
                 parentObject,
                 parentProcess,
                 parentBucket,
+                parentTable,
                 guidToFetch,
                 drawerVisible,
                 handleCloseDrawer,

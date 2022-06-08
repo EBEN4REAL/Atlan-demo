@@ -507,7 +507,7 @@ export const assetTypeList: {
         image: 'PowerBI',
         source: 'PowerBI',
         categoryType: 'BI',
-        parents: ['PowerBIWorkspace', 'PowerBIDataset'],
+        parents: ['PowerBIDataset'],
         relationships: ['measures', 'columns', 'dataset'],
         groupOrder: 4,
     },

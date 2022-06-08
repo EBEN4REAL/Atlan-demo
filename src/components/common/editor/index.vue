@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-full bg-white editor">
+    <div class="w-full h-full editor">
         <bubble-menu
             v-if="
                 editor &&
@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, toRefs } from 'vue'
+    import { defineComponent, ref, watch, toRefs, provide } from 'vue'
     import { useDebounceFn, useVModels } from '@vueuse/core'
 
     import { useEditor, EditorContent, BubbleMenu } from '@tiptap/vue-3'
@@ -66,10 +66,11 @@
     import CustomImage from './extensions/image/extension'
     import IFrame from './extensions/iframe/extension'
     import mentionSuggestion from './extensions/mentions/suggestion'
+    import Equation from './extensions/equation/extension'
 
     import LinkPreview from './extensions/linkPreview/linkPreview'
     import { BLOCK_TIPPY_MENU } from '~/constant/readmeMenuItems'
-    import { EMBED_EXTENSIONS } from '@common/editor/extensions/embeds'
+    import { EMBED_EXTENSIONS } from './extensions/embeds'
 
     export default defineComponent({
         name: 'TiptapEditor',
@@ -97,6 +98,11 @@
                 required: false,
                 default: ``,
             },
+            assetType: {
+                type: String,
+                required: false,
+                default: 'DISCOVERY',
+            },
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
@@ -104,7 +110,7 @@
             const widthOption = ref(1)
             const customWidth = ref(100)
 
-            const { isEditMode, emptyText } = toRefs(props)
+            const { isEditMode, emptyText, assetType } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
 
             const localModelValue = ref(modelValue.value)
@@ -120,6 +126,7 @@
                 editorProps: {
                     attributes: {
                         class: 'prose prose-sm w-full h-full',
+                        'data-asset-type': assetType.value,
                     },
                 },
                 autofocus: true,
@@ -148,6 +155,8 @@
                                     return 'Type in a heading'
                                 case 'codeBlock':
                                     return 'Go ahead. Type some geek...'
+                                case 'mention':
+                                    return 'Mention a user or a group'
                                 default:
                                     return props.placeholder
                             }
@@ -184,6 +193,7 @@
                         },
                         suggestion: mentionSuggestion,
                     }),
+                    Equation,
                 ],
                 onUpdate({ editor: currEditor }) {
                     const content = currEditor.getHTML()

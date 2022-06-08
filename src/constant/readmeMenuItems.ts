@@ -5,7 +5,7 @@ import {
     README_TRIGGERS,
     TYPE_OF_EVENTS,
     useTrackEvent,
-} from '~/modules/editor/analytics/useTrackEvent'
+} from '~/components/common/editor/analytics/useTrackEvent'
 
 const COMMAND_ITEM_GROUPS = ['Formatting', 'Media', 'Embeds', 'Basic Elements']
 

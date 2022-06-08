@@ -31,6 +31,8 @@ const {
     getGroupList,
 } = useGroups(groupListAPIParams, '', {})
 
+const isListLoading = or(isGroupLoading, isUserLoading)
+
 export default {
     items: async ({ query }) => {
         userListAPIParams.filter = {
@@ -68,7 +70,10 @@ export default {
                     // parent: this,
                     // propsData: props,
                     // using vue 3:
-                    props,
+                    props: {
+                        ...props,
+                        isListLoading,
+                    },
                     editor: props.editor,
                 })
 
@@ -84,7 +89,10 @@ export default {
             },
 
             onUpdate(props) {
-                component.updateProps(props)
+                component.updateProps({
+                    ...props,
+                    isListLoading,
+                })
 
                 popup[0].setProps({
                     getReferenceClientRect: props.clientRect,

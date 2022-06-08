@@ -71,6 +71,7 @@
 
     import whoami from '~/composables/user/whoami'
     import Owners from '~/components/common/input/owner/index.vue'
+    import { useAuthStore } from '~/store/auth'
 
     export default defineComponent({
         name: 'ConnectionInput',
@@ -99,6 +100,8 @@
             const componentProps = computed(() => property.value.ui)
             const fieldMappings = computed(() => property.value.ui?.mappings)
             const { username } = whoami()
+            const authStore = useAuthStore()
+            const getRoleId = authStore.getRoleId
 
             const selectedOwnersData = ref({
                 ownerUsers: formState[
@@ -113,7 +116,7 @@
             const allAdmins = ref(
                 formState[
                     `${baseKey.value}.${fieldMappings.value.allAdmins}`
-                ] || ['$admin']
+                ] || [getRoleId('$admin')]
             )
 
             const handleOwnersChange = () => {
@@ -128,7 +131,7 @@
             }
 
             const toggleAllAdmin = (set = true) => {
-                allAdmins.value = set ? ['$admin'] : []
+                allAdmins.value = set ? [getRoleId('$admin')] : []
                 handleOwnersChange()
             }
 

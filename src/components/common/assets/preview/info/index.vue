@@ -1188,6 +1188,7 @@
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import { useSimilarList } from '~/composables/discovery/useSimilarList'
     import { getColumnCountWithLineage } from '~/components/common/assets/profile/tabs/lineage/util.js'
+    import { useAuthStore } from '~/store/auth'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -1267,6 +1268,8 @@
 
             const sampleDataVisible = ref<boolean>(false)
             const columnWithLineageCount = ref(null)
+            const authStore = useAuthStore()
+            const getRoleId = authStore.getRoleId
 
             const {
                 getConnectorImage,
@@ -1436,7 +1439,7 @@
             }
 
             const setAllAdmins = (set = true) => {
-                localAdmins.value.adminRoles = set ? ['$admin'] : []
+                localAdmins.value.adminRoles = set ? [getRoleId('$admin')] : []
                 handleChangeAdmins()
             }
 

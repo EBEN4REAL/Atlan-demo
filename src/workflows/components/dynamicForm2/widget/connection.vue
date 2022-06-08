@@ -310,7 +310,6 @@
                     'ownerGroups',
                     'adminUsers',
                     'adminGroups',
-                    'adminRoles',
                     'allowQuery',
                     'allowQueryPreview',
                     'certificateStatus',
@@ -399,50 +398,27 @@
                             ],
                         },
                     },
-                    admins: {
-                        type: 'multiple',
+                    adminUsers: {
+                        type: 'string',
+
                         ui: {
-                            widget: 'CombinedUserSelector',
-                            title: 'Connection Admins',
-                            mappings: {
-                                users: 'adminUsers',
-                                groups: 'adminGroups',
-                                allAdmins: 'adminRoles',
-                            },
+                            help: 'These users will have ability to modify the connection and read/update/query all the related assets for this connection',
+                            widget: 'userMultiple',
+                            label: 'Admin Users',
                             start: 1,
-                            grid: 12,
+                            grid: 6,
                         },
                     },
-                    // adminRoles: {
-                    //     type: 'boolean',
-                    //     default: true,
-                    //     ui: {
-                    //         help: 'Assign all Atlan Admins as the admin for the current connection',
-                    //         label: 'Connection Admins',
-                    //         start: 1,
-                    //         grid: 6,
-                    //     },
-                    // },
-                    // adminUsers: {
-                    //     type: 'string',
-                    //     ui: {
-                    //         help: 'These users will have ability to modify the connection and read/update/query all the related assets for this connection',
-                    //         widget: 'userMultiple',
-                    //         label: 'Admin Users',
-                    //         start: 1,
-                    //         grid: 6,
-                    //     },
-                    // },
-                    // adminGroups: {
-                    //     type: 'string',
-                    //     ui: {
-                    //         help: 'These group of users will have ability to modify the connection and read/update/query all the related assets for this connection',
-                    //         widget: 'groupMultiple',
-                    //         label: 'Admin Groups',
+                    adminGroups: {
+                        type: 'string',
+                        ui: {
+                            help: 'These group of users will have ability to modify the connection and read/update/query all the related assets for this connection',
+                            widget: 'groupMultiple',
+                            label: 'Admin Groups',
 
-                    //         grid: 6,
-                    //     },
-                    // },
+                            grid: 6,
+                        },
+                    },
                     allowQuery: {
                         type: 'boolean',
                         default: true,

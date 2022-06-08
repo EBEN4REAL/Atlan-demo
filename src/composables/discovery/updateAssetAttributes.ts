@@ -120,7 +120,6 @@ export default function updateAssetAttributes(
     const localAdmins = ref({
         adminUsers: adminUsers(selectedAsset.value),
         adminGroups: adminGroups(selectedAsset.value),
-        adminRoles: selectedAsset.value?.attributes?.adminRoles,
     })
 
     const localViewers = ref({
@@ -268,9 +267,7 @@ export default function updateAssetAttributes(
             adminUsers(selectedAsset.value)?.sort().toString() ===
                 localAdmins.value?.adminUsers?.sort().toString() &&
             adminGroups(selectedAsset.value)?.sort().toString() ===
-                localAdmins.value?.adminGroups?.sort().toString() &&
-            localAdmins.value?.adminRoles?.sort().toString() ===
-                selectedAsset.value?.attributes?.adminRoles?.sort().toString()
+                localAdmins.value?.adminGroups?.sort().toString()
         ) {
             isChanged = false
         } else {
@@ -291,16 +288,6 @@ export default function updateAssetAttributes(
             ) {
                 entity.value.attributes.adminGroups =
                     localAdmins.value?.adminGroups
-                isChanged = true
-            }
-
-            // adminRoles
-            if (
-                entity.value.attributes.adminRoles?.sort().toString() !==
-                localAdmins.value?.adminRoles?.sort().toString()
-            ) {
-                entity.value.attributes.adminRoles =
-                    localAdmins.value?.adminRoles
                 isChanged = true
             }
         }
@@ -747,13 +734,6 @@ export default function updateAssetAttributes(
             adminGroups(selectedAsset?.value) !== localAdmins.value.adminGroups
         ) {
             localAdmins.value.adminGroups = adminGroups(selectedAsset?.value)
-        }
-        if (
-            selectedAsset?.value.attributes.adminRoles !==
-            localAdmins.value.adminRoles
-        ) {
-            localAdmins.value.adminRoles =
-                selectedAsset?.value.attributes.adminRoles
         }
         if (
             viewerUsers(selectedAsset?.value) !== localViewers.value.viewerUsers

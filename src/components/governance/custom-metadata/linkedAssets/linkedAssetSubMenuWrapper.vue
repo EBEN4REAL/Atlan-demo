@@ -8,46 +8,34 @@
         }"
     >
         <template #title>
-            <section
-                class="flex items-center h-12 p-6 rounded-t-lg gap-x-3"
-                :class="
-                    openKeys.includes(asset.guid) ||
-                    openKeys.includes(linkedAssets[x + 1]?.guid) ||
-                    linkedAssets.length - 1 === x
-                        ? 'border-b border-transparent'
-                        : 'border-b'
-                "
+            <LinkedAssetsOwnerPopover
+                v-if="isScrubbed(asset) && ownerUsers(asset).length"
+                :asset="asset"
             >
-                <div class="flex justify-between flex-grow gap-x-3">
-                    <div class="flex items-center flex-grow">
-                        <AssetTitle :asset="asset" />
-                    </div>
-                    <div class="text-sm text-new-gray-600">
-                        <span class="mr-1">
-                            {{ $refs?.LinkedAssetItem?.[x]?.count }}
-                            properties
-                        </span>
-                        <AtlanIcon
-                            icon="CaretDown"
-                            class="transition duration-300 ease"
-                            :style="
-                                openKeys.includes(asset.guid)
-                                    ? 'transform: rotateX(180deg)'
-                                    : ''
-                            "
-                        />
-                    </div>
-                    <div class="flex mb-2">
-                        <div class="">
-                            <AtlanIcon
-                                icon="TrashAlt"
-                                class="text-red-500 cursor-pointer"
-                                @click="handleClear(asset)"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </section>
+                <SubMenuTitle
+                    class="rounded-lg cursor-not-allowed bg-new-gray-100"
+                    :open-keys="openKeys"
+                    :count="$refs?.LinkedAssetItem?.[x]?.count"
+                    :asset="asset"
+                    @handleClear="handleClear(asset)"
+                />
+            </LinkedAssetsOwnerPopover>
+            <template v-else>
+                <SubMenuTitle
+                    :class="{
+                        ' border-transparent':
+                            openKeys.includes(asset.guid) ||
+                            openKeys.includes(linkedAssets[x + 1]?.guid) ||
+                            linkedAssets.length - 1 === x,
+                        'bg-new-gray-100 cursor-not-allowed rounded-lg':
+                            isScrubbed(asset),
+                    }"
+                    :open-keys="openKeys"
+                    :count="$refs?.LinkedAssetItem?.[x]?.count"
+                    :asset="asset"
+                    @handleClear="handleClear(asset)"
+                />
+            </template>
         </template>
         <a-menu-item>
             <div class="p-3 pt-0">
@@ -67,9 +55,11 @@
     import { message } from 'ant-design-vue'
     import { assetInterface } from '~/types/assets/asset.interface'
 
-    import AssetTitle from '@/common/assets/list/assetTitle.vue'
     import LinkedAssetItem from '@/governance/custom-metadata/linkedAssets/linkedAssetItem.vue'
     import { removeProperty } from '@/governance/custom-metadata/linkedAssets/removeProperty'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import LinkedAssetsOwnerPopover from '@/governance/custom-metadata/linkedAssets/linkedAssetsOwnerPopover.vue'
+    import SubMenuTitle from '@/governance/custom-metadata/linkedAssets/subMenuTitle.vue'
 
     const props = defineProps({
         linkedAssets: {
@@ -88,6 +78,8 @@
     const { metadata } = toRefs(props)
 
     const emit = defineEmits(['success', 'error', 'metadataRemove'])
+
+    const { isScrubbed, ownerUsers } = useAssetInfo()
 
     const handleClear = async (asset) => {
         const { error, isReady, isLoading, mutate } = removeProperty(

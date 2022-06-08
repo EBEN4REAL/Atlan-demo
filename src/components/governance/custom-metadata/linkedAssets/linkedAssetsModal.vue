@@ -14,7 +14,10 @@
             class="absolute flex items-center w-full p-3 text-sm rounded-lg gap-x-1 bg-new-yellow-100 text-new-yellow-700"
             style="top: -3.2rem"
         >
-            <AtlanIcon icon="Info" />
+            <AtlanIcon
+                icon="Overview"
+                class="bg-white rounded-full text-new-yellow-700"
+            />
             <span>
                 You will be able to archive Airflow, once all linked assets are
                 removed from Airflow
@@ -39,8 +42,7 @@
                     </div>
                     <span class="text-gray-300">•</span>
                     <span class="text-gray-500">
-                        {{ linkedAssets.length }} Assets linked to
-                        {{ metadata.displayName }}
+                        {{ linkedAssets.length }} Assets linked
                     </span>
                 </div>
             </header>
@@ -57,10 +59,10 @@
                     @openChange="onOpenChange"
                 >
                     <LinkedAssetsSubMenu
-                        @metadataRemove="(id) => emit('metadataRemove', id)"
                         :linked-assets="linkedAssets"
                         :metadata="metadata"
                         :open-keys="openKeys"
+                        @metadataRemove="(id) => emit('metadataRemove', id)"
                     />
                 </a-menu>
             </section>

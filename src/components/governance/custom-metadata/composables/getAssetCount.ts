@@ -1,5 +1,5 @@
 import { ref, watch } from 'vue'
-import { MinimalAttributes } from '~/constant/projection'
+import { MinimalAttributes, metadataLinkedAssetsAttributes } from '~/constant/projection'
 import { Search } from '~/services/meta/search'
 import { useTypedefStore } from '~/store/typedef'
 
@@ -25,7 +25,7 @@ const getAssetCount = (selectedBM) => {
                 }
             }
         },
-        attributes: [...typedefStore.getCustomMetadataListProjectionsByName(selectedBM.name, true), ...attributes],
+        attributes: [...typedefStore.getCustomMetadataListProjectionsByName(selectedBM.name, true), ...metadataLinkedAssetsAttributes],
         suppressLogs: true
     }
 

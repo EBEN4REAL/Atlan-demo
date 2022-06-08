@@ -17,7 +17,7 @@ export interface Actions extends State {
     removeClassificationByName(name: string): void
     removeCustomMetadataByName(name: string): void
     tickForceRevalidate(): void
-    getCustomMetadataListProjectionsByName(name: string): string[]
+    getCustomMetadataListProjectionsByName(name: string, includeArchive?: boolean): string[]
 }
 
 export const actions: Actions = {

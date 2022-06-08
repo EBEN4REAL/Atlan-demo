@@ -286,6 +286,12 @@ export const MinimalAttributes = [
     's3BucketName',
 ]
 
+export const metadataLinkedAssetsAttributes = [
+    ...MinimalAttributes,
+    "ownerUsers"
+
+]
+
 
 
 export const BasicSearchAttributes = [

@@ -19,8 +19,10 @@
                 class="bg-white rounded-full text-new-yellow-700"
             />
             <span>
-                You will be able to archive Airflow, once all linked assets are
-                removed from Airflow
+                You will be able to delete <b>{{ metadata.displayName }}</b
+                >, once all linked assets are removed from
+                <b>{{ metadata.displayName }}</b
+                >.
             </span>
         </div>
         <div class="flex flex-col overflow-hidden linkedAssetModal">

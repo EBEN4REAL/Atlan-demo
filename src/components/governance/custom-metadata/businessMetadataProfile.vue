@@ -27,6 +27,7 @@
                 </div>
                 <div class="flex items-center">
                     <MetadataHeaderButton
+                        ref="metaActions"
                         :metadata="localBm"
                         @viewAssets="linkedAssetsVisible = true"
                         :allow-delete="allowDelete"
@@ -223,6 +224,7 @@
             const store = useTypedefStore()
             const { checkAccess } = useAuth()
             const linkedAssetsVisible = ref(false)
+            const metaActions = ref()
             // * Data
             const localBm = computed({
                 get: () => props.selectedBm,
@@ -339,8 +341,11 @@
                 linkedAssets.value = linkedAssets.value.filter(
                     (asset) => asset?.guid !== assetID
                 )
-                if (!linkedAssets.value.length)
+                if (!linkedAssets.value.length) {
                     linkedAssetsVisible.value = false
+                    // ? since all assets are now cleared, open delete confirm modal
+                    metaActions.value?.openDeleteConfirm()
+                }
             }
 
             if (localBm.value.attributeDefs?.length) refreshLinkedAssets()
@@ -414,6 +419,7 @@
                 addPropertyDrawer.value?.open(property, true)
             }
             return {
+                metaActions,
                 handleMetadataRemove,
                 openDirection,
                 linkedAssetsVisible,

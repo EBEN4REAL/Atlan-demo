@@ -45,6 +45,7 @@
         <!-- AssetDrawer -->
         <AssetDrawer
             :guid="selectedAsset?.guid"
+            :watch-guid="true"
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
             :show-collapse-button="true"

@@ -157,6 +157,7 @@ export const AssetAttributes = [
     'isTrashedDataStudioAsset',
     'powerBITableColumnCount',
     'powerBITableMeasureCount',
+    'powerBIMeasureExpression',
 ]
 
 export const SQLAttributes = [

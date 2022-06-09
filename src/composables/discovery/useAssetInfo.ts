@@ -1388,6 +1388,9 @@ export default function useAssetInfo() {
     const isTrashedDataStudioAsset = (asset: assetInterface) =>
         !!attributes(asset)?.isTrashedDataStudioAsset
 
+    const powerBIMeasureExpression = (asset: assetInterface) =>
+        attributes(asset)?.powerBIMeasureExpression || ''
+
     return {
         attributes,
         title,
@@ -1578,5 +1581,6 @@ export default function useAssetInfo() {
         isTrashedDataStudioAsset,
         powerBITableColumnCount,
         powerBITableMeasureCount,
+        powerBIMeasureExpression,
     }
 }

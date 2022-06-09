@@ -644,6 +644,25 @@
 
             <div
                 v-if="
+                    ['PowerBIMeasure'].includes(selectedAsset?.typeName) &&
+                    powerBIMeasureExpression(selectedAsset) &&
+                    powerBIMeasureExpression(selectedAsset) !== ''
+                "
+                class="flex px-5"
+            >
+                <div class="flex flex-col w-full text-sm">
+                    <span class="mb-1 text-sm text-gray-500"
+                        >Measure Expression</span
+                    >
+                    <DetailsContainer
+                        :text="powerBIMeasureExpression(selectedAsset)"
+                        class="rounded-lg"
+                    />
+                </div>
+            </div>
+
+            <div
+                v-if="
                     isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
                     externalLocation(selectedAsset)
                 "
@@ -1325,6 +1344,7 @@
                 dataStudioAssetTitle,
                 dataStudioAssetOwner,
                 isTrashedDataStudioAsset,
+                powerBIMeasureExpression,
             } = useAssetInfo()
 
             const {
@@ -1544,6 +1564,7 @@
                 dataStudioAssetTitle,
                 dataStudioAssetOwner,
                 isTrashedDataStudioAsset,
+                powerBIMeasureExpression,
             }
         },
     })

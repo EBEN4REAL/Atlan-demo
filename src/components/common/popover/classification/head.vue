@@ -78,8 +78,7 @@
                         </div>
                     </div>
                 </template>
-                <span class="cursor-pointer" style="text-decoration: underline dotted"  
-                    @click="handleOpenProfile(propagatedVia[0])">
+                <span class="cursor-pointer" style="text-decoration: underline dotted">
                     {{extendedText}}
                 </span>
             </a-popover>

@@ -42,21 +42,21 @@
                                     icon="Overview"
                                 />
                             </div>
-                            <div class="text-sm text-gray-500" >Classifications attached to a {{selectedAsset?.typeName}} will propagate to all 
+                            <div class="text-sm text-gray-500" >Classifications attached to a {{selectedAsset?.typeName.replace(/([a-z])([A-Z])/, '$1 $2')}} will propagate to all
                                 <span 
                                     class="cursor-pointer"
                                     style="text-decoration: underline dotted"  
                                     @mouseover="showChildrenAsset = true"
                                     @mouseleave="showChildrenAsset = false">
-                                    children assets.
+                                    child assets.
                                 </span>
                             </div>
                         </div>
                     </div>
-                    <div class="absolute z-10 w-10/12 p-2 pt-3 mx-auto mt-6 text-white rounded-md left-5"  style="background: #2A2F45;" 
+                    <div class="absolute z-10 w-10/12 p-2 pt-3 mx-auto mt-6 text-xs text-white rounded-md left-5"  style="background: #2A2F45;" 
                         v-if="showChildrenAsset && parentAssetChildren?.length"
-                        :style="[{top:  !editPermission && role !== 'Guest' && parentAssetChildren?.length > 0  ?  '320px !important' : parentAssetChildren?.length > 0 ? '270px !important'  :   '230px !important'}]">
-                        {{parentAssetChildren}}
+                        :style="[{top:  !editPermission && role !== 'Guest' && parentAssetChildren?.length > 0  ?  '320px !important' : parentAssetChildren?.length > 0 && selectedAsset?.typeName.length < 5 ? '250px' :  parentAssetChildren?.length > 0 ? '270px !important'  :   '230px !important'}]">
+                        {{parentAssetChildren}}  
                     </div>
                 </div>
                 <div
@@ -173,7 +173,7 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import whoami from '~/composables/user/whoami.ts'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
-    import {assetParentChildHierachy} from '~/constant/assetParentChildHierachy'
+    import {assetParentChildMapping} from '~/constant/assetParentChildMapping'
     import {groupClassifications} from "~/utils/groupClassifications"
 
 
@@ -242,14 +242,11 @@
             const parentAssetChildren = ref<string>()
             const showChildrenAsset = ref<boolean>(false)
             
-            const parentAssets = assetParentChildHierachy.map((asset: {
-                parent: string;
-                children: string[];
-            }) => asset.parent)
+            const parentAssets = assetParentChildMapping.map((asset) => asset.parent)
             
             if(parentAssets.includes(selectedAsset.value?.typeName)) {
-                const findAssetTypeChildren = assetParentChildHierachy.find(asset => asset?.parent === selectedAsset.value?.typeName)
-                parentAssetChildren.value = findAssetTypeChildren.children.join(", ")
+                const findAssetTypeChildren = assetParentChildMapping.find(asset => asset?.parent === selectedAsset.value?.typeName)
+                parentAssetChildren.value = findAssetTypeChildren.children.map(el => el.displayText).join(", ")
             }
             
             const localValue = ref(modelValue.value)

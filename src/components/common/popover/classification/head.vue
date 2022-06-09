@@ -47,10 +47,8 @@
         >
             
             Propagated via <AtlanIcon :icon="propagatedViaIcon" />
-            <span class="text-gray-700 cursor-pointer" >
-                <a :href="`/assets/${propagatedVia.guid.trim() + ''}`" target="_blank" >
-                    {{ computeDisplayText(propagatedVia) }}
-                </a>
+            <span class="text-gray-700 cursor-pointer hover:text-primary" @click="handleOpenProfile(propagatedVia)" >
+                {{ computeDisplayText(propagatedVia) }}
             </span>
             {{ linkedAt }}
         </div>
@@ -59,33 +57,30 @@
             class="flex gap-1 mt-1.5 text-sm content-center items-center text-gray-500 flex-wrap break-all"
         >
            
-            Propagated via <AtlanIcon :icon="progatedIcon(propagatedVia)" />
+            Propagated via <AtlanIcon :icon="() => isPropagated && Object.prototype.toString.call(propagatedVia) === '[object Object]' ? progatedIcon(propagatedVia) : detailedPropagatedViaIcon(pv[0])" />
+            <span class="text-gray-700 cursor-pointer hover:text-primary" @click="() => propagatedVia?.length ?  handleOpenProfile(propagatedVia[0]) : handleOpenProfile(propagatedVia)" >
+                {{ computeDisplayText(propagatedVia) }}
+            </span>
             <a-popover 
                 placement="rightTop" >
                 <template #content>
                     <div class="py-3 pl-3 bg-white rounded-md w-52">
-                        <div class="flex items-center " v-for="(pv,i) in propagatedVia.slice(1)" :key="i">
+                        <div class="flex items-center" v-for="(pv,i) in propagatedVia.slice(1)" :key="i">
                             <div class="mr-1">
                                 <AtlanIcon
+                                    style="stroke: rgb(107, 114, 128, 50%) !iimportant;"
                                     :icon="detailedPropagatedViaIcon(pv)"
                                 />
                             </div>
-                            <div class="text-sm text-gray-500 cursor-pointer">
-                                <a :href="`/assets/${pv.guid.trim() + ''}`" target="_blank">
-                                    {{pv?.displayText}}
-                                </a>
+                            <div class="text-sm text-gray-500 cursor-pointer hover:text-primary" @click="handleOpenProfile(pv)" >
+                                {{pv?.displayText}}
                             </div>
                         </div>
                     </div>
                 </template>
-                <span class="text-gray-700 cursor-pointer" style="text-decoration: underline dotted">
-                    <a :href="`/assets/${propagatedVia[0].guid.trim() + ''}`" target="_blank" v-if="propagatedVia?.length > 0">
-                        {{ computeDisplayText(propagatedVia) }}
-                    </a>
-                    <span v-else>
-                        {{ computeDisplayText(propagatedVia) }}
-                    </span>
-                    
+                <span class="cursor-pointer" style="text-decoration: underline dotted"  
+                    @click="handleOpenProfile(propagatedVia[0])">
+                    {{extendedText}}
                 </span>
             </a-popover>
             {{ linkedAt }}
@@ -108,6 +103,8 @@
     import { useLinkedBy } from '~/composables/classification/useLinkedBy'
 
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
+
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     dayjs.extend(relativeTime)
 
@@ -137,6 +134,9 @@
             )
             const remainingClassifications = ref<boolean>(false)
             const guid = ref(props.entityGuid)
+            const extendedText = ref<string>()
+
+            const {getProfilePath } = useAssetInfo()
 
             const isPropagated = computed(() => {
                 if (!guid.value || guid.value.length === 0) {
@@ -195,7 +195,8 @@
                         // eslint-disable-next-line no-param-reassign
                         progatedVia.icon = propagateByIcon(el)
                     })
-                    return `${progatedVia[0]?.displayText} and ${progatedVia.slice(1).length} ${progatedVia.slice(1).length > 1 ? "others" : "other"}`
+                    extendedText.value = `and ${progatedVia.slice(1).length} ${progatedVia.slice(1).length > 1 ? "others" : "other"}`
+                    return `${progatedVia[0]?.displayText}`
                 }
                 return progatedVia?.displayText
             }
@@ -209,6 +210,10 @@
 
             const detailedPropagatedViaIcon = progatedViaObj =>  propagateByIcon(progatedViaObj)
 
+            const handleOpenProfile = (asset) => {
+                window.open(getProfilePath(asset), '_blank')
+            }
+
             return {
                 linkedUser,
                 linkedAt,
@@ -220,7 +225,9 @@
                 computeDisplayText,
                 progatedIcon,
                 detailedPropagatedViaIcon,
-                remainingClassifications
+                remainingClassifications,
+                extendedText,
+                handleOpenProfile
             }
         },
     })

@@ -77,7 +77,7 @@ export const featureList = {
             // if the config isn't present in tenant/user preferences, default value will be picked up from here
             defaultValue: true,
             // if feature needs a different feature to be active
-            dependantFeatureKey: null,
+            dependantFeatureKey: INSIGHT_WORKSPACE_LEVEL_TAB,
             // only these users will be allowed
             allowedUsers: [],
             allowedGroups: [],

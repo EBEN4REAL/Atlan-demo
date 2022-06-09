@@ -42,7 +42,7 @@
                                     icon="Overview"
                                 />
                             </div>
-                            <div class="text-sm text-gray-500" >Classifications attached to  {{assetType}} will propagate to all
+                            <div class="text-sm text-gray-500" >Classifications attached to a {{assetType}} will propagate to all
                                 <span 
                                     class="cursor-pointer"
                                     style="text-decoration: underline dotted"  

@@ -164,14 +164,14 @@
     .max-collapsed-width {
         max-width: calc(100vw - 480px);
         transition-property: all;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 150ms;
+        transition-timing-function: linear;
+        transition-duration: 10ms;
     }
 
     .max-full-width {
         max-width: calc(100vw - 60px);
         transition-property: all;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 150ms;
+        transition-timing-function: linear;
+        transition-duration: 10ms;
     }
 </style>

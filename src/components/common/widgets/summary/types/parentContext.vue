@@ -20,8 +20,9 @@
         </div>
         <div
             v-if="
-                ['PowerBIDatasource'].includes(asset?.typeName) &&
-                parentDataset(asset)?.guid
+                ['PowerBIDatasource', 'PowerBITable'].includes(
+                    asset?.typeName
+                ) && parentDataset(asset)?.guid
             "
             class="flex flex-col text-sm"
         >

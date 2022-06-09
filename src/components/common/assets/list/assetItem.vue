@@ -1230,6 +1230,45 @@
                                         objects</span
                                     >
                                 </div>
+                                <div
+                                    v-if="
+                                        ['powerbitable'].includes(
+                                            item.typeName?.toLowerCase()
+                                        )
+                                    "
+                                    class="flex text-sm text-gray-500 gap-x-2"
+                                >
+                                    <span
+                                        v-if="
+                                            powerBITableColumnCount(item) !==
+                                            '0'
+                                        "
+                                        class="text-gray-500"
+                                    >
+                                        <span
+                                            class="tracking-tight text-gray-500"
+                                            >{{
+                                                powerBITableColumnCount(item)
+                                            }}</span
+                                        >
+                                        columns</span
+                                    >
+                                    <span
+                                        v-if="
+                                            powerBITableMeasureCount(item) !==
+                                            '0'
+                                        "
+                                        class="text-gray-500"
+                                    >
+                                        <span
+                                            class="tracking-tight text-gray-500"
+                                            >{{
+                                                powerBITableMeasureCount(item)
+                                            }}</span
+                                        >
+                                        measures</span
+                                    >
+                                </div>
 
                                 <div
                                     v-if="
@@ -1699,6 +1738,8 @@
                 s3BucketName,
                 hasLineage,
                 dataStudioAssetType,
+                powerBITableColumnCount,
+                powerBITableMeasureCount,
             } = useAssetInfo()
 
             const icon = computed(() => {
@@ -1924,6 +1965,8 @@
                 hasLineage,
                 handleSwitchTabLineage,
                 dataStudioAssetType,
+                powerBITableColumnCount,
+                powerBITableMeasureCount,
             }
         },
     })

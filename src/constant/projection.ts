@@ -155,6 +155,8 @@ export const AssetAttributes = [
     'dataStudioAssetTitle',
     'dataStudioAssetOwner',
     'isTrashedDataStudioAsset',
+    'powerBITableColumnCount',
+    'powerBITableMeasureCount',
 ]
 
 export const SQLAttributes = [
@@ -292,6 +294,8 @@ export const MinimalAttributes = [
     'bucket',
     's3ObjectCount',
     's3BucketName',
+    'powerBITableColumnCount',
+    'powerBITableMeasureCount',
 ]
 
 export const BasicSearchAttributes = [

@@ -98,6 +98,12 @@ export default function useAssetInfo() {
     const fieldCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.fieldCount, true)
 
+    const powerBITableColumnCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.powerBITableColumnCount, true)
+
+    const powerBITableMeasureCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.powerBITableMeasureCount, true)
+
     const title = (asset: assetInterface) =>
         (attributes(asset)?.displayName ||
             attributes(asset)?.name ||
@@ -1570,5 +1576,7 @@ export default function useAssetInfo() {
         dataStudioAssetTitle,
         dataStudioAssetOwner,
         isTrashedDataStudioAsset,
+        powerBITableColumnCount,
+        powerBITableMeasureCount,
     }
 }

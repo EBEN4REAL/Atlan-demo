@@ -130,6 +130,7 @@ export const summaryVariants = [
         label: 'Table',
         components: [
             'ParentContext',
+            'PowerBITableCounts',
             'Connection',
             'SourceCreated',
             'SourceUpdated',

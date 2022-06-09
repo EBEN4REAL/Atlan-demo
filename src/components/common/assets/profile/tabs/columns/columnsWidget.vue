@@ -225,7 +225,7 @@
                 class="text-new-gray-600"
             >
                 Loading <span class="font-bold">20</span> more...
-                <AtlanLoader class="h-4" />
+                <AtlanLoader class="h-4 mb-0.5" />
             </div>
         </div>
 
@@ -554,25 +554,13 @@
             })
             const suggestionAggregations = ref(['name'])
 
-            const { quickChange: quickSuggestionChange, list: suggestionList } =
+            const { quickChange: quickSuggestionChange, similarListByName } =
                 useSimilarList({
                     limit: suggestionLimit,
                     offset: suggestionOffset,
                     facets: suggestionFacets,
                     aggregations: suggestionAggregations,
                 })
-
-            const similarListByName = (asset) => {
-                const suggestion = suggestionList.value.find(
-                    (item) => title(asset)?.toLowerCase() === item?.key
-                )
-
-                if (suggestion?.group_by_description?.buckets) {
-                    return suggestion?.group_by_description?.buckets
-                }
-
-                return []
-            }
 
             // rowClassName Antd
             const rowClassName = (record: { key: null }) =>

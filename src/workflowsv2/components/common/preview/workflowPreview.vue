@@ -137,10 +137,10 @@
             )
 
             const dName = computed(() =>
-                workflow.value?.metadata?.name
+                wfName(workflow.value)
                     ? displayName(
                           pkg.value,
-                          workflow.value?.metadata?.name,
+                          wfName(workflow.value),
                           workflow.value?.spec
                       )
                     : 'Workflow Name'

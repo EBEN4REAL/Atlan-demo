@@ -95,7 +95,7 @@
             </div>
             <div>
                 <p class="info-title">Workflow ID</p>
-                <p class="text-gray-700">{{ wfName(workflow) }}</p>
+                <p class="text-gray-700">{{ refName(workflow) }}</p>
             </div>
         </div>
     </div>
@@ -148,6 +148,7 @@
                 creationTimestamp,
                 modifierUsername,
                 name: wfName,
+                refName,
                 packageType,
                 nextRunRelativeTime,
                 workflowTemplateName,
@@ -197,7 +198,7 @@
                         const body = {
                             namespace: 'default',
                             resourceKind: 'WorkflowTemplate',
-                            resourceName: wfName(workflow.value),
+                            resourceName: refName(workflow.value),
                         }
 
                         const {
@@ -241,6 +242,7 @@
 
             return {
                 wfName,
+                refName,
                 isCronWorkflow,
                 cronString,
                 creatorUsername,

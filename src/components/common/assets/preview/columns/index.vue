@@ -77,11 +77,10 @@
         <!-- {{ list }} -->
         <AssetList
             v-else
-            ref="assetlistRef"
+            ref="columnlistRef"
             :list="list"
-            :is-load-more="isLoadMore"
-            :is-loading="isValidating"
-            @loadMore="handleLoadMore"
+            :is-load-more="false"
+            class="column-list-container"
         >
             <template #default="{ item }">
                 <ColumnItem
@@ -92,6 +91,13 @@
                 />
             </template>
         </AssetList>
+        <div
+            v-if="isValidating && list?.length !== 0"
+            class="flex items-center justify-center w-full mb-4 text-new-gray-600"
+        >
+            Loading<span class="mx-1 font-bold">20</span>more...
+            <AtlanLoader class="h-4 mb-0.5" />
+        </div>
     </div>
 </template>
 
@@ -104,7 +110,7 @@
         watch,
         PropType,
     } from 'vue'
-    import { debouncedWatch, useDebounceFn } from '@vueuse/core'
+    import { debouncedWatch, useDebounceFn, watchOnce } from '@vueuse/core'
 
     import ErrorView from '@common/error/discover.vue'
     import EmptyView from '@common/empty/index.vue'
@@ -122,8 +128,8 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { useSimilarList } from '~/composables/discovery/useSimilarList'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { getColumnCountWithLineage } from '~/components/common/assets/profile/tabs/lineage/util.js'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     export default defineComponent({
         name: 'ColumnWidget',
@@ -267,7 +273,7 @@
             )
 
             const body = ref({})
-            const { refresh } = useEvaluate(body, false, true) // true for secondaryEvaluations
+            const { refresh } = useEvaluate(body, false, false, true) // true for columnEvaluations
 
             debouncedWatch(
                 () => props.selectedAsset.attributes.qualifiedName,
@@ -286,11 +292,11 @@
                 quickChange()
             }
 
-            const handleLoadMore = () => {
+            const handleLoadMore = async () => {
                 if (isLoadMore.value) {
                     offset.value += limit.value
+                    await quickChange()
                 }
-                quickChange()
             }
 
             const handleSearchChange = useDebounceFn(() => {
@@ -311,7 +317,7 @@
             })
             const suggestionAggregations = ref(['name'])
 
-            const { quickChange: quickSuggestionChange, list: suggestionList } =
+            const { quickChange: quickSuggestionChange, similarListByName } =
                 useSimilarList({
                     limit: suggestionLimit,
                     offset: suggestionOffset,
@@ -321,18 +327,6 @@
 
             const { title } = useAssetInfo()
 
-            const similarListByName = (asset) => {
-                const suggestion = suggestionList.value.find(
-                    (item) => title(asset)?.toLowerCase() === item?.key
-                )
-
-                if (suggestion?.group_by_description?.buckets) {
-                    return suggestion?.group_by_description?.buckets
-                }
-
-                return []
-            }
-
             watch(
                 () => [...freshList.value],
                 () => {
@@ -340,7 +334,7 @@
                     body.value = {
                         entities: freshList.value.map((item) => ({
                             typeName: item.typeName,
-                            entityGuid: item.guid,
+                            entityId: item?.attributes?.qualifiedName,
                             action: 'ENTITY_UPDATE',
                         })),
                     }
@@ -357,6 +351,36 @@
                     quickSuggestionChange()
                 }
             )
+            const columnlistRef = ref(null)
+            const shouldLoadMore = ref(true)
+
+            watchOnce(columnlistRef, () => {
+                if (columnlistRef.value) {
+                    const node = document.querySelector(
+                        '.column-list-container'
+                    )
+
+                    if (node) {
+                        node.addEventListener('scroll', () => {
+                            const perc =
+                                (node.scrollTop /
+                                    (node.scrollHeight - node.clientHeight)) *
+                                100
+
+                            if (perc >= 100) {
+                                if (shouldLoadMore.value) {
+                                    shouldLoadMore.value = false
+                                    handleLoadMore()
+
+                                    setTimeout(() => {
+                                        shouldLoadMore.value = true
+                                    }, 1000)
+                                }
+                            }
+                        })
+                    }
+                }
+            })
 
             return {
                 isLoading,
@@ -382,6 +406,7 @@
                 similarListByName,
                 columnWithLineageCount,
                 handleLineageFilterChange,
+                columnlistRef,
             }
         },
     })

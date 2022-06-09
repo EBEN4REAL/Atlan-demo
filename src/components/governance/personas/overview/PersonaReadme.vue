@@ -60,7 +60,7 @@
                 )
             }
 
-            const handleUpdatePersonaReadme = (dataEditor) => {
+            const handleUpdatePersonaReadme = async (dataEditor) => {
                 const payload = { ...persona.value }
                 delete payload.dataPolicies
                 delete payload.metadataPolicies
@@ -72,7 +72,7 @@
 
             const handleSave = () => {
                 loadingSave.value = true
-                handleUpdatePersonaReadme(editorValue.value)
+                return handleUpdatePersonaReadme(editorValue.value)
             }
             return {
                 isLoading,

@@ -21,7 +21,13 @@
             </div>
         </div>
 
-        <div v-if="isReady" class="absolute w-full h-full">
+        <div
+            v-if="isReady"
+            class="absolute h-full"
+            :class="
+                selectedAsset?.guid ? 'max-collapsed-width' : 'max-full-width'
+            "
+        >
             <div
                 v-if="!Object.keys(lineage.guidEntityMap).length"
                 class="relative bg-white"
@@ -117,7 +123,7 @@
             })
 
             // Control
-            const control = (type, item = null) => {
+            const control = (type, item = '') => {
                 if (type === 'selectedAsset') selectedAsset.value = item
             }
 
@@ -148,7 +154,24 @@
                 isReady,
                 error,
                 emit,
+                selectedAsset,
             }
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .max-collapsed-width {
+        max-width: calc(100vw - 480px);
+        transition-property: all;
+        transition-timing-function: linear;
+        transition-duration: 10ms;
+    }
+
+    .max-full-width {
+        max-width: calc(100vw - 60px);
+        transition-property: all;
+        transition-timing-function: linear;
+        transition-duration: 10ms;
+    }
+</style>

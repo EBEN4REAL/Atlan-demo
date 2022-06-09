@@ -44,13 +44,13 @@
 
         <!-- AssetDrawer -->
         <AssetDrawer
+            :guid="selectedAsset?.guid"
             :watch-guid="true"
-            :guid="selectedAsset?.guid || ''"
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
             :show-collapse-button="true"
+            :show-drawer="showDrawer"
             @close-drawer="onCloseDrawer"
-            @update="handleDrawerUpdate"
         />
 
         <!-- GroupProcessesDrawer -->
@@ -67,6 +67,7 @@
         onUnmounted,
         provide,
         inject,
+        watch,
     } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
 
@@ -112,6 +113,7 @@
             const guidToSelectOnGraph = ref('')
             const selectedTypeInRelationDrawer = ref('__all')
             const groupedProcessIds = ref([])
+            const showDrawer = ref(false)
 
             /** EVENT DEFINITION */
             const sendPanelZoomOut = useDebounceFn((percentage) => {
@@ -148,11 +150,17 @@
             const onSelectAsset = (item, selectOnGraph = false) => {
                 const { isGroupEdge, processIds } = item || {}
 
-                if (typeof control === 'function')
+                if (typeof control === 'function') {
                     // TODO: && !isGroupEdge
                     control('selectedAsset', item)
+                    if (item?.guid) {
+                        graphWidth.value = window.outerWidth - 420
+                        graph.value.resize(graphWidth.value, graphHeight.value)
+                        showDrawer.value = true
+                    }
+                }
 
-                if (!item) return
+                if (!item?.guid) return
 
                 if (isGroupEdge && processIds.length)
                     groupedProcessIds.value = processIds
@@ -162,13 +170,10 @@
 
             // onCloseDrawer
             const onCloseDrawer = () => {
-                onSelectAsset(null)
-            }
-
-            // handleDrawerUpdate
-            const handleDrawerUpdate = (asset) => {
-                if (typeof control === 'function')
-                    control('selectedAsset', asset)
+                onSelectAsset('')
+                graphWidth.value = window.outerWidth
+                graph.value.resize(graphWidth.value, graphHeight.value)
+                showDrawer.value = false
             }
 
             // handleMinimapAction
@@ -222,6 +227,7 @@
                     sameTargetCount,
                     nodes,
                     edges,
+                    showDrawer,
                     onSelectAsset,
                     onCloseDrawer,
                     addSubGraph,
@@ -262,10 +268,10 @@
                 graphContainer,
                 minimapContainer,
                 onCloseDrawer,
-                handleDrawerUpdate,
                 handleZoom,
                 groupedProcessIds,
                 handleMinimapAction,
+                showDrawer,
             }
         },
     })

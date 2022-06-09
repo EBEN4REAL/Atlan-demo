@@ -1,12 +1,12 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
-    <ContextMenu :asset="item">
+    <ContextMenu :asset="item" :enable-sidebar-drawer="enableSidebarDrawer">
         <template #content>
             <div
                 class="transition duration-100 hover:border-primary"
                 :class="{
                     'border-primary  shadow border bg-primary-menu': isSelected,
-                    'cursor-pointer': enableSidebarDrawer,
+                    'cursor-pointer ': enableSidebarDrawer,
                     'opacity-80': isLoading,
                     'my-1.5 rounded-lg': page === 'assets',
                 }"
@@ -1461,12 +1461,14 @@
                     "
                 />
 
-                <AssetDrawer
-                    :guid="selectedAssetDrawerGuid"
-                    :show-drawer="showAssetSidebarDrawer"
-                    @closeDrawer="handleCloseDrawer"
-                    @update="handleListUpdate"
-                />
+                <div v-if="enableSidebarDrawer">
+                    <AssetDrawer
+                        :guid="selectedAssetDrawerGuid"
+                        :show-drawer="showAssetSidebarDrawer"
+                        @closeDrawer="handleCloseDrawer"
+                        @update="handleListUpdate"
+                    />
+                </div>
             </div>
         </template>
     </ContextMenu>

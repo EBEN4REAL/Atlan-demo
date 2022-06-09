@@ -56,8 +56,7 @@
             v-else-if="isPropagated && propagatedVia?.length"
             class="flex gap-1 mt-1.5 text-sm content-center items-center text-gray-500 flex-wrap break-all"
         >
-           
-            Propagated via <AtlanIcon :icon="() => isPropagated && Object.prototype.toString.call(propagatedVia) === '[object Object]' ? progatedIcon(propagatedVia) : detailedPropagatedViaIcon(pv[0])" />
+            Propagated via <AtlanIcon :icon="detailedPropagatedViaIcon(propagatedVia[0])" />
             <span class="text-gray-700 cursor-pointer hover:text-primary" @click="() => propagatedVia?.length ?  handleOpenProfile(propagatedVia[0]) : handleOpenProfile(propagatedVia)" >
                 {{ computeDisplayText(propagatedVia) }}
             </span>

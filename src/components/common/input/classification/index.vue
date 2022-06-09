@@ -42,7 +42,7 @@
                                     icon="Overview"
                                 />
                             </div>
-                            <div class="text-sm text-gray-500" >Classifications attached to a {{selectedAsset?.typeName.replace(/([a-z])([A-Z])/, '$1 $2')}} will propagate to all
+                            <div class="text-sm text-gray-500" >Classifications attached to  {{assetType}} will propagate to all
                                 <span 
                                     class="cursor-pointer"
                                     style="text-decoration: underline dotted"  
@@ -236,16 +236,18 @@
         emits: ['change', 'update:modelValue', 'popoverActive'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
+            const assetType = ref<string>()
            
             const { guid, editPermission, selectedAsset, allowDelete } = toRefs(props)
             
             const parentAssetChildren = ref<string>()
             const showChildrenAsset = ref<boolean>(false)
             
-            const parentAssets = assetParentChildMapping.map((asset) => asset.parent)
+            const parentAssets = assetParentChildMapping.map((asset) => asset.parent.name)
             
             if(parentAssets.includes(selectedAsset.value?.typeName)) {
-                const findAssetTypeChildren = assetParentChildMapping.find(asset => asset?.parent === selectedAsset.value?.typeName)
+                const findAssetTypeChildren = assetParentChildMapping.find(asset => asset?.parent.name === selectedAsset.value?.typeName)
+                assetType.value = findAssetTypeChildren.parent.displayText
                 parentAssetChildren.value = findAssetTypeChildren.children.map(el => el.displayText).join(", ")
             }
             
@@ -459,6 +461,7 @@
                 enteredPill,
                 parentAssetChildren,
                 showChildrenAsset,
+                assetType
             }
         },
     })

@@ -1,6 +1,9 @@
 export const assetParentChildMapping = [
     {
-        parent: "Database",
+        parent: {
+            name: "Database",
+            displayText: "Database"
+        },
         children: [
             {
                 name: 'Table',
@@ -29,7 +32,10 @@ export const assetParentChildMapping = [
         ]
     },
     {
-        parent: "Schema",
+        parent: {
+            name: "Schema",
+            displayText: "Schema"
+        },
         children: [
             {
                 name: 'Table',
@@ -54,7 +60,10 @@ export const assetParentChildMapping = [
         ]
     },
     {
-        parent: "Table",
+        parent: {
+            name: "Table",
+            displayText: "Table"
+        },
         children: [
             {
                 name: 'TablePartition',
@@ -67,7 +76,10 @@ export const assetParentChildMapping = [
         ]
     },
     {
-        parent: "TablePartition",
+        parent: {
+            name: "TablePartition",
+            displayText: "Table Partition"
+        },
         children: [
             {
                 name: 'Column',
@@ -76,7 +88,10 @@ export const assetParentChildMapping = [
         ]
     },
     {
-        parent: "View",
+        parent: {
+            name: "View",
+            displayText: "View"
+        },
         children: [
             {
                 name: 'Column',
@@ -85,7 +100,10 @@ export const assetParentChildMapping = [
         ]
     },
     {
-        parent: "MaterialisedView",
+        parent: {
+            name: "MaterialisedView",
+            displayText: "Materialised View"
+        },
         children: [
             {
                 name: 'Column',
@@ -94,7 +112,10 @@ export const assetParentChildMapping = [
         ]
     },
     {
-        parent: "SalesforceOrganization",
+        parent: {
+            name: "SalesforceOrganization",
+            displayText: "Salesforce Organization"
+        },
         children: [
             {
                 name: 'SalesforceReport',
@@ -115,7 +136,10 @@ export const assetParentChildMapping = [
         ]
     },
     {
-        parent: "SalesforceObject",
+        parent: {
+            name: "SalesforceObject",
+            displayText: "Salesforce Object"
+        },
         children: [
             {
                 name: 'SalesforceField',
@@ -124,7 +148,10 @@ export const assetParentChildMapping = [
         ]
     },
     {
-        parent: "PowerBIDataset",
+        parent: {
+            name: "PowerBIDataset",
+            displayText: "PowerBI Dataset"
+        },
         children: [
             {
                 name: 'PowerBITile',
@@ -153,7 +180,10 @@ export const assetParentChildMapping = [
         ]
     },
     {
-        parent: "PowerBITable",
+        parent: {
+            name: "PowerBITable",
+            displayText: "PowerBI Table"
+        },
         children: [
             {
                 name: 'PowerBIColumn',
@@ -166,7 +196,10 @@ export const assetParentChildMapping = [
         ]
     },
     {
-        parent: "Asset",
+        parent: {
+            name: "Asset",
+            displayText: "Asset"
+        },
         children: [
             {
                 name: 'Readme',
@@ -179,7 +212,10 @@ export const assetParentChildMapping = [
         ]
     },
     {
-        parent: "Namespace",
+        parent: {
+            name: "Namespace",
+            displayText: "Namespace"
+        },
         children: [
             {
                 name: 'Query',
@@ -192,7 +228,10 @@ export const assetParentChildMapping = [
         ]
     },
     {
-        parent: "Catalog",
+        parent: {
+            name: "Catalog",
+            displayText: "Catalog"
+        },
         children: [
             {
                 name: 'Process',
@@ -205,7 +244,10 @@ export const assetParentChildMapping = [
         ]
     },
     {
-        parent: "Process",
+        parent: {
+            name: "Process",
+            displayText: "Process"
+        },
         children: [
             {
                 name: 'ColumnProcess',
@@ -214,7 +256,10 @@ export const assetParentChildMapping = [
         ]
     },
     {
-        parent: "AtlasGlossaryTerm",
+        parent: {
+            name: "AtlasGlossaryTerm",
+            displayText: "Atlas Glossary Term"
+        },
         children: [
             {
                 name: 'Referenceable',

@@ -1397,6 +1397,7 @@ export default function useAssetInfo() {
         attributes(asset)?.powerBIColumnDataType
 
     return {
+        dataTypeCategory,
         attributes,
         title,
         getConnectorImage,

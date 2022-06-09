@@ -51,7 +51,7 @@
                 </template>
                 <div
                     v-if="initialName"
-                    class="flex items-center text-xs"
+                    class="flex items-center text-xs initial-text"
                     :style="`height: ${avatarSize}px`"
                 >
                     {{ initialName }}

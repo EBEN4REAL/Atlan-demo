@@ -11,13 +11,10 @@ import useLineageStore from '~/store/lineage'
 import useGraph from './useGraph'
 import useGetNodes from './useGetNodes'
 import useTransformGraph from './useTransformGraph'
-import {
-    featureEnabledMap,
-    LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE,
-} from '~/composables/labs/labFeatureList'
 
 /** UTILS */
 import {
+    portsTypeNames,
     getFilteredRelations,
     controlCyclicEdges,
     controlGroupedEdges,
@@ -57,7 +54,7 @@ export default async function useComputeGraph({
 
     mergedLineageData.value = { ...lineage.value }
     lineageStore.setMergedLineageData(mergedLineageData.value)
-    lineageStore.setSelectedNodeId(mergedLineageData.value.baseEntityGuid)
+    // lineageStore.setSelectedNodeId(baseEntityGuid.value)
 
     model.value = null
     edges.value = []
@@ -65,18 +62,7 @@ export default async function useComputeGraph({
 
     /* Nodes */
     const portIds = []
-    const isPortTypeName = (typeName) => {
-        const typeNames = [
-            'Column',
-            'TableauDatasourceField',
-            'TableauCalculatedField',
-            // 'LookerField',
-        ]
-        if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE])
-            typeNames.push('LookerField')
-
-        return typeNames.includes(typeName)
-    }
+    const isPortTypeName = (typeName) => portsTypeNames.includes(typeName)
 
     const sameSourceCount = ref({})
     const sameTargetCount = ref({})

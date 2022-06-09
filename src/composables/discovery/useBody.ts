@@ -513,8 +513,8 @@ export function useBody(
                 break
             }
             case '__hasLineage': {
-                const { value, operand } = filterObject
-                if (value) base.filter('exists', 'field', operand)
+                const { value } = filterObject
+                if (value) base.filter('term', '__hasLineage', 'true')
 
                 break
             }

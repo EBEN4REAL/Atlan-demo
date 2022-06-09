@@ -190,7 +190,9 @@ export default function useGraph(graph) {
                                     port.displayText.charAt(0).toUpperCase() +
                                     port.displayText.slice(1).toLowerCase()
 
-                                const dataType = port.attributes?.dataType
+                                const dataType =
+                                    port.attributes?.dataType ||
+                                    port.attributes?.powerBIColumnDataType
                                 const portTypeName = port.typeName
 
                                 const dataTypeComputed =
@@ -198,7 +200,7 @@ export default function useGraph(graph) {
                                         d.type.includes(dataType?.toUpperCase())
                                     )?.imageText
 
-                                const biDataTypeIcon =
+                                const biPortDataTypeIcon =
                                     biPortDataTypeIcons[portTypeName]
 
                                 const isSelectedPort =
@@ -216,7 +218,7 @@ export default function useGraph(graph) {
                                         ${
                                             portDataTypeIcons[
                                                 dataTypeComputed
-                                            ] || biDataTypeIcon
+                                            ] || biPortDataTypeIcon
                                         }
                                         <span title="${text}" class="truncate flex-grow-0 flex-shrink">${text}</span> 
                                     </div>

@@ -379,6 +379,8 @@ export const LineageAttributesPortLevel = [
     // SQL
     'table',
     'view',
+    // BI
+    'powerBIColumnDataType',
 ]
 
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

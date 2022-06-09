@@ -3,6 +3,9 @@ import { useDebounceFn } from '@vueuse/core'
 import { getRequests, actOnRequest } from '~/services/service/requests'
 import { RequestStatus } from '~/types/atlas/requests'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
+import whoami from '~/composables/user/whoami'
+import { useAuthStore } from '~/store/auth'
+import { RequestAttributes } from '~/types/atlas/requests'
 
 export interface RequestListFilters {
     status: RequestStatus
@@ -74,4 +77,30 @@ export function declineRequest(id: string, message?: string) {
         action: 'rejected',
         message,
     })
+}
+
+export function handleAccessForRequestAction(request: RequestAttributes) {
+    let hasAccess = false
+    const { username, groups, user } = whoami()
+
+    const approverGroups = request?.requestApproverGroups || []
+    const approverUsers = request?.requestApproverUsers || []
+    const approverRoles = request?.requestApproverRoles || []
+
+    const authStore = useAuthStore()
+
+    console.log('This is user', user)
+    const rolesArray = authStore?.roles?.map((el) => el?.id)
+
+    approverGroups.forEach((el) => {
+        if (groups.value?.includes(el)) hasAccess = true
+    })
+
+    if (approverUsers.includes(username.value)) hasAccess = true
+
+    approverRoles.forEach((el) => {
+        if (rolesArray?.includes(el)) hasAccess = true
+    })
+
+    return { hasAccess }
 }

@@ -453,6 +453,8 @@
     import CategoryPiece from '@/governance/requests/pieces/category.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { handleAccessForRequestAction } from '~/composables/requests/useRequests'
+
     import {
         typeCopyMapping,
         destinationAttributeMapping,
@@ -518,6 +520,7 @@
             const isLoading = ref(false)
             const loadingApproval = ref(false)
             const updatePopoverActive = ref(false)
+            const hasAccessForAction = ref(false)
 
             const assetText = computed(
                 () =>
@@ -637,6 +640,12 @@
                 () => route?.path?.includes('glossary') || null
             )
 
+            onMounted(() => {
+                const { hasAccess } = handleAccessForRequestAction(item.value)
+
+                hasAccessForAction.value = hasAccess
+            })
+
             return {
                 createdTime,
                 localClassification,
@@ -664,6 +673,7 @@
                 glossaryLabel,
                 capitalizeFirstLetter,
                 updatePopoverActive,
+                hasAccessForAction,
             }
         },
     })

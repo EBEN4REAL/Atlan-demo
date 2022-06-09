@@ -202,6 +202,7 @@
             <div class="pr-5">
                 <div
                     v-if="activeHover === request.id && !updatePopoverActive"
+                    v-auth="[map.APPROVE_REQUEST]"
                     class="flex items-center justify-end font-bold"
                 >
                     <!-- <AtlanIcon
@@ -466,7 +467,12 @@
     import TermPiece from './pieces/term.vue'
     import BMPiece from './pieces/bm.vue'
     import CategoryPiece from './pieces/category.vue'
+
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { handleAccessForRequestAction } from '~/composables/requests/useRequests'
+
+    import map from '~/constant/accessControl/map'
+
     import IconStatus from './iconStatus.vue'
     import Popover from '@/common/popover/assets/index.vue'
     import { RequestAttributes } from '~/types/atlas/requests'
@@ -548,6 +554,8 @@
             const { request } = toRefs(props)
             const updatedBy = ref({})
             const updatePopoverActive = ref(false)
+            const hasAccessForAction = ref(false)
+
             const state = reactive({
                 isLoading: false,
                 isApprovalLoading: false,
@@ -722,6 +730,15 @@
             })
             const createdAt = useTimeAgo(request.value.createdAt)
             const updatedAt = useTimeAgo(timeUpdated.value)
+
+            onMounted(() => {
+                const { hasAccess } = handleAccessForRequestAction(
+                    request.value
+                )
+
+                hasAccessForAction.value = hasAccess
+            })
+
             return {
                 handleApproval,
                 handleRejection,
@@ -741,6 +758,8 @@
                 glossaryLabel,
                 capitalizeFirstLetter,
                 updatePopoverActive,
+                hasAccessForAction,
+                map,
             }
         },
     })

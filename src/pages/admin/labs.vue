@@ -1,13 +1,16 @@
 <template>
     <main class="mx-4 space-y-8 my-9">
         <div class="flex flex-col">
-            <h1 class="text-2xl font-bold text-gray-800">Labs</h1>
+            <h1 class="text-3xl">Labs</h1>
             <p class="text-base font-normal text-gray-600">
                 Manage your workspace preferences
             </p>
         </div>
 
-        <div class="flex flex-row w-full border rounded-lg">
+        <div
+            class="flex flex-row w-full border rounded-lg"
+            :style="{ height: '576px' }"
+        >
             <preferences
                 :feature-list="featureList"
                 :feature-enabled-map="featureEnabledMap"

@@ -1,18 +1,18 @@
 <template>
     <div
-        class="flex flex-col items-center flex-grow px-12 pt-10 pb-4 text-gray-800 bg-gray-100"
+        class="flex flex-col items-center flex-grow px-12 pt-20 pb-4 text-gray-800 bg-gray-100"
         :style="{
             width: '355px',
         }"
     >
-        <h2 class="text-lg text-center">
+        <h2 class="text-base text-center">
             {{
                 feature.description ||
                 'Preference preview will appear over here'
             }}
         </h2>
 
-        <div class="flex flex-col w-full h-56 mt-8 preview-illustration">
+        <div class="flex flex-col w-full h-56 mt-10 preview-illustration">
             <div v-if="feature.key" class="preview-box">
                 <img class="w-full h-full" :src="feature.illustration" alt="" />
             </div>
@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <div class="mt-20 text-sm text-center text-gray-600">
+        <div class="mt-auto text-sm text-center text-gray-500">
             💡 Hover on a preference to learn more
         </div>
     </div>

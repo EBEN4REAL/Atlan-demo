@@ -264,6 +264,20 @@
                         />
                     </div>
                 </div>
+
+                <div
+                    v-else-if="
+                        activeHover === request.id &&
+                        request.status === 'active' &&
+                        !hasAccessForAction
+                    "
+                    v-auth="[map.APPROVE_REQUEST]"
+                >
+                    <p class="text-sm">
+                        You don't have access to review this request
+                    </p>
+                </div>
+
                 <div v-else class="flex justify-end">
                     <div class="flex items-center justify-end gap-x-1">
                         <Avatar

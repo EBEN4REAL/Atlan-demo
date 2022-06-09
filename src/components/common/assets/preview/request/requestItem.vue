@@ -19,6 +19,7 @@
                             ]
                         }}
                     </div>
+
                     <div
                         v-if="
                             item.status === 'active' &&
@@ -49,6 +50,17 @@
                         >
                             <span class="text-xs text-red-500"> Reject </span>
                         </RequestDropdown>
+                    </div>
+                    <div
+                        v-if="
+                            item.status === 'active' &&
+                            !updatePopoverActive &&
+                            !hasAccessForAction
+                        "
+                        v-auth="[map.APPROVE_REQUEST]"
+                        class="flex -mr-1.5 p-1 hover-action linear-gradient rounded-sm"
+                    >
+                        <span class="ml-auto text-sm">No review access</span>
                     </div>
                     <!-- hover-reject-approve -->
                     <div class="flex items-center justify-end ml-auto">

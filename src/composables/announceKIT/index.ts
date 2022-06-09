@@ -1,8 +1,12 @@
 import whoami from '~/composables/user/whoami'
-import { signJWT } from '~/modules/jose'
+import { signJWT } from '~/composables/utils/jose'
 import { getEnv } from '~/modules/__env'
 
-export const initAnnounceKit = async (target: string, widgetID: string, name: string) => {
+export const initAnnounceKit = async (
+    target: string,
+    widgetID: string,
+    name: string
+) => {
     const { username, email, userId } = whoami()
     const data = {
         id: userId.value,

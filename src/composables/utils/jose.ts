@@ -5,17 +5,22 @@
 
 import * as jose from 'jose'
 
-export const signJWT = async (config: { data: Object, secretKey: string, expirationTime?: string, algorithm?: string }) => {
+export const signJWT = async (config: {
+    data: Object
+    secretKey: string
+    expirationTime?: string
+    algorithm?: string
+}) => {
     const { data, secretKey, expirationTime, algorithm } = config
 
-    const uint8array = new TextEncoder("utf-8").encode(secretKey)
+    const uint8array = new TextEncoder('utf-8').encode(secretKey)
     // const decodedSecret = new TextDecoder("utf-8").decode(uint8array);
     const jwt = await new jose.SignJWT({ ...data })
         .setProtectedHeader({ alg: algorithm || 'ES256' })
         .setExpirationTime(expirationTime || '2h')
         .sign(uint8array)
 
-    console.log("jwt", jwt)
+    console.log('jwt', jwt)
 
     // const { payload, protectedHeader } = await jose.jwtVerify(jwt, uint8array)
 
@@ -40,5 +45,3 @@ export const signJWT = async (config: { data: Object, secretKey: string, expirat
 //     console.log(token)
 //     return sign
 // }
-
-

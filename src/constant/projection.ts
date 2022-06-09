@@ -158,6 +158,7 @@ export const AssetAttributes = [
     'powerBITableColumnCount',
     'powerBITableMeasureCount',
     'powerBIMeasureExpression',
+    'powerBIColumnDataType',
 ]
 
 export const SQLAttributes = [
@@ -297,6 +298,7 @@ export const MinimalAttributes = [
     's3BucketName',
     'powerBITableColumnCount',
     'powerBITableMeasureCount',
+    'powerBIColumnDataType',
 ]
 
 export const BasicSearchAttributes = [

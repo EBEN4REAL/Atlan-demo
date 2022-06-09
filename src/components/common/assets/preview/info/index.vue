@@ -310,6 +310,24 @@
                     </div>
                 </div>
             </div>
+            <div
+                v-if="selectedAsset.typeName?.toLowerCase() === 'powerbicolumn'"
+                class="flex flex-col px-5 text-sm"
+            >
+                <span class="mb-1 text-gray-500">Data Type</span>
+
+                <div class="flex items-center text-gray-700 gap-x-1">
+                    <div class="flex items-center">
+                        <component
+                            :is="powerBIColumnDataTypeImage(selectedAsset)"
+                            class="h-4 mr-0.5 mb-0.5"
+                        />
+                        <span class="mr-1 uppercase">{{
+                            powerBIColumnDataType(selectedAsset)
+                        }}</span>
+                    </div>
+                </div>
+            </div>
 
             <div
                 v-if="
@@ -1345,6 +1363,8 @@
                 dataStudioAssetOwner,
                 isTrashedDataStudioAsset,
                 powerBIMeasureExpression,
+                powerBIColumnDataType,
+                powerBIColumnDataTypeImage,
             } = useAssetInfo()
 
             const {
@@ -1565,6 +1585,8 @@
                 dataStudioAssetOwner,
                 isTrashedDataStudioAsset,
                 powerBIMeasureExpression,
+                powerBIColumnDataType,
+                powerBIColumnDataTypeImage,
             }
         },
     })

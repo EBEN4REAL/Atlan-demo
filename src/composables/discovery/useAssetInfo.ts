@@ -622,21 +622,23 @@ export default function useAssetInfo() {
 
     const dataType = (asset: assetInterface) => attributes(asset)?.dataType
 
-    const dataTypeCategory = (asset: assetInterface) => {
-        return dataTypeCategoryList.find((item) =>
-            item.type.some(
-                (i) =>
-                    i.toLowerCase() ===
-                    attributes(asset)?.dataType?.toLowerCase()
-            )
-        )
-    }
+    const dataTypeCategory = (asset: assetInterface) => {}
 
     const dataTypeCategoryLabel = (asset: assetInterface) =>
         dataTypeCategory(asset)?.label
 
     const dataTypeCategoryImage = (asset: assetInterface) => {
         return dataTypeCategory(asset)?.image
+    }
+
+    const powerBIColumnDataTypeImage = (asset: assetInterface) => {
+        return dataTypeCategoryList.find((item) =>
+            item.type.some(
+                (i) =>
+                    i.toLowerCase() ===
+                    attributes(asset)?.powerBIColumnDataType?.toLowerCase()
+            )
+        )?.image
     }
 
     const compiledQuery = (asset: assetInterface) => {
@@ -1391,6 +1393,9 @@ export default function useAssetInfo() {
     const powerBIMeasureExpression = (asset: assetInterface) =>
         attributes(asset)?.powerBIMeasureExpression || ''
 
+    const powerBIColumnDataType = (asset: assetInterface) =>
+        attributes(asset)?.powerBIColumnDataType
+
     return {
         attributes,
         title,
@@ -1582,5 +1587,7 @@ export default function useAssetInfo() {
         powerBITableColumnCount,
         powerBITableMeasureCount,
         powerBIMeasureExpression,
+        powerBIColumnDataType,
+        powerBIColumnDataTypeImage,
     }
 }

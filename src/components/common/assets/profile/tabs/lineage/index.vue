@@ -163,11 +163,15 @@
 <style lang="less" scoped>
     .max-collapsed-width {
         max-width: calc(100vw - 480px);
-        transition: max-width 0.3s ease-in-out;
+        transition-property: all;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
     }
 
     .max-full-width {
         max-width: calc(100vw - 60px);
-        transition: max-width 0.3s ease-in-out;
+        transition-property: all;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
     }
 </style>

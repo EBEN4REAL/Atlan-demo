@@ -34,7 +34,7 @@
                         @change="handleSelectedChange"
                     ></ClassificationFacet>
                    
-                    <div class="absolute w-full p-2 mx-auto mt-1 mt-5 bg-white rounded-md mix-blend-normal" :style="{background: '#F4F6FD', top:  !editPermission && role !== 'Guest' && parentAssetChildren?.length > 0  ?  '200px !important' : !editPermission && role !== 'Guest' ? '200px !important'  :   '150px !important'}" style="box-shadow: 0px 5px 16px rgba(0, 0, 0, 0.1);"  
+                    <div class="absolute w-full p-2 mx-auto mt-1 mt-5 bg-white rounded-md mix-blend-normal" :style="{background: '#F4F6FD', top:  !editPermission && role !== 'Guest' && parentAssetChildren?.length > 0  ?  '240px !important' : parentAssetChildren?.length > 0 ? '190px !important'  :   '150px !important'}" style="box-shadow: 0px 5px 16px rgba(0, 0, 0, 0.1);"  
                         v-if="parentAssetChildren?.length" >
                         <div class="flex ">
                             <div class="mr-2">
@@ -55,7 +55,7 @@
                     </div>
                     <div class="absolute z-10 w-10/12 p-2 pt-3 mx-auto mt-6 text-white rounded-md left-5"  style="background: #2A2F45;" 
                         v-if="showChildrenAsset && parentAssetChildren?.length"
-                        :style="[{top:  !editPermission && role !== 'Guest' && parentAssetChildren?.length > 0  ?  '280px !important' : !editPermission && role !== 'Guest' ? '295px !important'  :   '230px !important'}]">
+                        :style="[{top:  !editPermission && role !== 'Guest' && parentAssetChildren?.length > 0  ?  '320px !important' : parentAssetChildren?.length > 0 ? '270px !important'  :   '230px !important'}]">
                         {{parentAssetChildren}}
                     </div>
                 </div>
@@ -301,7 +301,7 @@
             }
 
             const handleDeleteClassification = (name) => {
-                localValue.value = localValue.value.filter(
+               localValue.value = localValue.value.filter(
                     (i) => i.typeName !== name || isPropagated(i)
                 )
                 selectedValue.value = {
@@ -310,6 +310,7 @@
                         .map((j) => j.typeName),
                 }
                 handleChange()
+                
             }
 
             const handleSelectedChange = () => {

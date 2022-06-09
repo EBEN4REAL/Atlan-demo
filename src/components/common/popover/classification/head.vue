@@ -46,9 +46,11 @@
             class="flex gap-1 mt-1.5 text-sm content-center items-center text-gray-500 flex-wrap break-all"
         >
             
-            Propagated via <AtlanIcon icon="Term" />
+            Propagated via <AtlanIcon :icon="propagatedViaIcon" />
             <span class="text-gray-700 cursor-pointer" >
-                {{ computeDisplayText(propagatedVia) }}
+                <a :href="`/assets/${propagatedVia.guid.trim() + ''}`" target="_blank" >
+                    {{ computeDisplayText(propagatedVia) }}
+                </a>
             </span>
             {{ linkedAt }}
         </div>

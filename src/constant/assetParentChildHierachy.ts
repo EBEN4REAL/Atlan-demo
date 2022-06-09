@@ -6,32 +6,61 @@ export const assetParentChildHierachy = [
             "View",
             "MaterialisedView",
             "Column",
-            "Procedures",
+            "TablePartition",
+            "Schema"
+        ]
+    },
+    {
+        parent: "Schema",
+        children: [
+            "Table",
+            "View",
+            "MaterialisedView",
+            "Column",
             "TablePartition",
 
         ]
     },
     {
+        parent: "Table",
+        children: [
+            "TablePartition",
+            "Column",
+        ]
+    },
+    {
+        parent: "TablePartition",
+        children: [
+            "Column",
+        ]
+    },
+    {
         parent: "SalesforceOrganization",
         children: [
-            'SalesforceReport',
+            "SalesforceReport",
             "SalesforceDashboard",
             "SalesforceObject",
             "SalesforceField"
         ]
     },
     {
-        parent: "PowerBiDataset",
+        parent: "SalesforceObject",
         children: [
-            'PowerBiTile',
-            "PowerBiDataFlow",
-            "PowerBiReport",
+            "SalesforceField"
+        ]
+    },
+    {
+        parent: "PowerBIDataset",
+        children: [
+            'PowerBITile',
+            "PowerBIDataflow",
+            "PowerBIReport",
         ]
     },
     {
         parent: "Asset",
         children: [
-            'ReadMe',
+            'Readme',
             "Link",
         ]
     },
@@ -50,7 +79,13 @@ export const assetParentChildHierachy = [
         ]
     },
     {
-        parent: "GlossaryTerm",
+        parent: "Process",
+        children: [
+            "ColumnProcess",
+        ]
+    },
+    {
+        parent: "AtlasGlossaryTerm",
         children: [
             'Referenceable',
         ]

@@ -12,7 +12,7 @@
             }}
         </h2>
 
-        <div class="flex flex-col w-full h-56 mt-10 preview-illustration">
+        <div class="flex flex-col h-56 mt-10 preview-illustration">
             <div v-if="feature.key" class="preview-box">
                 <img class="w-full h-full" :src="feature.illustration" alt="" />
             </div>
@@ -56,5 +56,9 @@
     .preview-box {
         box-shadow: 0px 8px 24px rgba(25, 32, 56, 0.04);
         @apply flex flex-col items-center justify-center w-full h-full overflow-hidden bg-white rounded-md;
+    }
+    .preview-illustration {
+        width: 100%;
+        max-width: 355px;
     }
 </style>

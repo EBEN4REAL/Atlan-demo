@@ -126,11 +126,10 @@
             />
 
             <LineError
-                :queryErrorObj="queryErrorObj"
-                :errorDecorations="errorDecorations"
                 v-else-if="
                     isQueryRunning === 'error' && haveLineNumber(queryErrorObj)
                 "
+                :query-error-obj="queryErrorObj"
                 :error-decorations="errorDecorations"
             />
         </div>

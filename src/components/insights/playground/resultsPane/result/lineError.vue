@@ -217,6 +217,7 @@
                 const t = lineDesc.split(' ')
 
                 let html = ''
+            
 
                 if (pos.value?.endLine) {
                     if (Number(lineIndex) === Number(pos.value.endLine)) {
@@ -224,28 +225,66 @@
                         t.forEach((token) => {
                             if (token !== '') {
                                 const color = getTokenColor(token)
-                                html += `<div style="color:${color}" >`
+                                html += `<div style="color:${color}" class="text_">`
                                 const chars = token.split('')
-                                chars.forEach((char, z) => {
-                                    if (
-                                        tokensTillNow.length + z + 1 >=
-                                            Number(pos.value.startColumn) &&
-                                        tokensTillNow.length + z + 1 <=
-                                            Number(pos.value.endColumn)
-                                    ) {
-                                        if (char !== ' ') {
-                                            html += `<div style="" class="light_creme text_">${char}</div>`
-                                        } else {
-                                            html += `<div style="" class="light_creme text_">&nbsp;</div>`
-                                        }
+                                let i = 0
+                                
+                                for(i; tokensTillNow.length + i + 1<Number(pos.value.startColumn) && i<chars.length; i +=1){
+                                    const char = chars[i];
+                                    
+                                    if (char !== ' ') {
+                                        html += char
                                     } else {
-                                        if (char !== ' ') {
-                                            html += `<div style=""  class="text_">${char}</div>`
-                                        } else {
-                                            html += `<div style="" class="text_">&nbsp;</div>`
-                                        }
+                                        html += '&nbsp;'
                                     }
-                                })
+                                }
+
+                                html += '<div class=" squiggly-text text_">'
+
+                                for(i; tokensTillNow.length + i + 1<Number(pos.value.endColumn) && i<chars.length; i +=1){
+                                    const char = chars[i];
+
+                                    if (char !== ' ') {
+                                        html += char
+                                    } else {
+                                        html += '&nbsp;'
+                                    }
+                                }
+
+                                html += '</div>'
+
+                                for(i; i<chars.length; i +=1){
+                                    const char = chars[i];
+
+                                    if (char !== ' ') {
+                                        html += char
+                                    } else {
+                                        html += '&nbsp;'
+                                    }
+                                }
+
+                                // chars.forEach((char, z) => {
+                                    
+                                //     if (
+                                //         tokensTillNow.length + z + 1 >=
+                                //             Number(pos.value.startColumn) &&
+                                //         tokensTillNow.length + z + 1 <=
+                                //             Number(pos.value.endColumn)
+                                //     ) {
+                                //         if (char !== ' ') {
+                                //             html += `<div class="light_creme squiggly-text text_">${char}</div>`
+                                //         } else {
+                                //             html += `<div style="" class="text_">&nbsp;</div>`
+                                //         }
+                                //     } else {
+                                //         if (char !== ' ') {
+                                //             html += `<div style=""  class="text_">${char}</div>`
+                                //         } else {
+                                //             html += `<div style="" class="text_">&nbsp;</div>`
+                                //         }
+                                //     }
+                                // })
+
                                 html += `<div style="" class="text_">&nbsp;</div>`
                                 html += `</div>`
                                 tokensTillNow += ' '
@@ -256,7 +295,7 @@
                                     tokensTillNow.length <=
                                         Number(pos.value.endColumn)
                                 ) {
-                                    html += `<div style="" class="light_creme text_">&nbsp;</div>`
+                                    html += `<div style="" class="squiggly-text text_">&nbsp;</div>`
                                 } else {
                                     html += `<div style="" class="text_">&nbsp;</div>`
                                 }
@@ -265,8 +304,8 @@
                             tokensTillNow += token
                         })
                     } else {
-                        console.log('else', pos.value?.endLine)
-                        t.forEach((token, i) => {
+
+                        t.forEach((token) => {
                             if (token !== '') {
                                 const color = getTokenColor(token)
                                 html += `<div class="keep-spaces text_" style="color:${color}">${token}&nbsp;</div>`
@@ -280,29 +319,66 @@
                     if (Number(lineIndex) === Number(pos.value.startLine)) {
                         let tokensTillNow = ''
                         t.forEach((token) => {
-                            console.log(t, 'tokens', tokensTillNow)
+
                             if (token !== '') {
                                 const chars = token.split('')
-                                chars.forEach((char, z) => {
-                                    if (
-                                        tokensTillNow.length + z + 1 >=
-                                            Number(pos.value.startColumn) &&
-                                        tokensTillNow.length + z + 1 <=
-                                            tokensTillNow.length + token.length
-                                    ) {
-                                        if (char !== ' ') {
-                                            html += `<div style="" class="text_ light_creme">${char}</div>`
-                                        } else {
-                                            html += `<div style="" class="text_ light_creme">&nbsp;</div>`
-                                        }
+                                let i = 0
+                                
+                                for(i; tokensTillNow.length + i + 1<Number(pos.value.startColumn) && i<chars.length; i +=1){
+                                    const char = chars[i];
+                                    
+                                    if (char !== ' ') {
+                                        html += char
                                     } else {
-                                        if (char !== ' ') {
-                                            html += `<div class="text_" style="" >${char}</div>`
-                                        } else {
-                                            html += `<div class="text_" style="" >&nbsp;</div>`
-                                        }
+                                        html += '&nbsp;'
                                     }
-                                })
+                                }
+
+                                html += '<div class="light_creme squiggly-text text_">'
+
+                                for(i; tokensTillNow.length + i + 1>=Number(pos.value.startColumn) && i<chars.length; i +=1){
+                                    const char = chars[i];
+
+                                    if (char !== ' ') {
+                                        html += char
+                                    } else {
+                                        html += '&nbsp;'
+                                    }
+                                }
+
+                                html += '</div>'
+
+                                for(i; i<chars.length; i +=1){
+                                    const char = chars[i];
+
+                                    if (char !== ' ') {
+                                        html += char
+                                    } else {
+                                        html += '&nbsp;'
+                                    }
+                                }
+
+                                // chars.forEach((char, z) => {
+                                //     if (
+                                //         tokensTillNow.length + z + 1 >=
+                                //             Number(pos.value.startColumn) &&
+                                //         tokensTillNow.length + z + 1 <=
+                                //             tokensTillNow.length + token.length
+                                //     ) {
+                                //         if (char !== ' ') {
+                                //             html += `<div style="" class="text_ squiggly-text">${char}</div>`
+                                //         } else {
+                                //             html += `<div style="" class="text_ squiggly-text">&nbsp;</div>`
+                                //         }
+                                //     } else {
+                                //         if (char !== ' ') {
+                                //             html += `<div class="text_" style="" >${char}</div>`
+                                //         } else {
+                                //             html += `<div class="text_" style="" >&nbsp;</div>`
+                                //         }
+                                //     }
+                                // })
+                                
                                 html += `<div style="" class="text_">&nbsp;</div>`
                                 tokensTillNow += ' '
                             } else {
@@ -323,6 +399,10 @@
                     }
                 }
                 return html
+            }
+
+            const processErrorMessage = () => {
+
             }
 
             const monacoI = toRaw(monacoInstance.value)
@@ -349,6 +429,7 @@
                 generateHTMLFromLine,
                 renderedLines,
                 queryErrorObj,
+                processErrorMessage
             }
         },
     })
@@ -368,9 +449,6 @@
     }
 </style>
 <style lang="less">
-    .light_creme {
-        background-color: #fceee8;
-    }
     .edtiorErrorDotDecoration {
         background: #cf592e;
         position: absolute !important;
@@ -384,6 +462,9 @@
     }
     .text_ {
         display: inline-block;
+    }
+    .squiggly-text {
+        text-decoration: red wavy underline;
     }
     .noselect {
         -webkit-touch-callout: none; /* iOS Safari */

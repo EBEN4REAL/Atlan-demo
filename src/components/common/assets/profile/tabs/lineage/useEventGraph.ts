@@ -935,8 +935,8 @@ export default function useEventGraph({
         } else addLineagePorts(nodesForPortLineage, portLineage)
 
         if (isPortEdgesPresent()) {
-            const parentNode = getPortNode(portId)
-            fit(parentNode.id)
+            // const parentNode = getPortNode(portId)
+            // fit(parentNode.id)
         }
 
         controlPortsLoader(node, false, 'item')
@@ -1924,8 +1924,7 @@ export default function useEventGraph({
 
             selectNode(newVal)
 
-            const cell = graph.value.getCellById(newVal)
-            graph.value.scrollToCell(cell, { animation: { duration: 600 } })
+            fit(newVal)
             guidToSelectOnGraph.value = ''
         }
     })

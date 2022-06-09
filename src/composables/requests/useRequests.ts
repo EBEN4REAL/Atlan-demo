@@ -89,7 +89,6 @@ export function handleAccessForRequestAction(request: RequestAttributes) {
 
     const authStore = useAuthStore()
 
-    console.log('This is user', user)
     const rolesArray = authStore?.roles?.map((el) => el?.id)
 
     approverGroups.forEach((el) => {

@@ -20,7 +20,11 @@
                         }}
                     </div>
                     <div
-                        v-if="item.status === 'active' && !updatePopoverActive"
+                        v-if="
+                            item.status === 'active' &&
+                            !updatePopoverActive &&
+                            hasAccessForAction
+                        "
                         v-auth="[map.APPROVE_REQUEST]"
                         class="flex -mr-1.5 hover-action linear-gradient"
                     >
@@ -344,7 +348,9 @@
                     :loading="isLoading"
                     :is-approval-loading="loadingApproval"
                     :placement="`topRight`"
-                    :show-actions="item.status === 'active'"
+                    :show-actions="
+                        item.status === 'active' && hasAccessForAction
+                    "
                     @switch-update-popover="
                         (val) => {
                             updatePopoverActive = val

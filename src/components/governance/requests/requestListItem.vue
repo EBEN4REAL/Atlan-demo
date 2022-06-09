@@ -173,6 +173,7 @@
                 :value-array="request?.destinationValueArray"
                 :loading="state.isLoading"
                 :is-approval-loading="state.isApprovalLoading"
+                :has-access="hasAccessForAction"
                 @accept="(message) => handleApproval(message || '')"
                 @reject="(message) => handleRejection(message || '')"
                 @switch-popover="
@@ -201,7 +202,12 @@
             <!-- <div v-else-if="selected"> -->
             <div class="pr-5">
                 <div
-                    v-if="activeHover === request.id && !updatePopoverActive"
+                    v-if="
+                        activeHover === request.id &&
+                        request.status === 'active' &&
+                        !updatePopoverActive &&
+                        hasAccessForAction
+                    "
                     v-auth="[map.APPROVE_REQUEST]"
                     class="flex items-center justify-end font-bold"
                 >

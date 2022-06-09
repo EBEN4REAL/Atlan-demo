@@ -405,7 +405,7 @@ export function useSavedQuery(
                         connectionQualifiedName,
                         collectionQualifiedName,
                         description,
-                        ownerUsers: [username.value],
+                        // __modifiedBy:username.value,
                         tenantId: 'default',
                         rawQuery,
                         variablesSchemaBase64,

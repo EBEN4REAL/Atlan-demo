@@ -45,6 +45,7 @@ export const getNodeTypeText = {
     View: 'View',
     MaterialisedView: 'MaterialisedView',
     // PowerBI
+    PowerBITable: 'Table',
     PowerBIDashboard: 'Dashboard',
     PowerBIDataflow: 'Dataflow',
     PowerBIDataset: 'Dataset',
@@ -105,6 +106,7 @@ export const portsTypeNames = [
     'Column',
     'TableauDatasourceField',
     'TableauCalculatedField',
+    'PowerBIColumn',
 ]
 if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE])
     portsTypeNames.push('LookerField')
@@ -115,6 +117,7 @@ export const nodeWithPorts = [
     'View',
     'MaterialisedView',
     'TableauDatasource',
+    'PowerBITable',
 ]
 if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
     nodeWithPorts.push('LookerExplore')
@@ -127,6 +130,7 @@ export const nodePortsLabelMap = {
     View: 'column',
     MaterialisedView: 'column',
     TableauDatasource: 'field',
+    PowerBITable: 'column',
 }
 if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
     nodePortsLabelMap.LookerExplore = 'field'

@@ -46,7 +46,7 @@
             class="flex gap-1 mt-1.5 text-sm content-center items-center text-gray-500 flex-wrap break-all"
         >
             
-            Propagated via <AtlanIcon :icon="propagatedViaIcon" />
+            Propagated via <AtlanIcon :icon="getPropagatedViaIcon(propagatedVia)" />
             <span class="text-gray-700 cursor-pointer hover:text-primary" @click="handleOpenProfile(propagatedVia)" >
                 {{ computeDisplayText(propagatedVia) }}
             </span>
@@ -56,7 +56,7 @@
             v-else-if="isPropagated && propagatedVia?.length"
             class="flex gap-1 mt-1.5 text-sm content-center items-center text-gray-500 flex-wrap break-all"
         >
-            Propagated via <AtlanIcon :icon="detailedPropagatedViaIcon(propagatedVia[0])" />
+            Propagated via <AtlanIcon :icon="getPropagatedViaIcon(propagatedVia[0])" />
             <span class="text-gray-700 cursor-pointer hover:text-primary" @click="() => propagatedVia?.length ?  handleOpenProfile(propagatedVia[0]) : handleOpenProfile(propagatedVia)" >
                 {{ computeDisplayText(propagatedVia) }}
             </span>
@@ -68,7 +68,7 @@
                             <div class="mr-1">
                                 <AtlanIcon
                                     class="text-gray-500"
-                                    :icon="detailedPropagatedViaIcon(pv)"
+                                    :icon="getPropagatedViaIcon(pv)"
                                     
                                 />
                             </div>
@@ -183,7 +183,7 @@
                 return propagatedViaIcon
             }
 
-            const detailedPropagatedViaIcon = progatedViaObj =>  propagateByIcon(progatedViaObj)
+            const getPropagatedViaIcon = progatedViaObj =>  propagateByIcon(progatedViaObj)
 
             const handleOpenProfile = (asset) => {
                 window.open(getProfilePath(asset), '_blank')
@@ -199,7 +199,7 @@
                 isLoading,
                 computeDisplayText,
                 progatedIcon,
-                detailedPropagatedViaIcon,
+                getPropagatedViaIcon,
                 remainingClassifications,
                 extendedText,
                 handleOpenProfile

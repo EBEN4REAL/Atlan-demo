@@ -46,6 +46,7 @@ export default function useEventGraph({
     nodes,
     edges,
     showDrawer,
+    groupedProcessIds,
     onSelectAsset,
     onCloseDrawer,
     addSubGraph,
@@ -1927,5 +1928,9 @@ export default function useEventGraph({
             fit(newVal)
             guidToSelectOnGraph.value = ''
         }
+    })
+
+    watch(groupedProcessIds, (newVal) => {
+        if (!newVal.length) resetState()
     })
 }

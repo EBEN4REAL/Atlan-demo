@@ -54,7 +54,10 @@
         />
 
         <!-- GroupProcessesDrawer -->
-        <GroupProcessesDrawer :grouped-process-ids="groupedProcessIds" />
+        <GroupProcessesDrawer
+            :grouped-process-ids="groupedProcessIds"
+            @close-drawer="handleCloseProcessDrawer"
+        />
     </div>
 </template>
 
@@ -150,8 +153,7 @@
             const onSelectAsset = (item, selectOnGraph = false) => {
                 const { isGroupEdge, processIds } = item || {}
 
-                if (typeof control === 'function') {
-                    // TODO: && !isGroupEdge
+                if (typeof control === 'function' && !isGroupEdge) {
                     control('selectedAsset', item)
                     if (item?.guid) {
                         graphWidth.value = window.outerWidth - 420
@@ -174,6 +176,11 @@
                 graphWidth.value = window.outerWidth
                 graph.value.resize(graphWidth.value, graphHeight.value)
                 showDrawer.value = false
+                onSelectAsset(null)
+            }
+            const handleCloseProcessDrawer = () => {
+                console.log('closing drawer')
+                groupedProcessIds.value = []
             }
 
             // handleMinimapAction
@@ -228,6 +235,7 @@
                     nodes,
                     edges,
                     showDrawer,
+                    groupedProcessIds,
                     onSelectAsset,
                     onCloseDrawer,
                     addSubGraph,
@@ -270,6 +278,7 @@
                 onCloseDrawer,
                 handleZoom,
                 groupedProcessIds,
+                handleCloseProcessDrawer,
                 handleMinimapAction,
                 showDrawer,
             }

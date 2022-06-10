@@ -46,8 +46,17 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, toRefs, provide, computed } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        toRefs,
+        provide,
+        computed,
+        inject,
+    } from 'vue'
     import AssetPreview from '@/common/assets/preview/index.vue'
+    import DrawerNavigator from '@/common/assets/profile/tabs/lineage/drawerNavigator.vue'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import {
         AssetAttributes,
@@ -61,6 +70,7 @@
         name: 'AssetDrawer',
         components: {
             AssetPreview,
+            DrawerNavigator,
         },
         props: {
             data: {
@@ -120,6 +130,7 @@
             const visible = ref(false)
             const drawerData = ref(data.value)
             const deferredLoading = ref(false)
+            const showDrawerNavigator = inject('showDrawerNavigator', false)
 
             const updateDrawerList = (asset) => {
                 drawerData.value = asset
@@ -200,7 +211,13 @@
                 } else deferredLoading.value = isLoading.value
             })
 
-            return { visible, drawerData, deferredLoading, isLoading }
+            return {
+                visible,
+                drawerData,
+                deferredLoading,
+                isLoading,
+                showDrawerNavigator,
+            }
         },
     })
 </script>

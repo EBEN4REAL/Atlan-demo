@@ -251,13 +251,15 @@
                 
                 const findAssetType = assetTypeList.find(asset => asset?.id === selectedAsset.value?.typeName)
                 assetType.value = findAssetType?.fullLabel ? findAssetType?.fullLabel : findAssetType?.label 
+                if(findAssetType?.children?.length) {
+                    parentAssetChildren.value = findAssetType.children
+                        .map((type) => {
+                            const mappedObj =  assetTypeList
+                                .find(ass => ass.id === type)
+                                    return mappedObj?.fullLabel ?? mappedObj?.label
+                                }).join(", ")
+                }
                 
-                parentAssetChildren.value = findAssetType.children
-                    .map((type) => {
-                        const mappedObj =  assetTypeList
-                            .find(ass => ass.id === type)
-                                return mappedObj?.fullLabel ?? mappedObj?.label
-                            }).join(", ")
             }
             
             const localValue = ref(modelValue.value)

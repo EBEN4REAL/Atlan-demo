@@ -310,6 +310,24 @@
                     </div>
                 </div>
             </div>
+            <div
+                v-if="selectedAsset.typeName?.toLowerCase() === 'powerbicolumn'"
+                class="flex flex-col px-5 text-sm"
+            >
+                <span class="mb-1 text-gray-500">Data Type</span>
+
+                <div class="flex items-center text-gray-700 gap-x-1">
+                    <div class="flex items-center">
+                        <component
+                            :is="powerBIColumnDataTypeImage(selectedAsset)"
+                            class="h-4 mr-0.5 mb-0.5"
+                        />
+                        <span class="mr-1 uppercase">{{
+                            powerBIColumnDataType(selectedAsset)
+                        }}</span>
+                    </div>
+                </div>
+            </div>
 
             <div
                 v-if="
@@ -422,6 +440,7 @@
                             'LookerQuery',
                             'SalesforceOrganization',
                             'S3Bucket',
+                            'DataStudioAsset',
                         ].includes(selectedAsset?.typeName)) ||
                     ['Schema', 'ColumnProcess', 'BIProcess'].includes(
                         selectedAsset?.typeName
@@ -602,6 +621,61 @@
                     <span class="text-gray-700"
                         >{{ s3ObjectSize(selectedAsset) }}B</span
                     >
+                </div>
+            </div>
+
+            <div
+                v-if="['DataStudioAsset'].includes(selectedAsset.typeName)"
+                class="flex flex-col px-5 gap-y-4"
+            >
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Asset Type</span>
+
+                    <span class="text-gray-700">{{
+                        dataStudioAssetType(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Asset Title</span>
+
+                    <span class="text-gray-700">{{
+                        dataStudioAssetTitle(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Asset Owner</span>
+
+                    <span class="text-gray-700">{{
+                        dataStudioAssetOwner(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500"
+                        >Trashed Data Studio Asset</span
+                    >
+
+                    <span class="text-gray-700">{{
+                        isTrashedDataStudioAsset(selectedAsset) ? 'Yes' : 'No'
+                    }}</span>
+                </div>
+            </div>
+
+            <div
+                v-if="
+                    ['PowerBIMeasure'].includes(selectedAsset?.typeName) &&
+                    powerBIMeasureExpression(selectedAsset) &&
+                    powerBIMeasureExpression(selectedAsset) !== ''
+                "
+                class="flex px-5"
+            >
+                <div class="flex flex-col w-full text-sm">
+                    <span class="mb-1 text-sm text-gray-500"
+                        >Measure Expression</span
+                    >
+                    <DetailsContainer
+                        :text="powerBIMeasureExpression(selectedAsset)"
+                        class="rounded-lg"
+                    />
                 </div>
             </div>
 
@@ -1322,6 +1396,13 @@
                 s3ObjectCount,
                 s3ObjectContentType,
                 readmeGuid,
+                dataStudioAssetType,
+                dataStudioAssetTitle,
+                dataStudioAssetOwner,
+                isTrashedDataStudioAsset,
+                powerBIMeasureExpression,
+                powerBIColumnDataType,
+                powerBIColumnDataTypeImage,
             } = useAssetInfo()
 
             const {
@@ -1542,6 +1623,13 @@
                 aggregationMap,
                 handleApplySuggestion,
                 readmeGuid,
+                dataStudioAssetType,
+                dataStudioAssetTitle,
+                dataStudioAssetOwner,
+                isTrashedDataStudioAsset,
+                powerBIMeasureExpression,
+                powerBIColumnDataType,
+                powerBIColumnDataTypeImage,
                 setAllAdmins,
             }
         },

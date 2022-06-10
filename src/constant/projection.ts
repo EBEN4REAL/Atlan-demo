@@ -148,6 +148,18 @@ export const AssetAttributes = [
     'awsOwnerName',
     'awsTags',
     's3ObjectVersionId',
+    'googleService',
+    'googleProjectName',
+    'googleProjectId',
+    'googleProjectNumber',
+    'dataStudioAssetType',
+    'dataStudioAssetTitle',
+    'dataStudioAssetOwner',
+    'isTrashedDataStudioAsset',
+    'powerBITableColumnCount',
+    'powerBITableMeasureCount',
+    'powerBIMeasureExpression',
+    'powerBIColumnDataType',
 ]
 
 export const SQLAttributes = [
@@ -285,6 +297,9 @@ export const MinimalAttributes = [
     'bucket',
     's3ObjectCount',
     's3BucketName',
+    'powerBITableColumnCount',
+    'powerBITableMeasureCount',
+    'powerBIColumnDataType',
 ]
 
 export const BasicSearchAttributes = [

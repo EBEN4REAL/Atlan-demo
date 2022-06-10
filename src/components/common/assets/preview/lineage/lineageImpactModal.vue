@@ -319,7 +319,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import useLineageService from '~/services/meta/lineage/lineage_service'
-    import { AssetAttributes } from '~/constant/projection'
+    import { LineageImpactedAssetsAttributes } from '~/constant/projection'
     import useCustomMetadata from '@/common/assets/preview/lineage/useCustomMetadata'
 
     /** UTILS */
@@ -402,8 +402,13 @@
                     guid: guid.value,
                     hideProcess: true,
                     allowDeletedProcess: false,
+                    entityFilters: {
+                        attributeName: '__state',
+                        operator: 'eq',
+                        attributeValue: 'ACTIVE',
+                    },
                     attributes: [
-                        ...AssetAttributes,
+                        ...LineageImpactedAssetsAttributes,
                         ...customMetadataProjections,
                     ],
                 }))

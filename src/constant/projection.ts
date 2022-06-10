@@ -384,6 +384,19 @@ export const LineageAttributes = [
     'view',
 ]
 
+export const LineageImpactedAssetsAttributes = [
+    'name',
+    'qualifiedName',
+    'connectorName',
+    'certificateStatus',
+    'certificateUpdatedBy',
+    'certificateUpdatedAt',
+    'ownerUsers',
+    'ownerGroups',
+    'classificationNames',
+    'meanings',
+]
+
 export const LineageAttributesPortLevel = [
     // General
     'qualifiedName',

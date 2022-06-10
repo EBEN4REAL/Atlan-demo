@@ -33,6 +33,7 @@
                             :index="index"
                             :attribute="attribute"
                             :condition="condition"
+                            :totalConditions="localValue.length"
                             @change="handleChangeCondition(condition)"
                             @clear="handleRemove(index)"
                         />

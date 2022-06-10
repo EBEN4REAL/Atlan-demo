@@ -402,6 +402,7 @@ export default function useWorkflowInfo() {
             return suffix || workflowName
         }
 
+        // FIXME: Remove this if schedule-queries won't ever show up in workflows
         if (packageType(item) === 'schedule-query') {
             return (
                 spec?.templates[0]?.dag?.tasks?.[0]?.arguments?.parameters?.find(

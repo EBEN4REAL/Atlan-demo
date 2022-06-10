@@ -499,7 +499,7 @@
                     value: activeInlineTab.value.playground.editor.text,
                     theme: editorConfig.value.theme,
                     fontSize: 14,
-                    cursorStyle: editorConfig.value.cursorStyle,
+                    cursorStyle: editorConfig.value?.cursorStyle,
                     cursorWidth: 2,
                     letterSpacing: 0.1,
                     // cursorSmoothCaretAnimation: true,
@@ -967,10 +967,14 @@
                             'atlansql'
                         )
 
-                        updateEditorModel(editorStates, tabs.value[index]?.key, {
-                            model: newModel,
-                            viewState: {},
-                        })
+                        updateEditorModel(
+                            editorStates,
+                            tabs.value[index]?.key,
+                            {
+                                model: newModel,
+                                viewState: {},
+                            }
+                        )
 
                         editor?.setModel(null)
                         editor?.setModel(newModel)

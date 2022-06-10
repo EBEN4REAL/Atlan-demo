@@ -34,7 +34,7 @@
                         @change="handleSelectedChange"
                     ></ClassificationFacet>
                    
-                    <div class="absolute w-full p-2 mx-auto mt-1 mt-5 bg-white rounded-md mix-blend-normal" :style="{background: '#F4F6FD', top:  !editPermission && role !== 'Guest' && parentAssetChildren?.length > 0  ?  '240px !important' : parentAssetChildren?.length > 0 ? '190px !important'  :   '150px !important'}" style="box-shadow: 0px 5px 16px rgba(0, 0, 0, 0.1);"  
+                    <div class="absolute w-full p-2 mx-auto mt-1 mt-5 bg-white rounded-md mix-blend-normal" :style="{background: '#F4F6FD', top:  !editPermission && role !== 'Guest' && parentAssetChildren?.length > 0  ?  '230px !important' : parentAssetChildren?.length > 0 ? '180px !important'  :   '150px !important'}" style="box-shadow: 0px 5px 16px rgba(0, 0, 0, 0.1);"  
                         v-if="parentAssetChildren?.length" >
                         <div class="flex ">
                             <div class="mr-2">
@@ -42,21 +42,24 @@
                                     icon="Overview"
                                 />
                             </div>
-                            <div class="text-sm text-gray-500" >Classifications attached to a {{assetType}} will propagate to all
-                                <span 
-                                    class="cursor-pointer"
-                                    style="text-decoration: underline dotted"  
-                                    @mouseover="showChildrenAsset = true"
-                                    @mouseleave="showChildrenAsset = false">
-                                    child assets.
-                                </span>
+                            <div class="" >Classifications attached to a {{assetType}} will propagate to all
+                                <a-popover 
+                                    :overlay-class-name="$style.childAssetsPopover"
+                                    placement="top" 
+                                   >
+                                    <template #content>
+                                        <div  class="w-full p-2 pt-3 mx-auto mt-6 text-xs text-white rounded-md left-5"  style="background: #2A2F45;">
+                                            {{parentAssetChildren}}
+                                        </div>
+                                    </template>
+                                    <span 
+                                        class="text-sm text-gray-500 cursor-pointer" 
+                                        style="text-decoration: underline dotted" >
+                                        child assets.
+                                    </span>
+                                </a-popover>
                             </div>
                         </div>
-                    </div>
-                    <div class="absolute z-10 w-10/12 p-2 pt-3 mx-auto mt-6 text-xs text-white rounded-md left-5"  style="background: #2A2F45;" 
-                        v-if="showChildrenAsset && parentAssetChildren?.length"
-                        :style="[{top:  !editPermission && role !== 'Guest' && parentAssetChildren?.length > 0  ?  '320px !important' : parentAssetChildren?.length > 0 && selectedAsset?.typeName.length < 5 ? '250px' :  parentAssetChildren?.length > 0 ? '270px !important'  :   '230px !important'}]">
-                        {{parentAssetChildren}}  
                     </div>
                 </div>
                 <div
@@ -173,9 +176,8 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import whoami from '~/composables/user/whoami.ts'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
-    import {assetParentChildMapping} from '~/constant/assetParentChildMapping'
     import {groupClassifications} from "~/utils/groupClassifications"
-
+    import { assetTypeList } from '~/constant/assetType'
 
     export default defineComponent({
         name: 'ClassificationWidget',
@@ -243,12 +245,19 @@
             const parentAssetChildren = ref<string>()
             const showChildrenAsset = ref<boolean>(false)
             
-            const parentAssets = assetParentChildMapping.map((asset) => asset.parent.name)
+            const parentAssets = assetTypeList.map((asset) => asset.id)
             
             if(parentAssets.includes(selectedAsset.value?.typeName)) {
-                const findAssetTypeChildren = assetParentChildMapping.find(asset => asset?.parent.name === selectedAsset.value?.typeName)
-                assetType.value = findAssetTypeChildren.parent.displayText
-                parentAssetChildren.value = findAssetTypeChildren.children.map(el => el.displayText).join(", ")
+                
+                const findAssetType = assetTypeList.find(asset => asset?.id === selectedAsset.value?.typeName)
+                assetType.value = findAssetType?.fullLabel ? findAssetType?.fullLabel : findAssetType?.label 
+                
+                parentAssetChildren.value = findAssetType.children
+                    .map((type) => {
+                        const mappedObj =  assetTypeList
+                            .find(ass => ass.id === type)
+                                return mappedObj?.fullLabel ?? mappedObj?.label
+                            }).join(", ")
             }
             
             const localValue = ref(modelValue.value)
@@ -482,5 +491,9 @@
         }
         @apply p-3;
         top: 50px !important;
+    }
+    .childAssetsPopover {
+        width: 225px !important;
+        left: 860px !important;
     }
 </style>

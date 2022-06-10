@@ -67,8 +67,9 @@
                         <div class="flex items-center" v-for="(pv,i) in propagatedVia.slice(1)" :key="i">
                             <div class="mr-1">
                                 <AtlanIcon
-                                    style="stroke: rgb(107, 114, 128, 50%) !iimportant;"
+                                    class="text-gray-500"
                                     :icon="detailedPropagatedViaIcon(pv)"
+                                    
                                 />
                             </div>
                             <div class="text-sm text-gray-500 cursor-pointer hover:text-primary" @click="handleOpenProfile(pv)" >
@@ -103,6 +104,7 @@
     import { ClassificationInterface } from '~/types/classifications/classification.interface'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
+    import { assetTypeList } from '~/constant/assetType'
 
     dayjs.extend(relativeTime)
 
@@ -158,33 +160,8 @@
             const isLoading = and(isAuditLoading, isAssetLoading)
 
             const propagateByIcon = item => {
-                if (Object.keys(item)?.length > 0) {
-                    const typeOfEntity = item.typeName.replace(
-                        'AtlasGlossary',
-                        ''
-                    )
-                    if (item?.attributes?.certificateStatus) {
-                        switch (item?.attributes?.certificateStatus) {
-                            case 'DRAFT': {
-                                return `${typeOfEntity}Draft`
-                            }
-        
-                            case 'VERIFIED': {
-                                return `${typeOfEntity}Verified`
-                            }
-        
-                            case 'DEPRECATED': {
-                                return `${typeOfEntity}Deprecated`
-                            }
-        
-                            default: {
-                                return `${typeOfEntity}`
-                            }
-                        }
-                    } else {
-                        return `${typeOfEntity}`
-                    }
-                }
+                const assetIcon = assetTypeList.find(asset => asset?.id === item?.typeName)
+                return assetIcon?.image
             }
 
             const computeDisplayText = progatedVia => {

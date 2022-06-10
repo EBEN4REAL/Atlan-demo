@@ -14,7 +14,10 @@
                     title(asset)
                 }}</span>
                 <router-link
-                    v-if="!portsTypeNames.includes(asset.typeName)"
+                    v-if="
+                        !portsTypeNames.includes(asset.typeName) &&
+                        !promptDownload
+                    "
                     :to="getLineagePath(asset)"
                     target="_blank"
                 >
@@ -26,8 +29,17 @@
                 </router-link>
             </div>
 
+            <!-- Prompt Download -->
+            <div v-if="promptDownload" class="relative my-6">
+                The Impacted Assets list is over 200, Please click
+                <a-button type="link" @click="downloadImpactedAssets"
+                    >here</a-button
+                >
+                to download as a CSV
+            </div>
+
             <!-- Content - Table -->
-            <div class="relative mb-6">
+            <div v-if="!promptDownload" class="relative mb-6">
                 <a-table
                     :columns="columns"
                     :class="$style.impactTable"
@@ -278,7 +290,7 @@
             </div>
 
             <!-- Footer CTA -->
-            <div class="flex justify-end w-full gap-x-4">
+            <div v-if="!promptDownload" class="flex justify-end w-full gap-x-4">
                 <AtlanButton2
                     label="Close"
                     color="secondary"
@@ -355,6 +367,7 @@
             const { guid, visible } = toRefs(props)
             const classificationPopoverMouseEnterDelay = ref(1)
             const currrTruncatedSQL = ref('')
+            const promptDownload = ref(false)
             const { useFetchLineage } = useLineageService()
             const {
                 ownerGroups,
@@ -498,6 +511,14 @@
             ])
 
             watch(isReady, () => {
+                console.log(
+                    'LineageImpactModal Assets List Count:',
+                    downstreamAssets.value.length
+                )
+
+                if (downstreamAssets.value.length > 200)
+                    promptDownload.value = true
+
                 assets.value = [...downstreamAssets.value]
 
                 const { assetGuidCMMap } = useCustomMetadata(
@@ -585,9 +606,9 @@
                         Type: y.details.typeName,
                         Database: y.db,
                         Schema: y.schema,
-                        Owners: y.owners,
-                        Classifications: y.classifications,
-                        Terms: y.terms.map((t) => t.termGuid),
+                        Owners: y.owners.join(', '),
+                        Classifications: y.classifications.join(', '),
+                        Terms: y.terms.map((t) => t.displayText).join(', '),
                         ...y.details.cm,
                     }
                 })
@@ -654,6 +675,7 @@
                 title,
                 asset,
                 portsTypeNames,
+                promptDownload,
             }
         },
     })

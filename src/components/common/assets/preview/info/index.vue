@@ -1623,7 +1623,6 @@
                 aggregationMap,
                 handleApplySuggestion,
                 readmeGuid,
-<<<<<<< HEAD
                 dataStudioAssetType,
                 dataStudioAssetTitle,
                 dataStudioAssetOwner,
@@ -1631,9 +1630,7 @@
                 powerBIMeasureExpression,
                 powerBIColumnDataType,
                 powerBIColumnDataTypeImage,
-=======
                 setAllAdmins,
->>>>>>> main
             }
         },
     })

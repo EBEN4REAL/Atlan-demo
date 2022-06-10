@@ -369,6 +369,7 @@ import Salesforce from '~/assets/images/source/svg/Salesforce.svg'
 import MySQL from '~/assets/images/source/svg/MySQL.svg'
 import Glue from '~/assets/images/source/svg/glue.svg'
 import S3 from '~/assets/images/source/svg/s3.svg'
+import GDS from '~/assets/images/source/svg/gds.svg'
 
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
@@ -849,6 +850,7 @@ export default {
     Looker,
     Salesforce,
     S3,
+    GDS,
     SSO,
     SMTP,
     APIKey,
@@ -969,5 +971,5 @@ export default {
     CSVLogo,
     PaperClip,
     IllustrationPersonaDemo,
-    IllustrationPurposeDemo
+    IllustrationPurposeDemo,
 }

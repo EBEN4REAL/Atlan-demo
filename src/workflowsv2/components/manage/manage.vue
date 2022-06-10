@@ -138,6 +138,7 @@
 
             const facets = computed(() => ({
                 ui: true,
+                verified: true,
                 packageName: packageId.value,
                 ...wfFilters.value,
             }))

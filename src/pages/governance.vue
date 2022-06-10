@@ -24,6 +24,11 @@
                         <a-menu-item key="purposes" v-auth="[map.LIST_PURPOSE]"
                             >Purposes</a-menu-item
                         >
+                        <a-menu-item
+                            key="connections"
+                            v-auth="[map.LIST_PURPOSE]"
+                            >Connections</a-menu-item
+                        >
                     </a-menu-item-group>
 
                     <a-menu-item-group title="Governance">

@@ -7,6 +7,7 @@ export interface Getters {
     getSourceList(): any[]
     getConnectorImageMapping(): any
     getImage(): (id: string) => any
+    getRoleId(): (string) => string | undefined
 }
 
 export const getters: GettersTree<State> & Getters = {
@@ -40,5 +41,11 @@ export const getters: GettersTree<State> & Getters = {
     },
     getImage() {
         return (id) => this.getSourceList?.find((item) => item.id === id)?.image
+    },
+    getRoleId() {
+        return (roleName: string) =>
+            this.roles.find((role) => role?.name === roleName)?.id as
+                | string
+                | undefined
     },
 }

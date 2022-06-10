@@ -46,9 +46,14 @@
             class="flex gap-1 mt-1.5 text-sm content-center items-center text-gray-500 flex-wrap break-all"
         >
             
-            Propagated via <AtlanIcon :icon="getPropagatedViaIcon(propagatedVia)" />
-            <span class="text-gray-700 cursor-pointer hover:text-primary" @click="handleOpenProfile(propagatedVia)" >
-                {{ computeDisplayText(propagatedVia) }}
+            Propagated via 
+            <span class="hover:text-primary">
+                <span class="mr-1 hover:text-primary">
+                    <AtlanIcon  class="hover:text-primary" :icon="getPropagatedViaIcon(propagatedVia)" />
+                </span>
+                <span class="text-gray-700 cursor-pointer hover:text-primary" @click="() => propagatedVia?.length ?  handleOpenProfile(propagatedVia[0]) : handleOpenProfile(propagatedVia)" >
+                    {{ computeDisplayText(propagatedVia) }} 
+                </span>
             </span>
             {{ linkedAt }}
         </div>
@@ -56,23 +61,30 @@
             v-else-if="isPropagated && propagatedVia?.length"
             class="flex gap-1 mt-1.5 text-sm content-center items-center text-gray-500 flex-wrap break-all"
         >
-            Propagated via <AtlanIcon :icon="getPropagatedViaIcon(propagatedVia[0])" />
-            <span class="text-gray-700 cursor-pointer hover:text-primary" @click="() => propagatedVia?.length ?  handleOpenProfile(propagatedVia[0]) : handleOpenProfile(propagatedVia)" >
-                {{ computeDisplayText(propagatedVia) }}
-            </span>
+            <div class="flex items-center content-center gap-1 ">
+                Propagated via 
+               <span class="hover:text-primary">
+                 <span class="hover:text-primary">
+                    <AtlanIcon  class="hover:text-primary" :icon="getPropagatedViaIcon(propagatedVia[0])" />
+                    </span>
+                    <span class="text-gray-700 cursor-pointer hover:text-primary" @click="() => propagatedVia?.length ?  handleOpenProfile(propagatedVia[0]) : handleOpenProfile(propagatedVia)" >
+                        {{ computeDisplayText(propagatedVia) }} 
+                    </span>
+               </span>
+            </div>
+            
             <a-popover 
                 placement="rightTop" >
                 <template #content>
                     <div class="py-3 pl-3 bg-white rounded-md w-52">
-                        <div class="flex items-center" v-for="(pv,i) in propagatedVia.slice(1)" :key="i">
+                        <div class="flex items-center hove:text-primary hover:text-primary" v-for="(pv,i) in propagatedVia.slice(1)" :key="i">
                             <div class="mr-1">
                                 <AtlanIcon
-                                    class="text-gray-500"
+                                    class="hover:text-primary"
                                     :icon="getPropagatedViaIcon(pv)"
-                                    
                                 />
                             </div>
-                            <div class="text-sm text-gray-500 cursor-pointer hover:text-primary" @click="handleOpenProfile(pv)" >
+                            <div class="text-sm text-gray-500 cursor-pointer hover:text-primary " @click="handleOpenProfile(pv)" >
                                 {{pv?.displayText}}
                             </div>
                         </div>
@@ -166,10 +178,6 @@
 
             const computeDisplayText = progatedVia => {
                 if(progatedVia?.length) {
-                    progatedVia.forEach((el) => {
-                        // eslint-disable-next-line no-param-reassign
-                        progatedVia.icon = propagateByIcon(el)
-                    })
                     extendedText.value = `and ${progatedVia.slice(1).length} ${progatedVia.slice(1).length > 1 ? "others" : "other"}`
                     return `${progatedVia[0]?.displayText}`
                 }

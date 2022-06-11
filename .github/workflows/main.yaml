@@ -61,16 +61,16 @@ jobs:
         with:
           node-version: 12
 
-      # - name: "Automated Version Bump"
-      #   uses: "phips28/gh-action-bump-version@master"
-      #   env:
-      #     GITHUB_USER: atlan-ci
-      #     GITHUB_EMAIL: it@atlan.com
-      #     GITHUB_TOKEN: ${{ secrets.my_pat }}
-      #     GITHUB_ACTOR: atlan-ci
-      #   with:
-      #     tag-prefix: ""
-      #     skip-tag: "true"
+      - name: "Automated Version Bump"
+        uses: "phips28/gh-action-bump-version@master"
+        env:
+          GITHUB_USER: atlan-ci
+          GITHUB_EMAIL: it@atlan.com
+          GITHUB_TOKEN: ${{ secrets.my_pat }}
+          GITHUB_ACTOR: atlan-ci
+        with:
+          tag-prefix: ""
+          skip-tag: "true"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.0.1
@@ -82,9 +82,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
-
-      - name: npm Install
-        run: npm install
 
       - name: pnpm Install
         run: pnpm install

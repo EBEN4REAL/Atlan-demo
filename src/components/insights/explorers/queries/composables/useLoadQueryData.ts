@@ -34,30 +34,8 @@ const useLoadQueryData = ({
     const defaultLimit = 50
 
     const attributes = [
-        'name',
-        'displayName',
-        'typeName',
-        'dataType',
-        'description',
-        'userDescription',
-        'certificateStatus',
-        'ownerUsers',
-        'ownerGroups',
-        'classifications',
-
-        'connectorName',
-        'connectionId',
-        'connectionQualifiedName',
-        'defaultSchemaQualifiedName',
-        'defaultDatabaseQualifiedName',
-        'parentFolder',
-        'columns', //TODO: queries
-        'folder',
-        'compiledQuery',
-        'rawQuery',
-        'meanings',
+        ...AssetAttributes,
         ...InternalAttributes,
-        ...BasicSearchAttributes,
         ...SavedQueryAttributes,
         // ...AssetAttributes
     ]

@@ -108,7 +108,7 @@
                                         >
                                             using
                                             <AtlanIcon icon="Key" class="h-3" />
-                                            API key
+                                            API token
                                         </template>
                                         <template v-else>
                                             by

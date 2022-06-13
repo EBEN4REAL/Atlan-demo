@@ -622,7 +622,15 @@ export default function useAssetInfo() {
 
     const dataType = (asset: assetInterface) => attributes(asset)?.dataType
 
-    const dataTypeCategory = (asset: assetInterface) => {}
+    const dataTypeCategory = (asset: assetInterface) => {
+        return dataTypeCategoryList.find((item) =>
+            item.type.some(
+                (i) =>
+                    i.toLowerCase() ===
+                    attributes(asset)?.dataType?.toLowerCase()
+            )
+        )
+    }
 
     const dataTypeCategoryLabel = (asset: assetInterface) =>
         dataTypeCategory(asset)?.label
@@ -823,7 +831,7 @@ export default function useAssetInfo() {
     const certificateUpdatedBy = (asset: assetInterface) => {
         const username = attributes(asset)?.certificateUpdatedBy
         return username?.startsWith('service-account-apikey-')
-            ? 'API key'
+            ? 'API token'
             : username
     }
 

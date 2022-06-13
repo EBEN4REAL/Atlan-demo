@@ -76,7 +76,7 @@
         Ref,
     } from 'vue'
     import { useVModels, whenever } from '@vueuse/core'
-    import { message } from 'ant-design-vue'
+    import { message, message } from 'ant-design-vue'
     import { useRouter } from 'vue-router'
 
     import ClassificationColorSelector from '@/governance/classifications/classificationColorSelector.vue'
@@ -185,7 +185,9 @@
             }
 
             const handleOk = async () => {
-                if (props.mode === 'create') {
+                if (!name.value) {
+                    message.error('Classification name cannot be blank')
+                } else if (props.mode === 'create') {
                     createClassification()
                 } else {
                     editClassification()

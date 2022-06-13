@@ -22,6 +22,7 @@ export default function usePermissions(immediate = true) {
         authStore.setDecentralizedRoles(data.value?.decentralizedRoles)
         authStore.setPersonas(data.value?.personas)
         authStore.setPurposes(data.value?.purposes)
+        authStore.setGroups(data.value?.groups)
     })
     return {
         data, mutate

@@ -513,8 +513,8 @@ export function useBody(
                 break
             }
             case '__hasLineage': {
-                const { value, operand } = filterObject
-                if (value) base.filter('exists', 'field', operand)
+                const { value } = filterObject
+                if (value) base.filter('term', '__hasLineage', 'true')
 
                 break
             }
@@ -978,6 +978,14 @@ export function useBody(
                 }
                 break
             }
+            case 'connectorName': {
+                if (filterObject) {
+                    if (filterObject !== '__all') {
+                        postFilter.filter('term', 'connectorName', filterObject)
+                    }
+                }
+                break
+            }
         }
     })
     base.rawOption('post_filter', postFilter.build().query)
@@ -1036,6 +1044,17 @@ export function useBody(
                         base.aggregation(
                             'terms',
                             'connectionQualifiedName',
+                            { size: 100 },
+                            `${agg_prefix}_${mkey}`
+                        )
+                    }
+                    break
+                }
+                case 'connectorName': {
+                    if (mkey) {
+                        base.aggregation(
+                            'terms',
+                            'connectorName',
                             { size: 100 },
                             `${agg_prefix}_${mkey}`
                         )

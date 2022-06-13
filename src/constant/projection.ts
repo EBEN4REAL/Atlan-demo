@@ -64,6 +64,7 @@ export const AssetAttributes = [
     'ownerGroups',
     'adminUsers',
     'adminGroups',
+    'adminRoles',
     'viewerGroups',
     'viewerUsers',
     'meanings',
@@ -147,6 +148,18 @@ export const AssetAttributes = [
     'awsOwnerName',
     'awsTags',
     's3ObjectVersionId',
+    'googleService',
+    'googleProjectName',
+    'googleProjectId',
+    'googleProjectNumber',
+    'dataStudioAssetType',
+    'dataStudioAssetTitle',
+    'dataStudioAssetOwner',
+    'isTrashedDataStudioAsset',
+    'powerBITableColumnCount',
+    'powerBITableMeasureCount',
+    'powerBIMeasureExpression',
+    'powerBIColumnDataType',
 ]
 
 export const SQLAttributes = [
@@ -284,6 +297,9 @@ export const MinimalAttributes = [
     'bucket',
     's3ObjectCount',
     's3BucketName',
+    'powerBITableColumnCount',
+    'powerBITableMeasureCount',
+    'powerBIColumnDataType',
 ]
 
 export const BasicSearchAttributes = [
@@ -368,6 +384,19 @@ export const LineageAttributes = [
     'view',
 ]
 
+export const LineageImpactedAssetsAttributes = [
+    'name',
+    'qualifiedName',
+    'connectorName',
+    'certificateStatus',
+    'certificateUpdatedBy',
+    'certificateUpdatedAt',
+    'ownerUsers',
+    'ownerGroups',
+    'classificationNames',
+    'meanings',
+]
+
 export const LineageAttributesPortLevel = [
     // General
     'qualifiedName',
@@ -379,6 +408,8 @@ export const LineageAttributesPortLevel = [
     // SQL
     'table',
     'view',
+    // BI
+    'powerBIColumnDataType',
 ]
 
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

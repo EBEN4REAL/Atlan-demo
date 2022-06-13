@@ -1,0 +1,33 @@
+<svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#google-data-studio__a)">
+        <path
+            d="M13.251 11H8.167c-1.229 0-1.918.848-1.918 1.75 0 .832.584 1.75 1.918 1.75h5.084V11Z"
+            fill="#669DF3"
+        />
+        <path
+            d="M13.251 14.5a1.75 1.75 0 1 0-.001-3.499 1.75 1.75 0 0 0 .001 3.499Z"
+            fill="#1A73E8"
+        />
+        <path
+            d="M8.002 6.25H2.918C1.688 6.25 1 7.098 1 8c0 .833.584 1.75 1.918 1.75h5.084v-3.5Z"
+            fill="#669DF3"
+        />
+        <path
+            d="M8.002 9.75A1.75 1.75 0 1 0 8 6.251 1.75 1.75 0 0 0 8 9.75Z"
+            fill="#1A73E8"
+        />
+        <path
+            d="M13.251 1.5H8.167c-1.229 0-1.918.848-1.918 1.75 0 .833.584 1.75 1.918 1.75h5.084V1.5Z"
+            fill="#669DF3"
+        />
+        <path
+            d="M13.251 5a1.75 1.75 0 1 0-.001-3.499A1.75 1.75 0 0 0 13.251 5Z"
+            fill="#1A73E8"
+        />
+    </g>
+    <defs>
+        <clipPath id="google-data-studio__a">
+            <path fill="#fff" transform="translate(1 1.5)" d="M0 0h14v13H0z" />
+        </clipPath>
+    </defs>
+</svg>

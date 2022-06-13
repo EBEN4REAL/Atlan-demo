@@ -37,8 +37,7 @@
                         v-for="run in runs"
                         :key="run.metadata.uid"
                         :run="run"
-                        :workflow="workflowMap.get(workflowTemplateName(run))"
-                        :wfLoading="isWFLoading"
+                        :workflow="workflowMap[workflowTemplateName(run)]"
                     />
                 </div>
                 <div
@@ -94,7 +93,6 @@
 
     import EmptyLogsIllustration from '~/assets/images/illustrations/empty_logs.svg'
     import { useWorkflowStore } from '~/workflowsv2/store'
-    import { useWorkflowDiscoverList } from '~/workflowsv2/composables/useWorkflowDiscoverList'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
 
     export default defineComponent({
@@ -142,45 +140,24 @@
 
             const facets = computed(() => ({
                 workflowTemplate: filters.value?.workflowId,
+                workflowTemplates: filters.value?.packageId
+                    ? //If Package is selected, filter wf templates by that package
+                      Object.values(workflowStore.verifiedWorkflows)
+                          .filter(
+                              (wf) =>
+                                  wf.metadata.annotations[
+                                      'package.argoproj.io/name'
+                                  ] === filters.value?.packageId
+                          )
+                          .map((wf) => wf.metadata.name)
+                    : //Else filter by all wf templates in pinia
+                      Object.keys(workflowStore.verifiedWorkflows),
+
                 prefix: workflowStore.packageMeta?.[filters.value?.packageId]
                     ?.metadata?.name,
                 dateRange: filters.value?.dateRange,
                 status: filters.value?.status,
                 creators: filters.value?.creators,
-                excludePrefix: [
-                    'atlan-gtc-bulk-upload-',
-                    'atlan-schedule-query-',
-                    'asq-',
-                    // ? if filtering by BQ package, then exclude miner as both has same prefix
-                    ...(workflowStore.packageMeta?.[filters.value?.packageId]
-                        ?.metadata?.name === 'atlan-bigquery'
-                        ? ['atlan-bigquery-miner']
-                        : []),
-                    // ? if filtering by Snowflake package, then exclude miner as both has same prefix
-                    ...(workflowStore.packageMeta?.[filters.value?.packageId]
-                        ?.metadata?.name === 'atlan-snowflake'
-                        ? ['atlan-snowflake-miner']
-                        : []),
-                    // ? if filtering by Redshift package, then exclude miner as both has same prefix
-                    ...(workflowStore.packageMeta?.[filters.value?.packageId]
-                        ?.metadata?.name === 'atlan-redshift'
-                        ? ['atlan-redshift-miner']
-                        : []),
-                ],
-                filterOut: [
-                    'atlan-typedef-seeder',
-                    'atlan', // atlan-upadate
-                    'cloud-es-log-policy',
-                    'cloud-backups',
-                    'fantastic-octopus',
-                    'atlan-metastore-migrations-haslineage',
-                    'atlan-gtc-bulk-upload',
-                    'atlan-schedule-query',
-                    'atlan-init',
-                    'atlan-atlas',
-                    'atlan-atlas-reset',
-                    'cloud-atlan-bootstrap',
-                ],
             }))
 
             const preference = ref({
@@ -199,6 +176,7 @@
                 offset,
                 queryText,
                 preference,
+                immediate: false,
             })
 
             const totalRuns = computed(
@@ -235,49 +213,14 @@
 
             watch(filters, () => fetchRuns(true), { deep: true })
 
-            const workflowMap = new Map<string, any>()
+            const workflowMap = computed(() => workflowStore.verifiedWorkflows)
 
-            const wfFacets = ref({ name: [] as string[], ui: true })
+            const init = async () => {
+                await workflowStore.fetchVerifiedWorkflows()
+                quickChange()
+            }
 
-            const {
-                list: wfList,
-                quickChange: fetchWF,
-                isLoading: isWFLoading,
-            } = useWorkflowDiscoverList({
-                facets: wfFacets,
-                limit: ref(100),
-                source: ref({
-                    includes: [
-                        'metadata.name',
-                        'metadata.annotations.package.argoproj.io/name',
-                        'metadata.annotations.orchestration.atlan.com/schedule',
-                        'metadata.annotations.orchestration.atlan.com/timezone',
-                        'metadata.annotations.orchestration.atlan.com/atlanName',
-                        'spec.templates',
-                    ],
-                }),
-                immediate: false,
-            })
-
-            watch(runs, () => {
-                wfFacets.value.name = []
-
-                runs.value.forEach((run) => {
-                    if (
-                        !workflowMap.has(workflowTemplateName(run)) &&
-                        workflowTemplateName(run)
-                    )
-                        wfFacets.value.name.push(workflowTemplateName(run))
-                })
-
-                if (wfFacets.value.name.length) fetchWF()
-            })
-
-            watch(wfList, () => {
-                wfList.value.forEach((wf) => {
-                    workflowMap.set(refName(wf), wf)
-                })
-            })
+            init()
 
             return {
                 filters,
@@ -292,7 +235,6 @@
                 limit,
                 offset,
                 totalRuns,
-                isWFLoading,
                 workflowMap,
                 workflowTemplateName,
                 resetFilter,

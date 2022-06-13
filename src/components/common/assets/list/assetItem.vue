@@ -218,6 +218,7 @@
                                                 'column',
                                                 'schema',
                                                 'query',
+                                                'datastudioasset',
                                             ].includes(
                                                 item.typeName?.toLowerCase()
                                             )
@@ -302,6 +303,16 @@
                                                 ) && isPublished(item)
                                             "
                                             >(Published)</span
+                                        >
+                                        <span
+                                            v-if="
+                                                ['DataStudioAsset'].includes(
+                                                    item.typeName
+                                                ) && dataStudioAssetType(item)
+                                            "
+                                            >({{
+                                                dataStudioAssetType(item)
+                                            }})</span
                                         >
                                     </div>
                                 </div>
@@ -468,6 +479,29 @@
                                             v-if="isPartition(item)"
                                             class="ml-1 text-sm text-gray-500"
                                             >Partition</span
+                                        >
+                                    </div>
+                                </div>
+
+                                <div
+                                    v-if="
+                                        item.typeName?.toLowerCase() ===
+                                        'powerbicolumn'
+                                    "
+                                    class="flex items-center mr-2"
+                                >
+                                    <div class="flex items-center">
+                                        <component
+                                            :is="
+                                                powerBIColumnDataTypeImage(item)
+                                            "
+                                            class="h-4 text-gray-500 mr-0.5 mb-0.5"
+                                        />
+                                        <span
+                                            class="text-sm tracking-wider text-gray-500 uppercase"
+                                            >{{
+                                                powerBIColumnDataType(item)
+                                            }}</span
                                         >
                                     </div>
                                 </div>
@@ -783,11 +817,12 @@
                                 </div>
                                 <div
                                     v-if="
-                                        ['PowerBIDatasource'].includes(
-                                            item?.typeName
-                                        )
+                                        [
+                                            'PowerBIDatasource',
+                                            'PowerBITable',
+                                        ].includes(item?.typeName)
                                     "
-                                    class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                                    class="flex flex-wrap mr-2 text-sm text-gray-500 gap-x-2"
                                 >
                                     <a-tooltip placement="bottomLeft">
                                         <div
@@ -810,6 +845,42 @@
                                                 >Dataset -
                                                 {{
                                                     parentDataset(item)
+                                                        ?.attributes?.name
+                                                }}</span
+                                            >
+                                        </template>
+                                    </a-tooltip>
+                                </div>
+                                <div
+                                    v-if="
+                                        [
+                                            'PowerBIMeasure',
+                                            'PowerBIColumn',
+                                        ].includes(item?.typeName)
+                                    "
+                                    class="flex flex-wrap mr-2 text-sm text-gray-500 gap-x-2"
+                                >
+                                    <a-tooltip placement="bottomLeft">
+                                        <div
+                                            v-if="
+                                                parentTable(item)?.attributes
+                                                    ?.name
+                                            "
+                                            class="flex items-center text-gray-500"
+                                        >
+                                            <span class="tracking-tight">
+                                                in
+                                                {{
+                                                    parentTable(item)
+                                                        ?.attributes?.name
+                                                }}
+                                            </span>
+                                        </div>
+                                        <template #title>
+                                            <span
+                                                >Table -
+                                                {{
+                                                    parentTable(item)
                                                         ?.attributes?.name
                                                 }}</span
                                             >
@@ -1217,6 +1288,45 @@
                                             >{{ s3ObjectCount(item) }}</span
                                         >
                                         objects</span
+                                    >
+                                </div>
+                                <div
+                                    v-if="
+                                        ['powerbitable'].includes(
+                                            item.typeName?.toLowerCase()
+                                        )
+                                    "
+                                    class="flex text-sm text-gray-500 gap-x-2"
+                                >
+                                    <span
+                                        v-if="
+                                            powerBITableColumnCount(item) !==
+                                            '0'
+                                        "
+                                        class="text-gray-500"
+                                    >
+                                        <span
+                                            class="tracking-tight text-gray-500"
+                                            >{{
+                                                powerBITableColumnCount(item)
+                                            }}</span
+                                        >
+                                        columns</span
+                                    >
+                                    <span
+                                        v-if="
+                                            powerBITableMeasureCount(item) !==
+                                            '0'
+                                        "
+                                        class="text-gray-500"
+                                    >
+                                        <span
+                                            class="tracking-tight text-gray-500"
+                                            >{{
+                                                powerBITableMeasureCount(item)
+                                            }}</span
+                                        >
+                                        measures</span
                                     >
                                 </div>
 
@@ -1687,6 +1797,11 @@
                 parentBucket,
                 s3BucketName,
                 hasLineage,
+                dataStudioAssetType,
+                powerBITableColumnCount,
+                powerBITableMeasureCount,
+                powerBIColumnDataType,
+                powerBIColumnDataTypeImage,
             } = useAssetInfo()
 
             const icon = computed(() => {
@@ -1911,6 +2026,11 @@
                 s3BucketName,
                 hasLineage,
                 handleSwitchTabLineage,
+                dataStudioAssetType,
+                powerBITableColumnCount,
+                powerBITableMeasureCount,
+                powerBIColumnDataType,
+                powerBIColumnDataTypeImage,
             }
         },
     })

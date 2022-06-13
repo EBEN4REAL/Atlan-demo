@@ -90,6 +90,9 @@ export function handleAccessForRequestAction(request: RequestAttributes) {
     const authStore = useAuthStore()
 
     const rolesArray = authStore?.roles?.map((el) => el?.id)
+    const decentralizedRolesArray = authStore?.decentralizedRoles?.map(
+        (el) => el?.roleId
+    )
 
     approverGroups.forEach((el) => {
         if (groups.value?.includes(el)) hasAccess = true
@@ -99,6 +102,7 @@ export function handleAccessForRequestAction(request: RequestAttributes) {
 
     approverRoles.forEach((el) => {
         if (rolesArray?.includes(el)) hasAccess = true
+        if (decentralizedRolesArray?.includes(el)) hasAccess = true
     })
 
     return { hasAccess }

@@ -285,40 +285,42 @@
                     ?.getWordAtPosition(editorPosition)
 
                 // for stripping quotes if cursor is in b/w quotes
-
                 let matches1 = 0
                 let matches2 = 0
                 let matches3 = 0
+                debugger
 
                 editor
                     ?.getModel()
-                    .findMatches('`[a-zA-Z]*`', true, true, false, null, true)
+                    .findMatches('`.*`', true, true, false, null, true)
                     ?.forEach((_el) => {
                         if (
-                            _el?.matches?.filter((_ely) => _ely?.length <= 5)
-                                .length
+                            _el?.matches?.filter(
+                                (_ely) => _ely?.split('.').length < 2
+                            ).length
                         ) {
                             matches1 += 1
                         }
                     })
                 editor
                     ?.getModel()
-                    .findMatches(`'[a-zA-Z]*'`, true, true, false, null, true)
+                    .findMatches(`'.*'`, true, true, false, null, true)
                     ?.forEach((_el) => {
                         if (
-                            _el?.matches?.filter((_ely) => _ely?.length <= 5)
-                                .length
+                            _el?.matches?.filter(
+                                (_ely) => _ely?.split('.').length < 2
+                            ).length
                         ) {
                             matches2 += 1
                         }
                     })
                 editor
                     ?.getModel()
-                    .findMatches('"[a-zA-Z]*"', true, true, false, null, true)
+                    .findMatches('".*"', true, true, false, null, true)
                     ?.forEach((_el) => {
                         if (
                             _el?.matches?.filter((_ely) => {
-                                return _ely?.length <= 5
+                                return _ely?.split('.').length < 2
                             }).length
                         ) {
                             matches3 += 1
@@ -326,7 +328,22 @@
                     })
 
                 let stripQuotes = false
-                if (matches1 > 0 || matches2 > 0 || matches3 > 0) {
+                // necessary for checking if current word have any quote
+                const typeofQuote = editor?.getModel()?.getValueInRange({
+                    startColumn:
+                        (wordPosition?.startColumn ?? editorPosition.column) -
+                        1,
+                    endColumn:
+                        wordPosition?.startColumn ?? editorPosition.column,
+                    endLineNumber: editorPosition.lineNumber,
+                    start: editorPosition.lineNumber,
+                })
+
+                if (
+                    matches1 > 0 ||
+                    matches2 > 0 ||
+                    (matches3 > 0 && [`"`, `'`, '`'].includes(typeofQuote))
+                ) {
                     stripQuotes = true
                 }
 
@@ -967,10 +984,14 @@
                             'atlansql'
                         )
 
-                        updateEditorModel(editorStates, tabs.value[index]?.key, {
-                            model: newModel,
-                            viewState: {},
-                        })
+                        updateEditorModel(
+                            editorStates,
+                            tabs.value[index]?.key,
+                            {
+                                model: newModel,
+                                viewState: {},
+                            }
+                        )
 
                         editor?.setModel(null)
                         editor?.setModel(newModel)

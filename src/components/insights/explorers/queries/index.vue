@@ -137,6 +137,7 @@
                             :isNodeLoading="isNodeLoading"
                             :nodeError="nodeError"
                             :errorNode="errorNode"
+                            :updateNode="updateNode"
                         />
                     </div>
                     <!--explorer pane end -->
@@ -1461,6 +1462,7 @@
             })
 
             return {
+                updateNode,
                 isValid,
                 refreshQueryTree,
                 isQueriesLoading,

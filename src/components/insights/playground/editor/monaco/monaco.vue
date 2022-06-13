@@ -516,7 +516,7 @@
                     value: activeInlineTab.value.playground.editor.text,
                     theme: editorConfig.value.theme,
                     fontSize: 14,
-                    cursorStyle: editorConfig.value.cursorStyle,
+                    cursorStyle: editorConfig?.value?.cursorStyle,
                     cursorWidth: 2,
                     letterSpacing: 0.1,
                     // cursorSmoothCaretAnimation: true,

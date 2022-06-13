@@ -1,7 +1,7 @@
 {
     "admin": {
         "expiry": "Expiry",
-        "api-key": "API Key | API Keys",
+        "api-key": "API Token | API Tokens",
         "access-log": "Access Log | Access Logs",
         "marking": "Marking as",
         "mark": "Mark as",

@@ -239,11 +239,16 @@
                         </div>
                     </a-tooltip>
                     <span
-                        v-if="computedActions || maskComputed"
+                        v-if="
+                            (computedActions && type !== 'data') || maskComputed
+                        "
                         class="text-gray-300 mx-1.5"
                         >•</span
                     >
-                    <a-tooltip v-if="computedActions" placement="top">
+                    <a-tooltip
+                        v-if="computedActions && type !== 'data'"
+                        placement="top"
+                    >
                         <template #title>
                             <div
                                 v-if="computedActions < mapAllPermission[type]"

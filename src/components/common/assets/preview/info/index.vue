@@ -1169,6 +1169,21 @@
                     @change="handleAntonymsUpdate"
                 >
                 </RelatedTerms>
+                <!-- Preferred terms widget -->
+                <p
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 mt-4"
+                >
+                    Preferred terms
+                </p>
+                <RelatedTerms
+                    v-model="localPreferredTerms"
+                    :selected-asset="selectedAsset"
+                    class="px-5"
+                    :edit-permission="editPermission"
+                    :allow-delete="editPermission"
+                    @change="handlePreferredTermsUpdate"
+                >
+                </RelatedTerms>
             </div>
 
             <div
@@ -1434,8 +1449,10 @@
                 localCategories,
                 localSeeAlso,
                 localAntonyms,
+                localPreferredTerms,
                 handleSeeAlsoUpdate,
                 handleAntonymsUpdate,
+                handlePreferredTermsUpdate,
                 handleCategoriesUpdate,
                 handleMeaningsUpdate,
                 handleChangeName,
@@ -1593,10 +1610,12 @@
                 handleCategoriesUpdate,
                 handleSeeAlsoUpdate,
                 handleAntonymsUpdate,
+                handlePreferredTermsUpdate,
                 isUserDescription,
                 localCategories,
                 localSeeAlso,
                 localAntonyms,
+                localPreferredTerms,
                 handleChangeAdmins,
                 localAdmins,
                 localViewers,

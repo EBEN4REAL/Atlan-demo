@@ -603,6 +603,27 @@ export default function updateAssetAttributes(
         })
         mutate()
     }
+    const handlePreferredTermsUpdate = () => {
+        console.log(localPreferredTerms.value)
+        entity.value = {
+            ...entity.value,
+            relationshipAttributes: {
+                preferredTerms: localPreferredTerms.value.map((term) => ({
+                    typeName: 'AtlasGlossaryTerm',
+                    guid: term.guid,
+                })),
+                anchor: selectedAsset?.value?.attributes?.anchor,
+            },
+        }
+        body.value.entities = [entity.value]
+        currentMessage.value = 'Preferred Terms have been updated'
+        // TODO: change event name to be more specific ?
+        sendMetadataTrackEvent('related_terms_updated', {
+            count: localSeeAlso.value?.length,
+        })
+        mutate()
+    }
+ 
     const handleParentCategoryUpdate = () => {
         entity.value = {
             ...entity.value,
@@ -802,6 +823,10 @@ export default function updateAssetAttributes(
         if (antonyms(selectedAsset?.value) !== localAntonyms.value) {
             localAntonyms.value = antonyms(selectedAsset.value)
         }
+        if (preferredTerms(selectedAsset?.value) !== localPreferredTerms.value) {
+            localPreferredTerms.value = preferredTerms(selectedAsset.value)
+        }
+
 
 
         if (error.value?.response?.data?.errorCode) {
@@ -916,6 +941,7 @@ export default function updateAssetAttributes(
         localCategories,
         localSeeAlso,
         localAntonyms,
+        localPreferredTerms,
         localViewers,
         handleChangeName,
         handleChangeDescription,
@@ -942,6 +968,7 @@ export default function updateAssetAttributes(
         handleCategoriesUpdate,
         handleSeeAlsoUpdate,
         handleAntonymsUpdate,
+        handlePreferredTermsUpdate,
         shouldDrawerUpdate,
         asset,
         localAssignedEntities,

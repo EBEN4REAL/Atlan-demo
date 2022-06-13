@@ -9,7 +9,7 @@
     >
         <template #title>
             <LinkedAssetsOwnerPopover
-                v-if="isScrubbed(asset) && ownerUsers(asset).length"
+                v-if="isScrubbed(asset) && ownerUsers(asset).length && false"
                 :asset="asset"
             >
                 <SubMenuTitle

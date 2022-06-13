@@ -5,28 +5,34 @@ import { Types } from '~/services/meta/types/index'
 
 export const removeProperty = (asset, metadata) => {
 
-    const payload = ref({ [metadata.name]: {} }) // * If we want to clear all property, then jut add this empty payload
+    const payload = ref({ [metadata.name]: {} }) // * If we want to clear all property, then jut add this empty payload & overwrite = true
 
-    const allAttributes = computed(() => {
-        if (!asset) return []
-        return Object.entries(asset.attributes).filter(
-            ([key, val]) => key.split('.').length === 2
-        )
-    })
+    // const allAttributes = computed(() => {
+    //     if (!asset) return []
+    //     return Object.entries(asset.attributes).filter(
+    //         ([key, val]) => key.split('.').length === 2
+    //     )
+    // })
 
-    allAttributes.value.forEach(attr => {
-        const [attributeKey, value] = attr
-        const [bmName, attributeName] = attributeKey.split(".")
-        if (bmName === metadata.name) {
-            payload.value[metadata.name][attributeName] = null
-        }
-    })
+    // allAttributes.value.forEach(attr => {
+    //     const [attributeKey, value] = attr
+    //     const [bmName, attributeName] = attributeKey.split(".")
+    //     if (bmName === metadata.name) {
+    //         payload.value[metadata.name][attributeName] = null
+    //     }
+    // })
 
 
     const assetID = () => asset?.guid
 
 
-    const { error, isReady, isLoading, mutate } = Types.updateAssetBMChanges(assetID(), payload, { asyncOptions: { immediate: false } })
+    const { error, isReady, isLoading, mutate } = Types.updateAssetBMChanges(assetID(), payload, {
+        asyncOptions: {
+            immediate: false, onError: (e) => {
+                throw e
+            }
+        }
+    }, true)
 
 
     return {

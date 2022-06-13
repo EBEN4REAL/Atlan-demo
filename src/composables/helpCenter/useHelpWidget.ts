@@ -111,30 +111,25 @@ export default function useHelpWidget() {
     }
     const setZendeskArticleSuggestions = () => {
         // not initialised
-        initialiseZendesk().then(() => {
-            const route = useRoute()
-            // set help desk article suggestions relevant to page
-            const labels = getLabelsForZendeskArticles(route?.path ?? '')
-            window?.zE('webWidget', 'helpCenter:setSuggestions', {
-                labels,
-            })
+        const route = useRoute()
+        // set help desk article suggestions relevant to page
+        const labels = getLabelsForZendeskArticles(route?.path ?? '')
+        window?.zE('webWidget', 'helpCenter:setSuggestions', {
+            labels,
         })
     }
     const prefillEmailField = () => {
         // not initialised
-        initialiseZendesk().then(() => {
-            // prefill email field in zendesk form; the field is hidden
-            const { email } = useUserData()
-            window?.zE('webWidget', 'prefill', {
-                email: {
-                    value: email,
-                    readOnly: true, // optional
-                },
-            })
+        // prefill email field in zendesk form; the field is hidden
+        const { email } = useUserData()
+        window?.zE('webWidget', 'prefill', {
+            email: {
+                value: email,
+                readOnly: true, // optional
+            },
         })
     }
     const toggleHelpWidget = () => {
-        debugger
         // not initialised
         initialiseZendesk().then(() => {
             debugger

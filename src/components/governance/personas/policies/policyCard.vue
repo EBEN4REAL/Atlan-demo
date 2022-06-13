@@ -246,10 +246,7 @@
                     <a-tooltip v-if="computedActions" placement="top">
                         <template #title>
                             <div
-                                v-if="
-                                    computedActions <
-                                    (type !== 'glossaryPolicy' ? 9 : 6)
-                                "
+                                v-if="computedActions < mapAllPermission[type]"
                             >
                                 {{ computedActions }}
                                 {{
@@ -267,8 +264,7 @@
                             />
 
                             {{
-                                computedActions >=
-                                (type !== 'glossaryPolicy' ? 9 : 6)
+                                computedActions >= mapAllPermission[type]
                                     ? 'All'
                                     : computedActions
                             }}
@@ -410,6 +406,7 @@
     import useScopeService from '../composables/useScopeService'
     import { splitArray } from '~/utils/string'
     import { maskPersona } from '~/constant/policy'
+    import { mapAllPermission } from '~/components/governance/personas/composables/useScopeService'
 
     export default defineComponent({
         name: 'DataPolicy',
@@ -565,6 +562,7 @@
                 createdAtFormated,
                 isAllAssets,
                 computedActions,
+                mapAllPermission,
             }
         },
     })

@@ -9,7 +9,11 @@
                     v-if="!generatedAPIKey.attributes"
                     class="text-lg font-bold"
                 >
-                    {{ apiKeyDirty.id ? apiKey.displayName : 'Add new key' }}
+                    {{
+                        apiKeyDirty.id
+                            ? apiKey.displayName
+                            : 'Add new API Token'
+                    }}
                 </div>
                 <div v-else class="text-lg font-bold">
                     {{ generatedAPIKey.attributes.displayName }}
@@ -221,7 +225,7 @@
                 class="flex flex-col items-center justify-center w-full h-full px-4"
             >
                 <component :is="SuccessIllustration" class="mb-5"></component>
-                <div class="mb-5 text-xl font-bold">API key generated</div>
+                <div class="mb-5 text-xl font-bold">API token generated</div>
                 <div
                     class="w-full h-24 p-4 mb-5 overflow-y-scroll bg-gray-100 border rounded"
                 >
@@ -263,7 +267,7 @@
                 <template #content>
                     <div class="px-4 py-3">
                         <div class="mb-4 text-base font-bold">
-                            Delete API Key
+                            Delete API Token
                         </div>
                         <div class="mb-3.5">
                             Are you sure you want to delete
@@ -320,7 +324,7 @@
             <div class="flex p-2 rounded-md bg-warning-light">
                 <AtlanIcon icon="Info" class="h-6 mr-2" />
                 <div>
-                    Please copy or download this api key as it will be only
+                    Please copy or download this api token as it will be only
                     visible this one time
                 </div>
             </div>
@@ -490,7 +494,7 @@
                         'en-GB'
                     )
                     const data = generatedAPIKey.value.attributes.accessToken
-                    const filename = `${generatedAPIKey.value.attributes.displayName}_${createDate}_atlan api key.txt`
+                    const filename = `${generatedAPIKey.value.attributes.displayName}_${createDate}_atlan api token.txt`
                     const type = 'text/plain'
                     downloadFile(data, filename, type)
                 }
@@ -500,7 +504,7 @@
                     copyToClipboard(
                         generatedAPIKey.value.attributes.accessToken
                     )
-                    message.success('API Key Copied')
+                    message.success('API Token Copied')
                 }
             }
             const handleClose = () => {

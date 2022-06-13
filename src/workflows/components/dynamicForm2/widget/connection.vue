@@ -30,7 +30,7 @@
                                 )
                             "
                         >
-                            using <AtlanIcon icon="Key" class="h-3" /> API key
+                            using <AtlanIcon icon="Key" class="h-3" /> API token
                         </template>
                         <template v-else>
                             by
@@ -71,7 +71,7 @@
 
                     <a-divider
                         orientation="left"
-                        orientationMargin="0px"
+                        orientation-margin="0px"
                         class="m-0 mt-2"
                     >
                         <span class="text-sm text-new-gray-600">
@@ -80,11 +80,11 @@
                     </a-divider>
 
                     <div
-                        class="flex flex-col mt-2 gap-y-3"
                         v-if="
                             selectedConnection?.attributes?.category?.toLowerCase() !=
                             'bi'
                         "
+                        class="flex flex-col mt-2 gap-y-3"
                     >
                         <div
                             class="flex items-center text-sm font-medium gap-x-9"
@@ -138,7 +138,7 @@
                     <AtlanButton2
                         label="Edit Connection"
                         color="secondary"
-                        prefixIcon="SidebarSwitch"
+                        prefix-icon="SidebarSwitch"
                         @click="isDrawerVisible = true"
                     />
                 </div>
@@ -163,8 +163,8 @@
     </div>
 
     <div v-else>
-        <FormItem :configMap="configMap" :baseKey="property.id"></FormItem>
-        <div class="flex" v-if="list.length > 0 && !isEdit">
+        <FormItem :config-map="configMap" :base-key="property.id"></FormItem>
+        <div v-if="list.length > 0 && !isEdit" class="flex">
             <div class="flex flex-col p-3 bg-gray-100 rounded">
                 <p class="mb-2 font-bold">
                     <AtlanIcon icon="Connection"></AtlanIcon>

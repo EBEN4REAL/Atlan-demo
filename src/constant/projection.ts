@@ -163,6 +163,7 @@ export const AssetAttributes = [
 ]
 
 export const SQLAttributes = [
+    'schemaCount',
     'rowCount',
     'columnCount',
     'sizeBytes',

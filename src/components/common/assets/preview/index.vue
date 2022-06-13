@@ -566,9 +566,12 @@
             const slackResourceCount = () =>
                 links(selectedAsset.value)?.filter(
                     (l) => getDomain(l.attributes.link) === 'slack.com'
-                )?.length
+                )?.length || 0
             const getCount = (tab) => {
                 if (tab?.toLowerCase() === 'resources') {
+                    if (!links(selectedAsset.value)?.length) {
+                        return 0
+                    }
                     return (
                         links(selectedAsset.value)?.length -
                         slackResourceCount()

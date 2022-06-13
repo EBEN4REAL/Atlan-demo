@@ -48,7 +48,6 @@
                     </span>
                 </div>
             </header>
-
             <section class="space-y-2.5 overflow-y-auto mb-3">
                 <a-menu
                     v-model:selectedKeys="selectedKeys"
@@ -67,6 +66,31 @@
                         @metadataRemove="(id) => emit('metadataRemove', id)"
                     />
                 </a-menu>
+                <div class="">
+                    <div
+                        v-if="
+                            (isLoadMore || isLoading) && linkedAssets.length > 0
+                        "
+                        class="flex items-center justify-center"
+                    >
+                        <button
+                            :disabled="isLoading"
+                            class="flex items-center justify-between px-3 py-2 transition-all duration-300 bg-white rounded-full text-primary"
+                            :class="isLoading ? 'px-3 py-2' : ''"
+                            @click="$emit('loadMore')"
+                        >
+                            <template v-if="!isLoading">
+                                <p
+                                    class="m-0 mr-1 overflow-hidden text-sm transition-all duration-300 overflow-ellipsis whitespace-nowrap"
+                                >
+                                    Load more
+                                </p>
+                                <AtlanIcon icon="ArrowDown" />
+                            </template>
+                            <AtlanLoader v-else class="w-6 h-6" />
+                        </button>
+                    </div>
+                </div>
             </section>
         </div>
     </a-modal>
@@ -85,6 +109,14 @@
             type: Boolean,
             required: true,
         },
+        isLoading: {
+            type: Boolean,
+            required: true,
+        },
+        isLoadMore: {
+            type: Boolean,
+            required: true,
+        },
         linkedAssets: {
             type: Object as PropType<any>,
             required: true,
@@ -98,7 +130,7 @@
             required: true,
         },
     })
-    const emit = defineEmits(['metadataRemove'])
+    const emit = defineEmits(['metadataRemove', 'loadMore'])
 
     const { visible } = useVModels(props, emit)
     const { linkedAssets } = toRefs(props)

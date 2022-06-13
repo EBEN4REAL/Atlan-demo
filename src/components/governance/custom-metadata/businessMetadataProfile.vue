@@ -3,6 +3,9 @@
         v-model:visible="linkedAssetsVisible"
         :linked-assets="linkedAssets"
         :metadata="selectedBm"
+        :isLoadMore="isLoadMore"
+        :isLoading="isLoading"
+        @loadMore="handleLoadMore"
         @metadataRemove="handleMetadataRemove"
     />
     <div class="relative">
@@ -185,7 +188,6 @@
     import CreateUpdateInfo from '@/common/info/createUpdateInfo.vue'
     import MetadataHeaderButton from './metadataHeaderButton.vue'
     import AddPropertyDrawer from './propertyDrawer/propertyDrawer.vue'
-    import noPropertyImage from '~/assets/images/admin/no-property.png'
     import PropertyList from '@/governance/custom-metadata/properties/propertyList.vue'
     import ArchivedPropertyList from '@/governance/custom-metadata/properties/archivedPropertyList.vue'
     import AvatarUpdate from './avatarUpdate.vue'
@@ -331,6 +333,10 @@
                 assets: linkedAssets,
                 mutate: refreshLinkedAssets,
                 isReady,
+                isLoading,
+                isLoadMore,
+                handleLoadMore,
+                removeAsset,
             } = getAssetCount(localBm.value)
 
             const handleMetadataRemove = async (assetID) => {
@@ -338,9 +344,8 @@
                 // await refreshLinkedAssets()
 
                 // ? hence removing locally
-                linkedAssets.value = linkedAssets.value.filter(
-                    (asset) => asset?.guid !== assetID
-                )
+                removeAsset(assetID)
+
                 if (!linkedAssets.value.length) {
                     linkedAssetsVisible.value = false
                     // ? since all assets are now cleared, open delete confirm modal
@@ -419,6 +424,9 @@
                 addPropertyDrawer.value?.open(property, true)
             }
             return {
+                isLoading,
+                isLoadMore,
+                handleLoadMore,
                 metaActions,
                 handleMetadataRemove,
                 openDirection,
@@ -444,11 +452,6 @@
                 checkAccess,
                 finalAttributeList,
                 archivedAttributeList,
-            }
-        },
-        data() {
-            return {
-                noPropertyImage,
             }
         },
     })

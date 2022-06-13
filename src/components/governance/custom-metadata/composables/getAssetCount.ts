@@ -1,5 +1,5 @@
-import { ref, watch } from 'vue'
-import { MinimalAttributes, metadataLinkedAssetsAttributes } from '~/constant/projection'
+import { computed, ref, watch } from 'vue'
+import { metadataLinkedAssetsAttributes } from '~/constant/projection'
 import { Search } from '~/services/meta/search'
 import { useTypedefStore } from '~/store/typedef'
 
@@ -8,11 +8,14 @@ import { useTypedefStore } from '~/store/typedef'
 const getAssetCount = (selectedBM) => {
     const typedefStore = useTypedefStore()
     const assets = ref([])
-    const attributes = [...MinimalAttributes]
+    const count = ref(0)
+    const offset = ref(0)
+    const size = 5
 
-    const body = {
+    const body = computed(() => ({
         "dsl": {
-            "size": 50,
+            size,
+            "from": offset.value,
             "query": {
                 "bool": {
                     "should": [
@@ -25,9 +28,11 @@ const getAssetCount = (selectedBM) => {
                 }
             }
         },
-        attributes: [...typedefStore.getCustomMetadataListProjectionsByName(selectedBM.name, true), ...metadataLinkedAssetsAttributes],
+        attributes: [
+            ...typedefStore.getCustomMetadataListProjectionsByName(selectedBM.name, true),
+            ...metadataLinkedAssetsAttributes],
         suppressLogs: true
-    }
+    }))
 
     const {
         data,
@@ -38,10 +43,35 @@ const getAssetCount = (selectedBM) => {
         isReady
     } = Search.IndexSearch(body, { asyncOptions: { immediate: false } })
     watch(data, (v) => {
-        assets.value = data?.value?.entities || []
+        if (offset.value > 0)
+            assets.value.push(...(data?.value?.entities || []))
+        else
+            assets.value = data?.value?.entities || []
+        count.value = data.value.approximateCount
     })
 
+    const isLoadMore = computed(() => {
+        if (!data.value) return false
+        return assets.value.length < count.value
+    })
+
+    const handleLoadMore = async () => {
+        offset.value += size
+        await mutate()
+    }
+
+    const removeAsset = (id) => {
+        assets.value = assets.value.filter(
+            (asset) => asset?.guid !== id
+        )
+        offset.value -= 1
+        count.value -= 1
+    }
+
     return {
+        removeAsset,
+        isLoadMore,
+        handleLoadMore,
         isReady,
         assets,
         mutate,

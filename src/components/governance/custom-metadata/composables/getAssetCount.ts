@@ -47,7 +47,7 @@ const getAssetCount = (selectedBM) => {
             assets.value.push(...(data?.value?.entities || []))
         else
             assets.value = data?.value?.entities || []
-        count.value = data.value.approximateCount
+        count.value = data.value?.approximateCount || 0
     })
 
     const isLoadMore = computed(() => {

@@ -1154,6 +1154,21 @@
                     @change="handleSeeAlsoUpdate"
                 >
                 </RelatedTerms>
+                <!-- Antonyms widget -->
+                <p
+                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 mt-4"
+                >
+                    Antonyms
+                </p>
+                <RelatedTerms
+                    v-model="localAntonyms"
+                    :selected-asset="selectedAsset"
+                    class="px-5"
+                    :edit-permission="editPermission"
+                    :allow-delete="editPermission"
+                    @change="handleAntonymsUpdate"
+                >
+                </RelatedTerms>
             </div>
 
             <div
@@ -1418,7 +1433,9 @@
                 localMeanings,
                 localCategories,
                 localSeeAlso,
+                localAntonyms,
                 handleSeeAlsoUpdate,
+                handleAntonymsUpdate,
                 handleCategoriesUpdate,
                 handleMeaningsUpdate,
                 handleChangeName,
@@ -1575,9 +1592,11 @@
                 handleMeaningsUpdate,
                 handleCategoriesUpdate,
                 handleSeeAlsoUpdate,
+                handleAntonymsUpdate,
                 isUserDescription,
                 localCategories,
                 localSeeAlso,
+                localAntonyms,
                 handleChangeAdmins,
                 localAdmins,
                 localViewers,

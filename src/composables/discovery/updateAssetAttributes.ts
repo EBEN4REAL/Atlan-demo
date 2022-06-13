@@ -39,6 +39,9 @@ export default function updateAssetAttributes(
         meanings,
         categories,
         seeAlso,
+        preferredTerms,
+        preferredToTerms,
+        antonyms,
         assignedEntities,
         allowQuery,
         allowQueryPreview,
@@ -139,6 +142,9 @@ export default function updateAssetAttributes(
     const localAssignedEntities = ref(assignedEntities(selectedAsset.value))
     const localCategories = ref(categories(selectedAsset.value))
     const localSeeAlso = ref(seeAlso(selectedAsset.value))
+    const localPreferredTerms = ref(preferredTerms(selectedAsset.value))
+    const localPreferredToTerms = ref(preferredToTerms(selectedAsset.value))
+    const localAntonyms = ref(antonyms(selectedAsset.value))
     const localParentCategory = ref(
         selectedAsset.value?.attributes?.parentCategory
     )
@@ -576,6 +582,27 @@ export default function updateAssetAttributes(
         })
         mutate()
     }
+
+    const handleAntonymsUpdate = () => {
+        console.log(localAntonyms.value)
+        entity.value = {
+            ...entity.value,
+            relationshipAttributes: {
+                antonyms: localAntonyms.value.map((term) => ({
+                    typeName: 'AtlasGlossaryTerm',
+                    guid: term.guid,
+                })),
+                anchor: selectedAsset?.value?.attributes?.anchor,
+            },
+        }
+        body.value.entities = [entity.value]
+        currentMessage.value = 'Antonyms have been updated'
+        // TODO: change event name to be more specific ?
+        sendMetadataTrackEvent('related_terms_updated', {
+            count: localSeeAlso.value?.length,
+        })
+        mutate()
+    }
     const handleParentCategoryUpdate = () => {
         entity.value = {
             ...entity.value,
@@ -772,6 +799,10 @@ export default function updateAssetAttributes(
         if (seeAlso(selectedAsset?.value) !== localSeeAlso.value) {
             localSeeAlso.value = seeAlso(selectedAsset.value)
         }
+        if (antonyms(selectedAsset?.value) !== localAntonyms.value) {
+            localAntonyms.value = antonyms(selectedAsset.value)
+        }
+
 
         if (error.value?.response?.data?.errorCode) {
             message.error(
@@ -884,6 +915,7 @@ export default function updateAssetAttributes(
         localMeanings,
         localCategories,
         localSeeAlso,
+        localAntonyms,
         localViewers,
         handleChangeName,
         handleChangeDescription,
@@ -909,6 +941,7 @@ export default function updateAssetAttributes(
         handleMeaningsUpdate,
         handleCategoriesUpdate,
         handleSeeAlsoUpdate,
+        handleAntonymsUpdate,
         shouldDrawerUpdate,
         asset,
         localAssignedEntities,

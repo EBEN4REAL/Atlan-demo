@@ -196,6 +196,9 @@ export const GlossaryAttributes = [
     'parentCategory',
     'assignedEntities',
     'seeAlso',
+    'antonyms',
+    'preferredTerms',
+    'preferredToTerms',
 ]
 
 export const GlossaryRelationAttributes = ['name']

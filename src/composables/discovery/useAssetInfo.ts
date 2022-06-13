@@ -45,6 +45,11 @@ export default function useAssetInfo() {
 
     const categories = (asset: assetInterface) => asset?.attributes?.categories
     const seeAlso = (asset: assetInterface) => asset?.attributes?.seeAlso
+    const antonyms = (asset: assetInterface) => asset?.attributes?.antonyms
+    const preferredTerms = (asset: assetInterface) =>
+        asset?.attributes?.preferredTerms
+    const preferredToTerms = (asset: assetInterface) =>
+        asset?.attributes?.preferredToTerms
 
     const parentWorkspace = (asset: assetInterface) =>
         attributes(asset)?.workspace
@@ -1482,6 +1487,9 @@ export default function useAssetInfo() {
         isSort,
         categories,
         seeAlso,
+        preferredTerms,
+        preferredToTerms,
+        antonyms,
         parentCategory,
         sourceOwners,
         isGTC,

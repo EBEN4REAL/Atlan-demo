@@ -138,6 +138,7 @@
                 required: true,
             },
         },
+        emits: ['viewAssets'],
         setup(props) {
             const store = useTypedefStore()
             const metadataModal = ref(null)

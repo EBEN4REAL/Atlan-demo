@@ -524,11 +524,15 @@
                     policy?.value?.connectionId
                 )
             })
-            const maskComputed = computed(
-                () =>
-                    maskPersona.find((el) => el.value === policy.value.type)
-                        ?.label
-            )
+            const maskComputed = computed(() => {
+                const finded = maskPersona.find(
+                    (el) => el.value === policy.value.type
+                )
+                const label = finded?.label || ''
+                if (label === 'None') return ''
+
+                return finded?.label
+            })
             const createdAtFormated = useTimeAgo(policy.value.createdAt)
             const isAllAssets = (name) => {
                 const splited = name.split('/')

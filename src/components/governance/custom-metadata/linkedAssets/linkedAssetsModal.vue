@@ -169,6 +169,9 @@
             @apply whitespace-normal;
         }
         @apply border-none  !important;
+        :global(.ant-menu-submenu) {
+            margin-bottom: -2px;
+        }
         :global(.ant-menu-submenu-title) {
             @apply h-full p-0 m-0 !important;
             :global(.ant-menu-submenu-arrow) {

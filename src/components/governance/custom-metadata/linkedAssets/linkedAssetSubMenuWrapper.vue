@@ -8,7 +8,7 @@
         }"
     >
         <template #title>
-            <LinkedAssetsOwnerPopover
+            <!-- <LinkedAssetsOwnerPopover
                 v-if="isScrubbed(asset) && ownerUsers(asset).length && false"
                 :asset="asset"
             >
@@ -19,23 +19,22 @@
                     :asset="asset"
                     @handleClear="handleClear(asset)"
                 />
-            </LinkedAssetsOwnerPopover>
-            <template v-else>
-                <SubMenuTitle
-                    :class="{
-                        ' border-transparent':
-                            openKeys.includes(asset.guid) ||
-                            openKeys.includes(linkedAssets[x + 1]?.guid) ||
-                            linkedAssets.length - 1 === x,
-                        'bg-new-gray-100 cursor-not-allowed rounded-lg':
-                            isScrubbed(asset),
-                    }"
-                    :open-keys="openKeys"
-                    :count="$refs?.LinkedAssetItem?.[x]?.count"
-                    :asset="asset"
-                    @handleClear="handleClear(asset)"
-                />
-            </template>
+            </LinkedAssetsOwnerPopover> -->
+            <SubMenuTitle
+                :class="{
+                    ' border-transparent':
+                        openKeys.includes(asset.guid) ||
+                        openKeys.includes(linkedAssets[x + 1]?.guid) ||
+                        linkedAssets.length - 1 === x,
+                    ' cursor-not-allowed ': isScrubbed(asset),
+                    ' hover:bg-gray-100': !openKeys.includes(asset.guid),
+                }"
+                :open-keys="openKeys"
+                :count="$refs?.LinkedAssetItem?.[x]?.count"
+                :asset="asset"
+                class="cursor-pointer"
+                @handleClear="handleClear(asset)"
+            />
         </template>
         <a-menu-item>
             <div class="p-3 pt-0">
@@ -111,7 +110,8 @@
 
 <style lang="less" module>
     .openBorder {
-        @apply border rounded-lg border-new-gray-200 overflow-hidden  !important;
+        @apply border rounded-lg border-new-gray-200 overflow-hidden mt-1 !important;
+        margin-bottom: 2px !important;
     }
 
     :global(.ant-menu-item::after) {

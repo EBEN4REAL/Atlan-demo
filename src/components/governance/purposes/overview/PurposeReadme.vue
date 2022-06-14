@@ -68,9 +68,8 @@
                         'Some error occured...Please try again later.'
                 )
             }
-            const handleSave = () => {
+            const handleSave = () =>
                 handleUpdatePurposeReadme(editorValue.value)
-            }
             return {
                 isLoading,
                 editorValue,

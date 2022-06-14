@@ -190,7 +190,6 @@
         "dompurify",
         "emoji-picker-element",
         "event-source-polyfill",
-        "jose",
         "json-2-csv",
         "katex",
         "keycloak-js",

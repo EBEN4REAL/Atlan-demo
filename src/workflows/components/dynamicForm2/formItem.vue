@@ -105,6 +105,7 @@
     import ConnectionSelector from './widget/connectionSelector.vue'
     import Alias from './widget/alias.vue'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
+    import Sage from './widget/authCheck.vue'
 
     export default defineComponent({
         name: 'DynamicForm',
@@ -132,6 +133,7 @@
             Datetime,
             Apitree,
             Date,
+            Sage,
         },
         props: {
             configMap: {

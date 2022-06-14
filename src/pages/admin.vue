@@ -13,7 +13,7 @@
                     mode="vertical"
                     style="width: inherit"
                     class="border-none admin-sidebar"
-                    :inlineIndent="1"
+                    :inline-indent="1"
                     @click="handleClick"
                 >
                     <a-menu-item-group title="Workspace">
@@ -30,7 +30,7 @@
                             Groups
                         </a-menu-item>
                         <a-menu-item key="apikeys" v-auth="[map.LIST_APIKEY]"
-                            >API Keys</a-menu-item
+                            >API Tokens</a-menu-item
                         >
                         <a-menu-item key="sso" v-auth="[map.UPDATE_SSO]">
                             SSO

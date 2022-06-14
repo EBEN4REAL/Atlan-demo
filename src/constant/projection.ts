@@ -15,6 +15,27 @@ export const SavedQueryAttributes = [
     'collectionQualifiedName',
     'visualBuilderSchemaBase64',
     'isVisualQuery',
+    'name',
+    'displayName',
+    'typeName',
+    'dataType',
+    'description',
+    'userDescription',
+    'certificateStatus',
+    'ownerUsers',
+    'ownerGroups',
+    'classifications',
+    'connectorName',
+    'connectionId',
+    'connectionQualifiedName',
+    'defaultSchemaQualifiedName',
+    'defaultDatabaseQualifiedName',
+    'parentFolder',
+    'columns', //TODO: queries
+    'folder',
+    'compiledQuery',
+    'rawQuery',
+    'meanings',
 ]
 
 export const InternalAttributes = [
@@ -163,6 +184,7 @@ export const AssetAttributes = [
 ]
 
 export const SQLAttributes = [
+    'schemaCount',
     'rowCount',
     'columnCount',
     'sizeBytes',

@@ -374,7 +374,7 @@
                 />
                 <span class="ml-2 text-gray-500">{{
                     item.createdBy?.startsWith('service-account-apikey-')
-                        ? 'API key'
+                        ? 'API token'
                         : item.createdBy
                 }}</span>
                 <div class="flex ml-auto">

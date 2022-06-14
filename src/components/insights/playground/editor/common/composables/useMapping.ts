@@ -17,7 +17,6 @@ export const mappingKeywords = {
     LEFT: 'NEXT_KEYWORD',
     RIGHT: 'NEXT_KEYWORD',
     GROUP: 'NEXT_KEYWORD',
-    ORDER: 'NEXT_KEYWORD',
     FULL: 'NEXT_KEYWORD',
     SELF: 'NEXT_KEYWORD',
     UNION: 'NEXT_KEYWORD',

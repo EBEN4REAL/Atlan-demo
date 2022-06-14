@@ -437,14 +437,15 @@
 
             // onFullscreen
             const onFullscreen = () => {
-                isFullscreen.value = !isFullscreen.value
+                const isFullscreenNative = !!document.fullscreenElement
+                isFullscreen.value = isFullscreenNative
 
                 // Handle Event - lineage_control_panel_full_screen_toggled
                 sendFullScreenToggleEvent()
 
-                if (isFullscreen.value) {
+                if (isFullscreenNative)
                     graph.value.resize(graphWidth.value, graphHeight.value)
-                } else {
+                else {
                     graph.value.resize(
                         graphWidth.value,
                         graphHeight.value / 1.35
@@ -453,6 +454,19 @@
 
                 fullscreen(lineageContainer)
             }
+
+            // onFullscreenChanged
+            const onFullscreenChanged = () => {
+                const isFullscreenNative = !!document.fullscreenElement
+
+                if (isFullscreenNative) {
+                    // Handle Event - lineage_control_panel_full_screen_toggled
+                    sendFullScreenToggleEvent()
+
+                    graph.value.resize(graphWidth.value, graphHeight.value)
+                } else isFullscreen.value = isFullscreenNative
+            }
+            document.addEventListener('fullscreenchange', onFullscreenChanged)
 
             // onShowMinimap
             const onShowMinimap = () => {

@@ -73,7 +73,7 @@
                             "
                             class="w-auto h-4 mr-1"
                         />
-                        <span class="text-primary"> {{ getFilterValue }}</span>
+                        <span class="text-primary">{{ getFilterValue }}</span>
                     </div>
                 </transition>
             </div>

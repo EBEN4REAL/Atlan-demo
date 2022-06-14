@@ -197,7 +197,6 @@
 
                 handleFilterChange()
             })
-            handleFilterChange()
 
             return {
                 typeName,

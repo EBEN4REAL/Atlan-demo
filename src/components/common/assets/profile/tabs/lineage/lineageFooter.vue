@@ -180,6 +180,7 @@
                                     <div
                                         v-if="tab.items.length"
                                         class="flex flex-col px-6 py-4 text-gray-500 bg-white gap-y-3"
+                                        style="min-height: 190px"
                                     >
                                         <div
                                             v-for="(item, index) in tab.items"
@@ -207,7 +208,7 @@
                             "
                         >
                             <AtlanIcon
-                                icon="Legend"
+                                icon="Info"
                                 class="outline-none"
                             ></AtlanIcon>
                         </div>
@@ -280,14 +281,17 @@
 
 <script lang="ts">
     /** VUE */
-    import { defineComponent, ref, toRefs } from 'vue'
+    import { defineComponent, ref, toRefs, computed } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
     import { DataUri } from '@antv/x6'
 
     /** COMPOSABLES */
     import useTransformGraph from './useTransformGraph'
-    import useLineageStore from '~/store/lineage'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+
+    /** STORE */
+    import useLineageStore from '~/store/lineage'
+    import { useConnectionStore } from '~/store/connection'
 
     /** CONSTANTS */
     import { exportStyles } from './stylesTwo'
@@ -324,6 +328,8 @@
         setup(props, { emit }) {
             /** INJECTIONS */
             const lineageStore = useLineageStore()
+            const connectionStore = useConnectionStore()
+
             const preferences = lineageStore.getPreferences()
 
             /** DATA */
@@ -341,6 +347,9 @@
             const showPref = ref(false)
             const footerRoot = ref<HTMLElement>()
             const activeLegendTabKey = ref('assets')
+            const activeConnectionSourceList = computed(() =>
+                connectionStore.activeConnectionSourceList.map((i) => i.id)
+            )
             const legendTabs = [
                 {
                     key: 'assets',
@@ -369,21 +378,41 @@
                 {
                     key: 'icons',
                     title: 'Icons',
-                    items: [
-                        {
-                            icon: 'LegendTableauDSField',
-                            label: 'Tableau datasource field',
-                        },
-                        {
-                            icon: 'LegendTableauCField',
-                            label: 'Tableau calculated field',
-                        },
-                        { icon: 'LegendLookerField', label: 'Looker field' },
-                        { icon: 'LegendMeasures', label: 'Measures' },
-                        { icon: 'LegendDimensions', label: 'Dimensions' },
-                    ],
+                    items: [],
                 },
             ]
+
+            if (activeConnectionSourceList.value.includes('tableau')) {
+                legendTabs[2].items.push(
+                    {
+                        icon: 'LegendTableauDSField',
+                        label: 'Tableau datasource field',
+                    },
+                    {
+                        icon: 'LegendTableauCField',
+                        label: 'Tableau calculated field',
+                    }
+                )
+            }
+
+            if (activeConnectionSourceList.value.includes('looker')) {
+                legendTabs[2].items.push({
+                    icon: 'LegendLookerField',
+                    label: 'Looker field',
+                })
+            }
+
+            const biAssetTypes = ['tableau', 'powerbi', 'looker']
+            if (
+                activeConnectionSourceList.value.find((i) =>
+                    biAssetTypes.includes(i)
+                )
+            ) {
+                legendTabs[2].items.push(
+                    { icon: 'LegendMeasures', label: 'Measures' },
+                    { icon: 'LegendDimensions', label: 'Dimensions' }
+                )
+            }
 
             /** EVENTS DEFINITIONS */
             const sendFullScreenToggleEvent = useDebounceFn(() => {

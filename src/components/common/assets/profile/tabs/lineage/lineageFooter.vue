@@ -1,60 +1,18 @@
 <template>
-    <div v-if="preferences.showLegend" class="lineage-legend footer">
-        <div>
-            <div class="flex justify-between px-4 py-3 text-sm">
-                <div>Legend</div>
-                <div>
-                    <AtlanIcon
-                        icon="Cross"
-                        class="cursor-pointer"
-                        style="width: 0.8rem !important"
-                        @click="preferences.showLegend = false"
-                    ></AtlanIcon>
-                </div>
-            </div>
-            <a-divider class="m-0" />
-            <div class="flex flex-col w-48 p-4 text-gray-500 gap-y-2">
-                <div class="flex items-center">
-                    <AtlanIcon icon="LegendExpand"></AtlanIcon>
-                    <div class="ml-4">Expandable node</div>
-                </div>
-                <div class="flex items-center">
-                    <AtlanIcon icon="LegendCollapse"></AtlanIcon>
-                    <div class="ml-4">Collapsible node</div>
-                </div>
-                <div class="flex items-center">
-                    <AtlanIcon
-                        icon="LegendAnomaly"
-                        style="width: 1.1rem !important"
-                    ></AtlanIcon>
-                    <div class="ml-4">Anomaly node</div>
-                </div>
-                <div class="flex items-center">
-                    <AtlanIcon
-                        icon="LegendSelected"
-                        style="width: 1.1rem !important"
-                    ></AtlanIcon>
-                    <div class="ml-4">Selected node</div>
-                </div>
-                <div class="flex items-center">
-                    <AtlanIcon
-                        icon="LegendHighlighted"
-                        style="width: 1.1rem !important"
-                    ></AtlanIcon>
-                    <div class="ml-4">Highlighted node</div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Controls -->
     <div ref="footerRoot" class="lineage-control footer">
         <slot></slot>
 
         <div class="controls">
-            <div class="ml-1 control-item" @click="toggleControlVisibility">
+            <!-- Controls toggle -->
+            <div class="ml-1 control-item" @click="onshowControls">
                 <a-tooltip placement="top">
                     <template #title>
                         <span
-                            >{{ isExpanded ? 'Hide ' : 'Show ' }} controls</span
+                            >{{
+                                showControls ? 'Hide ' : 'Show '
+                            }}
+                            controls</span
                         >
                     </template>
 
@@ -62,75 +20,92 @@
                         icon="CollapseControl"
                         class="transition-transform duration-300 outline-none"
                         :class="{
-                            'transform rotate-180 mr-1 my-2': !isExpanded,
+                            'transform rotate-180 mr-1 my-2': !showControls,
                         }"
                     ></AtlanIcon>
                 </a-tooltip>
             </div>
-            <template v-if="isExpanded">
+
+            <!-- Controls Items -->
+            <template v-if="showControls">
                 <div style="height: 40px; width: 1px" class="bg-gray-300" />
 
                 <!-- Preferences Popover -->
-                <a-popover
-                    v-model:visible="isPreferencesVisible"
-                    :trigger="['click']"
-                    :get-popup-container="() => footerRoot"
-                >
-                    <template #content>
-                        <div class="px-4 py-3 text-sm">View Options</div>
-                        <a-divider class="m-0" />
-                        <div class="flex flex-col w-64 p-4 gap-y-4">
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-500">Show Legend</span>
-                                <a-switch
-                                    v-model:checked="preferences.showLegend"
-                                />
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-500">Show Arrows</span>
-                                <a-switch
-                                    v-model:checked="preferences.showArrow"
-                                />
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-500">Show Database</span>
-                                <a-switch
-                                    v-model:checked="preferences.showDatabase"
-                                />
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-500">Show Schema</span>
-                                <a-switch
-                                    v-model:checked="preferences.showSchema"
-                                />
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-500"
-                                    >Show Announcement</span
-                                >
-                                <a-switch
-                                    v-model:checked="
-                                        preferences.showAnnouncement
-                                    "
-                                />
-                            </div>
-                        </div>
+                <a-tooltip placement="top">
+                    <template #title>
+                        <span>{{
+                            showPref ? 'Hide preferences' : 'Show preferences'
+                        }}</span>
                     </template>
-
-                    <div
-                        class="control-item"
-                        :class="
-                            isPreferencesVisible
-                                ? 'bg-primary-light text-primary'
-                                : ''
-                        "
+                    <a-popover
+                        v-model:visible="showPref"
+                        :trigger="['click']"
+                        :get-popup-container="() => footerRoot"
                     >
-                        <AtlanIcon
-                            icon="SettingsOutlined"
-                            class="outline-none"
-                        ></AtlanIcon>
-                    </div>
-                </a-popover>
+                        <template #content>
+                            <div class="px-4 py-3 text-sm">View Options</div>
+                            <a-divider class="m-0" />
+                            <div class="flex flex-col w-64 p-4 gap-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-500"
+                                        >Show Legend</span
+                                    >
+                                    <a-switch
+                                        v-model:checked="preferences.showLegend"
+                                    />
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-500"
+                                        >Show Arrows</span
+                                    >
+                                    <a-switch
+                                        v-model:checked="preferences.showArrow"
+                                    />
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-500"
+                                        >Show Database</span
+                                    >
+                                    <a-switch
+                                        v-model:checked="
+                                            preferences.showDatabase
+                                        "
+                                    />
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-500"
+                                        >Show Schema</span
+                                    >
+                                    <a-switch
+                                        v-model:checked="preferences.showSchema"
+                                    />
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-500"
+                                        >Show Announcement</span
+                                    >
+                                    <a-switch
+                                        v-model:checked="
+                                            preferences.showAnnouncement
+                                        "
+                                    />
+                                </div>
+                            </div>
+                        </template>
+
+                        <div
+                            class="control-item"
+                            :class="
+                                showPref ? 'bg-primary-light text-primary' : ''
+                            "
+                        >
+                            <AtlanIcon
+                                icon="SettingsOutlined"
+                                class="outline-none"
+                            ></AtlanIcon>
+                        </div>
+                    </a-popover>
+                </a-tooltip>
 
                 <!-- onSvgExport -->
                 <!-- <div class="control-item" @click="onSvgExport">
@@ -165,6 +140,80 @@
                         ></AtlanIcon>
                     </a-tooltip>
                 </div>
+
+                <!-- Legend Popover -->
+                <a-tooltip placement="top">
+                    <template #title>
+                        <span>{{
+                            showLegend ? 'Hide legend' : 'Show legend'
+                        }}</span>
+                    </template>
+                    <a-popover
+                        v-model:visible="showLegend"
+                        :trigger="['click']"
+                        :get-popup-container="() => footerRoot"
+                    >
+                        <template #content>
+                            <div class="flex justify-between px-4 py-3 text-sm">
+                                <div>Legend</div>
+                                <div>
+                                    <AtlanIcon
+                                        icon="Cross"
+                                        class="cursor-pointer"
+                                        style="width: 0.8rem !important"
+                                        @click="showLegend = false"
+                                    ></AtlanIcon>
+                                </div>
+                            </div>
+                            <a-divider class="m-0" />
+
+                            <a-tabs
+                                v-model:activeKey="activeLegendTabKey"
+                                class="h-full"
+                                :class="$style.legendTab"
+                            >
+                                <a-tab-pane
+                                    v-for="tab in legendTabs"
+                                    :key="tab.key"
+                                    :tab="tab.title"
+                                >
+                                    <div
+                                        v-if="tab.items.length"
+                                        class="flex flex-col px-6 py-4 text-gray-500 bg-white gap-y-3"
+                                    >
+                                        <div
+                                            v-for="(item, index) in tab.items"
+                                            :key="index"
+                                            class="flex items-center"
+                                        >
+                                            <AtlanIcon
+                                                :icon="item.icon"
+                                            ></AtlanIcon>
+                                            <div class="ml-3">
+                                                {{ item.label }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a-tab-pane>
+                            </a-tabs>
+                        </template>
+
+                        <div
+                            class="control-item"
+                            :class="
+                                showLegend
+                                    ? 'bg-primary-light text-primary'
+                                    : ''
+                            "
+                        >
+                            <AtlanIcon
+                                icon="Legend"
+                                class="outline-none"
+                            ></AtlanIcon>
+                        </div>
+                    </a-popover>
+                </a-tooltip>
+
                 <!-- Re-center -->
                 <div
                     class="control-item"
@@ -286,10 +335,55 @@
                 graphWidth,
             } = toRefs(props)
             const showMinimap = ref(false)
+            const showLegend = ref(false)
             const isFullscreen = ref(false)
-            const isExpanded = ref(true)
-            const isPreferencesVisible = ref(false)
+            const showControls = ref(true)
+            const showPref = ref(false)
             const footerRoot = ref<HTMLElement>()
+            const activeLegendTabKey = ref('assets')
+            const legendTabs = [
+                {
+                    key: 'assets',
+                    title: 'Assets',
+                    items: [
+                        { icon: 'LegendExpand', label: 'Expandable' },
+                        { icon: 'LegendCollapse', label: 'Collapsible' },
+                        { icon: 'LegendAnomaly', label: 'Anomaly' },
+                        { icon: 'LegendSelected', label: 'Selected' },
+                        { icon: 'LegendHighlighted', label: 'Highlighted' },
+                    ],
+                },
+                {
+                    key: 'process',
+                    title: 'Process',
+                    items: [
+                        { icon: 'LegendProcessDefault', label: 'Default' },
+                        {
+                            icon: 'LegendProcessHighlighted',
+                            label: 'Highlighted',
+                        },
+                        { icon: 'LegendProcess', label: 'Process' },
+                        { icon: 'LegendProcessAnomaly', label: 'Anomaly' },
+                    ],
+                },
+                {
+                    key: 'icons',
+                    title: 'Icons',
+                    items: [
+                        {
+                            icon: 'LegendTableauDSField',
+                            label: 'Tableau datasource field',
+                        },
+                        {
+                            icon: 'LegendTableauCField',
+                            label: 'Tableau calculated field',
+                        },
+                        { icon: 'LegendLookerField', label: 'Looker field' },
+                        { icon: 'LegendMeasures', label: 'Measures' },
+                        { icon: 'LegendDimensions', label: 'Dimensions' },
+                    ],
+                },
+            ]
 
             /** EVENTS DEFINITIONS */
             const sendFullScreenToggleEvent = useDebounceFn(() => {
@@ -304,7 +398,7 @@
 
             const sendControlPanelToggledEvent = useDebounceFn(() => {
                 useAddEvent('lineage', 'control_panel', 'toggled', {
-                    is_hidden: !isExpanded.value,
+                    is_hidden: !showControls.value,
                 })
             }, 600)
 
@@ -369,14 +463,14 @@
                 sendMiniMapClickedEvent()
             }
 
-            // toggleControlVisibility
-            const toggleControlVisibility = () => {
-                if (isExpanded.value) {
-                    isPreferencesVisible.value = false
+            // onshowControls
+            const onshowControls = () => {
+                if (showControls.value) {
+                    showPref.value = false
                     // Close the minimap if the user wants to collapse the controls
                     if (showMinimap.value) onShowMinimap()
-                    isExpanded.value = false
-                } else isExpanded.value = true
+                    showControls.value = false
+                } else showControls.value = true
 
                 // Handle Event - lineage_control_panel_toggled
                 sendControlPanelToggledEvent()
@@ -389,17 +483,20 @@
 
             return {
                 showMinimap,
+                showLegend,
                 isFullscreen,
-                isPreferencesVisible,
-                isExpanded,
+                showPref,
+                showControls,
                 footerRoot,
                 preferences,
+                activeLegendTabKey,
+                legendTabs,
                 zoom,
                 fit,
                 onShowMinimap,
                 onFullscreen,
                 onSvgExport,
-                toggleControlVisibility,
+                onshowControls,
                 setPreference,
                 sendPanelRefocusEvent,
             }
@@ -421,5 +518,16 @@
 
     .ant-switch-checked.ant-switch {
         background-color: #5277d7 !important;
+    }
+</style>
+
+<style lang="less" module>
+    .legendTab {
+        :global(.ant-tabs-tab) {
+            @apply mr-8 ml-0 !important;
+        }
+        :global(.ant-tabs-nav-list) {
+            @apply pl-6 bg-new-gray-100 !important;
+        }
     }
 </style>

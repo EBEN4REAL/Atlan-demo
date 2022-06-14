@@ -1,8 +1,18 @@
+import Legend from '~/assets/images/lineage/legend.svg'
 import LegendExpand from '~/assets/images/lineage/legendExpand.svg'
 import LegendCollapse from '~/assets/images/lineage/legendCollapse.svg'
 import LegendAnomaly from '~/assets/images/lineage/legendAnomaly.svg'
 import LegendSelected from '~/assets/images/lineage/legendSelected.svg'
 import LegendHighlighted from '~/assets/images/lineage/legendHighlighted.svg'
+import LegendProcess from '~/assets/images/lineage/legendProcess.svg'
+import LegendProcessDefault from '~/assets/images/lineage/legendProcessDefault.svg'
+import LegendProcessHighlighted from '~/assets/images/lineage/legendProcessHighlighted.svg'
+import LegendProcessAnomaly from '~/assets/images/lineage/legendProcessAnomaly.svg'
+import LegendTableauDSField from '~/assets/images/lineage/legendTableauDSField.svg'
+import LegendTableauCField from '~/assets/images/lineage/legendTableauCField.svg'
+import LegendLookerField from '~/assets/images/lineage/legendLookerField.svg'
+import LegendMeasures from '~/assets/images/lineage/legendMeasures.svg'
+import LegendDimensions from '~/assets/images/lineage/legendDimensions.svg'
 import Time from '~/assets/images/icons/time.svg'
 import BookmarkFilled from '~/assets/images/icons/bookmark-filled.svg'
 import Bookmark from '~/assets/images/icons/bookmark.svg'
@@ -508,11 +518,21 @@ export default {
     QueryMetadata,
     QueryOutputSuccess,
     FullScreenSquare,
+    Legend,
     LegendExpand,
     LegendCollapse,
     LegendAnomaly,
     LegendSelected,
     LegendHighlighted,
+    LegendProcess,
+    LegendProcessDefault,
+    LegendProcessHighlighted,
+    LegendProcessAnomaly,
+    LegendTableauDSField,
+    LegendTableauCField,
+    LegendLookerField,
+    LegendMeasures,
+    LegendDimensions,
     Schedule24,
     Mail,
     EmptyJira,
@@ -969,5 +989,5 @@ export default {
     CSVLogo,
     PaperClip,
     IllustrationPersonaDemo,
-    IllustrationPurposeDemo
+    IllustrationPurposeDemo,
 }

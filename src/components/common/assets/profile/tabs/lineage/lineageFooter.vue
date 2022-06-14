@@ -180,6 +180,7 @@
                                     <div
                                         v-if="tab.items.length"
                                         class="flex flex-col px-6 py-4 text-gray-500 bg-white gap-y-3"
+                                        style="min-height: 190px"
                                     >
                                         <div
                                             v-for="(item, index) in tab.items"
@@ -207,7 +208,7 @@
                             "
                         >
                             <AtlanIcon
-                                icon="Legend"
+                                icon="Info"
                                 class="outline-none"
                             ></AtlanIcon>
                         </div>

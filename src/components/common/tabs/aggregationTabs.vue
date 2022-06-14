@@ -38,6 +38,13 @@
                                 icon="Globe"
                                 class="self-center mr-1 mb-0.5"
                             ></AtlanIcon>
+                            <img
+                                v-else-if="
+                                    item.image && !item.hideIcon && useImagePath
+                                "
+                                :src="item.image"
+                                class="mr-1 mb-0.5 h-4 w-4"
+                            />
                             <AtlanIcon
                                 v-else-if="item.image && !item.hideIcon"
                                 :icon="item.image"
@@ -128,6 +135,13 @@
                 },
             },
             shortcutEnabled: {
+                type: Boolean,
+                required: false,
+                default() {
+                    return false
+                },
+            },
+            useImagePath: {
                 type: Boolean,
                 required: false,
                 default() {

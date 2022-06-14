@@ -43,8 +43,6 @@
 
             const handleUpdatePurposeReadme = (dataEditor) => {
                 const payload = { ...purpose.value }
-                delete payload.dataPolicies
-                delete payload.metadataPolicies
 
                 return savePersona({
                     ...payload,

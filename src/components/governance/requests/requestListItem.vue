@@ -271,7 +271,6 @@
                         request.status === 'active' &&
                         !hasAccessForAction
                     "
-                    v-auth="[map.APPROVE_REQUEST]"
                 >
                     <p class="text-sm">
                         You don't have access to review this request

@@ -57,7 +57,6 @@
                             !updatePopoverActive &&
                             !hasAccessForAction
                         "
-                        v-auth="[map.APPROVE_REQUEST]"
                         class="flex -mr-1.5 p-1 hover-action linear-gradient rounded-sm"
                     >
                         <span class="ml-auto text-sm">No review access</span>

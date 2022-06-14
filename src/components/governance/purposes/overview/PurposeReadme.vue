@@ -43,6 +43,7 @@
 
             const handleUpdatePurposeReadme = (dataEditor) => {
                 const payload = { ...purpose.value }
+
                 return savePersona({
                     ...payload,
                     readme: dataEditor,
@@ -65,9 +66,8 @@
                         'Some error occured...Please try again later.'
                 )
             }
-            const handleSave = () => {
+            const handleSave = () =>
                 handleUpdatePurposeReadme(editorValue.value)
-            }
             return {
                 isLoading,
                 editorValue,

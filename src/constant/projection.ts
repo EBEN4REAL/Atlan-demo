@@ -325,9 +325,12 @@ export const MinimalAttributes = [
 ]
 
 export const metadataLinkedAssetsAttributes = [
-    ...MinimalAttributes,
-    "ownerUsers"
-
+    'name',
+    'displayName',
+    'certificateStatus',
+    'certificateUpdatedBy',
+    'connectorName',
+    'connectionName'
 ]
 
 

@@ -10,7 +10,7 @@ const getAssetCount = (selectedBM) => {
     const assets = ref([])
     const count = ref(0)
     const offset = ref(0)
-    const size = 5
+    const size = 100
 
     const body = computed(() => ({
         "dsl": {

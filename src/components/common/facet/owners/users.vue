@@ -59,12 +59,12 @@
                                                     ? 'user-name-facet-owner'
                                                     : 'user-name-facet-owner-verified',
                                                 !item?.enabled &&
-                                                !fullName(item).includes('me')
+                                                !fullName(item, false).includes('me')
                                                     ? 'line-through'
                                                     : '',
                                             ]"
                                         >
-                                            {{ fullName(item) }}
+                                            {{ fullName(item, false) }}
                                         </div>
                                         <div
                                             v-if="item.emailVerified === false"
@@ -317,12 +317,18 @@
                 return data
             })
 
-            const fullName = (item) => {
+            const fullName = (item, isTooltip) => {
+                const screenResolution = window.innerWidth;
+                let name = item.username;
                 if (item.firstName) {
-                    return `${item.firstName} ${item.lastName || ''}`
+                    name = `${item.firstName} ${item.lastName || ''}`
+                    // eslint-disable-next-line no-nested-ternary
+                    return isTooltip ? name  : (screenResolution < 1500) ? truncateString(name, 12, "...")  : truncateString(name, 30, "...")
                 }
-                return `${item.username}`
+                return isTooltip ? name : truncateString(name, 23, "...")
             }
+            
+            
             const handleChange = (checked, id) => {
                 if (checked.target.checked) {
                     map.value[id] = true
@@ -376,9 +382,9 @@
 
             const toolTipTitle = (item) => {
                 if (item?.enabled || fullName(item).includes('me')) {
-                    return `${fullName(item)}`
+                    return `${fullName(item, true)}`
                 } else {
-                    return `${fullName(item)} (Disabled)`
+                    return `${fullName(item, true)} (Disabled)`
                 }
             }
 

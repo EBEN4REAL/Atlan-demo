@@ -323,8 +323,7 @@ export const glossaryPolicyScopeList = [
 
 export const mapAllPermission = {
     glossaryPolicy: glossaryPolicyScopeList.reduce((acc, el)=> acc + el.scopes.length , 0),
-    data: personaScopeList.reduce((acc, el)=> acc + el.scopes.length , 0) -1,
-    meta: personaScopeList.reduce((acc, el)=> acc + el.scopes.length , 0) -1
+    meta: personaScopeList.reduce((acc, el)=> acc + el.scopes.length , 0)
 }
 
 export default function scopeService() {

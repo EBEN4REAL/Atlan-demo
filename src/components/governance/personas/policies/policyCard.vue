@@ -251,7 +251,11 @@
                     >
                         <template #title>
                             <div
-                                v-if="computedActions < mapAllPermission[type]"
+                                v-if="
+                                    computedActions <
+                                    mapAllPermission[type] -
+                                        (type === 'meta' ? 1 : 0)
+                                "
                             >
                                 {{ computedActions }}
                                 {{
@@ -269,7 +273,9 @@
                             />
 
                             {{
-                                computedActions >= mapAllPermission[type]
+                                computedActions >=
+                                mapAllPermission[type] -
+                                    (type === 'meta' ? 1 : 0)
                                     ? 'All'
                                     : computedActions
                             }}

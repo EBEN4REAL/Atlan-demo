@@ -9,7 +9,7 @@
 
         <div
             class="flex flex-row w-full border rounded-lg"
-            :style="{ height: '576px' }"
+            :style="{ height: '520px' }"
         >
             <preferences
                 :feature-list="featureList"

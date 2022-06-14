@@ -751,6 +751,7 @@
 
             /** whenever resource ID is fetched, refresh the asset to load the generated resource, then switch tab */
             watch(resourceId, () => {
+                if (!resourceId.value) return
                 const id = ref(selectedAsset.value.guid)
                 const { asset, isReady: isUpdateReady } = useCurrentUpdate({
                     id,

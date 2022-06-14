@@ -4,9 +4,26 @@ on:
     branches:
       - staging
 jobs:
+  test:
+    name: mabl Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Functional test deployment
+        id: mabl-test-deployment
+        uses: mablhq/github-run-tests-action@v1
+        env:
+          MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.my_pat }}
+        with:
+          application-id: ${{ secrets.MABL_APPLICATION_ID }}
+          environment-id: ${{ secrets.MABL_ENVIRONMENT_ID }}
+          plan-labels: Governance, Assets, Admin Center
   deploy:
     name: Deployment
     runs-on: ubuntu-latest
+    needs: test
 
     steps:
       - name: Get branch name
@@ -125,19 +142,3 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         if: failure() # Pick up events even if the job fails or is canceled.
-  test:
-    name: mabl Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Functional test deployment
-        id: mabl-test-deployment
-        uses: mablhq/github-run-tests-action@v1
-        env:
-          MABL_API_KEY: ${{ secrets.MABL_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.my_pat }}
-        with:
-          application-id: ${{ secrets.MABL_APPLICATION_ID }}
-          environment-id: ${{ secrets.MABL_ENVIRONMENT_ID }}
-          plan-labels: Governance, Assets, Admin Center

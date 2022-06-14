@@ -53,7 +53,7 @@
                     value: 'service-account',
                 },
                 {
-                    displayName: 'API Key',
+                    displayName: 'API Token',
                     value: 'apikey',
                 },
             ]

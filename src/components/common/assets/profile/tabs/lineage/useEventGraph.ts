@@ -17,10 +17,6 @@ import useGraph from './useGraph'
 import useTransformGraph from './useTransformGraph'
 import fetchPorts from './fetchPorts'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
-import {
-    featureEnabledMap,
-    LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE,
-} from '~/composables/labs/labFeatureList'
 
 /** CONSTANTS */
 import {
@@ -30,6 +26,8 @@ import {
 
 /** UTILS */
 import {
+    nodePortsLabelMap,
+    portsTypeNames,
     getFilteredRelations,
     getCyclicRelations,
     controlCyclicEdges,
@@ -173,20 +171,7 @@ export default function useEventGraph({
     // getPortLabel
     const getNodePortLabel = (node) => {
         const { typeName } = node.store.data.entity
-        const portsLabelMap = {
-            Table: 'column',
-            View: 'column',
-            MaterialisedView: 'column',
-            TableauDatasource: 'field',
-            // LookerExplore: 'field',
-            // LookerView: 'field',
-        }
-        if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
-            portsLabelMap.LookerExplore = 'field'
-            portsLabelMap.LookerView = 'field'
-        }
-
-        return portsLabelMap[typeName]
+        return nodePortsLabelMap[typeName]
     }
 
     // getEventPath
@@ -297,19 +282,7 @@ export default function useEventGraph({
         graph.value.getNodes().some((x) => x.hasPort(portId))
 
     // isPortTypeName
-    const isPortTypeName = (typeName) => {
-        const typeNames = [
-            'Column',
-            'TableauDatasourceField',
-            'TableauCalculatedField',
-            // 'LookerField',
-        ]
-
-        if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE])
-            typeNames.push('LookerField')
-
-        return typeNames.includes(typeName)
-    }
+    const isPortTypeName = (typeName) => portsTypeNames.includes(typeName)
 
     // isPortEdgesPresent
     const isPortEdgesPresent = () =>

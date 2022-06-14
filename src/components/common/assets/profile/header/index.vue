@@ -109,6 +109,14 @@
                                 "
                                 >(Published)</span
                             >
+                            <span
+                                v-if="
+                                    ['DataStudioAsset'].includes(
+                                        item.typeName
+                                    ) && dataStudioAssetType(item)
+                                "
+                                >({{ dataStudioAssetType(item) }})</span
+                            >
                         </div>
                         <div
                             v-else
@@ -514,6 +522,7 @@
                 sourceURL,
                 isCustom,
                 isPublished,
+                dataStudioAssetType,
                 assetPermission,
                 databaseQualifiedName,
                 schemaQualifiedName,
@@ -685,6 +694,7 @@
                 handleNameUpdate,
                 entityTitle,
                 isPublished,
+                dataStudioAssetType,
                 databaseQualifiedName,
                 schemaQualifiedName,
                 handleOpenDrawer,

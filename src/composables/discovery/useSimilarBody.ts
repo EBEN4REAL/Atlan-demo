@@ -118,13 +118,38 @@ export function useSimilarBody(
                         'name.keyword',
                         { size: 50 },
                         `${agg_prefix}_${mkey}`,
-                        (a) =>
+                        (a) => (
                             a.aggregation(
                                 'terms',
                                 'description.keyword',
                                 {},
-                                `${agg_prefix}_description`
+                                'group_by_description',
+                                (hits) =>
+                                    hits.aggregation(
+                                        'top_hits',
+                                        {
+                                            size: 1,
+                                            _source: ['description'],
+                                        },
+                                        'group_by_description'
+                                    )
+                            ),
+                            a.aggregation(
+                                'terms',
+                                'userDescription.keyword',
+                                {},
+                                'group_by_userDescription',
+                                (hits) =>
+                                    hits.aggregation(
+                                        'top_hits',
+                                        {
+                                            size: 1,
+                                            _source: ['userDescription'],
+                                        },
+                                        'group_by_userDescription'
+                                    )
                             )
+                        )
                     )
                 }
                 break

@@ -77,6 +77,8 @@
                     ></GroupPill>
                 </PopOverGroup>
             </template>
+
+            <slot />
         </div>
     </div>
 </template>

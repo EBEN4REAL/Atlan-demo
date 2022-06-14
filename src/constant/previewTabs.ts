@@ -50,6 +50,7 @@ export const previewTabs = [
             'SalesforceField',
             'S3Bucket',
             'S3Object',
+            'DataStudioAsset',
         ],
         icon: 'Lineage',
         tooltip: 'Lineage',
@@ -74,6 +75,7 @@ export const previewTabs = [
             'Collection',
             'S3Bucket',
             'S3Object',
+            'DataStudioAsset',
         ],
         icon: 'Relation',
         activeIcon: 'RelationActive',
@@ -118,6 +120,7 @@ export const previewTabs = [
     {
         name: 'Request',
         component: 'request',
+        excludes: ['Connection'],
         icon: 'Request',
         activeIcon: 'RequestActive',
         tooltip: 'Request',

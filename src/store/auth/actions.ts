@@ -15,6 +15,7 @@ export interface Actions extends State {
     setDecentralizedRoles(value: any): void
     setPersonas(value: any): void
     setPurposes(value: any): void
+    setGroups(value: any): void
 }
 
 export const actions: Actions = {
@@ -156,11 +157,11 @@ export const actions: Actions = {
                     `${i.entityId || i.entityIdEnd2}_${i.action}`
                 ) >= 0
         )
-        if (this.columnEvaluations.length + uniqueArray.length > 2000) {
+        if (this.columnEvaluations.length + uniqueArray.length > 1000) {
             this.columnEvaluations.splice(0, uniqueArray.length)
         }
         this.columnEvaluations.push(...uniqueArray)
-        if (this.columnEvaluations.length + uniqueArray.length > 2000) {
+        if (this.columnEvaluations.length + uniqueArray.length > 1000) {
             value.forEach((el) => {
                 const found = this.columnEvaluations.find(
                     (i) =>
@@ -188,5 +189,8 @@ export const actions: Actions = {
     },
     setPurposes(value) {
         this.purposes = value
+    },
+    setGroups(value) {
+        this.groups = value
     },
 }

@@ -4,6 +4,10 @@ import { watchOnce } from '@vueuse/core'
 
 /** COMPOSABLES */
 import fetchPorts from '~/components/common/assets/profile/tabs/lineage/fetchPorts'
+import {
+    featureEnabledMap,
+    LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE,
+} from '~/composables/labs/labFeatureList'
 
 /** STORE */
 import useLineageStore from '~/store/lineage'
@@ -41,6 +45,7 @@ export const getNodeTypeText = {
     View: 'View',
     MaterialisedView: 'MaterialisedView',
     // PowerBI
+    PowerBITable: 'Table',
     PowerBIDashboard: 'Dashboard',
     PowerBIDataflow: 'Dataflow',
     PowerBIDataset: 'Dataset',
@@ -94,6 +99,42 @@ export const getNodeSourceImage = {
     mssql,
     glue,
     salesforce,
+}
+
+/* A list of the types of ports that we are interested in. */
+export const portsTypeNames = [
+    'Column',
+    'TableauDatasourceField',
+    'TableauCalculatedField',
+    'PowerBIColumn',
+]
+if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE])
+    portsTypeNames.push('LookerField')
+
+/* A list of the types of nodes that have ports. */
+export const nodeWithPorts = [
+    'Table',
+    'View',
+    'MaterialisedView',
+    'TableauDatasource',
+    'PowerBITable',
+]
+if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
+    nodeWithPorts.push('LookerExplore')
+    nodeWithPorts.push('LookerView')
+}
+
+/* A mapping of the node type to the label of the ports. */
+export const nodePortsLabelMap = {
+    Table: 'column',
+    View: 'column',
+    MaterialisedView: 'column',
+    TableauDatasource: 'field',
+    PowerBITable: 'column',
+}
+if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
+    nodePortsLabelMap.LookerExplore = 'field'
+    nodePortsLabelMap.LookerView = 'field'
 }
 
 /**

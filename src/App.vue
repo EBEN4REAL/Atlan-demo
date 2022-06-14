@@ -8,7 +8,6 @@
     import useTypedefs from '~/composables/typedefs/useTypedefs'
     import { useConnection } from '~/composables/connection/useConnection'
     import useIntegration from '~/composables/integrations/useIntegrations'
-    import usePermissions from '~/composables/auth/usePermissions'
     import { useAuthStore } from './store/auth'
     import useGlossary from './composables/glossary2/useGlossary'
     import usePersona from './composables/persona/usePersona'
@@ -28,7 +27,8 @@
                 authStore.setUserDetails()
 
                 // permissions
-                usePermissions()
+                // ? this habe be been moved to load before app mount
+                // usePermissions()
 
                 // tenant
                 // ? this habe be been moved to load before app mount

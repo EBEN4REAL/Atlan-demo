@@ -19,10 +19,11 @@
         </p>
         <AtlanButton2
             v-if="buttonText"
-            size="large"
+            size="medium"
             :class="buttonClass"
             :color="buttonColor"
-            :prefixIcon="buttonIcon"
+            :prefix-icon="buttonIcon"
+            :prefixIconClass="buttonIconClass"
             :label="buttonText"
             @click="handleClick"
         />
@@ -85,6 +86,11 @@
                 default: 'primary',
             },
             buttonIcon: {
+                type: String,
+                required: false,
+                default: '',
+            },
+            buttonIconClass: {
                 type: String,
                 required: false,
                 default: '',

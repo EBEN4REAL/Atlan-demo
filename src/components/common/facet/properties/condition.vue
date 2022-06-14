@@ -24,7 +24,7 @@
                     {{ item?.label }}
                 </a-select-option>
             </a-select>
-            <div class="p-1 cursor-pointer">
+            <div v-if="totalConditions > 1" class="p-1 cursor-pointer">
                 <AtlanIcon
                     icon="Trash"
                     class="h-3 text-gray-500 hover:text-red-700"
@@ -73,6 +73,13 @@
                 required: false,
                 default() {
                     return {}
+                },
+            },
+            totalConditions: {
+                type: Number,
+                required: false,
+                default() {
+                    return 0
                 },
             },
         },

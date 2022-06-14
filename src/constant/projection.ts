@@ -15,6 +15,27 @@ export const SavedQueryAttributes = [
     'collectionQualifiedName',
     'visualBuilderSchemaBase64',
     'isVisualQuery',
+    'name',
+    'displayName',
+    'typeName',
+    'dataType',
+    'description',
+    'userDescription',
+    'certificateStatus',
+    'ownerUsers',
+    'ownerGroups',
+    'classifications',
+    'connectorName',
+    'connectionId',
+    'connectionQualifiedName',
+    'defaultSchemaQualifiedName',
+    'defaultDatabaseQualifiedName',
+    'parentFolder',
+    'columns', //TODO: queries
+    'folder',
+    'compiledQuery',
+    'rawQuery',
+    'meanings',
 ]
 
 export const InternalAttributes = [
@@ -64,6 +85,7 @@ export const AssetAttributes = [
     'ownerGroups',
     'adminUsers',
     'adminGroups',
+    'adminRoles',
     'viewerGroups',
     'viewerUsers',
     'meanings',
@@ -147,9 +169,22 @@ export const AssetAttributes = [
     'awsOwnerName',
     'awsTags',
     's3ObjectVersionId',
+    'googleService',
+    'googleProjectName',
+    'googleProjectId',
+    'googleProjectNumber',
+    'dataStudioAssetType',
+    'dataStudioAssetTitle',
+    'dataStudioAssetOwner',
+    'isTrashedDataStudioAsset',
+    'powerBITableColumnCount',
+    'powerBITableMeasureCount',
+    'powerBIMeasureExpression',
+    'powerBIColumnDataType',
 ]
 
 export const SQLAttributes = [
+    'schemaCount',
     'rowCount',
     'columnCount',
     'sizeBytes',
@@ -284,6 +319,9 @@ export const MinimalAttributes = [
     'bucket',
     's3ObjectCount',
     's3BucketName',
+    'powerBITableColumnCount',
+    'powerBITableMeasureCount',
+    'powerBIColumnDataType',
 ]
 
 export const metadataLinkedAssetsAttributes = [
@@ -376,6 +414,19 @@ export const LineageAttributes = [
     'view',
 ]
 
+export const LineageImpactedAssetsAttributes = [
+    'name',
+    'qualifiedName',
+    'connectorName',
+    'certificateStatus',
+    'certificateUpdatedBy',
+    'certificateUpdatedAt',
+    'ownerUsers',
+    'ownerGroups',
+    'classificationNames',
+    'meanings',
+]
+
 export const LineageAttributesPortLevel = [
     // General
     'qualifiedName',
@@ -387,6 +438,8 @@ export const LineageAttributesPortLevel = [
     // SQL
     'table',
     'view',
+    // BI
+    'powerBIColumnDataType',
 ]
 
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

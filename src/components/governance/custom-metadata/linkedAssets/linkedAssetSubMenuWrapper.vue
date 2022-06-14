@@ -20,6 +20,7 @@
                     @handleClear="handleClear(asset)"
                 />
             </LinkedAssetsOwnerPopover> -->
+
             <SubMenuTitle
                 :class="{
                     ' border-transparent':
@@ -30,16 +31,21 @@
                     ' hover:bg-gray-100': !openKeys.includes(asset.guid),
                 }"
                 :open-keys="openKeys"
-                :count="$refs?.LinkedAssetItem?.[x]?.count"
+                :count="LinkedAssetItemRef?.[x]?.count"
                 :asset="asset"
                 class="cursor-pointer"
                 @handleClear="handleClear(asset)"
             />
         </template>
+
         <a-menu-item>
             <div class="p-3 pt-0">
                 <LinkedAssetItem
-                    ref="LinkedAssetItem"
+                    :ref="
+                        (el) => {
+                            LinkedAssetItemRef[x] = el
+                        }
+                    "
                     :asset="asset"
                     :metadata="metadata"
                 />
@@ -75,7 +81,7 @@
         },
     })
     const { metadata } = toRefs(props)
-
+    const LinkedAssetItemRef = ref([])
     const emit = defineEmits(['success', 'error', 'metadataRemove'])
 
     const { isScrubbed, ownerUsers } = useAssetInfo()

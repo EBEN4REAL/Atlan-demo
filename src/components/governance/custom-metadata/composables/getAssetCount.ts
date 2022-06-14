@@ -69,6 +69,7 @@ const getAssetCount = (selectedBM) => {
     }
 
     return {
+        count,
         removeAsset,
         isLoadMore,
         handleLoadMore,

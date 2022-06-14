@@ -3,8 +3,9 @@
         v-model:visible="linkedAssetsVisible"
         :linked-assets="linkedAssets"
         :metadata="selectedBm"
-        :isLoadMore="isLoadMore"
-        :isLoading="isLoading"
+        :asset-count="count"
+        :is-load-more="isLoadMore"
+        :is-loading="isLoading"
         @loadMore="handleLoadMore"
         @metadataRemove="handleMetadataRemove"
     />
@@ -32,9 +33,8 @@
                     <MetadataHeaderButton
                         ref="metaActions"
                         :metadata="localBm"
-                        @viewAssets="linkedAssetsVisible = true"
                         :allow-delete="allowDelete"
-                        :asset-count="linkedAssets.length"
+                        @viewAssets="linkedAssetsVisible = true"
                     />
                 </div>
             </div>
@@ -333,6 +333,7 @@
                 assets: linkedAssets,
                 mutate: refreshLinkedAssets,
                 isReady,
+                count,
                 isLoading,
                 isLoadMore,
                 handleLoadMore,
@@ -346,7 +347,8 @@
                 // ? hence removing locally
                 removeAsset(assetID)
 
-                if (!linkedAssets.value.length) {
+                if (!linkedAssets.value.length && isLoadMore) handleLoadMore()
+                if (!count.value) {
                     linkedAssetsVisible.value = false
                     // ? since all assets are now cleared, open delete confirm modal
                     metaActions.value?.openDeleteConfirm()
@@ -424,6 +426,7 @@
                 addPropertyDrawer.value?.open(property, true)
             }
             return {
+                count,
                 isLoading,
                 isLoadMore,
                 handleLoadMore,

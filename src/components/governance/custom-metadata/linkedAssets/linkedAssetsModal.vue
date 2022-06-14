@@ -44,7 +44,7 @@
                     </div>
                     <span class="text-gray-300">•</span>
                     <span class="text-gray-500">
-                        {{ linkedAssets.length }} Assets linked
+                        {{ assetCount }} Assets linked
                     </span>
                 </div>
             </header>
@@ -68,9 +68,7 @@
                 </a-menu>
                 <div class="">
                     <div
-                        v-if="
-                            (isLoadMore || isLoading) && linkedAssets.length > 0
-                        "
+                        v-if="isLoadMore || isLoading"
                         class="flex items-center justify-center"
                     >
                         <button

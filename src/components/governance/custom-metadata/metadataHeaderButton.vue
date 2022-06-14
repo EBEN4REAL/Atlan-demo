@@ -133,10 +133,6 @@
                 type: Boolean,
                 required: true,
             },
-            assetCount: {
-                type: Number,
-                required: true,
-            },
         },
         emits: ['viewAssets'],
         setup(props) {

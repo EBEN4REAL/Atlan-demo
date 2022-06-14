@@ -39,7 +39,12 @@
                         v-else
                         icon="TrashAlt"
                         class="text-red-500 cursor-pointer"
-                        @click="emit('handleClear', asset)"
+                        @click="
+                            (e) => {
+                                e.stopPropagation()
+                                emit('handleClear', asset)
+                            }
+                        "
                     />
                 </div>
             </div>
@@ -60,7 +65,7 @@
             required: true,
         },
         count: {
-            type: Object,
+            type: Number,
             required: true,
         },
         openKeys: {

@@ -98,7 +98,7 @@
                     'DATE'
                 ) {
                     const days = Math.round(
-                        (buckets[buckets.length - 1].key - buckets[0].key) /
+                        (buckets[buckets.length - 1]?.key - buckets[0]?.key) /
                             (1000 * 60 * 60 * 24)
                     ) // ms * seconds * minutes * hours
 

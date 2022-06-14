@@ -405,7 +405,7 @@ export function useSavedQuery(
                         connectionQualifiedName,
                         collectionQualifiedName,
                         description,
-                        ownerUsers: [username.value],
+                        // __modifiedBy:username.value,
                         tenantId: 'default',
                         rawQuery,
                         variablesSchemaBase64,
@@ -438,6 +438,7 @@ export function useSavedQuery(
                         })
                         message.success({
                             content: `${name} query saved!`,
+                            key: 'saved',
                         })
 
                         /* Not present in response */
@@ -614,6 +615,7 @@ export function useSavedQuery(
                         showSaveQueryModal.value = false
                         message.success({
                             content: `${name} query saved!`,
+                            key: 'saved',
                         })
                         saveModalRef.value?.clearData()
                         const guid = data.value.mutatedEntities.CREATE[0].guid
@@ -826,7 +828,10 @@ export function useSavedQuery(
                     }
 
                     showSaveQueryModal.value = false
-                    message.success(`${name} query saved!`)
+                    message.success({
+                        content: `${name} query saved!`,
+                        key: 'saved',
+                    })
                     saveModalRef.value?.clearData()
                     // const guid = savedQuery.guid
                     console.log(data.value, 'saved')
@@ -1110,6 +1115,7 @@ export function useSavedQuery(
                         showSaveQueryModal.value = false
                         message.success({
                             content: `${name} query saved!`,
+                            key: 'saved',
                         })
                         saveModalRef.value?.clearData()
 

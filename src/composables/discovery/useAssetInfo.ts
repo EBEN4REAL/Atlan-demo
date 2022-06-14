@@ -98,6 +98,12 @@ export default function useAssetInfo() {
     const fieldCount = (asset: assetInterface) =>
         getCountString(attributes(asset)?.fieldCount, true)
 
+    const powerBITableColumnCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.powerBITableColumnCount, true)
+
+    const powerBITableMeasureCount = (asset: assetInterface) =>
+        getCountString(attributes(asset)?.powerBITableMeasureCount, true)
+
     const title = (asset: assetInterface) =>
         (attributes(asset)?.displayName ||
             attributes(asset)?.name ||
@@ -252,6 +258,10 @@ export default function useAssetInfo() {
             (link) => link?.attributes?.__state === 'ACTIVE'
         )
         return activeLinks
+    }
+
+    const hasLineage = (asset: assetInterface) => {
+        return attributes(asset)?.__hasLineage
     }
 
     function isValidHttpUrl(string) {
@@ -629,6 +639,16 @@ export default function useAssetInfo() {
         return dataTypeCategory(asset)?.image
     }
 
+    const powerBIColumnDataTypeImage = (asset: assetInterface) => {
+        return dataTypeCategoryList.find((item) =>
+            item.type.some(
+                (i) =>
+                    i.toLowerCase() ===
+                    attributes(asset)?.powerBIColumnDataType?.toLowerCase()
+            )
+        )?.image
+    }
+
     const compiledQuery = (asset: assetInterface) => {
         if (
             attributes(asset)?.compiledQuery &&
@@ -811,7 +831,7 @@ export default function useAssetInfo() {
     const certificateUpdatedBy = (asset: assetInterface) => {
         const username = attributes(asset)?.certificateUpdatedBy
         return username?.startsWith('service-account-apikey-')
-            ? 'API key'
+            ? 'API token'
             : username
     }
 
@@ -869,7 +889,8 @@ export default function useAssetInfo() {
         return (
             assetType(asset)?.includes('Tableau') ||
             assetType(asset)?.includes('BI') ||
-            assetType(asset)?.includes('Looker')
+            assetType(asset)?.includes('Looker') ||
+            assetType(asset)?.includes('DataStudio')
         )
     }
     const isSaasAsset = (asset: assetInterface) => {
@@ -931,6 +952,31 @@ export default function useAssetInfo() {
 
         return evaluations.find(
             (ev) => ev?.entityGuid === asset?.guid && ev?.action === action
+        )?.allowed
+    }
+
+    const columnUpdatePermission = (
+        asset: assetInterface,
+        action = 'ENTITY_UPDATE',
+        typeName?
+    ) => {
+        const evaluations = authStore?.columnEvaluations
+
+        if (typeName) {
+            const evaluationObject = evaluations.find(
+                (ev) =>
+                    ev?.entityIdEnd2 === asset?.attributes?.qualifiedName &&
+                    ev?.action === action &&
+                    (ev?.entityTypeEnd1 === typeName ||
+                        ev?.entityTypeEnd2 === typeName)
+            )
+            return evaluationObject?.allowed
+        }
+
+        return evaluations.find(
+            (ev) =>
+                ev?.entityId === asset?.attributes?.qualifiedName &&
+                ev?.action === action
         )?.allowed
     }
 
@@ -1328,7 +1374,38 @@ export default function useAssetInfo() {
     const s3ObjectVersionId = (asset: assetInterface) =>
         attributes(asset)?.s3ObjectVersionId || '-'
 
+    const googleService = (asset: assetInterface) =>
+        attributes(asset)?.googleService || '-'
+
+    const googleProjectName = (asset: assetInterface) =>
+        attributes(asset)?.googleProjectName || '-'
+
+    const googleProjectId = (asset: assetInterface) =>
+        attributes(asset)?.googleProjectId || '-'
+
+    const googleProjectNumber = (asset: assetInterface) =>
+        attributes(asset)?.googleProjectNumber || '-'
+
+    const dataStudioAssetType = (asset: assetInterface) =>
+        attributes(asset)?.dataStudioAssetType || '-'
+
+    const dataStudioAssetTitle = (asset: assetInterface) =>
+        attributes(asset)?.dataStudioAssetTitle || '-'
+
+    const dataStudioAssetOwner = (asset: assetInterface) =>
+        attributes(asset)?.dataStudioAssetOwner || '-'
+
+    const isTrashedDataStudioAsset = (asset: assetInterface) =>
+        !!attributes(asset)?.isTrashedDataStudioAsset
+
+    const powerBIMeasureExpression = (asset: assetInterface) =>
+        attributes(asset)?.powerBIMeasureExpression || ''
+
+    const powerBIColumnDataType = (asset: assetInterface) =>
+        attributes(asset)?.powerBIColumnDataType
+
     return {
+        dataTypeCategory,
         attributes,
         title,
         getConnectorImage,
@@ -1506,5 +1583,20 @@ export default function useAssetInfo() {
         s3ObjectContentType,
         s3ObjectContentDisposition,
         s3ObjectVersionId,
+        columnUpdatePermission,
+        hasLineage,
+        googleService,
+        googleProjectName,
+        googleProjectId,
+        googleProjectNumber,
+        dataStudioAssetType,
+        dataStudioAssetTitle,
+        dataStudioAssetOwner,
+        isTrashedDataStudioAsset,
+        powerBITableColumnCount,
+        powerBITableMeasureCount,
+        powerBIMeasureExpression,
+        powerBIColumnDataType,
+        powerBIColumnDataTypeImage,
     }
 }

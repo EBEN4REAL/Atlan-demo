@@ -512,6 +512,12 @@ export function useBody(
                 }
                 break
             }
+            case '__hasLineage': {
+                const { value } = filterObject
+                if (value) base.filter('term', '__hasLineage', 'true')
+
+                break
+            }
             case 'guidList': {
                 if (filterObject) {
                     base.filter('terms', '__guid', filterObject)
@@ -540,59 +546,339 @@ export function useBody(
                         filterObject[key]?.forEach((element) => {
                             if (!element.operand) return
                             if (element.operator === 'isNull') {
-                                base.notFilter('exists', element.operand)
+                                if (
+                                    element.operand === 'description.keyword' ||
+                                    element.operand ===
+                                        'userDescription.keyword'
+                                ) {
+                                    base.notFilter(
+                                        'exists',
+                                        'description.keyword'
+                                    )
+                                    base.notFilter(
+                                        'exists',
+                                        'userDescription.keyword'
+                                    )
+                                } else {
+                                    base.notFilter('exists', element.operand)
+                                }
                             }
                             if (element.operator === 'isNotNull') {
-                                base.filter('exists', element.operand)
+                                if (
+                                    element.operand === 'description.keyword' ||
+                                    element.operand ===
+                                        'userDescription.keyword'
+                                ) {
+                                    base.filter('bool', (q) => {
+                                        q.orFilter(
+                                            'exists',
+                                            'description.keyword'
+                                        )
+                                        q.orFilter(
+                                            'exists',
+                                            'userDescription.keyword'
+                                        )
+                                        return q
+                                    })
+                                } else {
+                                    base.filter('exists', element.operand)
+                                }
                             }
-                            if (element.value != null && element.value !== '') {
+                            if (
+                                element.operator === 'boolean' &&
+                                element.operand === '__hasLineage'
+                            ) {
+                                // eslint-disable-next-line no-unused-expressions
+                                element.value
+                                    ? base.filter(
+                                          'term',
+                                          '__hasLineage',
+                                          Array.isArray(element.value)
+                                              ? JSON.stringify(element.value)
+                                              : element.value
+                                      )
+                                    : (base.orFilter(
+                                          'term',
+                                          '__hasLineage',
+                                          Array.isArray(element.value)
+                                              ? JSON.stringify(element.value)
+                                              : element.value
+                                      ),
+                                      base.orFilter('bool', (q) => {
+                                          q.notFilter('exists', element.operand)
+                                          return q
+                                      }))
+                            } else if (
+                                element.value != null &&
+                                element.value !== ''
+                            ) {
                                 if (element.operator === 'equals') {
-                                    base.filter(
-                                        'term',
-                                        element.operand,
-                                        Array.isArray(element.value)
-                                            ? JSON.stringify(element.value)
-                                            : element.value
-                                    )
+                                    if (
+                                        element.operand ===
+                                            'description.keyword' ||
+                                        element.operand ===
+                                            'userDescription.keyword'
+                                    ) {
+                                        base.filter('bool', (q) => {
+                                            q.orFilter(
+                                                'term',
+                                                'description.keyword',
+                                                Array.isArray(element.value)
+                                                    ? JSON.stringify(
+                                                          element.value
+                                                      )
+                                                    : element.value
+                                            )
+                                            q.orFilter(
+                                                'term',
+                                                'userDescription.keyword',
+                                                Array.isArray(element.value)
+                                                    ? JSON.stringify(
+                                                          element.value
+                                                      )
+                                                    : element.value
+                                            )
+                                            return q
+                                        })
+                                    } else {
+                                        base.filter(
+                                            'term',
+                                            element.operand,
+                                            Array.isArray(element.value)
+                                                ? JSON.stringify(element.value)
+                                                : element.value
+                                        )
+                                    }
                                 }
                                 if (element.operator === 'notEquals') {
-                                    base.notFilter(
-                                        'term',
-                                        element.operand,
-                                        Array.isArray(element.value)
-                                            ? JSON.stringify(element.value)
-                                            : element.value
-                                    )
+                                    if (
+                                        element.operand ===
+                                            'description.keyword' ||
+                                        element.operand ===
+                                            'userDescription.keyword'
+                                    ) {
+                                        base.notFilter(
+                                            'term',
+                                            'description.keyword',
+                                            Array.isArray(element.value)
+                                                ? JSON.stringify(element.value)
+                                                : element.value
+                                        )
+                                        base.notFilter(
+                                            'term',
+                                            'userDescription.keyword',
+                                            Array.isArray(element.value)
+                                                ? JSON.stringify(element.value)
+                                                : element.value
+                                        )
+                                    } else {
+                                        base.notFilter(
+                                            'term',
+                                            element.operand,
+                                            Array.isArray(element.value)
+                                                ? JSON.stringify(element.value)
+                                                : element.value
+                                        )
+                                    }
                                 }
                                 if (element.operator === 'startsWith') {
-                                    base.filter(
-                                        'wildcard',
-                                        element.operand,
-                                        `${
-                                            Array.isArray(element.value)
-                                                ? JSON.stringify(element.value)
-                                                : element.value
-                                        }*`
-                                    )
+                                    if (
+                                        element.operand ===
+                                            'description.keyword' ||
+                                        element.operand ===
+                                            'userDescription.keyword'
+                                    ) {
+                                        base.filter('bool', (q) => {
+                                            q.orFilter(
+                                                'wildcard',
+                                                'description.keyword',
+                                                {
+                                                    value: `${
+                                                        Array.isArray(
+                                                            element.value
+                                                        )
+                                                            ? JSON.stringify(
+                                                                  element.value
+                                                              )
+                                                            : element.value
+                                                    }*`,
+                                                }
+                                            )
+                                            q.orFilter(
+                                                'wildcard',
+                                                'userDescription.keyword',
+                                                {
+                                                    value: `${
+                                                        Array.isArray(
+                                                            element.value
+                                                        )
+                                                            ? JSON.stringify(
+                                                                  element.value
+                                                              )
+                                                            : element.value
+                                                    }*`,
+                                                }
+                                            )
+                                            return q
+                                        })
+                                    } else {
+                                        base.filter(
+                                            'wildcard',
+                                            element.operand,
+                                            {
+                                                value: `${
+                                                    Array.isArray(element.value)
+                                                        ? JSON.stringify(
+                                                              element.value
+                                                          )
+                                                        : element.value
+                                                }*`,
+                                            }
+                                        )
+                                    }
                                 }
                                 if (element.operator === 'endsWith') {
-                                    base.filter(
-                                        'wildcard',
-                                        element.operand,
-                                        `*${
-                                            Array.isArray(element.value)
-                                                ? JSON.stringify(element.value)
-                                                : element.value
-                                        }`
-                                    )
+                                    if (
+                                        element.operand ===
+                                            'description.keyword' ||
+                                        element.operand ===
+                                            'userDescription.keyword'
+                                    ) {
+                                        base.filter('bool', (q) => {
+                                            q.orFilter(
+                                                'wildcard',
+                                                'description.keyword',
+                                                {
+                                                    value: `*${
+                                                        Array.isArray(
+                                                            element.value
+                                                        )
+                                                            ? JSON.stringify(
+                                                                  element.value
+                                                              )
+                                                            : element.value
+                                                    }`,
+                                                }
+                                            )
+                                            q.orFilter(
+                                                'wildcard',
+                                                'userDescription.keyword',
+                                                {
+                                                    value: `*${
+                                                        Array.isArray(
+                                                            element.value
+                                                        )
+                                                            ? JSON.stringify(
+                                                                  element.value
+                                                              )
+                                                            : element.value
+                                                    }`,
+                                                }
+                                            )
+                                            return q
+                                        })
+                                    } else {
+                                        base.filter(
+                                            'wildcard',
+                                            element.operand,
+                                            {
+                                                value: `*${
+                                                    Array.isArray(element.value)
+                                                        ? JSON.stringify(
+                                                              element.value
+                                                          )
+                                                        : element.value
+                                                }`,
+                                            }
+                                        )
+                                    }
                                 }
                                 if (element.operator === 'contains') {
-                                    base.filter('wildcard', element.operand, {
-                                        value: `*${element.value}*`,
-                                    })
+                                    if (
+                                        element.operand ===
+                                            'description.keyword' ||
+                                        element.operand ===
+                                            'userDescription.keyword'
+                                    ) {
+                                        base.filter('bool', (q) => {
+                                            q.orFilter(
+                                                'wildcard',
+                                                'description.keyword',
+                                                {
+                                                    value: `*${
+                                                        Array.isArray(
+                                                            element.value
+                                                        )
+                                                            ? JSON.stringify(
+                                                                  element.value
+                                                              )
+                                                            : element.value
+                                                    }*`,
+                                                }
+                                            )
+                                            q.orFilter(
+                                                'wildcard',
+                                                'userDescription.keyword',
+                                                {
+                                                    value: `*${
+                                                        Array.isArray(
+                                                            element.value
+                                                        )
+                                                            ? JSON.stringify(
+                                                                  element.value
+                                                              )
+                                                            : element.value
+                                                    }*`,
+                                                }
+                                            )
+                                            return q
+                                        })
+                                    } else {
+                                        base.filter(
+                                            'wildcard',
+                                            element.operand,
+                                            {
+                                                value: `*${
+                                                    Array.isArray(element.value)
+                                                        ? JSON.stringify(
+                                                              element.value
+                                                          )
+                                                        : element.value
+                                                }*`,
+                                            }
+                                        )
+                                    }
                                 }
 
                                 if (element.operator === 'pattern') {
+                                    if (
+                                        element.operand ===
+                                            'description.keyword' ||
+                                        element.operand ===
+                                            'userDescription.keyword'
+                                    ) {
+                                        base.filter('bool', (q) => {
+                                            q.orFilter(
+                                                'regexp',
+                                                'description.keyword',
+                                                Array.isArray(element.value)
+                                                    ? JSON.stringify(
+                                                          element.value
+                                                      )
+                                                    : element.value
+                                            )
+                                            q.orFilter(
+                                                'regexp',
+                                                'userDescription.keyword',
+                                                Array.isArray(element.value)
+                                                    ? JSON.stringify(
+                                                          element.value
+                                                      )
+                                                    : element.value
+                                            )
+                                            return q
+                                        })
+                                    }
                                     base.filter(
                                         'regexp',
                                         element.operand,
@@ -692,6 +978,14 @@ export function useBody(
                 }
                 break
             }
+            case 'connectorName': {
+                if (filterObject) {
+                    if (filterObject !== '__all') {
+                        postFilter.filter('term', 'connectorName', filterObject)
+                    }
+                }
+                break
+            }
         }
     })
     base.rawOption('post_filter', postFilter.build().query)
@@ -750,6 +1044,17 @@ export function useBody(
                         base.aggregation(
                             'terms',
                             'connectionQualifiedName',
+                            { size: 100 },
+                            `${agg_prefix}_${mkey}`
+                        )
+                    }
+                    break
+                }
+                case 'connectorName': {
+                    if (mkey) {
+                        base.aggregation(
+                            'terms',
+                            'connectorName',
                             { size: 100 },
                             `${agg_prefix}_${mkey}`
                         )

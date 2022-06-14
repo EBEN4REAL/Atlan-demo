@@ -10,7 +10,8 @@ import axios from 'axios'
 export default function useEvaluate(
     body: Record<string, any> | Ref<Record<string, any>>,
     immediate?: Boolean,
-    secondaryEvaluation?: Boolean
+    secondaryEvaluation?: Boolean,
+    columnEvaluation?: Boolean
 ) {
     const options: useOptions = {}
     let cancel = axios.CancelToken.source()
@@ -28,7 +29,9 @@ export default function useEvaluate(
     const authStore = useAuthStore()
 
     watch(data, () => {
-        if (secondaryEvaluation) {
+        if (columnEvaluation) {
+            authStore.setColumnEvaluations(data.value)
+        } else if (secondaryEvaluation) {
             authStore.setSecondaryEvaluations(data.value)
         } else {
             authStore.setEvaluations(data.value)

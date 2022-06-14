@@ -7,6 +7,8 @@ import { dataTypeCategoryList } from '~/constant/dataType'
 
 /** UTILS */
 import {
+    nodePortsLabelMap,
+    nodeWithPorts,
     SQLAssets,
     getNodeSourceImage,
     getSource,
@@ -49,7 +51,7 @@ import {
     percent,
     tableauCalculatedField,
     tableauDatasourceField,
-    // lookerField,
+    lookerField,
 } from './icons'
 
 interface EdgeStyle {
@@ -93,7 +95,7 @@ const portDataTypeIcons = {
 const biPortDataTypeIcons = {
     TableauCalculatedField: tableauCalculatedField,
     TableauDatasourceField: tableauDatasourceField,
-    // LookerField: lookerField,
+    LookerField: lookerField,
 }
 
 const columnKeyTypeIcons = {
@@ -101,17 +103,8 @@ const columnKeyTypeIcons = {
     isForeign: iconForeign,
 }
 
-const portsLabelMap = {
-    Table: 'columns',
-    View: 'columns',
-    MaterialisedView: 'columns',
-    TableauDatasource: 'fields',
-    // LookerExplore: 'fields',
-    // LookerView: 'fields',
-}
-
 const getPortsCTALabel = (typeName, portsCount) => {
-    const label = portsLabelMap[typeName]
+    const label = `${nodePortsLabelMap[typeName]}s`
     return portsCount || portsCount === 0
         ? `${portsCount} ${label}`
         : `view ${label}`
@@ -134,14 +127,7 @@ export default function useGraph(graph) {
         const isBase = guid === baseEntityGuid
         const isVpNode = typeName === 'vpNode'
         const isSQLNode = SQLAssets.includes(typeName)
-        const isNodeWithPorts = [
-            'Table',
-            'View',
-            'MaterialisedView',
-            'TableauDatasource',
-            // 'LookerExplore',
-            // 'LookerView',
-        ].includes(typeName)
+        const isNodeWithPorts = nodeWithPorts.includes(typeName)
 
         const computedData = {
             id: guid,
@@ -204,7 +190,9 @@ export default function useGraph(graph) {
                                     port.displayText.charAt(0).toUpperCase() +
                                     port.displayText.slice(1).toLowerCase()
 
-                                const dataType = port.attributes?.dataType
+                                const dataType =
+                                    port.attributes?.dataType ||
+                                    port.attributes?.powerBIColumnDataType
                                 const portTypeName = port.typeName
 
                                 const dataTypeComputed =
@@ -212,7 +200,7 @@ export default function useGraph(graph) {
                                         d.type.includes(dataType?.toUpperCase())
                                     )?.imageText
 
-                                const biDataTypeIcon =
+                                const biPortDataTypeIcon =
                                     biPortDataTypeIcons[portTypeName]
 
                                 const isSelectedPort =
@@ -230,7 +218,7 @@ export default function useGraph(graph) {
                                         ${
                                             portDataTypeIcons[
                                                 dataTypeComputed
-                                            ] || biDataTypeIcon
+                                            ] || biPortDataTypeIcon
                                         }
                                         <span title="${text}" class="truncate flex-grow-0 flex-shrink">${text}</span> 
                                     </div>
@@ -269,8 +257,8 @@ export default function useGraph(graph) {
                                 res += `
                                 <div isportshowmore="true" class="node-port flex justify-center text-new-blue-400 items-center pl-2">
                                     <span> Show more ${
-                                        portsLabelMap[typeName]
-                                    } </span>
+                                        nodePortsLabelMap[typeName]
+                                    }s </span>
                                     ${
                                         data?.portShowMoreLoading
                                             ? `<div class="w-5 h-5 ml-2">

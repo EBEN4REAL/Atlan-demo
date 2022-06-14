@@ -134,7 +134,7 @@
                 default: () => ({}),
             },
         },
-        emits: [],
+        emits: ['newrun'],
         setup: (props) => {
             const {
                 workflowTemplate,
@@ -143,7 +143,7 @@
                 workflowObject,
             } = toRefs(props)
 
-            const { allowSchedule, name } = useWorkflowInfo()
+            const { allowSchedule, refName } = useWorkflowInfo()
             const isWorkflowDirty = inject<Ref<boolean>>(
                 'isWorkflowDirty',
                 ref(false)
@@ -237,8 +237,9 @@
                                             parameters,
                                         },
                                         templateRef: {
-                                            name: workflowTemplate.value
-                                                .metadata.name,
+                                            name: refName(
+                                                workflowTemplate.value
+                                            ),
                                             template: 'main',
                                             clusterScope: true,
                                         },
@@ -261,7 +262,7 @@
                 })
 
                 path.value = {
-                    name: workflowObject.value.metadata.name,
+                    name: refName(workflowObject.value),
                 }
 
                 updateWorkflow()
@@ -287,7 +288,7 @@
                         {
                             namespace: 'default',
                             resourceKind: 'WorkflowTemplate',
-                            resourceName: name(workflowObject.value),
+                            resourceName: refName(workflowObject.value),
                         },
                         true
                     )
@@ -301,6 +302,10 @@
                         // facets.value = {
                         //     runName: nrd.value.metadata.name,
                         // }
+
+                        // Emit won't work, use inject/provide
+                        // emit('newrun', refName(nrd.value))
+
                         message.success({
                             content: 'Workflow is in progress',
                             key: msgKey,

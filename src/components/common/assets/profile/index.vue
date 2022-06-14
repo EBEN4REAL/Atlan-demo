@@ -10,9 +10,27 @@
             <a-tab-pane
                 v-for="tab in getProfileTabs(asset)"
                 :key="tab.id"
-                :tab="tab.label"
                 :disabled="isScrubbed(asset) && tab.scrubbed"
             >
+                <template #tab>
+                    <div v-if="tab.id !== 'columns'">
+                        {{ tab.label }}
+                    </div>
+                    <div v-else class="flex items-center">
+                        {{ tab.label }}
+                        <div
+                            v-if="columnCount(asset)"
+                            class="px-1 py-0.5 ml-2 text-xs rounded flex items-center"
+                            :class="
+                                activeKey === 'columns'
+                                    ? 'text-primary bg-primary-light'
+                                    : 'text-gray-500 bg-gray-100 font-bold'
+                            "
+                        >
+                            {{ columnCount(asset) }}
+                        </div>
+                    </div>
+                </template>
                 <NoAccess
                     v-if="isScrubbed(asset) && tab.scrubbed"
                     :back-button="true"
@@ -39,6 +57,8 @@
         toRefs,
         provide,
         computed,
+        watch,
+        inject,
     } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
 
@@ -103,7 +123,7 @@
             provide('actions', actions)
             provide('selectedAsset', asset)
 
-            const { getProfileTabs, isScrubbed } = useAssetInfo()
+            const { getProfileTabs, isScrubbed, columnCount } = useAssetInfo()
 
             const route = useRoute()
             const router = useRouter()
@@ -119,10 +139,31 @@
                 activeKey.value = value
             }
             provide('changeActiveTab', changeActiveTab)
+
+            const handlePreviewVisibility = inject(
+                'handlePreviewVisibility',
+                (args) => {
+                    console.log(args)
+                }
+            )
+
+            watch(
+                activeKey,
+                () => {
+                    if (activeKey.value === 'columns') {
+                        handlePreviewVisibility(false)
+                    } else {
+                        handlePreviewVisibility(true)
+                    }
+                },
+                { immediate: true }
+            )
+
             return {
                 getProfileTabs,
                 activeKey,
                 isScrubbed,
+                columnCount,
             }
         },
     })

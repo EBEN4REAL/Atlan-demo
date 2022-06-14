@@ -66,7 +66,7 @@
                 </div>
             </div>
             <div v-if="!readOnly">
-                <CardActions v-bind="props">
+                <CardActions :actions="actions" v-bind="props">
                     <div>
                         <AtlanIcon
                             icon="KebabMenu"
@@ -99,6 +99,10 @@
             type: String,
             required: false,
             default: '',
+        },
+        actions: {
+            type: Array,
+            required: false,
         },
     })
 

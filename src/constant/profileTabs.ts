@@ -8,14 +8,14 @@ export const profileTabs = [
         tooltip: 'Overview',
         scrubbed: false,
     },
-    /* {
+    {
         id: 'columns',
         label: 'Columns',
         component: 'columns',
         includes: ['Table', 'View', 'MaterialisedView', 'PartitionTable'],
         icon: 'Columns',
         tooltip: 'Columns',
-    }, */
+    },
     {
         id: 'lineage',
         label: 'Lineage',
@@ -37,6 +37,7 @@ export const profileTabs = [
             'SalesforceField',
             'S3Bucket',
             'S3Object',
+            'DataStudioAsset',
         ],
         icon: 'Lineage',
         tooltip: 'Lineage',
@@ -97,6 +98,7 @@ export const profileTabs = [
             'Procedure',
             'S3Bucket',
             'S3Object',
+            'DataStudioAsset',
         ],
         tooltip: 'Related Assets',
         scrubbed: false,

@@ -138,6 +138,7 @@
 
             const facets = computed(() => ({
                 ui: true,
+                verified: true,
                 packageName: packageId.value,
                 ...wfFilters.value,
             }))
@@ -164,7 +165,7 @@
 
             const runFacets = computed(() => ({
                 workflowTemplates: list.value
-                    .map((wft) => name(wft))
+                    .map((wft) => wft.metadata.name)
                     .slice(offset.value),
             }))
 

@@ -34,6 +34,7 @@
                     isGTC(selectedAsset) ||
                     selectedAsset.typeName === 'Connection' ||
                     selectedAsset.typeName === 'Process' ||
+                    selectedAsset.typeName === 'ColumnProcess' ||
                     selectedAsset.typeName === 'Query' ||
                     selectedAsset.typeName === 'Collection'
                 "
@@ -149,13 +150,32 @@
                     @click="switchTab(selectedAsset, 'Columns')"
                 >
                     <span class="mb-1 text-sm text-gray-500">Columns</span>
-                    <span class="font-semibold text-primary">{{
-                        columnCount(selectedAsset)
-                    }}</span>
+                    <span class="inline-flex items-center">
+                        <span class="font-semibold text-primary"
+                            >{{ columnCount(selectedAsset) }}
+                        </span>
+                        <a-tooltip
+                            placement="bottom"
+                            :title="`${columnWithLineageCount} out of ${columnCount(
+                                selectedAsset
+                            )} columns have lineage`"
+                        >
+                            <span
+                                v-if="columnWithLineageCount"
+                                class="inline-flex items-center px-1 ml-3 border rounded-full border-new-gray-200 text-new-gray-600"
+                            >
+                                <AtlanIcon
+                                    icon="LineageNew"
+                                    class="mb-0.5 mr-2"
+                                />
+                                <span>{{ columnWithLineageCount }}</span>
+                            </span>
+                        </a-tooltip>
+                    </span>
                 </div>
                 <div
                     v-if="sizeBytes(selectedAsset) !== '0'"
-                    class="flex flex-col text-sm cursor-pointer"
+                    class="flex flex-col text-sm"
                 >
                     <span class="mb-1 text-sm text-gray-500">Size</span>
                     <span class="text-gray-700">{{
@@ -290,6 +310,24 @@
                     </div>
                 </div>
             </div>
+            <div
+                v-if="selectedAsset.typeName?.toLowerCase() === 'powerbicolumn'"
+                class="flex flex-col px-5 text-sm"
+            >
+                <span class="mb-1 text-gray-500">Data Type</span>
+
+                <div class="flex items-center text-gray-700 gap-x-1">
+                    <div class="flex items-center">
+                        <component
+                            :is="powerBIColumnDataTypeImage(selectedAsset)"
+                            class="h-4 mr-0.5 mb-0.5"
+                        />
+                        <span class="mr-1 uppercase">{{
+                            powerBIColumnDataType(selectedAsset)
+                        }}</span>
+                    </div>
+                </div>
+            </div>
 
             <div
                 v-if="
@@ -402,6 +440,7 @@
                             'LookerQuery',
                             'SalesforceOrganization',
                             'S3Bucket',
+                            'DataStudioAsset',
                         ].includes(selectedAsset?.typeName)) ||
                     ['Schema', 'ColumnProcess', 'BIProcess'].includes(
                         selectedAsset?.typeName
@@ -586,6 +625,61 @@
             </div>
 
             <div
+                v-if="['DataStudioAsset'].includes(selectedAsset.typeName)"
+                class="flex flex-col px-5 gap-y-4"
+            >
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Asset Type</span>
+
+                    <span class="text-gray-700">{{
+                        dataStudioAssetType(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Asset Title</span>
+
+                    <span class="text-gray-700">{{
+                        dataStudioAssetTitle(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Asset Owner</span>
+
+                    <span class="text-gray-700">{{
+                        dataStudioAssetOwner(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500"
+                        >Trashed Data Studio Asset</span
+                    >
+
+                    <span class="text-gray-700">{{
+                        isTrashedDataStudioAsset(selectedAsset) ? 'Yes' : 'No'
+                    }}</span>
+                </div>
+            </div>
+
+            <div
+                v-if="
+                    ['PowerBIMeasure'].includes(selectedAsset?.typeName) &&
+                    powerBIMeasureExpression(selectedAsset) &&
+                    powerBIMeasureExpression(selectedAsset) !== ''
+                "
+                class="flex px-5"
+            >
+                <div class="flex flex-col w-full text-sm">
+                    <span class="mb-1 text-sm text-gray-500"
+                        >Measure Expression</span
+                    >
+                    <DetailsContainer
+                        :text="powerBIMeasureExpression(selectedAsset)"
+                        class="rounded-lg"
+                    />
+                </div>
+            </div>
+
+            <div
                 v-if="
                     isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
                     externalLocation(selectedAsset)
@@ -732,7 +826,7 @@
 
                 <transition
                     v-if="
-                        similarList('description').length > 0 &&
+                        descriptionSimilarList('description').length > 0 &&
                         !localDescription
                     "
                     name="fade"
@@ -743,7 +837,7 @@
                         :button-between="false"
                         :asset="selectedAsset"
                         :edit-permission="editPermission"
-                        :list="similarList('description')"
+                        :list="descriptionSimilarList('description')"
                     ></Suggestion>
                 </transition>
             </div>
@@ -826,19 +920,54 @@
                 "
                 class="flex flex-col"
             >
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-                >
-                    <span>Admins</span>
-                </div>
+                <a-tooltip color="#2A2F45">
+                    <template #title>
+                        <p class="font-bold">Connection Admin Permissions:</p>
+                        <p>1. View and edit all assets in the connection</p>
+                        <p>2. Edit connection preferences</p>
+                        <p>
+                            3. Edit persona based policies for the connection.
+                        </p>
+                    </template>
+                    <div
+                        class="flex items-center h-6 px-5 mb-1 text-sm text-gray-500 cursor-help"
+                    >
+                        <span>Connection Admins</span>
+                        <AtlanIcon icon="Info" class="mb-0.5 ml-1 mr-auto" />
+                        <AtlanButton2
+                            v-if="
+                                !localAdmins.adminRoles?.length &&
+                                editPermission
+                            "
+                            label="Add all admins"
+                            color="link"
+                            class="h-6 ml-auto"
+                            @click="setAllAdmins"
+                        />
+                    </div>
+                </a-tooltip>
 
-                <Admins
-                    v-model="localAdmins"
-                    class="px-5"
-                    :selected-asset="selectedAsset"
-                    :edit-permission="editPermission"
-                    @change="handleChangeAdmins"
-                />
+                <div class="flex">
+                    <Admins
+                        v-model="localAdmins"
+                        class="px-5"
+                        :selected-asset="selectedAsset"
+                        :edit-permission="editPermission"
+                        @change="handleChangeAdmins"
+                    >
+                        <div
+                            v-if="localAdmins.adminRoles?.length"
+                            class="flex items-center justify-between flex-none px-2 py-1 border border-gray-200 rounded-full cursor-pointer text-new-gray-800 hover:bg-primary hover:text-white"
+                        >
+                            <span> All admins </span>
+                            <AtlanIcon
+                                icon="Cross"
+                                class="h-3 ml-3 rotate-45"
+                                @click="setAllAdmins(false)"
+                            />
+                        </div>
+                    </Admins>
+                </div>
             </div>
 
             <div
@@ -1132,6 +1261,8 @@
     import PopOverUser from '@/common/popover/user/user.vue'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import { useSimilarList } from '~/composables/discovery/useSimilarList'
+    import { getColumnCountWithLineage } from '~/components/common/assets/profile/tabs/lineage/util.js'
+    import { useAuthStore } from '~/store/auth'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -1210,6 +1341,9 @@
             const { isDrawer } = toRefs(props)
 
             const sampleDataVisible = ref<boolean>(false)
+            const columnWithLineageCount = ref(null)
+            const authStore = useAuthStore()
+            const getRoleId = authStore.getRoleId
 
             const {
                 getConnectorImage,
@@ -1262,6 +1396,13 @@
                 s3ObjectCount,
                 s3ObjectContentType,
                 readmeGuid,
+                dataStudioAssetType,
+                dataStudioAssetTitle,
+                dataStudioAssetOwner,
+                isTrashedDataStudioAsset,
+                powerBIMeasureExpression,
+                powerBIColumnDataType,
+                powerBIColumnDataTypeImage,
             } = useAssetInfo()
 
             const {
@@ -1302,19 +1443,23 @@
                 similarity: title(selectedAsset.value),
                 orExists: ['description', 'userDescription'],
             })
-            const aggregations = ref(['description'])
+            const aggregations = ref(['description', 'userDescription'])
 
-            const { quickChange, similarList, aggregationMap } = useSimilarList(
-                {
+            const { quickChange, descriptionSimilarList, aggregationMap } =
+                useSimilarList({
                     limit,
                     offset,
                     facets,
                     aggregations,
-                }
-            )
+                })
             if (!localDescription.value) {
                 quickChange()
             }
+
+            getColumnCountWithLineage(
+                selectedAsset.value,
+                columnWithLineageCount
+            )
 
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
                 if (
@@ -1374,6 +1519,11 @@
                 showUserPreview({ allowed: ['about', 'assets', 'groups'] })
             }
 
+            const setAllAdmins = (set = true) => {
+                localAdmins.value.adminRoles = set ? [getRoleId('$admin')] : []
+                handleChangeAdmins()
+            }
+
             return {
                 localDescription,
                 selectedAsset,
@@ -1387,6 +1537,7 @@
                 sizeBytes,
                 dataType,
                 columnCount,
+                columnWithLineageCount,
                 localOwners,
                 dataTypeCategoryImage,
                 isDist,
@@ -1468,10 +1619,18 @@
                 title,
                 offset,
                 aggregations,
-                similarList,
+                descriptionSimilarList,
                 aggregationMap,
                 handleApplySuggestion,
                 readmeGuid,
+                dataStudioAssetType,
+                dataStudioAssetTitle,
+                dataStudioAssetOwner,
+                isTrashedDataStudioAsset,
+                powerBIMeasureExpression,
+                powerBIColumnDataType,
+                powerBIColumnDataTypeImage,
+                setAllAdmins,
             }
         },
     })

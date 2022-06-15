@@ -6,7 +6,12 @@
             :entity="selectedAsset"
         /> -->
         <div
-            v-if="selectedAsset?.typeName==='AtlasGlossaryTerm' && ( preferredTerms(selectedAsset)?.length || preferredToTerms(selectedAsset)?.length )"
+            v-if="
+                selectedAsset?.typeName === 'AtlasGlossaryTerm' &&
+                (preferredTerms(selectedAsset)?.length ||
+                    preferredToTerms(selectedAsset)?.length) &&
+                showPreferredTerms
+            "
             class="rounded-lg p-4 bg-white flex flex-wrap items-center"
         >
             <atlan-icon icon="Info" class="mx-1 text-primary" />
@@ -67,8 +72,9 @@
         </Summary>
         <slot name="readme"></slot>
         <RelatedTermsWidget
-            v-if="selectedAsset?.typeName==='AtlasGlossaryTerm'"
-        :asset="selectedAsset"/>
+            v-if="selectedAsset?.typeName === 'AtlasGlossaryTerm'"
+            :asset="selectedAsset"
+        />
     </div>
 </template>
 
@@ -88,7 +94,7 @@
 
     export default defineComponent({
         name: 'GlossaryOverview',
-        components: { AnnouncementWidget, Summary,  RelatedTermsWidget },
+        components: { AnnouncementWidget, Summary, RelatedTermsWidget },
         props: {
             selectedAsset: {
                 type: Object as PropType<assetInterface>,

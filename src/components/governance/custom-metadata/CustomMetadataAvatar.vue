@@ -1,6 +1,6 @@
 <template>
     <div
-        class="relative flex items-center justify-center p-1 overflow-hidden rounded cursor-pointer text-0"
+        class="relative flex items-center justify-center overflow-hidden rounded cursor-pointer text-0"
         :style="{ 'max-width': size, 'max-height': size }"
     >
         <a-spin v-if="isUpdating" />

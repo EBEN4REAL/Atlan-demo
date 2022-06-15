@@ -68,12 +68,22 @@
     } = useCustomMetadataHelpers()
 
     const applicableList: any = ref([])
-
+    // attr.displayName.split('-archived')[0]
     const initializeAttributesList = () => {
         applicableList.value = []
         applicableList.value = getApplicableAttributes(
             metadata.value,
             asset.value.typeName
+        )
+        applicableList.value = applicableList.value.map((attr) =>
+            ['true', true].includes(attr.options.isArchived)
+                ? {
+                      ...attr,
+                      displayName: `${
+                          attr.displayName.split('-archived')[0]
+                      } (deleted)`,
+                  }
+                : attr
         )
     }
 

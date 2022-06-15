@@ -101,7 +101,7 @@
                 default: false,
             },
         },
-        emits: ['event', 'visibility'],
+        emits: ['event'],
         setup(props, { emit }) {
             const handleClick = () => {
                 emit('event')

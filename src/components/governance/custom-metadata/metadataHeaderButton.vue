@@ -55,67 +55,51 @@
             <AtlanIcon class="" icon="Edit" />
         </AtlanButton>
 
-        <a-tooltip
-            :title="
-                !allowDelete
-                    ? `${metadata.displayName} is linked with ${assetCount} assets. You'll have to remove them before archiving.`
-                    : ''
+        <AtlanButton
+            v-if="!viewOnly"
+            v-auth="map.DELETE_BUSINESS_METADATA"
+            class="flex items-center justify-center h-8 px-5 border border-l-0 rounded rounded-l-none cursor-pointer customShadow"
+            color="secondary"
+            @click.prevent.stop="
+                () =>
+                    !viewOnly && allowDelete
+                        ? (deleteConfirm = true)
+                        : $emit('viewAssets')
             "
-            :mouse-enter-delay="0"
-            placement="left"
         >
-            <AtlanButton
-                v-if="!viewOnly"
-                v-auth="map.DELETE_BUSINESS_METADATA"
-                class="flex items-center justify-center h-8 px-5 border border-l-0 rounded rounded-l-none cursor-pointer customShadow"
-                color="secondary"
-                :class="!allowDelete ? 'text-gray-400 cursor-not-allowed' : ''"
-                @click.prevent.stop="
-                    () =>
-                        !viewOnly && allowDelete ? (deleteConfirm = true) : ''
-                "
-            >
-                <AtlanIcon
-                    class=""
-                    :class="!allowDelete ? 'text-red-200' : 'text-error'"
-                    icon="TrashAlt"
-                />
-            </AtlanButton>
-            <a-modal
-                v-model:visible="deleteConfirm"
-                :width="340"
-                :closable="false"
-            >
-                <div class="p-4" style="height: 85px">
-                    <p class="mb-1 font-bold text-md">
-                        Delete {{ metadata.displayName }}
-                    </p>
-                    <p class="text-md">
-                        Are you sure you want to delete the custom metadata?
-                    </p>
-                </div>
+            <AtlanIcon class="text-error" icon="TrashAlt" />
+        </AtlanButton>
 
-                <template #footer>
-                    <div class="flex justify-end p-2 space-x-2">
-                        <AtlanButton
-                            color="minimal"
-                            padding="compact"
-                            size="sm"
-                            @click="deleteConfirm = false"
-                            >Cancel</AtlanButton
-                        >
-                        <AtlanButton
-                            color="danger"
-                            size="sm"
-                            padding="compact"
-                            :loading="isLoading"
-                            @click="deleteCM"
-                            >Delete</AtlanButton
-                        >
-                    </div>
-                </template>
-            </a-modal>
-        </a-tooltip>
+        <a-modal v-model:visible="deleteConfirm" :width="340" :closable="false">
+            <div class="p-4" style="height: 85px">
+                <p class="mb-1 font-bold text-md">
+                    Delete {{ metadata.displayName }}
+                </p>
+                <p class="text-md">
+                    Are you sure you want to delete the custom metadata?
+                </p>
+            </div>
+
+            <template #footer>
+                <div class="flex justify-end p-2 space-x-2">
+                    <AtlanButton
+                        color="minimal"
+                        padding="compact"
+                        size="sm"
+                        @click="deleteConfirm = false"
+                        >Cancel</AtlanButton
+                    >
+                    <AtlanButton
+                        color="danger"
+                        size="sm"
+                        padding="compact"
+                        :loading="isLoading"
+                        @click="deleteCM"
+                        >Delete</AtlanButton
+                    >
+                </div>
+            </template>
+        </a-modal>
     </a-button-group>
 
     <addMetadataModal
@@ -149,11 +133,8 @@
                 type: Boolean,
                 required: true,
             },
-            assetCount: {
-                type: Number,
-                required: true,
-            },
         },
+        emits: ['viewAssets'],
         setup(props) {
             const store = useTypedefStore()
             const metadataModal = ref(null)
@@ -194,6 +175,10 @@
             })
 
             const deleteConfirm = ref(false)
+
+            const openDeleteConfirm = () => {
+                deleteConfirm.value = true
+            }
 
             const deleteCM = () => {
                 message.loading({
@@ -236,6 +221,7 @@
             }
 
             return {
+                openDeleteConfirm,
                 copyDropdown,
                 viewOnly,
                 isLoading,
@@ -262,7 +248,7 @@
 <style lang="less" module>
     .copyDropdown {
         :global(.ant-dropdown-menu) {
-            @apply shadow-none !important;
+            @apply shadow-none overflow-hidden !important;
         }
     }
 </style>

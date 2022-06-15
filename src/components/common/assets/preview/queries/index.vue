@@ -36,7 +36,7 @@
                 button-color="secondary"
                 button-class="mt-4"
                 @event="handleCreateQuery"
-                :visibility="allowQuery(parentConnection)"
+                :buttonVisibility="allowQuery(parentConnection)"
             ></EmptyView>
         </div>
 

@@ -18,7 +18,7 @@
             {{ desc }}
         </p>
         <AtlanButton2
-            v-if="buttonText && visibility"
+            v-if="buttonText && buttonVisibility"
             size="medium"
             :class="buttonClass"
             :color="buttonColor"
@@ -95,7 +95,7 @@
                 required: false,
                 default: '',
             },
-            visibility: {
+            buttonVisibility: {
                 type: Boolean,
                 required: false,
                 default: false,

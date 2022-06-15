@@ -157,7 +157,10 @@
                     control('selectedAsset', item)
                     if (item?.guid) {
                         graphWidth.value = window.outerWidth - 420
-                        graph.value.resize(graphWidth.value, graphHeight.value)
+                        graph.value.resize(
+                            graphWidth.value,
+                            graphHeight.value / 1.35
+                        )
                         showDrawer.value = true
                     }
                 }
@@ -174,7 +177,7 @@
             const onCloseDrawer = () => {
                 onSelectAsset('')
                 graphWidth.value = window.outerWidth
-                graph.value.resize(graphWidth.value, graphHeight.value)
+                graph.value.resize(graphWidth.value, graphHeight.value / 1.35)
                 showDrawer.value = false
                 onSelectAsset(null)
             }

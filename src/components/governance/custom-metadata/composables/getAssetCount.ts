@@ -29,7 +29,9 @@ const getAssetCount = (selectedBM) => {
             }
         },
         attributes: [
-            ...typedefStore.getCustomMetadataListProjectionsByName(selectedBM.name, true),
+            // ? get all attributes to use isOverwrite true
+            ...typedefStore.getAllCustomMetadataListProjections,
+            // ...typedefStore.getCustomMetadataListProjectionsByName(selectedBM.name, true),
             ...metadataLinkedAssetsAttributes],
         suppressLogs: true
     }))

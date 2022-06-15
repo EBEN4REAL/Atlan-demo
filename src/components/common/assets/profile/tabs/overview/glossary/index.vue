@@ -6,7 +6,7 @@
             :entity="selectedAsset"
         /> -->
         <div
-            v-if="selectedAsset?.typeName==='AtlasGlossaryTerm'"
+            v-if="selectedAsset?.typeName==='AtlasGlossaryTerm' && ( preferredTerms(selectedAsset)?.length || preferredToTerms(selectedAsset)?.length )"
             class="rounded-lg p-4 bg-white flex flex-wrap items-center"
         >
             <atlan-icon icon="Info" class="mx-1 text-primary" />

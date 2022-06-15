@@ -16,16 +16,20 @@ export const getters: GettersTree<State> & Getters = {
             const found = state.list.find((item) => item.id === id)
             const assetList = []
 
-            found?.metadataPolicies.forEach((element) => {
-                if (element.allow) {
-                    assetList.push(element?.connectionId)
-                }
-            })
-            found?.dataPolicies.forEach((element) => {
-                if (element.allow) {
-                    assetList.push(element?.connectionId)
-                }
-            })
+            if (found?.metadataPolicies?.length) {
+                found?.metadataPolicies.forEach((element) => {
+                    if (element.allow) {
+                        assetList.push(element?.connectionId)
+                    }
+                })
+            }
+            if (found?.dataPolicies?.length) {
+                found?.dataPolicies.forEach((element) => {
+                    if (element.allow) {
+                        assetList.push(element?.connectionId)
+                    }
+                })
+            }
 
             return assetList
         }
@@ -35,21 +39,29 @@ export const getters: GettersTree<State> & Getters = {
             const found = state.list.find((item) => item.id === id)
             const assetList = []
 
-            found?.metadataPolicies.forEach((element) => {
-                if (element.allow) {
-                    assetList.push(...element?.assets)
-                }
-            })
-            found?.dataPolicies.forEach((element) => {
-                if (element.allow) {
-                    assetList.push(...element?.assets)
-                }
-            })
-            found?.glossaryPolicies.forEach((element) => {
-                if (element.allow) {
-                    assetList.push(...element?.glossaryQualifiedNames)
-                }
-            })
+            if (found?.metadataPolicies?.length) {
+                found?.metadataPolicies.forEach((element) => {
+                    if (element.allow) {
+                        assetList.push(...element?.assets)
+                    }
+                })
+            }
+
+            if (found?.dataPolicies?.length) {
+                found?.dataPolicies.forEach((element) => {
+                    if (element.allow) {
+                        assetList.push(...element?.assets)
+                    }
+                })
+            }
+
+            if (found?.glossaryPolicies?.length) {
+                found?.glossaryPolicies.forEach((element) => {
+                    if (element.allow) {
+                        assetList.push(...element?.glossaryQualifiedNames)
+                    }
+                })
+            }
             return assetList
         }
     },
@@ -57,16 +69,28 @@ export const getters: GettersTree<State> & Getters = {
         return (id, connectionId) => {
             const found = state?.list?.find((item) => item.id === id)
             const assetList = []
-            found?.metadataPolicies.forEach((element) => {
-                if (element.allow && element.connectionId === connectionId) {
-                    assetList.push(...element?.assets)
-                }
-            })
-            found?.dataPolicies.forEach((element) => {
-                if (element.allow && element.connectionId === connectionId) {
-                    assetList.push(...element?.assets)
-                }
-            })
+
+            if (found?.metadataPolicies?.length) {
+                found?.metadataPolicies.forEach((element) => {
+                    if (
+                        element.allow &&
+                        element.connectionId === connectionId
+                    ) {
+                        assetList.push(...element?.assets)
+                    }
+                })
+            }
+
+            if (found?.dataPolicies?.length) {
+                found?.dataPolicies.forEach((element) => {
+                    if (
+                        element.allow &&
+                        element.connectionId === connectionId
+                    ) {
+                        assetList.push(...element?.assets)
+                    }
+                })
+            }
             return assetList
         }
     },

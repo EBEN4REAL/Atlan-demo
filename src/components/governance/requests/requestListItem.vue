@@ -173,9 +173,10 @@
                 :value-array="request?.destinationValueArray"
                 :loading="state.isLoading"
                 :is-approval-loading="state.isApprovalLoading"
-                @accept="handleApproval"
-                @reject="handleRejection"
-                @switchUpdatePopover="
+                :has-access="hasAccessForAction"
+                @accept="(message) => handleApproval(message || '')"
+                @reject="(message) => handleRejection(message || '')"
+                @switch-popover="
                     (val) => {
                         updatePopoverActive = val
                     }
@@ -201,7 +202,13 @@
             <!-- <div v-else-if="selected"> -->
             <div class="pr-5">
                 <div
-                    v-if="activeHover === request.id && !updatePopoverActive"
+                    v-if="
+                        activeHover === request.id &&
+                        request.status === 'active' &&
+                        !updatePopoverActive &&
+                        hasAccessForAction
+                    "
+                    v-auth="[map.APPROVE_REQUEST]"
                     class="flex items-center justify-end font-bold"
                 >
                     <!-- <AtlanIcon
@@ -257,6 +264,19 @@
                         />
                     </div>
                 </div>
+
+                <div
+                    v-else-if="
+                        activeHover === request.id &&
+                        request.status === 'active' &&
+                        !hasAccessForAction
+                    "
+                >
+                    <p class="text-sm">
+                        You don't have access to review this request
+                    </p>
+                </div>
+
                 <div v-else class="flex justify-end">
                     <div class="flex items-center justify-end gap-x-1">
                         <Avatar
@@ -466,7 +486,12 @@
     import TermPiece from './pieces/term.vue'
     import BMPiece from './pieces/bm.vue'
     import CategoryPiece from './pieces/category.vue'
+
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { handleAccessForRequestAction } from '~/composables/requests/useRequests'
+
+    import map from '~/constant/accessControl/map'
+
     import IconStatus from './iconStatus.vue'
     import Popover from '@/common/popover/assets/index.vue'
     import { RequestAttributes } from '~/types/atlas/requests'
@@ -548,6 +573,8 @@
             const { request } = toRefs(props)
             const updatedBy = ref({})
             const updatePopoverActive = ref(false)
+            const hasAccessForAction = ref(false)
+
             const state = reactive({
                 isLoading: false,
                 isApprovalLoading: false,
@@ -722,6 +749,15 @@
             })
             const createdAt = useTimeAgo(request.value.createdAt)
             const updatedAt = useTimeAgo(timeUpdated.value)
+
+            onMounted(() => {
+                const { hasAccess } = handleAccessForRequestAction(
+                    request.value
+                )
+
+                hasAccessForAction.value = hasAccess
+            })
+
             return {
                 handleApproval,
                 handleRejection,
@@ -741,6 +777,8 @@
                 glossaryLabel,
                 capitalizeFirstLetter,
                 updatePopoverActive,
+                hasAccessForAction,
+                map,
             }
         },
     })

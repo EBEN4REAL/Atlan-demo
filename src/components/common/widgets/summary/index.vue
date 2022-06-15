@@ -167,6 +167,9 @@
             S3ObjectCount: defineAsyncComponent(
                 () => import('./types/s3ObjectCount.vue')
             ),
+            PowerBITableCounts: defineAsyncComponent(
+                () => import('./types/powerBITableCounts.vue')
+            ),
         },
 
         props: {

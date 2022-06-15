@@ -246,6 +246,11 @@ import ColumnGray from '~/assets/images/icons/column-gray.svg'
 import MaterialisedView from '~/assets/images/icons/materialised-view.svg'
 import TablePartition from '~/assets/images/icons/table-partition.svg'
 
+// autosuggetions
+import Function from '~/assets/images/insights/autocomplete/function.svg'
+import Nut from '~/assets/images/insights/autocomplete/nut.svg'
+import Snippet from '~/assets/images/insights/autocomplete/snippet.svg'
+
 import Gdoc from '~/assets/images/admin/integrations/gDoc.svg'
 
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
@@ -364,6 +369,7 @@ import Salesforce from '~/assets/images/source/svg/Salesforce.svg'
 import MySQL from '~/assets/images/source/svg/MySQL.svg'
 import Glue from '~/assets/images/source/svg/glue.svg'
 import S3 from '~/assets/images/source/svg/s3.svg'
+import GDS from '~/assets/images/source/svg/gds.svg'
 
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
@@ -491,6 +497,9 @@ import CSVLogo from '~/assets/images/icons/csv-logo.svg'
 import PaperClip from '~/assets/images/icons/paper-clip.svg'
 
 export default {
+    Function,
+    Nut,
+    Snippet,
     Gift,
     NoSearchResultsQuery,
     SlackTabEmpty,
@@ -841,6 +850,7 @@ export default {
     Looker,
     Salesforce,
     S3,
+    GDS,
     SSO,
     SMTP,
     APIKey,
@@ -961,5 +971,5 @@ export default {
     CSVLogo,
     PaperClip,
     IllustrationPersonaDemo,
-    IllustrationPurposeDemo
+    IllustrationPurposeDemo,
 }

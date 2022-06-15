@@ -164,7 +164,7 @@
                         runStatusMap[run.status.phase]?.label
                     )?.toLowerCase() === 'needs attention'
                 "
-                class="mt-2 pt-2 border-t  text-gray-500"
+                class="mt-2 pt-2 border-t text-gray-500"
             >
                 <atlan-icon icon="Info" class="mr-1 h-4 ml-4" />
                 Re-upload the updated file to successfully resolve the errors.
@@ -219,6 +219,10 @@
     import { downloadFile } from '~/utils/library/download'
     // components
     import Avatar from '~/components/common/avatar/index.vue'
+    import {
+        featureEnabledMap,
+        WORKFLOW_CENTER_V2,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'UploadHistoryItem',
@@ -318,7 +322,10 @@
                     const status = el.outputs?.parameters.find(
                         (i) => (i.name = 'status')
                     )
-                    if (el?.displayName === 'create-final-csv' && status?.value) {
+                    if (
+                        el?.displayName === 'create-final-csv' &&
+                        status?.value
+                    ) {
                         finalStatus.value.terms = JSON.parse(status?.value)
                     } else if (el?.displayName === 'extract-category-status') {
                         finalStatus.value.categories = JSON.parse(status?.value)
@@ -372,7 +379,11 @@
                 const url = `/workflows/profile/${workflowTemplateName(
                     props.run
                 )}/runs?name=${name(props.run)}`
-                router.push(url)
+
+                if (!featureEnabledMap.value[WORKFLOW_CENTER_V2]) {
+                    const newRoute = url.replace('/workflows/profile', '/workflowsv1')
+                    router.push(newRoute)
+                } else router.push(url)
             }
 
             const getCustomClassesByPhase = (run) => {

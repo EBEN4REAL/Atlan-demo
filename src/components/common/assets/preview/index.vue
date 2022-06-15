@@ -402,7 +402,7 @@
     import Jira from '@/common/assets/preview/integrations/jira/jira.vue'
     import SlackResources from '@/common/assets/preview/resources/slackResourcesWrapper.vue'
     import CustomMetaData from './customMetadata/index.vue'
-    
+
     import { useCurrentUpdate } from '~/composables/discovery/useCurrentUpdate'
 
     import {
@@ -419,7 +419,7 @@
 
     export default defineComponent({
         name: 'AssetPreview',
-       components: {
+        components: {
             PreviewTabsIcon,
             CertificateBadge,
             NoAccess,
@@ -442,7 +442,7 @@
                 () => import('./relations/index.vue')
             ),
             resources: Resources,
-            
+
             lineage: defineAsyncComponent(
                 () => import('./lineage/lineageTab.vue')
             ),
@@ -540,7 +540,7 @@
                 links,
             } = useAssetInfo()
 
-            const activeKey = ref(1)
+            const activeKey = ref(0)
             const activeLabel = ref<string>('Overview')
 
             const route = useRoute()
@@ -564,14 +564,17 @@
             const authStore = useAuthStore()
 
             const slackResourceCount = () =>
-                links(selectedAsset.value).filter(
+                links(selectedAsset.value)?.filter(
                     (l) => getDomain(l.attributes.link) === 'slack.com'
-                ).length
-
+                )?.length || 0
             const getCount = (tab) => {
                 if (tab?.toLowerCase() === 'resources') {
+                    if (!links(selectedAsset.value)?.length) {
+                        return 0
+                    }
                     return (
-                        links(selectedAsset.value).length - slackResourceCount()
+                        links(selectedAsset.value)?.length -
+                        slackResourceCount()
                     )
                 } else if (tab?.toLowerCase() === 'slack') {
                     return slackResourceCount()
@@ -637,9 +640,12 @@
             }
 
             debouncedWatch(
-                selectedAsset,
+                () => selectedAsset.value?.attributes?.qualifiedName,
                 () => {
-                    if (drawerActiveKey.value === 'Overview') {
+                    if (
+                        drawerActiveKey.value === 'Overview' &&
+                        resourceId.value === ''
+                    ) {
                         switchTab(selectedAsset.value, activeLabel.value)
                     }
                 },
@@ -748,6 +754,7 @@
 
             /** whenever resource ID is fetched, refresh the asset to load the generated resource, then switch tab */
             watch(resourceId, () => {
+                if (!resourceId.value) return
                 const id = ref(selectedAsset.value.guid)
                 const { asset, isReady: isUpdateReady } = useCurrentUpdate({
                     id,

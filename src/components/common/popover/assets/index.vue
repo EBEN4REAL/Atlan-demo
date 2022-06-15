@@ -1,10 +1,11 @@
 <template>
     <a-popover
-        v-model:visible="assetPopoverVisible"
+        v-model:visible="localAssetPopoverVisible"
         title=""
-        placement="left"
+        :placement="placement"
         :mouse-enter-delay="mouseEnterDelay"
-        trigger="hover"
+        :trigger="popoverTrigger"
+        :overlayClassName="overlayClassName"
     >
         <template #content>
             <div class="rounded w-96">
@@ -17,7 +18,7 @@
                             <div class="flex mr-3.5">
                                 <div
                                     v-if="
-                                        item.typeName?.toLowerCase() ===
+                                        item?.typeName?.toLowerCase() ===
                                             'column' &&
                                         item.attributes?.dataType
                                     "
@@ -52,7 +53,7 @@
                                 size="icn"
                                 color="minimal"
                                 padding="icon"
-                                @click="handleAssetPreview"
+                                @click="(e, item) => handleAssetPreview(item)"
                             >
                                 <AtlanIcon icon="OpenPreview" />
                             </AtlanBtn>
@@ -63,7 +64,7 @@
                         <AtlanIcon
                             v-if="
                                 ['atlasglossarycategory'].includes(
-                                    item.typeName?.toLowerCase()
+                                    item?.typeName?.toLowerCase()
                                 )
                             "
                             icon="Category"
@@ -72,7 +73,7 @@
                         <AtlanIcon
                             v-if="
                                 ['atlasglossaryterm'].includes(
-                                    item.typeName?.toLowerCase()
+                                    item?.typeName?.toLowerCase()
                                 )
                             "
                             icon="Term"
@@ -99,7 +100,7 @@
                         <!-- DB and Schema context for tables/views etc. -->
                         <div
                             v-if="
-                                db && item.typeName?.toLowerCase() !== 'column'
+                                db && item?.typeName?.toLowerCase() !== 'column'
                             "
                             class="flex items-center text-gray-500"
                         >
@@ -115,7 +116,7 @@
                         <div
                             v-if="
                                 schema &&
-                                item.typeName?.toLowerCase() !== 'column'
+                                item?.typeName?.toLowerCase() !== 'column'
                             "
                             class="flex items-center text-gray-500"
                         >
@@ -156,7 +157,7 @@
                                     'view',
                                     'tablepartition',
                                     'materialisedview',
-                                ].includes(item.typeName?.toLowerCase())
+                                ].includes(item?.typeName?.toLowerCase())
                             "
                             class="flex justify-between flex-grow pb-4"
                         >
@@ -178,8 +179,8 @@
                         <!--data type context for columns -->
                         <div
                             v-if="
-                                item.typeName?.toLowerCase() === 'column' &&
-                                item.attributes?.dataType
+                                item?.typeName?.toLowerCase() === 'column' &&
+                                item?.attributes?.dataType
                             "
                             class="pb-4"
                         >
@@ -189,7 +190,7 @@
                                     :is="dataTypeCategoryImage(item)"
                                     class="h-4 mr-1 text-gray-500 mb-0.5"
                                 />
-                                <span>{{ item.attributes?.dataType }}</span>
+                                <span>{{ item?.attributes?.dataType }}</span>
                                 <div class="flex ml-1 gap-x-2">
                                     <ColumnKeys
                                         :is-primary="isPrimary(item)"
@@ -362,11 +363,8 @@
                         </div>
                     </div>
 
-                    <div class="flex" v-if="showPreviewLink" >
-                        <router-link
-                            :to="path"
-                            class="ml-auto" 
-                        >
+                    <div class="flex" v-if="showPreviewLink">
+                        <router-link :to="path" class="ml-auto">
                             <AtlanBtn
                                 class="flex-none px-0"
                                 size="sm"
@@ -398,7 +396,15 @@
 </template>
 
 <script lang="ts">
-    import { toRefs, computed, inject, onMounted, ref, ComputedRef } from 'vue'
+    import {
+        toRefs,
+        computed,
+        inject,
+        onMounted,
+        ref,
+        ComputedRef,
+        watch,
+    } from 'vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
@@ -415,6 +421,7 @@
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import {groupClassifications} from "~/utils/groupClassifications"
     import PopoverClassification from '@/common/popover/classification/index.vue'
+    import { useVModels } from '@vueuse/core'
 
     export default {
         name: 'PopoverAsset',
@@ -450,10 +457,28 @@
                 type: Boolean,
                 default: true,
             },
+            assetPopoverVisible: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
+            popoverTrigger: {
+                type: String,
+                default: 'hover',
+            },
+            placement: {
+                type: String,
+                default: 'left',
+            },
+            overlayClassName: {
+                type: String,
+                default: '',
+            },
         },
         emits: ['previewAsset'],
         setup(props, { slots, emit }) {
-            const { item } = toRefs(props)
+            const { item, popoverTrigger, placement, overlayClassName } =
+                toRefs(props)
 
             const {
                 certificateStatus,
@@ -482,8 +507,14 @@
 
             const { showUserPreview: openPreview, setUserUniqueAttribute } =
                 useUserPreview()
+            const { assetPopoverVisible } = useVModels(props, emit)
+            const localAssetPopoverVisible = ref(
+                assetPopoverVisible.value ?? false
+            )
+            watch(assetPopoverVisible, () => {
+                localAssetPopoverVisible.value = localAssetPopoverVisible
+            })
             const { classificationList } = useTypedefData()
-            const assetPopoverVisible = ref(false)
             const showTablePreview = ref(false)
 
             const isPropagated = (classification) => {
@@ -574,7 +605,7 @@
             }
             const handleAssetPreview = () => {
                 closePopover()
-                emit('previewAsset')
+                emit('previewAsset', item)
             }
 
             onMounted(() => {
@@ -582,6 +613,10 @@
             })
 
             return {
+                overlayClassName,
+                placement,
+                localAssetPopoverVisible,
+                popoverTrigger,
                 certificateStatus,
                 enteredPill,
                 certificateUpdatedBy,

@@ -3,7 +3,7 @@
         <div
             class="relative mx-1 border border-gray-200 rounded-lg cursor-pointer hover:border-primary card-container"
         >
-            <div class="flex flex-col bg-gray-100 px-3 py-3 rounded-lg">
+            <div class="flex flex-col px-3 py-3 bg-gray-100 rounded-lg">
                 <div class="flex items-center">
                     <div
                         v-if="item.requestType === 'term_link' && isGlossary"
@@ -19,8 +19,13 @@
                             ]
                         }}
                     </div>
+
                     <div
-                        v-if="item.status === 'active'"
+                        v-if="
+                            item.status === 'active' &&
+                            !updatePopoverActive &&
+                            hasAccessForAction
+                        "
                         v-auth="[map.APPROVE_REQUEST]"
                         class="flex -mr-1.5 hover-action linear-gradient"
                     >
@@ -45,6 +50,16 @@
                         >
                             <span class="text-xs text-red-500"> Reject </span>
                         </RequestDropdown>
+                    </div>
+                    <div
+                        v-if="
+                            item.status === 'active' &&
+                            !updatePopoverActive &&
+                            !hasAccessForAction
+                        "
+                        class="flex -mr-1.5 p-1 hover-action linear-gradient rounded-sm"
+                    >
+                        <span class="ml-auto text-sm">No review access</span>
                     </div>
                     <!-- hover-reject-approve -->
                     <div class="flex items-center justify-end ml-auto">
@@ -104,8 +119,8 @@
                             selectedAsset?.typeName === 'Table') &&
                         item?.destinationEntity?.attributes?.name
                     "
-                    class="flex items-center space-x-1 mt-1"
-                    style="max-width: 200px;"
+                    class="flex items-center mt-1 space-x-1"
+                    style="max-width: 200px"
                 >
                     <atlan-icon
                         v-if="selectedAsset?.typeName === 'AtlasGlossary'"
@@ -128,10 +143,12 @@
                     />
                     <div
                         v-if="selectedAsset?.typeName !== 'AtlasGlossary'"
-                        class="flex items-center space-x-1 "
+                        class="flex items-center space-x-1"
                     >
-                        <div class="bg-gray-300 rounded-full h-1.5 w-1.5 mx-1 mb-0.5" />
-                        <atlan-icon :icon="assetIcon" class='mb-0.5 h-4'/>
+                        <div
+                            class="bg-gray-300 rounded-full h-1.5 w-1.5 mx-1 mb-0.5"
+                        />
+                        <atlan-icon :icon="assetIcon" class="mb-0.5 h-4" />
                         <span class="text-gray-500 uppercase">{{
                             item?.entityType
                         }}</span>
@@ -258,10 +275,10 @@
                                         :key="i"
                                     >
                                         <span
-                                            class="border-gray-200 px-2 py-1 flex items-center"
+                                            class="flex items-center px-2 py-1 border-gray-200"
                                             ><atlan-icon
                                                 icon="User"
-                                                class="mr-1 h-3"
+                                                class="h-3 mr-1"
                                             />{{ i }}</span
                                         >
                                     </template>
@@ -270,7 +287,7 @@
 
                             <span
                                 v-if="item?.destinationValueArray?.length > 1"
-                                class="text-primary flex items-center cursor-pointer"
+                                class="flex items-center cursor-pointer text-primary"
                                 >+
                                 {{ item?.destinationValueArray?.length - 1 }}
                                 more</span
@@ -332,12 +349,30 @@
                     :show-label="false"
                 />
 
-                <div v-else class="text-sm text-gray-700 truncate">
+                <!-- <div v-else class="text-sm text-gray-700 truncate">
                     {{ item.destinationValue }}
-                </div>
+                </div> -->
+
+                <description-popover
+                    v-else
+                    :request="item"
+                    :loading="isLoading"
+                    :is-approval-loading="loadingApproval"
+                    :placement="`topRight`"
+                    :show-actions="
+                        item.status === 'active' && hasAccessForAction
+                    "
+                    @switch-update-popover="
+                        (val) => {
+                            updatePopoverActive = val
+                        }
+                    "
+                    @accept="(message) => handleApproval(message || '')"
+                    @reject="(message) => handleRejection(message || '')"
+                />
             </div>
             <div
-                class="flex px-3 py-2 mt-2 border-t border-gray-200 text-gray-500"
+                class="flex px-3 py-2 mt-2 text-gray-500 border-t border-gray-200"
             >
                 <span class="mr-2">by</span>
                 <AtlanIcon
@@ -356,7 +391,7 @@
                 />
                 <span class="ml-2 text-gray-500">{{
                     item.createdBy?.startsWith('service-account-apikey-')
-                        ? 'API key'
+                        ? 'API token'
                         : item.createdBy
                 }}</span>
                 <div class="flex ml-auto">
@@ -435,6 +470,8 @@
     import CategoryPiece from '@/governance/requests/pieces/category.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { handleAccessForRequestAction } from '~/composables/requests/useRequests'
+
     import {
         typeCopyMapping,
         destinationAttributeMapping,
@@ -449,6 +486,7 @@
     import Avatar from '~/components/common/avatar/index.vue'
     import TermPopover from '@/common/popover/term/term.vue'
     import useTermPopover from '@/common/popover/term/useTermPopover'
+    import DescriptionPopover from '~/components/governance/requests/pieces/descriptionPopover.vue'
     import AtlanButton from '@/UI/button.vue'
     import RequestDropdown from '~/components/common/dropdown/requestDropdown.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
@@ -468,6 +506,7 @@
             CertificateBadge,
             Avatar,
             TermPopover,
+            DescriptionPopover,
             AtlanButton,
             RequestDropdown,
             UserPill,
@@ -489,7 +528,7 @@
                 default: () => ({}),
             },
         },
-        emits: ['handleUpdateData'],
+        emits: ['handleUpdateData', 'switchPopover'],
         setup(props, { emit }) {
             const { item } = toRefs(props)
             const updatedBy = ref({})
@@ -497,6 +536,8 @@
             const createdTime = (time) => useTimeAgo(time).value
             const isLoading = ref(false)
             const loadingApproval = ref(false)
+            const updatePopoverActive = ref(false)
+            const hasAccessForAction = ref(false)
 
             const assetText = computed(
                 () =>
@@ -616,6 +657,12 @@
                 () => route?.path?.includes('glossary') || null
             )
 
+            onMounted(() => {
+                const { hasAccess } = handleAccessForRequestAction(item.value)
+
+                hasAccessForAction.value = hasAccess
+            })
+
             return {
                 createdTime,
                 localClassification,
@@ -642,6 +689,8 @@
                 isGlossary,
                 glossaryLabel,
                 capitalizeFirstLetter,
+                updatePopoverActive,
+                hasAccessForAction,
             }
         },
     })

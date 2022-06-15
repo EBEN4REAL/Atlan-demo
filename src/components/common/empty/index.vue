@@ -98,7 +98,7 @@
             buttonVisibility: {
                 type: Boolean,
                 required: false,
-                default: false,
+                default: true,
             },
         },
         emits: ['event'],

@@ -1,6 +1,5 @@
 <template>
     <a-drawer
-        v-if="visible"
         :key="data?.guid"
         v-model:visible="visible"
         placement="right"

@@ -156,7 +156,7 @@
                 if (typeof control === 'function' && !isGroupEdge) {
                     control('selectedAsset', item)
                     if (item?.guid) {
-                        graphWidth.value = window.outerWidth - 420
+                        graphWidth.value = window.outerWidth - 480
                         graph.value.resize(
                             graphWidth.value,
                             graphHeight.value / 1.35
@@ -176,7 +176,7 @@
             // onCloseDrawer
             const onCloseDrawer = () => {
                 onSelectAsset('')
-                graphWidth.value = window.outerWidth
+                graphWidth.value = window.outerWidth - 60
                 graph.value.resize(graphWidth.value, graphHeight.value / 1.35)
                 showDrawer.value = false
                 onSelectAsset(null)

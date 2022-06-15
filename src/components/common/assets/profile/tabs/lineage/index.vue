@@ -163,15 +163,9 @@
 <style lang="less" scoped>
     .max-collapsed-width {
         max-width: calc(100vw - 480px);
-        transition-property: all;
-        transition-timing-function: linear;
-        transition-duration: 10ms;
     }
 
     .max-full-width {
         max-width: calc(100vw - 60px);
-        transition-property: all;
-        transition-timing-function: linear;
-        transition-duration: 10ms;
     }
 </style>

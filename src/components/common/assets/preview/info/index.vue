@@ -1140,10 +1140,18 @@
                 v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
                 class="flex flex-col"
             >
-                <p
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-                >
+                <p class="flex items-center px-5 mb-1 text-sm text-gray-500">
                     Related Terms
+
+                    <span class="mx-2">
+                        <a-tooltip>
+                            <template #title>
+                                Associated terms. Example: For term "customer",
+                                the related term "account" may be added
+                            </template>
+                            <atlan-icon icon="Info" class="h-3" />
+                        </a-tooltip>
+                    </span>
                 </p>
                 <RelatedTerms
                     v-model="localSeeAlso"
@@ -1157,9 +1165,18 @@
                 <!-- Antonyms widget -->
                 <p
                     v-if="showAntonyms"
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 mt-4"
+                    class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4"
                 >
                     Antonyms
+                    <span class="mx-2">
+                        <a-tooltip>
+                            <template #title>
+                                Opposite of this term. Example: For term
+                                "profit", the related term "loss" is an antonym
+                            </template>
+                            <atlan-icon icon="Info" class="h-3" />
+                        </a-tooltip>
+                    </span>
                 </p>
                 <RelatedTerms
                     v-if="showAntonyms"
@@ -1174,9 +1191,18 @@
                 <!-- Preferred terms widget -->
                 <p
                     v-if="showPreferredTerms"
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 mt-4"
+                    class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4"
                 >
                     Preferred terms
+                    <span class="mx-2">
+                        <a-tooltip>
+                            <template #title>
+                                Related terms which should be used instead of
+                                this one
+                            </template>
+                            <atlan-icon icon="Info" class="h-3" />
+                        </a-tooltip>
+                    </span>
                 </p>
                 <RelatedTerms
                     v-if="showPreferredTerms"
@@ -1254,7 +1280,7 @@
         inject,
         ref,
         toRefs,
-        computed
+        computed,
     } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'

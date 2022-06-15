@@ -1,6 +1,6 @@
 <template>
     <div class="p-6 py-6 rounded-lg bg-white flex flex-col">
-        <span class="font-bold text-base text-gray-500">Related Terms</span>
+        <span v-if="seeAlso(asset)?.length" class="font-bold text-base">Related Terms</span>
         <div
             v-if="seeAlso(asset)?.length"
             class="flex flex-wrap items-center gap-1 text-sm text-gray-500 mt-2 mb-4"
@@ -28,9 +28,7 @@
                 </TermPopover>
             </template>
         </div>
-        <span v-else class="text-gray-500 mt-1 mb-2">No related terms</span>
-
-        <span v-if="showAntonyms" class="font-bold text-base text-gray-500 mt-2"
+        <span v-if="showAntonyms && antonyms(asset)?.length" class="font-bold text-base  mt-2"
             >Antonyms</span
         >
         <div v-if="showAntonyms">
@@ -61,7 +59,6 @@
                     </TermPopover>
                 </template>
             </div>
-            <span v-else class="text-gray-500 pt-2 mb-2 ">No antonyms</span>
         </div>
     </div>
 </template>

@@ -14,10 +14,10 @@
             <div>
                 <div
                     v-if="preferredTerms(selectedAsset)?.length"
-                    class="flex items-center flex-wrap mb-1"
+                    class="flex items-center flex-wrap"
                 >
                     <div
-                        v-for="(el,i) in preferredTerms(selectedAsset)"
+                        v-for="(el, i) in preferredTerms(selectedAsset)"
                         :key="el?.guid"
                         class="ml-1"
                     >
@@ -39,7 +39,7 @@
 
                     <router-link
                         :to="`/glossary/${selectedAsset?.guid}`"
-                        class="font-bold text-primary hover:underline mx-1"
+                        class="font-bold text-primary hover:underline"
                     >
                         {{
                             selectedAsset?.attributes?.name ||
@@ -66,7 +66,6 @@
                     <div
                         v-for="(el, i) in preferredToTerms(selectedAsset)"
                         :key="el?.guid"
-                        class="ml-1"
                     >
                         <router-link
                             :to="`/glossary/${el?.guid}`"
@@ -95,7 +94,11 @@
         </Summary>
         <slot name="readme"></slot>
         <RelatedTermsWidget
-            v-if="selectedAsset?.typeName === 'AtlasGlossaryTerm'"
+            v-if="
+                selectedAsset?.typeName === 'AtlasGlossaryTerm' &&
+                (seeAlso(selectedAsset)?.length ||
+                    antonyms(selectedAsset)?.length)
+            "
             :asset="selectedAsset"
         />
     </div>
@@ -133,8 +136,15 @@
             const showPreferredTerms = computed(
                 () => featureEnabledMap.value[PREFERRED_TERMS]
             )
-            const { preferredTerms, preferredToTerms } = useAssetInfo()
-            return { showPreferredTerms, preferredTerms, preferredToTerms }
+            const { preferredTerms, seeAlso, antonyms, preferredToTerms } =
+                useAssetInfo()
+            return {
+                showPreferredTerms,
+                preferredTerms,
+                preferredToTerms,
+                antonyms,
+                seeAlso,
+            }
         },
     })
 </script>

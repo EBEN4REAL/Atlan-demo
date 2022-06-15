@@ -86,8 +86,6 @@
 
             const togglePreview = () => {
                 visible.value = !visible.value
-                
-                console.log("TOGGLE VIEW  => 87", visible.value)
             }
 
             return {

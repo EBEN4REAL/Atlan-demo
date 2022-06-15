@@ -495,7 +495,6 @@
         top: 50px !important;
     }
     .childAssetsPopover {
-        width: 225px !important;
-        left: 860px !important;
+        width: 200px !important;
     }
 </style>

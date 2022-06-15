@@ -18,7 +18,7 @@
             {{ desc }}
         </p>
         <AtlanButton2
-            v-if="buttonText"
+            v-if="buttonText && visibility"
             size="medium"
             :class="buttonClass"
             :color="buttonColor"
@@ -95,8 +95,13 @@
                 required: false,
                 default: '',
             },
+            visibility: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
         },
-        emits: ['event'],
+        emits: ['event', 'visibility'],
         setup(props, { emit }) {
             const handleClick = () => {
                 emit('event')

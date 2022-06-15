@@ -36,6 +36,7 @@
                 button-color="secondary"
                 button-class="mt-4"
                 @event="handleCreateQuery"
+                :visibility="allowQuery(parentConnection)"
             ></EmptyView>
         </div>
 
@@ -99,7 +100,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, PropType, watch } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        toRefs,
+        PropType,
+        watch,
+        computed,
+    } from 'vue'
     import { debouncedWatch, useDebounceFn } from '@vueuse/core'
 
     import ErrorView from '@common/error/discover.vue'
@@ -121,6 +129,7 @@
     import Popover from '@/common/popover/assets/index.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import useConnectionData from '~/composables/connection/useConnectionData'
 
     import { whenever } from '@vueuse/core'
 
@@ -149,7 +158,14 @@
         setup(props) {
             const { selectedAsset } = toRefs(props)
 
-            const { queries, getAssetQueryPath } = useAssetInfo()
+            const {
+                queries,
+                getAssetQueryPath,
+                allowQuery,
+                connectionQualifiedName,
+            } = useAssetInfo()
+
+            const { getConnection } = useConnectionData()
 
             const guid = ref()
             const queriesAttribute = ref(['queries'])
@@ -268,6 +284,10 @@
                 quickChange()
             })
 
+            const parentConnection = computed(() =>
+                getConnection(connectionQualifiedName(selectedAsset.value))
+            )
+
             return {
                 isLoading,
                 queryText,
@@ -290,6 +310,8 @@
                 handleCloseDrawer,
                 drawerVisible,
                 guidToFetch,
+                allowQuery,
+                parentConnection,
             }
         },
     })

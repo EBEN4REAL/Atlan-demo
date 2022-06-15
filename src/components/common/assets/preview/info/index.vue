@@ -941,7 +941,7 @@
                             "
                             label="Add all admins"
                             color="link"
-                            class="h-6 ml-auto"
+                            class="h-6 ml-auto -mr-4"
                             @click="setAllAdmins"
                         />
                     </div>

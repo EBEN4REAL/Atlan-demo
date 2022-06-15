@@ -1158,8 +1158,9 @@
 
             <div
                 v-if="
-                    selectedAsset.typeName === 'Column' ||
-                    readmeGuid(selectedAsset)
+                    (selectedAsset.typeName === 'Column' ||
+                        readmeGuid(selectedAsset)) &&
+                    !isProfile
                 "
                 class="flex flex-col px-5"
             >

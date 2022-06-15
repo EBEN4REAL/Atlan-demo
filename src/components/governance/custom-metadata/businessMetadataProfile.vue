@@ -359,7 +359,7 @@
 
             const allowDelete = computed(() => {
                 if (!localBm.value.attributeDefs?.length) return true
-                return !linkedAssets.value.length
+                return !count.value
             })
 
             const selected = computed(() =>

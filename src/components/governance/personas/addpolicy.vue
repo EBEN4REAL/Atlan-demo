@@ -106,7 +106,7 @@
                         (policy.updatedBy || policy.createdBy)?.startsWith(
                             'service-account-apikey-'
                         )
-                            ? 'API key'
+                            ? 'API token'
                             : policy.updatedBy || policy.createdBy
                     }}
                     <div class="ml-1">

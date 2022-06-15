@@ -67,7 +67,7 @@
                     <EmptyView
                         empty-screen="Error"
                         headline="Not Found"
-                        desc="The metadata you're looking for has been archived or doesn't exist."
+                        desc="The metadata you're looking for has been deleted or doesn't exist."
                     />
                 </template>
             </ExplorerLayout>

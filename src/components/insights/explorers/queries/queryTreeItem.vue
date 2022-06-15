@@ -36,7 +36,7 @@
                                     ></AtlanIcon>
                                     <span
                                         class="mt-0.5 text-sm text-gray-700 parent-ellipsis-container-base"
-                                        >{{ title(item) }}</span
+                                        >{{ title(item?.entity) }}</span
                                     >
                                     <div
                                         :id="`${item.qualifiedName}-menu`"
@@ -181,7 +181,7 @@
                                     ></AtlanIcon>
                                     <span
                                         class="mb-0 text-sm text-gray-700 parent-ellipsis-container-base"
-                                        >{{ title(item) }}</span
+                                        >{{ title(item?.entity) }}</span
                                     >
 
                                     <div
@@ -489,15 +489,16 @@
             //     required: true,
             //     default: 'root',
             // },
-            // refetchTreeData: {
-            //     type: Function,
-            //     required: false,
-            //     default: () => {},
-            // },
+            updateNode: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
         },
         setup(props, { emit }) {
             const { canUserDeleteFolder } = useAccess()
             const {
+                updateNode,
                 expandedKeys,
                 item,
                 errorNode,
@@ -803,7 +804,6 @@
                 const parentNode = document.getElementsByClassName(
                     `${item.value.qualifiedName}`
                 )[0]
-                debugger
 
                 const childNode = parentNode?.firstChild as HTMLElement
                 childNode?.classList?.add('hidden')
@@ -876,6 +876,7 @@
                         } catch {}
                         childNode?.classList?.remove('hidden')
                     }
+                    const entity = item.value.entity
                     if (e.key === 'Enter') {
                         if (input.value && input.value !== orignalName) {
                             item.value.attributes.name = input.value
@@ -883,10 +884,13 @@
                             const { data, error, isLoading } =
                                 Insights.CreateQueryFolder(
                                     {
-                                        entity: item.value.entity,
+                                        entity: entity,
                                     },
                                     {}
                                 )
+
+                            entity.attributes.name = newName
+
                             // console.log('rename: ', { data, error })
                             watch(
                                 error,
@@ -922,6 +926,10 @@
                                             ? 'Query'
                                             : 'Folder'
                                     } renamed successfully`,
+                                })
+                                updateNode.value({
+                                    guid: entity.guid,
+                                    entity: entity,
                                 })
 
                                 // if same tab renamed
@@ -1021,13 +1029,15 @@
                     if (input.value && input.value !== orignalName) {
                         item.value.attributes.name = input.value
                         newName = input.value
+                        const entity = item.value.entity
                         const { data, error, isLoading } =
                             Insights.CreateQueryFolder(
                                 {
-                                    entity: item.value.entity,
+                                    entity: entity,
                                 },
                                 {}
                             )
+                        entity.attributes.name = newName
 
                         watch(
                             error,
@@ -1062,6 +1072,10 @@
                                             ? 'Query'
                                             : 'Folder'
                                     } renamed successfully`,
+                                })
+                                updateNode.value({
+                                    guid: entity.guid,
+                                    entity: entity,
                                 })
                                 if (
                                     activeInlineTab.value.attributes &&
@@ -1401,7 +1415,6 @@
                                 {}
                             )
                         watch([error, data, isLoading], (newError) => {
-                            debugger
                             // if (newError) {
 
                             if (isLoading.value == false) {

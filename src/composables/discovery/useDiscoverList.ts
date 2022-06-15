@@ -9,9 +9,11 @@ import { assetTypeList } from '~/constant/assetType'
 import useAssetStore from '~/store/asset'
 import { useBody } from './useBody'
 import useGlossaryStore from '~/store/glossary'
+import useConnectionData from '~/composables/connection/useConnectionData'
 
 const assetTypeAggregationName = 'group_by_typeName'
 const glossaryAggregationName = 'group_by_glossary'
+const connectorAggregationName = 'group_by_connectorName'
 
 interface DiscoverListParams {
     isCache?: boolean | false
@@ -109,7 +111,8 @@ export function useDiscoverList({
         labelList?: any,
         includeWithoutLabel?: Boolean
     ) => {
-        const temp = []
+        console.log('labelList', labelList)
+        let temp = []
         if (labelList.length === 0) {
             aggregationMap(aggregationKey).forEach((element) => {
                 temp.push({
@@ -179,12 +182,33 @@ export function useDiscoverList({
             )
         }
 
+        if (aggregationKey === connectorAggregationName) {
+            console.log('shivansh aggregationKey === connectorAggregationName')
+            temp = temp.map((object) => {
+                const imagePath = labelList.find(
+                    (labelObj) =>
+                        labelObj.id.toLowerCase() === object.id.toLowerCase()
+                )?.image
+                console.log('imagePath', imagePath)
+                const newObj = {
+                    ...object,
+                    image: imagePath,
+                }
+                return newObj
+            })
+        }
+
         return temp
     }
 
     const assetTypeAggregationList = computed(() =>
         getAggregationList(assetTypeAggregationName, assetTypeList, false)
     )
+
+    const connectorAggregateList = computed(() => {
+        const { sourceList } = useConnectionData()
+        return getAggregationList(connectorAggregationName, sourceList, false)
+    })
 
     const rotateAggregateTab = (increment, handleFocusOnInput) => {
         const currentTab = postFacets?.value.typeName
@@ -303,5 +327,6 @@ export function useDiscoverList({
         error,
         updateList,
         rotateAggregateTab,
+        connectorAggregateList,
     }
 }

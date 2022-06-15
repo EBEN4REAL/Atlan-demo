@@ -26,7 +26,7 @@
                     ref="editableQueryField"
                     :value="queryNameDirty"
                     :size="queryNameDirty.length"
-                    class="w-full pr-1 mt-1 mr-1 text-base text-gray-700 border-none outline-none"
+                    class="w-full pr-1 mt-1 text-base text-gray-700 border-none outline-none"
                     style="max-width: 95%"
                     @input="updateQueryNameDirty"
                     :readonly="readOnly"
@@ -653,9 +653,11 @@
                                         .label as string
                                     message.error({
                                         content: `Query rename failed`,
+                                        key: 'saved',
                                     })
                                 }
                                 renameQueryFieldActive.value = false
+                                activeInlineTab.value.isSaved = true
                             }
                         },
                         { immediate: true }
@@ -663,8 +665,12 @@
 
                     // update state
                     watch(data, () => {
-                        message.success('Query renamed successfully')
+                        message.success({
+                            content: 'Query renamed successfully',
+                            key: 'saved',
+                        })
                         if (data.value !== undefined) {
+                            activeInlineTab.value.isSaved = true
                             updateAssetCheck.value = true
                             const parentGuid =
                                 activeInlineTab?.value?.attributes?.parent
@@ -729,6 +735,9 @@
                         editableQueryField.value.addEventListener(
                             'keydown',
                             (e) => {
+                                if (activeInlineTab.value.isSaved) {
+                                    activeInlineTab.value.isSaved = false
+                                }
                                 if (e.key === 'Escape') {
                                     renameQueryFieldActive.value = false
                                     queryNameDirty.value =

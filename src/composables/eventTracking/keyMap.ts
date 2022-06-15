@@ -548,13 +548,13 @@ const keyMap = {
                             is_full_screen: props?.is_full_screen,
                             description_added: props?.description_added,
                         }
-                    } 
-                        return {
-                            action: props.action,
-                            query_tab_id: props?.query_tab_id,
-                            is_full_screen: props?.is_full_screen,
-                        }
-                    
+                    }
+                    return {
+                        action: props.action,
+                        query_tab_id: props?.query_tab_id,
+                        is_full_screen: props?.is_full_screen,
+                    }
+
                 },
             },
             tab_switched: {
@@ -620,10 +620,10 @@ const keyMap = {
         persona: {
             cta_clicked: {
                 action: "governance_persona_cta_clicked",
-                 properties: (props) => (props),
+                properties: (props) => (props),
             },
             home_tab: {
-                 action: 'governance_persona_sidebar_tab_changed',
+                action: 'governance_persona_sidebar_tab_changed',
                 properties: (props) => (props),
             },
             readme_expanded: {
@@ -705,7 +705,7 @@ const keyMap = {
         purpose: {
             cta_clicked: {
                 action: "governance_purpose_cta_clicked",
-                 properties: (props) => (props),
+                properties: (props) => (props),
             },
             home_tab: {
                 action: 'governance_purpose_sidebar_tab_changed',
@@ -815,6 +815,16 @@ const keyMap = {
                     title: props.title,
                 }),
             },
+            asset_data_deleted: {
+                action: 'governance_custom_metadata_asset_data_deleted',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    cm_id: props.cm_id,
+                    total_asset_count: props.total_asset_count,
+                    title: props.title,
+                    filled_property_count: props.filled_property_count,
+                }),
+            },
             property_added: {
                 action: 'governance_custom_metadata_property_added',
                 properties: (props) => ({
@@ -884,7 +894,6 @@ const keyMap = {
                 }),
             },
         },
-
         options: {
             created: {
                 action: 'governance_options_created',
@@ -897,6 +906,11 @@ const keyMap = {
                 properties: (props: { title: string }) => ({
                     ...props,
                 }),
+            },
+        },
+        connection: {
+            card_clicked: {
+                action: 'governance_connection_card_clicked',
             },
         },
     },

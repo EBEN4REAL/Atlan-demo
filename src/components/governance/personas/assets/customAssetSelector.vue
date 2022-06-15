@@ -34,6 +34,7 @@
             />
         </div>
         <button
+            v-if="!hideCTA"
             class="text-sm text-primary"
             data-test-id="add-expression"
             @click="addExpr"
@@ -73,6 +74,7 @@
                 return found?.attributes?.name || ''
             })
             const regexes = ref([''] as String[])
+            const hideCTA = computed(() => regexes.value.some((el) => !el))
             function addExpr() {
                 regexes.value = regexes.value.filter((val) => val.trim().length)
                 regexes.value.push('')
@@ -99,6 +101,7 @@
                 getImage,
                 updateAssets,
                 connName,
+                hideCTA,
             }
         },
     })

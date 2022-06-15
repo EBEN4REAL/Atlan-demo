@@ -17,6 +17,7 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
         View: 'Column',
         MaterialisedView: 'Column',
         TableauDatasource: ['TableauDatasourceField', 'TableauCalculatedField'],
+        PowerBITable: 'PowerBIColumn',
         LookerExplore: 'LookerField',
         LookerView: 'LookerField',
     }
@@ -25,6 +26,7 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
         View: 'view',
         MaterialisedView: 'view',
         TableauDatasource: 'datasource',
+        PowerBITable: 'powerBITable',
         LookerExplore: 'lookerExplore',
         LookerView: 'lookerView',
     }
@@ -65,7 +67,12 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
             key: `${nodeTypeNameMap[typeName]}QualifiedName`,
             value: qualifiedName,
             type: 'must',
-            prop: ['Table', 'View', 'MaterialisedView'].includes(typeName)
+            prop: [
+                'Table',
+                'View',
+                'MaterialisedView',
+                'PowerBITable',
+            ].includes(typeName)
                 ? 'term'
                 : 'match_phrase_prefix',
         },

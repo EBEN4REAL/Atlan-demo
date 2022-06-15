@@ -26,6 +26,7 @@ export interface State {
     personas: { id: string; name: string }[]
     purposes: { id: string; name: string }[]
     defaultRoles: string[]
+    groups: any
 }
 
 export const state: State = {
@@ -50,4 +51,5 @@ export const state: State = {
     personas: useStorage('personas', []),
     purposes: useStorage('purposes', []),
     defaultRoles: useStorage('defaultRoles', []),
+    groups: []
 }

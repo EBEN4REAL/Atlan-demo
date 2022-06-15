@@ -37,7 +37,7 @@
 
     import useCustomMetadataAvatar from './composables/useCustomMetadataAvatar'
 
-    import CustomMetadataAvatar from './CustomMetadataAvatar.vue'
+    import CustomMetadataAvatar from '@/governance/custom-metadata/CustomMetadataAvatar.vue'
     import IconPicker from '~/components/common/IconPicker/IconPicker.vue'
 
     export default defineComponent({

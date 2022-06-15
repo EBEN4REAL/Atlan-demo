@@ -640,9 +640,12 @@
             }
 
             debouncedWatch(
-                selectedAsset,
+                () => selectedAsset.value?.attributes?.qualifiedName,
                 () => {
-                    if (drawerActiveKey.value === 'Overview') {
+                    if (
+                        drawerActiveKey.value === 'Overview' &&
+                        resourceId.value === ''
+                    ) {
                         switchTab(selectedAsset.value, activeLabel.value)
                     }
                 },

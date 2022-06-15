@@ -47,11 +47,11 @@
         >
             
             Propagated via 
-            <span class="hover:text-primary">
-                <span class="mr-1 hover:text-primary">
-                    <AtlanIcon  class="hover:text-primary" :icon="getPropagatedViaIcon(propagatedVia)" />
+            <span class="">
+                <span class="mr-2">
+                    <AtlanIcon  class="" :icon="getPropagatedViaIcon(propagatedVia)" />
                 </span>
-                <span class="text-gray-700 cursor-pointer hover:text-primary" @click="() => propagatedVia?.length ?  handleOpenProfile(propagatedVia[0]) : handleOpenProfile(propagatedVia)" >
+                <span class="text-gray-700 cursor-pointer underlined-text" @click="() => propagatedVia?.length ?  handleOpenProfile(propagatedVia[0]) : handleOpenProfile(propagatedVia)" >
                     {{ computeDisplayText(propagatedVia) }} 
                 </span>
             </span>
@@ -63,11 +63,11 @@
         >
             <div class="flex items-center content-center gap-1 ">
                 Propagated via 
-               <span class="hover:text-primary">
-                 <span class="hover:text-primary">
-                    <AtlanIcon  class="hover:text-primary" :icon="getPropagatedViaIcon(propagatedVia[0])" />
+               <span class="">
+                 <span class="mr-1">
+                    <AtlanIcon  class="" :icon="getPropagatedViaIcon(propagatedVia[0])" />
                     </span>
-                    <span class="text-gray-700 cursor-pointer hover:text-primary" @click="() => propagatedVia?.length ?  handleOpenProfile(propagatedVia[0]) : handleOpenProfile(propagatedVia)" >
+                    <span class="text-gray-700 cursor-pointer display-text" @click="() => propagatedVia?.length ?  handleOpenProfile(propagatedVia[0]) : handleOpenProfile(propagatedVia)" >
                         {{ computeDisplayText(propagatedVia) }} 
                     </span>
                </span>
@@ -77,20 +77,20 @@
                 placement="rightTop" >
                 <template #content>
                     <div class="py-3 pl-3 bg-white rounded-md w-52">
-                        <div class="flex items-center hove:text-primary hover:text-primary" v-for="(pv,i) in propagatedVia.slice(1)" :key="i">
+                        <div class="flex items-center hove:text-primary" v-for="(pv,i) in propagatedVia.slice(1)" :key="i">
                             <div class="mr-1">
                                 <AtlanIcon
-                                    class="hover:text-primary"
+                                    class=""
                                     :icon="getPropagatedViaIcon(pv)"
                                 />
                             </div>
-                            <div class="text-sm text-gray-500 cursor-pointer hover:text-primary " @click="handleOpenProfile(pv)" >
+                            <div class="text-sm text-gray-500 cursor-pointer display-text" @click="handleOpenProfile(pv)" >
                                 {{pv?.displayText}}
                             </div>
                         </div>
                     </div>
                 </template>
-                <span class="cursor-pointer" style="text-decoration: underline dotted">
+                <span class="cursor-pointer underlined-text " style="">
                     {{extendedText}}
                 </span>
             </a-popover>
@@ -221,6 +221,12 @@
     .propagated-tooltip {
         box-shadow: 0px 0px 4px rgba(55, 65, 81, 0.06), 0px 2px 6px rgba(55, 65, 81, 0.1);
         left: 93px;
+    }
+    .display-text:hover {
+        text-decoration: underline dotted;
+    }
+    .underlined-text {
+        text-decoration: underline dotted;
     }
     .propagated-class-tooltip {
         .ant-popover-inner-content {

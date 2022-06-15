@@ -1,4 +1,20 @@
 <template>
+      <a-drawer
+        v-model:visible="visible"
+        :destroy-on-close="true"
+        placement="right"
+        :body-style="{ height: '100%' }"
+        :mask="false"
+        :width="420"
+        :closable="false"
+        class="drawer"
+        @close="togglePreview"
+    >
+        <ClassificationDrawer
+            :classification-prop="classification"
+            @close="togglePreview"
+        />
+    </a-drawer>
     <a-popover
         placement="left"
         :mouse-enter-delay="mouseEnterDelay"
@@ -27,22 +43,7 @@
         </template>
         <slot></slot>
     </a-popover>
-    <a-drawer
-        :visible="showClassificationPreview"
-        :destroy-on-close="true"
-        placement="right"
-        :body-style="{ height: '100%' }"
-        :mask="false"
-        :width="420"
-        :closable="false"
-        class="drawer"
-        @close="togglePreview"
-    >
-        <ClassificationDrawer
-            :classification-prop="classification"
-            @close="togglePreview"
-        />
-    </a-drawer>
+  
 </template>
 
 <script lang="ts">
@@ -81,16 +82,17 @@
             const classification = ref<ClassificationInterface>(
                 props.classification
             )
-            const showClassificationPreview = ref(false)
+            const visible = ref<boolean>(false);
 
             const togglePreview = () => {
-                showClassificationPreview.value =
-                    !showClassificationPreview.value
+                visible.value = !visible.value
+                
+                console.log("TOGGLE VIEW  => 87", visible.value)
             }
 
             return {
                 classification,
-                showClassificationPreview,
+                visible,
                 togglePreview,
             }
         },

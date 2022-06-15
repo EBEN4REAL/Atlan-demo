@@ -238,11 +238,37 @@
                             v-if="list?.length"
                             class="flex flex-wrap gap-1 mt-1"
                         >
+                            <!-- v-for="classification in list.slice(0, 3)" -->
                             <template
                                 v-for="classification in list.slice(0, 3)"
                                 :key="classification.guid"
                             >
-                                <ClassificationPill
+                                <PopoverClassification
+                                    :classification="classification"
+                                    :entity-guid="item.guid"
+                                    :mouse-enter-delay="classificationMouseEnterDelay"
+                                    @mouse-entered="enteredPill"
+                                    @mouse-left="leftPill"
+                                >
+                                    <ClassificationPill
+                                        :name="classification.name"
+                                        :display-name="
+                                            classification?.displayName
+                                        "
+                                        :is-propagated="
+                                            isPropagated(classification)
+                                        "
+                                        :count="classification?.count"
+                                        :allow-delete="false"
+                                        :color="
+                                            classification.options?.color?.toLowerCase()
+                                        "
+                                        :created-by="
+                                            classification?.createdBy
+                                        "
+                                    ></ClassificationPill>
+                                </PopoverClassification>
+                                <!-- <ClassificationPill
                                     :name="classification.name"
                                     :display-name="classification?.displayName"
                                     :is-propagated="
@@ -250,13 +276,14 @@
                                     "
                                     :allow-delete="false"
                                     :created-by="classification?.createdBy"
-                                ></ClassificationPill>
+                                    :color="classification.options?.color?.toLowerCase()"
+                                ></ClassificationPill> -->
                             </template>
                             <span
                                 v-if="list.slice(3, list.length).length"
                                 class="bg-gray-100 border border-gray-300 flex items-center px-1.5 py-1 rounded-full text-gray-500"
                             >
-                                +{{ list.slice(3, list.length).length }}
+                                + {{ list.slice(3, list.length).length }} 
                             </span>
                         </div>
                         <div
@@ -385,6 +412,9 @@
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import {groupClassifications} from "~/utils/groupClassifications"
+    import PopoverClassification from '@/common/popover/classification/index.vue'
 
     export default {
         name: 'PopoverAsset',
@@ -397,6 +427,7 @@
             TermPill,
             AssetDrawer,
             ColumnKeys,
+            PopoverClassification
         },
         props: {
             item: {
@@ -469,8 +500,18 @@
                     'name',
                     'typeName'
                 )
-                return matchingIdsResult
+                const groupedClassifications = groupClassifications(matchingIdsResult, isPropagated)
+                return groupedClassifications
             })
+
+             const { classificationMouseEnterDelay, enteredPill, leftPill } =
+                useMouseEnterDelay()
+            
+            // const {
+            //     mouseEnterDelay: termMouseEnterDelay,
+            //     enteredPill: termEnteredPill,
+            //     leftPill: termLeftPill,
+            // } = useMouseEnterDelay()
 
             const rows = computed(() => {
                 const rawRowCount = rowCount(item.value, true)
@@ -542,6 +583,7 @@
 
             return {
                 certificateStatus,
+                enteredPill,
                 certificateUpdatedBy,
                 certificateUpdatedAt,
                 isPropagated,
@@ -575,6 +617,8 @@
                 handleUserPreview,
                 closePopover,
                 handleAssetPreview,
+                leftPill,
+                classificationMouseEnterDelay
             }
         },
     }

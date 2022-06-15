@@ -70,11 +70,11 @@ const keyMap = {
                 action: 'discovery_cta_action_clicked',
                 properties: (props: {
                     action:
-                        | 'open_asset'
-                        | 'vqb_query'
-                        | 'sql_query'
-                        | 'copy_link'
-                        | 'open_in_source'
+                    | 'open_asset'
+                    | 'vqb_query'
+                    | 'sql_query'
+                    | 'copy_link'
+                    | 'open_in_source'
                     asset_type: string
                 }) => ({
                     ...props,
@@ -548,13 +548,13 @@ const keyMap = {
                             is_full_screen: props?.is_full_screen,
                             description_added: props?.description_added,
                         }
-                    } 
-                        return {
-                            action: props.action,
-                            query_tab_id: props?.query_tab_id,
-                            is_full_screen: props?.is_full_screen,
-                        }
-                    
+                    }
+                    return {
+                        action: props.action,
+                        query_tab_id: props?.query_tab_id,
+                        is_full_screen: props?.is_full_screen,
+                    }
+
                 },
             },
             tab_switched: {
@@ -620,10 +620,10 @@ const keyMap = {
         persona: {
             cta_clicked: {
                 action: "governance_persona_cta_clicked",
-                 properties: (props) => (props),
+                properties: (props) => (props),
             },
             home_tab: {
-                 action: 'governance_persona_sidebar_tab_changed',
+                action: 'governance_persona_sidebar_tab_changed',
                 properties: (props) => (props),
             },
             readme_expanded: {
@@ -705,7 +705,7 @@ const keyMap = {
         purpose: {
             cta_clicked: {
                 action: "governance_purpose_cta_clicked",
-                 properties: (props) => (props),
+                properties: (props) => (props),
             },
             home_tab: {
                 action: 'governance_purpose_sidebar_tab_changed',
@@ -813,6 +813,14 @@ const keyMap = {
                 action: 'governance_custom_metadata_deleted',
                 properties: (props) => ({
                     title: props.title,
+                }),
+            },
+            asset_data_deleted: {
+                action: 'governance_custom_metadata_asset_data_deleted',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    title: props.title,
+                    filled_property_count: props.filled_property_count,
                 }),
             },
             property_added: {

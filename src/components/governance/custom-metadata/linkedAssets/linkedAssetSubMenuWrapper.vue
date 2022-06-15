@@ -21,21 +21,31 @@
                 />
             </LinkedAssetsOwnerPopover> -->
 
-            <SubMenuTitle
-                :class="{
-                    ' border-transparent':
-                        openKeys.includes(asset.guid) ||
-                        openKeys.includes(linkedAssets[x + 1]?.guid) ||
-                        linkedAssets.length - 1 === x,
-                    ' cursor-not-allowed ': isScrubbed(asset),
-                    ' hover:bg-gray-100': !openKeys.includes(asset.guid),
-                }"
-                :open-keys="openKeys"
-                :count="LinkedAssetItemRef?.[x]?.count"
-                :asset="asset"
-                class="cursor-pointer"
-                @handleClear="handleClear(asset)"
-            />
+            <a-tooltip
+                :title="
+                    isScrubbed(asset)
+                        ? 'You don&lsquo;t have access to edit Custom Metadata for this asset'
+                        : ''
+                "
+            >
+                <SubMenuTitle
+                    :class="{
+                        ' border-transparent':
+                            openKeys.includes(asset.guid) ||
+                            openKeys.includes(linkedAssets[x + 1]?.guid) ||
+                            linkedAssets.length - 1 === x,
+                        ' cursor-not-allowed ': isScrubbed(asset),
+                        ' hover:bg-gray-100': !openKeys.includes(asset.guid),
+                    }"
+                    :open-keys="openKeys"
+                    :count="LinkedAssetItemRef?.[x]?.count"
+                    :asset="asset"
+                    class="cursor-pointer"
+                    @handleClear="
+                        handleClear(asset, LinkedAssetItemRef?.[x]?.count)
+                    "
+                />
+            </a-tooltip>
         </template>
 
         <a-menu-item>
@@ -65,6 +75,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import LinkedAssetsOwnerPopover from '@/governance/custom-metadata/linkedAssets/linkedAssetsOwnerPopover.vue'
     import SubMenuTitle from '@/governance/custom-metadata/linkedAssets/subMenuTitle.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     const props = defineProps({
         linkedAssets: {
@@ -84,9 +95,9 @@
     const LinkedAssetItemRef = ref([])
     const emit = defineEmits(['success', 'error', 'metadataRemove'])
 
-    const { isScrubbed, ownerUsers } = useAssetInfo()
+    const { isScrubbed, ownerUsers, assetType } = useAssetInfo()
 
-    const handleClear = async (asset) => {
+    const handleClear = async (asset, count) => {
         const { error, isReady, isLoading, mutate } = removeProperty(
             asset,
             metadata.value
@@ -101,6 +112,11 @@
             message.success({
                 key: 'clear',
                 content: 'Custom Metadata has been cleared.',
+            })
+            useAddEvent('governance', 'custom_metadata', 'asset_data_deleted', {
+                asset_type: assetType(asset),
+                title: metadata.value.displayName,
+                filled_property_count: count,
             })
         } catch (e) {
             emit('error')

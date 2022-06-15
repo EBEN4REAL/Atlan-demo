@@ -44,7 +44,8 @@
                     </div>
                     <span class="text-gray-300">•</span>
                     <span class="text-gray-500">
-                        {{ assetCount }} Assets linked
+                        {{ assetCount }}
+                        {{ assetCount > 1 ? 'Assets' : 'Asset' }} linked
                     </span>
                 </div>
             </header>

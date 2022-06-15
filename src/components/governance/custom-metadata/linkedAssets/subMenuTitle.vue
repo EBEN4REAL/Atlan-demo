@@ -16,7 +16,8 @@
             <div class="text-sm text-new-gray-600">
                 <span class="mr-1">
                     {{ count }}
-                    properties
+
+                    {{ count > 1 ? 'properties' : 'property' }}
                 </span>
                 <AtlanIcon
                     icon="CaretDown"

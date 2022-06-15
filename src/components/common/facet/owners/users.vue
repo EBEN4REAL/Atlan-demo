@@ -59,12 +59,12 @@
                                                     ? 'user-name-facet-owner'
                                                     : 'user-name-facet-owner-verified',
                                                 !item?.enabled &&
-                                                !fullName(item, false).includes('me')
+                                                !fullName(item).includes('me')
                                                     ? 'line-through'
                                                     : '',
                                             ]"
                                         >
-                                            {{ fullName(item, false) }}
+                                            {{ fullName(item) }}
                                         </div>
                                         <div
                                             v-if="item.emailVerified === false"
@@ -317,7 +317,7 @@
                 return data
             })
 
-            const fullName = (item, isTooltip) => {
+            const fullName = (item, isTooltip=false) => {
                 const screenResolution = window.innerWidth;
                 let name = item.username;
                 if (item.firstName) {

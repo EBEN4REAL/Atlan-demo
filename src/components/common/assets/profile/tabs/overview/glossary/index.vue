@@ -6,6 +6,7 @@
             :entity="selectedAsset"
         /> -->
         <div
+            v-if="selectedAsset?.typeName==='AtlasGlossaryTerm'"
             class="rounded-lg p-4 bg-white flex flex-wrap items-center"
         >
             <atlan-icon icon="Info" class="mx-1 text-primary" />
@@ -65,7 +66,9 @@
             </template>
         </Summary>
         <slot name="readme"></slot>
-        <RelatedTermsWidget :asset="selectedAsset"/>
+        <RelatedTermsWidget
+            v-if="selectedAsset?.typeName==='AtlasGlossaryTerm'"
+        :asset="selectedAsset"/>
     </div>
 </template>
 

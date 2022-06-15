@@ -129,7 +129,7 @@
         >
             <template v-if="!isMultivalued && attribute.value">
                 <div
-                    class="px-2 py-1 border rounded-full"
+                    class="px-2 py-1 bg-white border rounded-full"
                     :style="{ 'max-width': '100%' }"
                 >
                     <SimpleEllipsis :text="attribute.value" />
@@ -141,7 +141,7 @@
                         JSON.stringify(attribute.value)
                     ).sort()"
                     :key="e"
-                    class="px-2 py-1 border rounded-full"
+                    class="px-2 py-1 bg-white border rounded-full"
                     :style="{ 'max-width': '100%' }"
                 >
                     <SimpleEllipsis :text="e" />

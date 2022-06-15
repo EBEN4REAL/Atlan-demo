@@ -63,6 +63,7 @@
                     <LinkedAssetsSubMenu
                         :linked-assets="linkedAssets"
                         :metadata="metadata"
+                        :asset-count="assetCount"
                         :open-keys="openKeys"
                         @metadataRemove="(id) => emit('metadataRemove', id)"
                     />

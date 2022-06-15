@@ -90,8 +90,12 @@
             type: Array,
             required: true,
         },
+        assetCount: {
+            type: Number,
+            required: true,
+        },
     })
-    const { metadata } = toRefs(props)
+    const { metadata, assetCount } = toRefs(props)
     const LinkedAssetItemRef = ref([])
     const emit = defineEmits(['success', 'error', 'metadataRemove'])
 
@@ -115,7 +119,9 @@
             })
             useAddEvent('governance', 'custom_metadata', 'asset_data_deleted', {
                 asset_type: assetType(asset),
+                cm_id: metadata.value.guid,
                 title: metadata.value.displayName,
+                total_asset_count: assetCount.value,
                 filled_property_count: count,
             })
         } catch (e) {

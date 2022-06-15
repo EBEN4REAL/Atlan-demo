@@ -2,11 +2,11 @@
     <div
         :data-test-id="item?.guid"
         class="flex items-center w-full group"
+        :class="`schemaTreeElement-${item?.guid}`"
         :style="{ height: assetType(item) == 'Column' ? '32px' : '32px' }"
     >
         <div class="flex justify-between w-full h-full overflow-hidden">
             <!-- Popover Allowed -->
-
             <div
                 class="flex w-full m-0"
                 v-if="isPopoverAllowed(item?.typeName) && hoverActions"
@@ -30,6 +30,7 @@
                             :item="item"
                             class=""
                             trigger="contextmenu"
+                            @visibleChange="insightsThreeDotMenuVisibleChange"
                         >
                             <template #menuTrigger>
                                 <div
@@ -68,11 +69,14 @@
                                         v-if="hoverActions"
                                         class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
                                         style="width: "
-                                        :class="
+                                        :class="[
                                             item?.selected
                                                 ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                                : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
-                                        "
+                                                : 'bg-gradient-to-l from-tree-light-color via-tree-light-color',
+                                            hoverActiveState
+                                                ? 'opacity-100'
+                                                : '',
+                                        ]"
                                         @click.stop="() => {}"
                                     >
                                         <div
@@ -162,6 +166,9 @@
                                             v-if="showVQB"
                                             :item="item"
                                             :treeData="treeData"
+                                            @visibleChange="
+                                                insightsThreeDotMenuVisibleChange
+                                            "
                                         />
 
                                         <!-- <div
@@ -232,6 +239,7 @@
                             :item="item"
                             class=""
                             trigger="contextmenu"
+                            @visibleChange="insightsThreeDotMenuVisibleChange"
                         >
                             <template #menuTrigger>
                                 <div class="flex items-center w-full h-8 m-0">
@@ -267,11 +275,14 @@
                                         v-if="hoverActions"
                                         class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
                                         @click.stop="() => {}"
-                                        :class="
+                                        :class="[
                                             item?.selected
                                                 ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                                : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
-                                        "
+                                                : 'bg-gradient-to-l from-tree-light-color via-tree-light-color',
+                                            hoverActiveState
+                                                ? 'opacity-100'
+                                                : '',
+                                        ]"
                                     >
                                         <div
                                             class="w-8 h-full opacity-70 bg-gradient-to-l from-new-gray-200"
@@ -514,6 +525,11 @@
                                         <div class="pl-1">
                                             <div
                                                 class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                                :class="
+                                                    hoverActiveState
+                                                        ? 'bg-new-gray-300'
+                                                        : ''
+                                                "
                                             >
                                                 <InsightsThreeDotMenu
                                                     :options="
@@ -521,6 +537,9 @@
                                                     "
                                                     :item="item"
                                                     class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                                    @visibleChange="
+                                                        insightsThreeDotMenuVisibleChange
+                                                    "
                                                 >
                                                     <template #menuTrigger>
                                                         <AtlanIcon
@@ -572,6 +591,7 @@
                 :item="item"
                 class=""
                 trigger="contextmenu"
+                @visibleChange="insightsThreeDotMenuVisibleChange"
             >
                 <template #menuTrigger>
                     <div
@@ -614,16 +634,22 @@
                             <div
                                 v-if="hoverActions"
                                 class="absolute right-0 flex items-center opacity-0 text-new-gray-700 h-7 margin-align-top group-hover:opacity-100"
-                                :class="
+                                :class="[
                                     item?.selected
                                         ? 'bg-gradient-to-l from-tree-light-color  via-tree-light-color '
-                                        : 'bg-gradient-to-l from-tree-light-color via-tree-light-color'
-                                "
+                                        : 'bg-gradient-to-l from-tree-light-color via-tree-light-color',
+                                    hoverActiveState ? 'opacity-100' : '',
+                                ]"
                                 @click.stop="() => {}"
                             >
                                 <div class="pl-2 ml-4">
                                     <div
                                         class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
+                                        :class="
+                                            hoverActiveState
+                                                ? 'bg-new-gray-300'
+                                                : ''
+                                        "
                                     >
                                         <InsightsThreeDotMenu
                                             :options="
@@ -631,6 +657,9 @@
                                             "
                                             :item="item"
                                             class="w-4 h-4 my-auto -mr-1.5 outline-none"
+                                            @visibleChange="
+                                                insightsThreeDotMenuVisibleChange
+                                            "
                                         >
                                             <template #menuTrigger>
                                                 <AtlanIcon
@@ -2090,8 +2119,24 @@
                           },
                       },
                   ]
+            ////// for active state of element
+            const hoverActiveState = ref(false)
+            const insightsThreeDotMenuVisibleChange = (state) => {
+                hoverActiveState.value = state
+                const el = document.querySelector(
+                    `.schemaTreeElement-${item.value?.guid}`
+                )
+                const parentEl = el?.closest('.ant-tree-treenode')
+                if (state) {
+                    parentEl?.classList.add('bg-new-gray-200')
+                } else {
+                    parentEl?.classList.remove('bg-new-gray-200')
+                }
+            }
 
             return {
+                hoverActiveState,
+                insightsThreeDotMenuVisibleChange,
                 recordTooltipPresence,
                 MOUSE_ENTER_DELAY,
                 ADJACENT_TOOLTIP_DELAY,

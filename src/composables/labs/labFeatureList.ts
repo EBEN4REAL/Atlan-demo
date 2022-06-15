@@ -12,6 +12,8 @@ export const INSIGHT_DATA_DOWNLOAD = 'INSIGHT_DATA_DOWNLOAD'
 export const WORKFLOW_CENTER_V2 = 'WORKFLOW_CENTER_V2_ENABLED'
 export const LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE =
     'LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE'
+export const PREFERRED_TERMS='PREFERRED_TERMS'
+export const ANTONYMS='ANTONYMS'
 
 export const featureList = [
     {
@@ -136,6 +138,44 @@ export const featureList = [
         // should it show up in user preferences
         isUserLevel: false,
         isBeta: true,
+    },
+    {
+        name: 'Preferred Terms',
+        key: PREFERRED_TERMS,
+        description:
+            'Preferred terms in Glossary',
+        // if the config isn't present in tenant/user preferences, default value will be picked up from here
+        defaultValue: true,
+        // only these users will be allowed
+        allowedUsers: [],
+        allowedGroups: [],
+        // these users will be deined even if its enabled for whole org
+        deniedUsers: [],
+        deniedGroups: [],
+        // should it show up in admin center to configure for organisation
+        isAdminLevel: true,
+        // should it show up in user preferences
+        isUserLevel: false,
+        isBeta: false,
+    },
+    {
+        name: 'Antonyms',
+        key: ANTONYMS,
+        description:
+            'Antonyms in Glossary',
+        // if the config isn't present in tenant/user preferences, default value will be picked up from here
+        defaultValue: true,
+        // only these users will be allowed
+        allowedUsers: [],
+        allowedGroups: [],
+        // these users will be deined even if its enabled for whole org
+        deniedUsers: [],
+        deniedGroups: [],
+        // should it show up in admin center to configure for organisation
+        isAdminLevel: true,
+        // should it show up in user preferences
+        isUserLevel: false,
+        isBeta: false,
     },
 ]
 

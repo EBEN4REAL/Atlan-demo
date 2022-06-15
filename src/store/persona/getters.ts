@@ -4,7 +4,7 @@ import { State } from './state'
 export interface Getters {
     getList(state: State): any[]
     getConnectionList(): (id: string) => string[]
-    getAssetList(): (id: string) => string[],
+    getAssetList(): (id: string) => string[]
 }
 
 export const getters: GettersTree<State> & Getters = {
@@ -28,6 +28,11 @@ export const getters: GettersTree<State> & Getters = {
             found?.metadataPolicies.forEach((element) => {
                 if (element.allow) {
                     assetList.push(...element?.assets)
+                }
+            })
+            found?.glossaryPolicies.forEach((element) => {
+                if (element.allow) {
+                    assetList.push(...element?.glossaryQualifiedNames)
                 }
             })
             return assetList

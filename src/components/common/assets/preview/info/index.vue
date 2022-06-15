@@ -1156,11 +1156,13 @@
                 </RelatedTerms>
                 <!-- Antonyms widget -->
                 <p
+                    v-if="showAntonyms"
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 mt-4"
                 >
                     Antonyms
                 </p>
                 <RelatedTerms
+                    v-if="showAntonyms"
                     v-model="localAntonyms"
                     :selected-asset="selectedAsset"
                     class="px-5"
@@ -1171,11 +1173,13 @@
                 </RelatedTerms>
                 <!-- Preferred terms widget -->
                 <p
+                    v-if="showPreferredTerms"
                     class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500 mt-4"
                 >
                     Preferred terms
                 </p>
                 <RelatedTerms
+                    v-if="showPreferredTerms"
                     v-model="localPreferredTerms"
                     :selected-asset="selectedAsset"
                     class="px-5"
@@ -1250,6 +1254,7 @@
         inject,
         ref,
         toRefs,
+        computed
     } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'
@@ -1293,6 +1298,11 @@
     import { useSimilarList } from '~/composables/discovery/useSimilarList'
     import { getColumnCountWithLineage } from '~/components/common/assets/profile/tabs/lineage/util.js'
     import { useAuthStore } from '~/store/auth'
+    import {
+        featureEnabledMap,
+        ANTONYMS,
+        PREFERRED_TERMS,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -1469,6 +1479,13 @@
                 localSQLQuery,
                 handleSQLQueryUpdate,
             } = updateAssetAttributes(selectedAsset, isDrawer.value)
+
+            const showPreferredTerms = computed(
+                () => featureEnabledMap.value[PREFERRED_TERMS]
+            )
+            const showAntonyms = computed(
+                () => featureEnabledMap.value[ANTONYMS]
+            )
 
             const limit = ref(0)
             const offset = ref(0)
@@ -1669,6 +1686,8 @@
                 powerBIColumnDataType,
                 powerBIColumnDataTypeImage,
                 setAllAdmins,
+                showPreferredTerms,
+                showAntonyms,
             }
         },
     })

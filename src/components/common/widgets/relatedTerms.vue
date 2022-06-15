@@ -28,7 +28,7 @@
                 </TermPopover>
             </template>
         </div>
-        <span v-else class="text-gray-500 mt-1 mb-2 ml-1">No related terms</span>
+        <span v-else class="text-gray-500 mt-1 mb-2">No related terms</span>
 
         <span v-if="showAntonyms" class="font-bold text-base text-gray-500 mt-2"
             >Antonyms</span
@@ -61,7 +61,7 @@
                     </TermPopover>
                 </template>
             </div>
-            <span v-else class="text-gray-500 pt-2 mb-2 ml-1">No antonyms</span>
+            <span v-else class="text-gray-500 pt-2 mb-2 ">No antonyms</span>
         </div>
     </div>
 </template>

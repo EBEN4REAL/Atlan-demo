@@ -1,10 +1,6 @@
 <template>
     <div class="flex flex-col p-6 gap-y-4">
         <!-- hidden for GA -->
-        <!-- <BulkUploadProgress
-            v-if="selectedAsset?.typeName === 'AtlasGlossary'"
-            :entity="selectedAsset"
-        /> -->
         <div
             v-if="
                 selectedAsset?.typeName === 'AtlasGlossaryTerm' &&
@@ -14,53 +10,80 @@
             "
             class="rounded-lg p-4 bg-white flex flex-wrap items-center"
         >
-            <atlan-icon icon="Info" class="mx-1 text-primary" />
-            <router-link
-                :to="`/glossary/${selectedAsset?.guid}`"
-                class="font-bold text-primary hover:underline mx-1"
-            >
-                {{
-                    selectedAsset?.attributes?.name ||
-                    selectedAsset?.displayText
-                }}
-            </router-link>
-            <div
-                v-for="el in preferredTerms(selectedAsset)"
-                :key="el?.guid"
-                class="mx-1"
-            >
-                <router-link
-                    :to="`/glossary/${el?.guid}`"
-                    class="font-bold text-primary hover:underline"
+            <atlan-icon icon="Info" class="mx-1 mr-1.5 text-primary h-5" />
+            <div>
+                <div
+                    v-if="preferredTerms(selectedAsset)?.length"
+                    class="flex items-center flex-wrap mb-1"
                 >
-                    {{ el?.attributes?.name }}
-                </router-link>
-            </div>
+                    <div
+                        v-for="(el,i) in preferredTerms(selectedAsset)"
+                        :key="el?.guid"
+                        class="ml-1"
+                    >
+                        <router-link
+                            :to="`/glossary/${el?.guid}`"
+                            class="font-bold text-primary hover:underline"
+                        >
+                            {{ el?.attributes?.name }}
+                            <span
+                                v-if="
+                                    i !==
+                                    preferredTerms(selectedAsset)?.length - 1
+                                "
+                                >,</span
+                            >
+                        </router-link>
+                    </div>
+                    <span class="mx-1"> is preferred over </span>
 
-            is preferred over
-            <div
-                v-for="el in preferredToTerms(selectedAsset)"
-                :key="el?.guid"
-                class="ml-1"
-            >
-                <router-link
-                    :to="`/glossary/${el?.guid}`"
-                    class="font-bold text-primary hover:underline"
+                    <router-link
+                        :to="`/glossary/${selectedAsset?.guid}`"
+                        class="font-bold text-primary hover:underline mx-1"
+                    >
+                        {{
+                            selectedAsset?.attributes?.name ||
+                            selectedAsset?.displayText
+                        }}
+                    </router-link>
+                </div>
+                <div
+                    v-if="preferredToTerms(selectedAsset)?.length"
+                    class="flex items-center flex-wrap"
                 >
-                    {{ el?.attributes?.name }}
-                </router-link>
+                    <span class="mx-1">
+                        <router-link
+                            :to="`/glossary/${selectedAsset?.guid}`"
+                            class="font-bold text-primary hover:underline"
+                        >
+                            {{
+                                selectedAsset?.attributes?.name ||
+                                selectedAsset?.displayText
+                            }}
+                        </router-link>
+                    </span>
+                    <span class="mx-1"> is preferred over </span>
+                    <div
+                        v-for="(el, i) in preferredToTerms(selectedAsset)"
+                        :key="el?.guid"
+                        class="ml-1"
+                    >
+                        <router-link
+                            :to="`/glossary/${el?.guid}`"
+                            class="font-bold text-primary hover:underline"
+                        >
+                            {{ el?.attributes?.name }}
+                            <span
+                                v-if="
+                                    i !==
+                                    preferredToTerms(selectedAsset)?.length - 1
+                                "
+                                >,</span
+                            >
+                        </router-link>
+                    </div>
+                </div>
             </div>
-            <span class="mx-1">
-                <router-link
-                    :to="`/glossary/${selectedAsset?.guid}`"
-                    class="font-bold text-primary hover:underline"
-                >
-                    {{
-                        selectedAsset?.attributes?.name ||
-                        selectedAsset?.displayText
-                    }}
-                </router-link>
-            </span>
         </div>
         <Summary :asset="selectedAsset">
             <template #announcement>

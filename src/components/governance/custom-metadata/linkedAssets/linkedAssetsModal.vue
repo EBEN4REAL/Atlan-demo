@@ -12,7 +12,7 @@
         </template>
         <div
             class="absolute flex items-center w-full p-3 text-sm rounded-lg gap-x-1 bg-new-yellow-100 text-new-yellow-700"
-            style="top: -3.2rem"
+            style="bottom: calc(100% + 0.5rem)"
         >
             <AtlanIcon
                 icon="Overview"

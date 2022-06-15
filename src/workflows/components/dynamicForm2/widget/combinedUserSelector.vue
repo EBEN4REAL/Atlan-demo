@@ -1,9 +1,9 @@
 <template>
     <div
-        class="flex items-center justify-between mb-1 text-sm text-gray cursor-help"
+        class="flex items-center justify-between mb-1 text-sm text-gray"
         style="line-height: 22px"
     >
-        <a-tooltip color="#2A2F45">
+        <a-tooltip color="#2A2F45" class="cursor-help">
             <template #title>
                 <p class="font-bold">Connection Admin Permissions:</p>
                 <p>1. View and edit all assets in the connection</p>
@@ -15,47 +15,54 @@
         </a-tooltip>
     </div>
 
-    <div class="flex justify-between">
-        <Owners
-            v-model:modelValue="selectedOwnersData"
-            :edit-permission="true"
-            :read-only="false"
-            :destroy-tooltip-on-hide="false"
-            :show-empty-owner="false"
-            :custom-add-button="true"
-            @change="handleOwnersChange"
-        >
-            <template #addButton>
-                <div class="ml-1 cursor-pointer">
-                    <span class="text-sm text-primary"> Add</span>
-                    <AtlanIcon
-                        icon="Add"
-                        class="ml-1 -mt-1 text-primary"
-                    /></div
-            ></template>
-            <template #users>
+    <Owners
+        v-model:modelValue="selectedOwnersData"
+        :edit-permission="true"
+        :read-only="false"
+        :destroy-tooltip-on-hide="false"
+        :show-empty-owner="false"
+        :custom-add-button="true"
+        @change="handleOwnersChange"
+    >
+        <template #addButton>
+            <a-button
+                shape="circle"
+                size="small"
+                class="text-center shadow hover:bg-primary-light hover:border-primary"
+            >
+                <span><AtlanIcon icon="Add" class="h-3"></AtlanIcon></span
+            ></a-button>
+        </template>
+        <template #groups>
+            <a-tooltip color="#2A2F45">
+                <template #title>
+                    All users with admin role will be added as connection admin
+                </template>
+
                 <div
                     v-if="allAdmins?.length"
-                    class="flex items-center justify-between flex-none px-2 py-1 ml-2 border border-gray-200 rounded-full cursor-pointer text-new-gray-800 hover:bg-primary hover:text-white"
+                    class="flex items-center justify-between flex-none px-2 py-1 border border-gray-200 rounded-full cursor-pointer text-new-gray-800 hover:bg-primary hover:text-white"
                 >
-                    <span> All admins </span>
+                    <AtlanIcon icon="Admin" class="h-4 mr-1" />
+
+                    <span> All Admins </span>
                     <AtlanIcon
                         icon="Cross"
                         class="h-3 ml-3 rotate-45"
                         @click="toggleAllAdmin(false)"
                     />
                 </div>
-            </template>
-        </Owners>
-        <AtlanButton2
-            v-if="!allAdmins.length"
-            label="Include all admins"
-            color="link"
-            class="pb-1 ml-3"
-            prefix-icon="UserLightActive"
-            @click="toggleAllAdmin"
-        />
-    </div>
+            </a-tooltip>
+        </template>
+    </Owners>
+
+    <a-checkbox
+        :checked="allAdmins.length"
+        @change="toggleAllAdmin($event.target.checked)"
+        class="mt-2"
+    >
+        Include all admins
+    </a-checkbox>
 </template>
 
 <script lang="ts">

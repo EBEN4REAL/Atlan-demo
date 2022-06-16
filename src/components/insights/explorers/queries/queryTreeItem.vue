@@ -2,7 +2,7 @@
     <div
         :id="`${item.qualifiedName}`"
         class="h-auto"
-        :class="`w-full group ${item.qualifiedName} schemaTreeElement-${item?.guid}`"
+        :class="`w-full group ${item.qualifiedName} queryTreeElement-${item?.guid}`"
         :data-test-id="item?.guid"
     >
         <div class="flex justify-between w-full overflow-hidden">
@@ -157,7 +157,7 @@
                     placement="right"
                     mouse-enter-delay="0.6"
                     @previewAsset="openSidebar"
-                    @visibleChange="insightsThreeDotMenuVisibleChange"
+                    @visibleChange="insightsPopoverVisibleChange"
                 >
                     <InsightsThreeDotMenu
                         trigger="contextmenu"
@@ -1694,10 +1694,24 @@
 
             ////// for active state of element
             const hoverActiveState = ref(false)
+            const hoverPopoverActiveState = ref(false)
             const insightsThreeDotMenuVisibleChange = (state) => {
                 hoverActiveState.value = state
                 const el = document.querySelector(
-                    `.schemaTreeElement-${item.value?.guid}`
+                    `.queryTreeElement-${item.value?.guid}`
+                )
+                const parentEl = el?.closest('.ant-tree-treenode')
+                if (state) {
+                    parentEl?.classList.add('bg-new-gray-200-dropdown')
+                } else {
+                    parentEl?.classList.remove('bg-new-gray-200-dropdown')
+                }
+            }
+
+            const insightsPopoverVisibleChange = (state) => {
+                hoverPopoverActiveState.value = state
+                const el = document.querySelector(
+                    `.queryTreeElement-${item.value?.guid}`
                 )
                 const parentEl = el?.closest('.ant-tree-treenode')
                 if (state) {
@@ -1708,6 +1722,7 @@
             }
 
             return {
+                insightsPopoverVisibleChange,
                 hoverActiveState,
                 insightsThreeDotMenuVisibleChange,
                 dropdownFolderOptions,
@@ -1801,6 +1816,7 @@
     .parent-ellipsis-container-extension {
         flex-shrink: 0;
     }
+
     /* ------------------------------- */
 </style>
 <style lang="less" module>
@@ -1808,6 +1824,11 @@
         // min-width: 440px !important;
         max-width: none !important;
         // min-height: 228px !important;
+    }
+</style>
+<style lang="less">
+    .bg-new-gray-200-dropdown {
+        @apply bg-new-gray-200;
     }
 </style>
 

@@ -814,6 +814,16 @@ const keyMap = {
                     title: props.title,
                 }),
             },
+            asset_data_deleted: {
+                action: 'governance_custom_metadata_asset_data_deleted',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    cm_id: props.cm_id,
+                    total_asset_count: props.total_asset_count,
+                    title: props.title,
+                    filled_property_count: props.filled_property_count,
+                }),
+            },
             property_added: {
                 action: 'governance_custom_metadata_property_added',
                 properties: (props) => ({
@@ -883,7 +893,6 @@ const keyMap = {
                 }),
             },
         },
-
         options: {
             created: {
                 action: 'governance_options_created',
@@ -896,6 +905,11 @@ const keyMap = {
                 properties: (props: { title: string }) => ({
                     ...props,
                 }),
+            },
+        },
+        connection: {
+            card_clicked: {
+                action: 'governance_connection_card_clicked',
             },
         },
     },

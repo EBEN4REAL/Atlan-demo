@@ -1,7 +1,6 @@
 import {
     InternalAttributes,
     SQLAttributes,
-    AssetRelationAttributes,
     AssetAttributes,
 } from '~/constant/projection'
 

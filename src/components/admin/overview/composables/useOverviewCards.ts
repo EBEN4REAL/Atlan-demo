@@ -104,9 +104,9 @@ export default function useOverviewCards() {
     const apiKeyCard = {
         id: 'apiKey',
         icon: 'APIKey',
-        displayName: 'API Keys',
+        displayName: 'API Tokens',
         value: totalAPIKeysCount.value,
-        valueText: `${totalAPIKeysCount.value > 0 ? 'keys' : 'key'} generated`,
+        valueText: `${totalAPIKeysCount.value > 0 ? 'tokens' : 'token'} generated`,
         emptyText: 'No keys generated',
         link: '/admin/apikeys',
         isAPIKeyCountLoading,

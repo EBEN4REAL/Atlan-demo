@@ -72,7 +72,7 @@
                             tenantStore.setTenant(data?.value)
                         } else if (error && error.value) {
                             console.error(
-                                'Unable to update API Key. Please try again.'
+                                'Unable to update API Token. Please try again.'
                             )
                         }
                     },

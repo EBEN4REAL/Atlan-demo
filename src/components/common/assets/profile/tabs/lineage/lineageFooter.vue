@@ -149,8 +149,8 @@
                         }}</span>
                     </template>
                     <a-popover
-                        v-model:visible="showLegend"
-                        :trigger="['click']"
+                        :visible="showLegend"
+                        trigger="click"
                         :get-popup-container="() => footerRoot"
                     >
                         <template #content>
@@ -161,7 +161,7 @@
                                         icon="Cross"
                                         class="cursor-pointer"
                                         style="width: 0.8rem !important"
-                                        @click="showLegend = false"
+                                        @click="showLegend = !showLegend"
                                     ></AtlanIcon>
                                 </div>
                             </div>
@@ -180,7 +180,7 @@
                                     <div
                                         v-if="tab.items.length"
                                         class="flex flex-col px-6 py-4 text-gray-500 bg-white gap-y-3"
-                                        style="min-height: 190px"
+                                        style="min-height: 196px"
                                     >
                                         <div
                                             v-for="(item, index) in tab.items"
@@ -198,7 +198,6 @@
                                 </a-tab-pane>
                             </a-tabs>
                         </template>
-
                         <div
                             class="control-item"
                             :class="
@@ -206,6 +205,7 @@
                                     ? 'bg-primary-light text-primary'
                                     : ''
                             "
+                            @click="showLegend = !showLegend"
                         >
                             <AtlanIcon
                                 icon="Info"
@@ -357,7 +357,7 @@
                     items: [
                         { icon: 'LegendExpand', label: 'Expandable' },
                         { icon: 'LegendCollapse', label: 'Collapsible' },
-                        { icon: 'LegendAnomaly', label: 'Anomaly' },
+                        // { icon: 'LegendAnomaly', label: 'Anomaly' },
                         { icon: 'LegendSelected', label: 'Selected' },
                         { icon: 'LegendHighlighted', label: 'Highlighted' },
                     ],
@@ -372,7 +372,7 @@
                             label: 'Highlighted',
                         },
                         { icon: 'LegendProcess', label: 'Process' },
-                        { icon: 'LegendProcessAnomaly', label: 'Anomaly' },
+                        { icon: 'LegendProcessAnomaly', label: 'Cyclic' },
                     ],
                 },
                 {
@@ -396,19 +396,11 @@
             }
 
             if (activeConnectionSourceList.value.includes('looker')) {
-                legendTabs[2].items.push({
-                    icon: 'LegendLookerField',
-                    label: 'Looker field',
-                })
-            }
-
-            const biAssetTypes = ['tableau', 'powerbi', 'looker']
-            if (
-                activeConnectionSourceList.value.find((i) =>
-                    biAssetTypes.includes(i)
-                )
-            ) {
                 legendTabs[2].items.push(
+                    {
+                        icon: 'LegendLookerField',
+                        label: 'Looker field',
+                    },
                     { icon: 'LegendMeasures', label: 'Measures' },
                     { icon: 'LegendDimensions', label: 'Dimensions' }
                 )

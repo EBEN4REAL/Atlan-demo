@@ -2,7 +2,7 @@
     <div
         :id="`${item.qualifiedName}`"
         class="h-auto"
-        :class="`w-full group ${item.qualifiedName}`"
+        :class="`w-full group ${item.qualifiedName} schemaTreeElement-${item?.guid}`"
         :data-test-id="item?.guid"
     >
         <div class="flex justify-between w-full overflow-hidden">
@@ -16,6 +16,7 @@
                         :options="dropdownFolderOptions"
                         :item="item"
                         :showOverlay="hasWritePermission ? true : false"
+                        @visibleChange="insightsThreeDotMenuVisibleChange"
                         minWidth=""
                     >
                         <template #menuTrigger>
@@ -41,12 +42,20 @@
                                     <div
                                         :id="`${item.qualifiedName}-menu`"
                                         class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
+                                        :class="
+                                            hoverActiveState
+                                                ? 'opacity-100'
+                                                : ''
+                                        "
                                     >
                                         <InsightsThreeDotMenu
                                             @click.stop="() => {}"
                                             :options="dropdownFolderOptions"
                                             :item="item"
                                             minWidth="150"
+                                            @visibleChange="
+                                                insightsThreeDotMenuVisibleChange
+                                            "
                                         >
                                             <template #menuTrigger>
                                                 <div
@@ -155,6 +164,7 @@
                         :item="item"
                         :showOverlay="hasWritePermission ? true : false"
                         minWidth=""
+                        @visibleChange="insightsThreeDotMenuVisibleChange"
                     >
                         <template #menuTrigger>
                             <div
@@ -193,6 +203,9 @@
                                             hasWritePermission
                                                 ? 'right-7'
                                                 : 'right-0',
+                                            hoverActiveState
+                                                ? 'opacity-100'
+                                                : '',
                                         ]"
                                     >
                                         <div
@@ -249,11 +262,19 @@
                                         :id="`${item.qualifiedName}-menu`"
                                         class="absolute top-0 right-0 flex items-center h-full text-gray-500 opacity-0 margin-align-top group-hover:opacity-100"
                                         @click.stop="() => {}"
+                                        :class="
+                                            hoverActiveState
+                                                ? 'opacity-100'
+                                                : ''
+                                        "
                                     >
                                         <InsightsThreeDotMenu
                                             :options="dropdownQueryOptions"
                                             :item="item"
                                             minWidth="150"
+                                            @visibleChange="
+                                                insightsThreeDotMenuVisibleChange
+                                            "
                                         >
                                             <template #menuTrigger>
                                                 <div
@@ -1670,7 +1691,24 @@
                 },
             ]
 
+            ////// for active state of element
+            const hoverActiveState = ref(false)
+            const insightsThreeDotMenuVisibleChange = (state) => {
+                hoverActiveState.value = state
+                const el = document.querySelector(
+                    `.schemaTreeElement-${item.value?.guid}`
+                )
+                const parentEl = el?.closest('.ant-tree-treenode')
+                if (state) {
+                    parentEl?.classList.add('bg-new-gray-200')
+                } else {
+                    parentEl?.classList.remove('bg-new-gray-200')
+                }
+            }
+
             return {
+                hoverActiveState,
+                insightsThreeDotMenuVisibleChange,
                 dropdownFolderOptions,
                 dropdownQueryOptions,
                 dropdownQueryRightClickOptions,

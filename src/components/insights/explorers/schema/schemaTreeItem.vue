@@ -525,11 +525,6 @@
                                         <div class="pl-1">
                                             <div
                                                 class="flex items-center w-6 h-6 p-1 rounded hover:bg-new-gray-300"
-                                                :class="
-                                                    hoverActiveState
-                                                        ? 'bg-new-gray-300'
-                                                        : ''
-                                                "
                                             >
                                                 <InsightsThreeDotMenu
                                                     :options="

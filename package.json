@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "2.79.6",
+  "version": "2.81.2",
   "scripts": {
     "dev": "vite --port 3333 --open",
     "build-dev": "vite build --mode development",
@@ -190,7 +190,6 @@
         "dompurify",
         "emoji-picker-element",
         "event-source-polyfill",
-        "jose",
         "json-2-csv",
         "katex",
         "keycloak-js",

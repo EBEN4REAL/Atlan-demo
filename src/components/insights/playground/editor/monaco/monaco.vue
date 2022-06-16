@@ -296,7 +296,9 @@
                     ?.forEach((_el) => {
                         if (
                             _el?.matches?.filter(
-                                (_ely) => _ely?.split('.').length < 2
+                                (_ely) =>
+                                    _ely.length > 0 &&
+                                    _ely?.split('.').length < 2
                             ).length
                         ) {
                             matches1 += 1
@@ -307,9 +309,13 @@
                     .findMatches(`'.*'`, true, true, false, null, true)
                     ?.forEach((_el) => {
                         if (
-                            _el?.matches?.filter(
-                                (_ely) => _ely?.split('.').length < 2
-                            ).length
+                            _el?.matches?.filter((_ely) => {
+                                debugger
+                                return (
+                                    _ely.length > 0 &&
+                                    _ely?.split('.').length < 2
+                                )
+                            }).length
                         ) {
                             matches2 += 1
                         }
@@ -320,7 +326,11 @@
                     ?.forEach((_el) => {
                         if (
                             _el?.matches?.filter((_ely) => {
-                                return _ely?.split('.').length < 2
+                                debugger
+                                return (
+                                    _ely.length > 0 &&
+                                    _ely?.split('.').length < 2
+                                )
                             }).length
                         ) {
                             matches3 += 1
@@ -516,7 +526,7 @@
                     value: activeInlineTab.value.playground.editor.text,
                     theme: editorConfig.value.theme,
                     fontSize: 14,
-                    cursorStyle: editorConfig.value.cursorStyle,
+                    cursorStyle: editorConfig?.value?.cursorStyle,
                     cursorWidth: 2,
                     letterSpacing: 0.1,
                     // cursorSmoothCaretAnimation: true,
@@ -1010,8 +1020,15 @@
 
                     editor?.getModel()?.onDidChangeContent(async (event) => {
                         const text = editor?.getValue()
-                        onEditorContentChange(event, text, editor)
                         const changes = event?.changes[0]
+                        if (
+                            changes.text === '""' ||
+                            changes.text === `''` ||
+                            changes.text === '``'
+                        ) {
+                            return
+                        }
+                        onEditorContentChange(event, text, editor)
                         /* ------------- custom variable color change */
                         findAndChangeCustomVariablesColor(false)
                         /* ------------------------------------------ */

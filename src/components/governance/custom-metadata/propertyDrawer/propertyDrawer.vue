@@ -205,6 +205,14 @@
                             }
                         }
 
+                        // ? migrate old desc to new as form is using localProperty.description
+                        if (
+                            !localProperty?.description &&
+                            localProperty?.options?.description
+                        )
+                            localProperty.description =
+                                localProperty?.options?.description
+
                         // ? check for isArchived
                         isArchived.value = ['true', true].includes(
                             localProperty?.options?.isArchived
@@ -294,6 +302,12 @@
                 tempForm.options.customApplicableEntityTypes = JSON.stringify(
                     tempForm.options.customApplicableEntityTypes
                 )
+
+                /**
+                 * if new desc is present, delete old description
+                 *  this is done because if user is deleting new description, it will fall back to old description
+                 */
+                if (tempForm.description) delete tempForm.options.description
 
                 // make copy to prevent updating
                 const tempBM = JSON.parse(JSON.stringify(metadata.value))

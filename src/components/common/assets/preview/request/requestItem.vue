@@ -19,8 +19,13 @@
                             ]
                         }}
                     </div>
+
                     <div
-                        v-if="item.status === 'active' && !updatePopoverActive"
+                        v-if="
+                            item.status === 'active' &&
+                            !updatePopoverActive &&
+                            hasAccessForAction
+                        "
                         v-auth="[map.APPROVE_REQUEST]"
                         class="flex -mr-1.5 hover-action linear-gradient"
                     >
@@ -45,6 +50,16 @@
                         >
                             <span class="text-xs text-red-500"> Reject </span>
                         </RequestDropdown>
+                    </div>
+                    <div
+                        v-if="
+                            item.status === 'active' &&
+                            !updatePopoverActive &&
+                            !hasAccessForAction
+                        "
+                        class="flex -mr-1.5 p-1 hover-action linear-gradient rounded-sm"
+                    >
+                        <span class="ml-auto text-sm">No review access</span>
                     </div>
                     <!-- hover-reject-approve -->
                     <div class="flex items-center justify-end ml-auto">
@@ -344,7 +359,9 @@
                     :loading="isLoading"
                     :is-approval-loading="loadingApproval"
                     :placement="`topRight`"
-                    :show-actions="item.status === 'active'"
+                    :show-actions="
+                        item.status === 'active' && hasAccessForAction
+                    "
                     @switch-update-popover="
                         (val) => {
                             updatePopoverActive = val
@@ -453,6 +470,8 @@
     import CategoryPiece from '@/governance/requests/pieces/category.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import { handleAccessForRequestAction } from '~/composables/requests/useRequests'
+
     import {
         typeCopyMapping,
         destinationAttributeMapping,
@@ -518,6 +537,7 @@
             const isLoading = ref(false)
             const loadingApproval = ref(false)
             const updatePopoverActive = ref(false)
+            const hasAccessForAction = ref(false)
 
             const assetText = computed(
                 () =>
@@ -637,6 +657,12 @@
                 () => route?.path?.includes('glossary') || null
             )
 
+            onMounted(() => {
+                const { hasAccess } = handleAccessForRequestAction(item.value)
+
+                hasAccessForAction.value = hasAccess
+            })
+
             return {
                 createdTime,
                 localClassification,
@@ -664,6 +690,7 @@
                 glossaryLabel,
                 capitalizeFirstLetter,
                 updatePopoverActive,
+                hasAccessForAction,
             }
         },
     })

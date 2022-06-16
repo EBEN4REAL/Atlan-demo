@@ -17,7 +17,7 @@ export interface Actions extends State {
     removeClassificationByName(name: string): void
     removeCustomMetadataByName(name: string): void
     tickForceRevalidate(): void
-    getCustomMetadataListProjectionsByName(name: string): string[]
+    getCustomMetadataListProjectionsByName(name: string, includeArchive?: boolean): string[]
 }
 
 export const actions: Actions = {
@@ -85,9 +85,10 @@ export const actions: Actions = {
         this.forceRevalidate += 1
     },
 
-    getCustomMetadataListProjectionsByName(cmName) {
+    getCustomMetadataListProjectionsByName(cmName, includeArchive = false) {
         const reqBmAttrNames: string[] = []
-        this.activeCustomMetadataList?.forEach((bm) => {
+        const BMList = includeArchive ? this.getCustomMetadataList : this.activeCustomMetadataList
+        BMList?.forEach((bm) => {
             if (
                 bm?.attributeDefs &&
                 bm?.attributeDefs?.length &&

@@ -505,6 +505,7 @@ import CommonError3 from '~/assets/images/icons/common-error-3.svg'
 import CommonError4 from '~/assets/images/icons/common-error-4.svg'
 import CSVLogo from '~/assets/images/icons/csv-logo.svg'
 import PaperClip from '~/assets/images/icons/paper-clip.svg'
+import FlaskIcon from '~/assets/images/icons/flask.svg'
 
 export default {
     Function,
@@ -992,4 +993,5 @@ export default {
     PaperClip,
     IllustrationPersonaDemo,
     IllustrationPurposeDemo,
+    FlaskIcon,
 }

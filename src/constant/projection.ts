@@ -324,6 +324,19 @@ export const MinimalAttributes = [
     'powerBIColumnDataType',
 ]
 
+export const metadataLinkedAssetsAttributes = [
+    'name',
+    'displayName',
+    'certificateStatus',
+    'certificateUpdatedBy',
+    'connectorName',
+    'connectionName',
+    'dataType',
+    'certificateUpdatedAt'
+]
+
+
+
 export const BasicSearchAttributes = [
     '__timestamp',
     '__modificationTimestamp',

@@ -4,6 +4,7 @@ export type Getters = {
     getCustomMetadataList(state: State): object[] | null
     activeCustomMetadataList(state: State): object[]
     getCustomMetadataListProjections(): string[]
+    getAllCustomMetadataListProjections(): string[]
     getForceRevalidate(state: State): number
 }
 
@@ -22,6 +23,17 @@ export const getters: Getters = {
         const reqBmAttrNames: string[] = []
         this.activeCustomMetadataList?.forEach((bm) => {
             if (bm.attributeDefs && bm.attributeDefs.length && !bm.isArchived) {
+                bm.attributeDefs.forEach((attr: { name: any }) => {
+                    reqBmAttrNames.push(`${bm.name}.${attr.name}`)
+                })
+            }
+        })
+        return reqBmAttrNames
+    },
+    getAllCustomMetadataListProjections() {
+        const reqBmAttrNames: string[] = []
+        this.getCustomMetadataList?.forEach((bm) => {
+            if (bm.attributeDefs && bm.attributeDefs.length) {
                 bm.attributeDefs.forEach((attr: { name: any }) => {
                     reqBmAttrNames.push(`${bm.name}.${attr.name}`)
                 })

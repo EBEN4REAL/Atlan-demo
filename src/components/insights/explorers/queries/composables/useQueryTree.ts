@@ -831,6 +831,7 @@ const useQueryTree = ({
     }
 
     const updateNodeUtil = ({ entity, guid }) => {
+        debugger
         const currentParents = nodeToParentNameMap[guid]
         if (
             currentParents === 'root' ||
@@ -914,6 +915,7 @@ const useQueryTree = ({
         entity: SavedQuery
         updateAttributesOnly?: boolean
     }) => {
+        debugger
         if (updateAttributesOnly) {
             ;(async () => {
                 const {

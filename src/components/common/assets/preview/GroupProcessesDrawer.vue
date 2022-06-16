@@ -17,14 +17,14 @@
                 <span class="text-gray-700 font-bold text-base"
                     >All Process</span
                 >
-                <span class="text-gray-500">{{ totalCount }} process</span>
+                <span class="text-gray-500">process ({{ totalCount }}) </span>
             </div>
         </div>
         <div class="mx-5 pb-0 border-b mt-2">
             <SearchAdvanced
                 v-model:value="queryText"
                 :autofocus="true"
-                :placeholder="`Search ${totalCount} process`"
+                :placeholder="`Search ${totalCount} processes`"
                 @change="handleSearchChange"
             >
                 <template #postFilter>

@@ -710,37 +710,99 @@
                         "
                         class="p-4 mt-3 bg-white shadow-section"
                     >
-                        <div class="flex">
-                            <span class="text-sm font-bold text-gray-700">{{
-                                type === 'meta'
-                                    ? 'Deny selected permissions'
-                                    : 'Deny Query'
-                            }}</span>
-                            <!-- <a-tooltip placement="top" color="white">
-                                    <AtlanIcon icon="Overview" class="mx-2" />
-                                    <template #title>
-                                        <p class="m-3 text-gray">
-                                            This will deny the permissions you
-                                            have selected above, for all the
-                                            users in the persona, even if they
-                                            had access to those permissions via
-                                            some other persona or purpose.
-                                        </p>
-                                    </template>
-                                </a-tooltip> -->
-                            <a-switch
-                                :class="
-                                    policy.allow ? `bg-gray-300` : 'bg-red-600'
-                                "
-                                data-test-id="toggle-switch"
-                                class="ml-auto"
-                                :checked="!policy.allow"
-                                style="width: 40px !important"
-                                @update:checked="policy.allow = !$event"
-                            />
+                        <div
+                            class="flex"
+                            :class="type === 'data' ? 'flex-col' : ''"
+                        >
+                            <span
+                                class="mb-1 text-sm font-bold text-gray-700"
+                                >{{
+                                    type === 'meta'
+                                        ? 'Deny selected permissions'
+                                        : 'Query access filters'
+                                }}</span
+                            >
+
+                            <div v-if="type === 'data'" class="space-y-2">
+                                <div
+                                    style="border-width: 1.5px !important"
+                                    @click="policy.allow = !policy.allow"
+                                    :class="
+                                        policy.allow
+                                            ? ' border-new-blue-400 bg-new-blue-100'
+                                            : 'hover:border-new-blue-100'
+                                    "
+                                    class="p-3 text-sm border border-white rounded-lg cursor-pointer"
+                                >
+                                    <div
+                                        class="flex items-center gap-x-2 gap-y-2"
+                                    >
+                                        <AtlanIcon icon="QueryOutputSuccess" />
+                                        <span class="text-new-gray-800">
+                                            Allow query on selected assets
+                                        </span>
+                                        <div class="flex-grow" />
+                                        <AtlanIcon
+                                            v-if="policy.allow"
+                                            icon="Check"
+                                            class="text-new-blue-400"
+                                        />
+                                    </div>
+                                    <div class="text-new-gray-700">
+                                        Users can query on only assets mentioned
+                                        below. <br />
+                                        Other policies can affect this.
+                                    </div>
+                                </div>
+                                <div
+                                    style="border-width: 1.5px !important"
+                                    @click="policy.allow = !policy.allow"
+                                    :class="
+                                        !policy.allow
+                                            ? ' border-new-blue-400 bg-new-blue-100'
+                                            : 'hover:border-new-blue-200'
+                                    "
+                                    class="p-3 text-sm border border-white rounded-lg cursor-pointer"
+                                >
+                                    <div
+                                        class="flex items-center gap-x-2 gap-y-2"
+                                    >
+                                        <AtlanIcon icon="QueryOutputFail" />
+                                        <span class="text-new-gray-800">
+                                            Deny query on selected assets
+                                        </span>
+                                        <div class="flex-grow" />
+                                        <AtlanIcon
+                                            v-if="!policy.allow"
+                                            icon="Check"
+                                            class="text-new-blue-400"
+                                        />
+                                    </div>
+                                    <div class="text-new-gray-700">
+                                        Users can’t query on only assets
+                                        mentioned below.<br />
+                                        Deny policy overrides all allow
+                                        policies.
+                                    </div>
+                                </div>
+                            </div>
+                            <template v-else>
+                                <a-switch
+                                    :class="
+                                        policy.allow
+                                            ? `bg-gray-300`
+                                            : 'bg-red-600'
+                                    "
+                                    data-test-id="toggle-switch"
+                                    class="ml-auto"
+                                    :checked="!policy.allow"
+                                    style="width: 40px !important"
+                                    @update:checked="policy.allow = !$event"
+                                />
+                            </template>
                         </div>
                         <div
-                            v-if="!policy.allow"
+                            v-if="!policy.allow && type === 'meta'"
                             class="flex p-3 mt-3 bg-red-100 rounded-lg"
                         >
                             <div class="w-4 mr-2">

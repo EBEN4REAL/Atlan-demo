@@ -20,12 +20,12 @@ export default function useWorkflowInfo() {
 
     const creatorUsername = (item) =>
         item?.metadata?.labels[
-        'workflows.argoproj.io/creator-preferred-username'
+            'workflows.argoproj.io/creator-preferred-username'
         ] || 'argo'
 
     const modifierUsername = (item) =>
         item?.metadata?.labels[
-        'workflows.argoproj.io/modifier-preferred-username'
+            'workflows.argoproj.io/modifier-preferred-username'
         ]
 
     // const modifiedTimestamp = (item: any, relative: any) => {
@@ -52,7 +52,7 @@ export default function useWorkflowInfo() {
     const allowSchedule = (item: any) => {
         if (
             item.metadata?.annotations[
-            'orchestration.atlan.com/allowSchedule'
+                'orchestration.atlan.com/allowSchedule'
             ] === 'false'
         ) {
             return false
@@ -135,13 +135,11 @@ export default function useWorkflowInfo() {
         return percentage
     }
 
-    const cron = (item) => {
-        return item?.metadata?.annotations && item?.metadata?.annotations['orchestration.atlan.com/schedule']
-    }
+    const cron = (item) =>
+        item?.metadata?.annotations?.['orchestration.atlan.com/schedule']
 
-    const cronTimezone = (item) => {
-        return item?.metadata?.annotations && item?.metadata?.annotations['orchestration.atlan.com/timezone']
-    }
+    const cronTimezone = (item) =>
+        item?.metadata?.annotations?.['orchestration.atlan.com/timezone']
 
     const nextRuns = (item) => {
         const options = {
@@ -270,19 +268,19 @@ export default function useWorkflowInfo() {
         item?.metadata?.labels['orchestration.atlan.com/type']
 
     const packageName = (item) =>
-        item?.metadata?.annotations && item?.metadata?.annotations['package.argoproj.io/name']
+        item?.metadata?.annotations?.['package.argoproj.io/name']
 
     const useCases = (item) => {
         let temp =
-            item?.metadata?.annotations && item?.metadata?.annotations[
+            item?.metadata?.annotations?.[
                 'orchestration.atlan.com/usecases'
             ]?.split(',')
 
         return temp?.map((i) => i.trim()) || []
     }
 
-    const supportLink = (item) =>
-        item?.metadata?.annotations && item?.metadata?.annotations['orchestration.atlan.com/supportLink']
+    const docsUrl = (item) =>
+        item?.metadata?.annotations?.['orchestration.atlan.com/docsUrl']
 
     const connectorStore = useConnectionStore()
 
@@ -347,7 +345,7 @@ export default function useWorkflowInfo() {
         nextRuns,
         getGlobalArguments,
         useCases,
-        supportLink,
+        docsUrl,
         formatDate,
         difference,
         getRunClassByPhase,

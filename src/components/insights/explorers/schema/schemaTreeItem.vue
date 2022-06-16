@@ -18,7 +18,7 @@
                     @previewAsset="
                         () => actionClick('info', item, 'quick_action')
                     "
-                    @visibleChange="insightsThreeDotMenuVisibleChange"
+                    @visibleChange="insightsPopoverVisibleChange"
                 >
                     <div
                         class="relative flex items-center content-center w-full h-full my-auto overflow-hidden text-sm leading-5 text-gray-700"
@@ -2117,8 +2117,21 @@
                   ]
             ////// for active state of element
             const hoverActiveState = ref(false)
+            const hoverPopoverActiveState = ref(false)
             const insightsThreeDotMenuVisibleChange = (state) => {
                 hoverActiveState.value = state
+                const el = document.querySelector(
+                    `.schemaTreeElement-${item.value?.guid}`
+                )
+                const parentEl = el?.closest('.ant-tree-treenode')
+                if (state) {
+                    parentEl?.classList.add('bg-new-gray-200-dropdown')
+                } else {
+                    parentEl?.classList.remove('bg-new-gray-200-dropdown')
+                }
+            }
+            const insightsPopoverVisibleChange = (state) => {
+                hoverPopoverActiveState.value = state
                 const el = document.querySelector(
                     `.schemaTreeElement-${item.value?.guid}`
                 )
@@ -2131,6 +2144,7 @@
             }
 
             return {
+                insightsPopoverVisibleChange,
                 hoverActiveState,
                 insightsThreeDotMenuVisibleChange,
                 recordTooltipPresence,
@@ -2267,6 +2281,11 @@
     }
     :global(.ant-tree li) {
         @apply pt-0 pb-0 !important;
+    }
+</style>
+<style lang="less">
+    .bg-new-gray-200-dropdown {
+        @apply bg-new-gray-200;
     }
 </style>
 

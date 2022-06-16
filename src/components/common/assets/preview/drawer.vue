@@ -26,6 +26,11 @@
             <AtlanIcon icon="CaretRight" class="w-auto h-4" />
         </div>
 
+        <DrawerNavigator
+            v-if="showDrawerNavigator"
+            @close="$emit('closeDrawer')"
+        />
+
         <transition name="fade">
             <div
                 v-if="deferredLoading"
@@ -55,7 +60,7 @@
         inject,
     } from 'vue'
     import AssetPreview from '@/common/assets/preview/index.vue'
-    import DrawerNavigator from '@/common/assets/profile/tabs/lineage/drawerNavigator.vue'
+    import DrawerNavigator from '@/common/assets/preview/drawerNavigator.vue'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import {
         AssetAttributes,

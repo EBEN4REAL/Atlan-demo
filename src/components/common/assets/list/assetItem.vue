@@ -1762,7 +1762,6 @@
             }
             const handleUpdateDrawer = (guid) => {
                 selectedAssetDrawerGuid.value = guid
-                console.log(selectedAssetDrawerGuid.value)
             }
 
             const handleListUpdate = (asset) => {
@@ -1950,6 +1949,7 @@
                 parentView,
                 parentBucket,
                 s3BucketName,
+                handleUpdateDrawer,
                 hasLineage,
                 handleSwitchTabLineage,
                 dataStudioAssetType,

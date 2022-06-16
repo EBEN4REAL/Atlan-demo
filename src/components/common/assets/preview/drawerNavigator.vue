@@ -32,26 +32,19 @@
 </template>
 
 <script lang="ts">
-    import {
-        defineComponent,
-        ref,
-        watch,
-        toRefs,
-        inject,
-        provide,
-        computed,
-    } from 'vue'
+    import { defineComponent, inject } from 'vue'
 
     export default defineComponent({
         name: 'DrawerNavigator',
         components: {},
         props: {},
         emits: [],
-        setup(props, { emit }) {
+        setup() {
             const currentIndex = inject('currentIndex')
             const totalCount = inject('totalCount')
             const handleNavigation = inject('handleNavigation', () => {})
-            return { currentIndex, totalCount , handleNavigation}
+
+            return { currentIndex, totalCount, handleNavigation }
         },
     })
 </script>

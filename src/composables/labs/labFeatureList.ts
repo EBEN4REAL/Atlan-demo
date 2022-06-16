@@ -100,7 +100,7 @@ export const featureList = {
             description:
                 'New enhanced workflow monitoring and discovery experience',
             // if the config isn't present in tenant/user preferences, default value will be picked up from here
-            defaultValue: false,
+            defaultValue: true,
             // only these users will be allowed
             allowedUsers: [],
             allowedGroups: [],

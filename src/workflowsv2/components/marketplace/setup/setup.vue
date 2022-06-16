@@ -320,17 +320,17 @@
     import { useRoute, useRouter } from 'vue-router'
 
     // Components
-    import DynamicForm from '~/workflows/components/dynamicForm2/index.vue'
-    import WorkflowPreview from '~/workflows/components/workflows/preview/index.vue'
+    import DynamicForm from '~/workflowsv2/components/dynamicForm2/index.vue'
+    import WorkflowPreview from '~/workflowsv2/migrated/packageSidebar.vue'
     import Schedule from './schedule.vue'
     import Run from './run.vue'
 
-    import { createWorkflow } from '~/workflows/composables/package/useWorkflow'
-    import { useWorkflowHelper } from '~/workflows/composables/package/useWorkflowHelper'
-    import useWorkflowSubmit from '~/workflows/composables/package/useWorkflowSubmit'
-    import useWorkflowUpdate from '~/workflows/composables/package/useWorkflowUpdate'
+    import { createWorkflow } from '~/workflowsv2/composables/useWorkflow'
+    import { useWorkflowHelper } from '~/workflowsv2/composables/useWorkflowHelper'
+    import useWorkflowSubmit from '~/workflowsv2/composables/useWorkflowSubmit'
+    import useWorkflowUpdate from '~/workflowsv2/composables/useWorkflowUpdate'
 
-    import { useRunDiscoverList } from '~/workflows/composables/package/useRunDiscoverList'
+    import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
 
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'

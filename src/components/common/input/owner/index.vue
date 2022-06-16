@@ -142,6 +142,7 @@
                     ></GroupPill>
                 </PopOverGroup>
             </template>
+            <slot name="groups"></slot>
 
             <span
                 v-if="

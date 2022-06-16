@@ -224,7 +224,7 @@ export default function useAssetInfo() {
 
     const viewName = (asset: assetInterface) =>
         attributes(asset)?.viewName ?? ''
-    // const assetState = (asset: assetInterface) => asset?.status?.toLowerCase()
+    const assetState = (asset: assetInterface) => asset?.status?.toLowerCase()
     // const assetTypeLabel = (asset: assetInterface) => {
     //     const found = assetTypeList.find((d) => d.id === assetType(asset))
     //     return found?.label
@@ -1407,6 +1407,7 @@ export default function useAssetInfo() {
     return {
         dataTypeCategory,
         attributes,
+        assetState,
         title,
         getConnectorImage,
         getConnectorName,

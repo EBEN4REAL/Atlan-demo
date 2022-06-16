@@ -141,11 +141,17 @@
                                 />
                                 <a-tooltip>
                                     <template #title>
-                                        <span>{{ a.options.description }}</span>
+                                        <span>{{
+                                            a.description ||
+                                            a.options.description
+                                        }}</span>
                                     </template>
                                     <div class="">
                                         <AtlanIcon
-                                            v-if="a.options.description"
+                                            v-if="
+                                                a.description ||
+                                                a.options.description
+                                            "
                                             class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
                                             icon="Info"
                                         />
@@ -199,12 +205,16 @@
                                     <a-tooltip>
                                         <template #title>
                                             <span>{{
+                                                a.description ||
                                                 a.options.description
                                             }}</span>
                                         </template>
                                         <div class="">
                                             <AtlanIcon
-                                                v-if="a.options.description"
+                                                v-if="
+                                                    a.description ||
+                                                    a.options.description
+                                                "
                                                 class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
                                                 icon="Info"
                                             />
@@ -304,11 +314,16 @@
                             />
                             <a-tooltip>
                                 <template #title>
-                                    <span>{{ a.options.description }}</span>
+                                    <span>{{
+                                        a.description || a.options.description
+                                    }}</span>
                                 </template>
                                 <div class="">
                                     <AtlanIcon
-                                        v-if="a.options.description"
+                                        v-if="
+                                            a.description ||
+                                            a.options.description
+                                        "
                                         class="h-4 mb-1 ml-2 text-gray-400 hover:text-gray-500"
                                         icon="Info"
                                     />

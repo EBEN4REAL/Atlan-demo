@@ -70,11 +70,11 @@ const keyMap = {
                 action: 'discovery_cta_action_clicked',
                 properties: (props: {
                     action:
-                    | 'open_asset'
-                    | 'vqb_query'
-                    | 'sql_query'
-                    | 'copy_link'
-                    | 'open_in_source'
+                        | 'open_asset'
+                        | 'vqb_query'
+                        | 'sql_query'
+                        | 'copy_link'
+                        | 'open_in_source'
                     asset_type: string
                 }) => ({
                     ...props,
@@ -554,7 +554,6 @@ const keyMap = {
                         query_tab_id: props?.query_tab_id,
                         is_full_screen: props?.is_full_screen,
                     }
-
                 },
             },
             tab_switched: {
@@ -613,30 +612,30 @@ const keyMap = {
                 properties: (props) => ({
                     total_tab_count: props?.tab_count,
                 }),
-            }
+            },
         },
     },
     governance: {
         persona: {
             cta_clicked: {
-                action: "governance_persona_cta_clicked",
-                properties: (props) => (props),
+                action: 'governance_persona_cta_clicked',
+                properties: (props) => props,
             },
             home_tab: {
                 action: 'governance_persona_sidebar_tab_changed',
-                properties: (props) => (props),
+                properties: (props) => props,
             },
             readme_expanded: {
                 action: 'governance_persona_sidebar_readme_viewed',
-                properties: (props) => (props),
+                properties: (props) => props,
             },
             home_card_asset: {
                 action: 'home_persona_card_view_assets_clicked',
-                properties: (props) => (props),
+                properties: (props) => props,
             },
             home_card: {
                 action: 'home_persona_card_clicked',
-                properties: (props) => (props),
+                properties: (props) => props,
             },
             created: {
                 action: 'governance_persona_created',
@@ -704,24 +703,24 @@ const keyMap = {
         },
         purpose: {
             cta_clicked: {
-                action: "governance_purpose_cta_clicked",
-                properties: (props) => (props),
+                action: 'governance_purpose_cta_clicked',
+                properties: (props) => props,
             },
             home_tab: {
                 action: 'governance_purpose_sidebar_tab_changed',
-                properties: (props) => (props),
+                properties: (props) => props,
             },
             readme_expanded: {
                 action: 'governance_purpose_sidebar_readme_viewed',
-                properties: (props) => (props),
+                properties: (props) => props,
             },
             home_card_asset: {
                 action: 'home_purpose_card_view_assets_clicked',
-                properties: (props) => (props),
+                properties: (props) => props,
             },
             home_card: {
                 action: 'home_purpose_card_clicked',
-                properties: (props) => (props),
+                properties: (props) => props,
             },
             created: {
                 action: 'governance_purpose_created',
@@ -1183,6 +1182,18 @@ const keyMap = {
                     asset_type: assetType,
                     application,
                     trigger,
+                }),
+            },
+        },
+    },
+    marketplace: {
+        package_documentation_link: {
+            clicked: {
+                action: 'imarketplace_package_documentation_link_clicked',
+                properties: (props) => ({
+                    package_alias: props?.packageId,
+                    package_name: props?.packageName,
+                    doc_link: props?.docLink,
                 }),
             },
         },

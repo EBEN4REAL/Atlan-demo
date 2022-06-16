@@ -330,7 +330,9 @@ export const metadataLinkedAssetsAttributes = [
     'certificateStatus',
     'certificateUpdatedBy',
     'connectorName',
-    'connectionName'
+    'connectionName',
+    'dataType',
+    'certificateUpdatedAt'
 ]
 
 

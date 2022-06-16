@@ -19,7 +19,17 @@
     </div>
 
     <Tooltip
-        v-if="
+        v-if="assetState(asset) === 'deleted'"
+        :clamp-percentage="assetNameTruncatePercentage"
+        :tooltip-text="`${title(asset)} (deleted)`"
+        :classes="
+            isScrubbed(asset)
+                ? 'mb-0 font-semibold text-gray-500 opacity-80 tracking-wide'
+                : 'font-bold mb-0 text-gray-500 tracking-wide'
+        "
+    />
+    <Tooltip
+        v-else-if="
             ['process', 'columnprocess', 'biprocess'].includes(
                 asset.typeName?.toLowerCase()
             )
@@ -92,6 +102,7 @@
     })
 
     const {
+        assetState,
         connectorName,
         connectionName,
         dataTypeCategoryImage,

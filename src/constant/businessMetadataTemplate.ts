@@ -11,6 +11,7 @@ export const DEFAULT_ATTRIBUTE: CMA = {
     isUnique: false,
     name: '',
     displayName: '',
+    description: '',
     options: {
         applicableEntityTypes: JSON.stringify(['Asset']),
         customApplicableEntityTypes: [],

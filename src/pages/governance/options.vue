@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isAccess">
+    <div v-if="isAccess" class="h-full">
         <div v-auth="map.LIST_ENUM" class="h-full">
             <div v-if="isLoading" class="flex items-center justify-center h-64">
                 <a-spin size="large" />
@@ -70,7 +70,7 @@
                     }"
                 >
                     <template #description>
-                        <p class="text-2xl font-bold">Start adding enums</p>
+                        <p class="text-2xl font-bold">Start adding Options</p>
                     </template>
 
                     <a-button type="primary" @click="addModalVisible = true"

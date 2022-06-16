@@ -1517,7 +1517,7 @@ export default function useEventGraph({
             const newAction = { selectNode: _selectedNodeId }
             actions.value = { ...actions.value, ...newAction }
 
-            resetState(true)
+            resetState(true, false)
             controlHoPaCTALoader(node, portId)
             fetchNodeLineage(node.id)
         }
@@ -1537,7 +1537,7 @@ export default function useEventGraph({
             const newAction = { selectNodeEdge: _selectedNodeEdgeId }
             actions.value = { ...actions.value, ...newAction }
 
-            resetState(true)
+            resetState(true, false)
             controlHoPaCTALoader(node, portId)
             fetchNodeLineage(node.id)
         }
@@ -1571,7 +1571,7 @@ export default function useEventGraph({
             }
             actions.value = { ...actions.value, ...newAction }
 
-            resetState(true)
+            resetState(true, false)
             controlHoPaCTALoader(node, portId)
             fetchNodeLineage(node.id)
         }
@@ -1652,13 +1652,15 @@ export default function useEventGraph({
     }
 
     // resetState
-    const resetState = (all?) => {
-        onCloseDrawer()
-        if (selectedNodeId.value) resetSelectedNode()
-        else if (selectedNodeEdgeId.value) resetSelectedNodeEdge()
-        else if (selectedPortId.value || selectedPortEdgeId.value) {
-            if (selectedPortId.value) resetSelectedPort()
-            if (selectedPortEdgeId.value) resetSelectedPortEdge()
+    const resetState = (all?, closeDrawer = true) => {
+        if (closeDrawer) {
+            onCloseDrawer()
+            if (selectedNodeId.value) resetSelectedNode()
+            else if (selectedNodeEdgeId.value) resetSelectedNodeEdge()
+            else if (selectedPortId.value || selectedPortEdgeId.value) {
+                if (selectedPortId.value) resetSelectedPort()
+                if (selectedPortEdgeId.value) resetSelectedPortEdge()
+            }
         }
 
         if (all) {

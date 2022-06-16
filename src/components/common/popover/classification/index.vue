@@ -1,6 +1,6 @@
 <template>
-      <a-drawer
-        v-model:visible="visible"
+    <a-drawer
+        v-model:visible="showClassificationPreview"
         :destroy-on-close="true"
         placement="right"
         :body-style="{ height: '100%' }"
@@ -43,7 +43,6 @@
         </template>
         <slot></slot>
     </a-popover>
-  
 </template>
 
 <script lang="ts">
@@ -78,19 +77,16 @@
             },
         },
         emits: ['mouseEntered', 'mouseLeft'],
-        setup(props) {
-            const classification = ref<ClassificationInterface>(
-                props.classification
-            )
-            const visible = ref<boolean>(false);
+        setup() {
+            const showClassificationPreview = ref<boolean>(false)
 
             const togglePreview = () => {
-                visible.value = !visible.value
+                showClassificationPreview.value =
+                    !showClassificationPreview.value
             }
 
             return {
-                classification,
-                visible,
+                showClassificationPreview,
                 togglePreview,
             }
         },

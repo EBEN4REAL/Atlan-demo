@@ -247,7 +247,9 @@
                                 <PopoverClassification
                                     :classification="classification"
                                     :entity-guid="item.guid"
-                                    :mouse-enter-delay="classificationMouseEnterDelay"
+                                    :mouse-enter-delay="
+                                        classificationMouseEnterDelay
+                                    "
                                     @mouse-entered="enteredPill"
                                     @mouse-left="leftPill"
                                 >
@@ -264,27 +266,15 @@
                                         :color="
                                             classification.options?.color?.toLowerCase()
                                         "
-                                        :created-by="
-                                            classification?.createdBy
-                                        "
+                                        :created-by="classification?.createdBy"
                                     ></ClassificationPill>
                                 </PopoverClassification>
-                                <!-- <ClassificationPill
-                                    :name="classification.name"
-                                    :display-name="classification?.displayName"
-                                    :is-propagated="
-                                        isPropagated(classification)
-                                    "
-                                    :allow-delete="false"
-                                    :created-by="classification?.createdBy"
-                                    :color="classification.options?.color?.toLowerCase()"
-                                ></ClassificationPill> -->
                             </template>
                             <span
                                 v-if="list.slice(3, list.length).length"
                                 class="bg-gray-100 border border-gray-300 flex items-center px-1.5 py-1 rounded-full text-gray-500"
                             >
-                                + {{ list.slice(3, list.length).length }} 
+                                + {{ list.slice(3, list.length).length }}
                             </span>
                         </div>
                         <div
@@ -405,6 +395,7 @@
         ComputedRef,
         watch,
     } from 'vue'
+    import { useVModels } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
@@ -419,9 +410,8 @@
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
-    import {groupClassifications} from "~/utils/groupClassifications"
+    import { groupClassifications } from '~/utils/groupClassifications'
     import PopoverClassification from '@/common/popover/classification/index.vue'
-    import { useVModels } from '@vueuse/core'
 
     export default {
         name: 'PopoverAsset',
@@ -434,7 +424,7 @@
             TermPill,
             AssetDrawer,
             ColumnKeys,
-            PopoverClassification
+            PopoverClassification,
         },
         props: {
             item: {
@@ -477,8 +467,7 @@
         },
         emits: ['previewAsset'],
         setup(props, { slots, emit }) {
-            const { item, popoverTrigger, placement, overlayClassName } =
-                toRefs(props)
+            const { item } = toRefs(props)
 
             const {
                 certificateStatus,
@@ -531,18 +520,18 @@
                     'name',
                     'typeName'
                 )
-                const groupedClassifications = groupClassifications(matchingIdsResult, isPropagated)
+                const groupedClassifications = groupClassifications(
+                    matchingIdsResult,
+                    isPropagated
+                )
                 return groupedClassifications
             })
 
-             const { classificationMouseEnterDelay, enteredPill, leftPill } =
-                useMouseEnterDelay()
-            
-            // const {
-            //     mouseEnterDelay: termMouseEnterDelay,
-            //     enteredPill: termEnteredPill,
-            //     leftPill: termLeftPill,
-            // } = useMouseEnterDelay()
+            const {
+                mouseEnterDelay: classificationMouseEnterDelay,
+                enteredPill,
+                leftPill,
+            } = useMouseEnterDelay()
 
             const rows = computed(() => {
                 const rawRowCount = rowCount(item.value, true)
@@ -613,10 +602,7 @@
             })
 
             return {
-                overlayClassName,
-                placement,
                 localAssetPopoverVisible,
-                popoverTrigger,
                 certificateStatus,
                 enteredPill,
                 certificateUpdatedBy,
@@ -644,7 +630,6 @@
                 isSort,
                 isIndexed,
                 isPartition,
-                assetPopoverVisible,
                 handleTableForColumnPreview,
                 handleCloseTablePreview,
                 tableGuid,
@@ -653,7 +638,7 @@
                 closePopover,
                 handleAssetPreview,
                 leftPill,
-                classificationMouseEnterDelay
+                classificationMouseEnterDelay,
             }
         },
     }

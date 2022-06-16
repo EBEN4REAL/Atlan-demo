@@ -51,7 +51,7 @@
                 <span class="mr-2">
                     <AtlanIcon  class="" :icon="getPropagatedViaIcon(propagatedVia)" />
                 </span>
-                <span class="text-gray-700 cursor-pointer underlined-text" @click="() => propagatedVia?.length ?  handleOpenProfile(propagatedVia[0]) : handleOpenProfile(propagatedVia)" >
+                <span class="text-gray-700 cursor-pointer display-text" @click="() => propagatedVia?.length ?  handleOpenProfile(propagatedVia[0]) : handleOpenProfile(propagatedVia)" >
                     {{ computeDisplayText(propagatedVia) }} 
                 </span>
             </span>

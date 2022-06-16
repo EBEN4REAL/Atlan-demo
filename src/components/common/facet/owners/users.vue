@@ -18,7 +18,7 @@
             <div class="w-full px-3">
                 <div>
                     <template
-                        v-for="item in userList"
+                        v-for="(item) in userList"
                         :key="item[selectUserKey]"
                     >
                         <a-checkbox
@@ -59,7 +59,7 @@
                                                     ? 'user-name-facet-owner'
                                                     : 'user-name-facet-owner-verified',
                                                 !item?.enabled &&
-                                                !fullName(item).includes('me')
+                                                item?.username !== username
                                                     ? 'line-through'
                                                     : '',
                                             ]"
@@ -247,6 +247,8 @@
                 return data
             })
 
+            const {username} = whoami()
+
             const {
                 userList: users,
                 handleSearch,
@@ -267,8 +269,7 @@
                     handleSearch(queryText.value)
                 }
             )
-            const { username } = whoami()
-
+            
             // to filter out loggedIn user if needed from list based on showLoggedInUser
             const userList = computed(() => {
                 if (showLoggedInUser.value) {
@@ -323,7 +324,7 @@
                 if (item.firstName) {
                     name = `${item.firstName} ${item.lastName || ''}`
                     // eslint-disable-next-line no-nested-ternary
-                    return isTooltip ? name  : (screenResolution < 1500) ? truncateString(name, 12, "...")  : truncateString(name, 30, "...")
+                    return isTooltip ? name  : (screenResolution < 1500) ? truncateString(name, 13, "...")  : truncateString(name, 30, "...")
                 }
                 return isTooltip ? name : truncateString(name, 23, "...")
             }
@@ -381,11 +382,10 @@
             })
 
             const toolTipTitle = (item) => {
-                if (item?.enabled || fullName(item).includes('me')) {
+                if (item?.enabled || item?.username === username.value) {
                     return `${fullName(item, true)}`
-                } else {
-                    return `${fullName(item, true)} (Disabled)`
-                }
+                } 
+                return `${fullName(item, true)} (Disabled)`
             }
 
             return {

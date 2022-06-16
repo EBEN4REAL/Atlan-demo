@@ -239,25 +239,42 @@
                             v-if="list?.length"
                             class="flex flex-wrap gap-1 mt-1"
                         >
+                            <!-- v-for="classification in list.slice(0, 3)" -->
                             <template
                                 v-for="classification in list.slice(0, 3)"
                                 :key="classification.guid"
                             >
-                                <ClassificationPill
-                                    :name="classification.name"
-                                    :display-name="classification?.displayName"
-                                    :is-propagated="
-                                        isPropagated(classification)
+                                <PopoverClassification
+                                    :classification="classification"
+                                    :entity-guid="item.guid"
+                                    :mouse-enter-delay="
+                                        classificationMouseEnterDelay
                                     "
-                                    :allow-delete="false"
-                                    :created-by="classification?.createdBy"
-                                ></ClassificationPill>
+                                    @mouse-entered="enteredPill"
+                                    @mouse-left="leftPill"
+                                >
+                                    <ClassificationPill
+                                        :name="classification.name"
+                                        :display-name="
+                                            classification?.displayName
+                                        "
+                                        :is-propagated="
+                                            isPropagated(classification)
+                                        "
+                                        :count="classification?.count"
+                                        :allow-delete="false"
+                                        :color="
+                                            classification.options?.color?.toLowerCase()
+                                        "
+                                        :created-by="classification?.createdBy"
+                                    ></ClassificationPill>
+                                </PopoverClassification>
                             </template>
                             <span
                                 v-if="list.slice(3, list.length).length"
                                 class="bg-gray-100 border border-gray-300 flex items-center px-1.5 py-1 rounded-full text-gray-500"
                             >
-                                +{{ list.slice(3, list.length).length }}
+                                + {{ list.slice(3, list.length).length }}
                             </span>
                         </div>
                         <div
@@ -378,6 +395,7 @@
         ComputedRef,
         watch,
     } from 'vue'
+    import { useVModels } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
@@ -391,7 +409,9 @@
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
-    import { useVModels } from '@vueuse/core'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import { groupClassifications } from '~/utils/groupClassifications'
+    import PopoverClassification from '@/common/popover/classification/index.vue'
 
     export default {
         name: 'PopoverAsset',
@@ -404,6 +424,7 @@
             TermPill,
             AssetDrawer,
             ColumnKeys,
+            PopoverClassification,
         },
         props: {
             item: {
@@ -446,8 +467,7 @@
         },
         emits: ['previewAsset'],
         setup(props, { slots, emit }) {
-            const { item, popoverTrigger, placement, overlayClassName } =
-                toRefs(props)
+            const { item } = toRefs(props)
 
             const {
                 certificateStatus,
@@ -500,8 +520,18 @@
                     'name',
                     'typeName'
                 )
-                return matchingIdsResult
+                const groupedClassifications = groupClassifications(
+                    matchingIdsResult,
+                    isPropagated
+                )
+                return groupedClassifications
             })
+
+            const {
+                mouseEnterDelay: classificationMouseEnterDelay,
+                enteredPill,
+                leftPill,
+            } = useMouseEnterDelay()
 
             const rows = computed(() => {
                 const rawRowCount = rowCount(item.value, true)
@@ -572,11 +602,9 @@
             })
 
             return {
-                overlayClassName,
-                placement,
                 localAssetPopoverVisible,
-                popoverTrigger,
                 certificateStatus,
+                enteredPill,
                 certificateUpdatedBy,
                 certificateUpdatedAt,
                 isPropagated,
@@ -602,7 +630,6 @@
                 isSort,
                 isIndexed,
                 isPartition,
-                assetPopoverVisible,
                 handleTableForColumnPreview,
                 handleCloseTablePreview,
                 tableGuid,
@@ -610,6 +637,8 @@
                 handleUserPreview,
                 closePopover,
                 handleAssetPreview,
+                leftPill,
+                classificationMouseEnterDelay,
             }
         },
     }

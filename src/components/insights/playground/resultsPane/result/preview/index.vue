@@ -143,7 +143,7 @@
                     >
                         <template #popoverContent>
                             <span
-                                class="font-mono cursor-pointer hover:text-primary hover:underline"
+                                class="font-mono font-medium text-blue-400 cursor-pointer hover:text-primary hover:underline"
                             >
                                 {{
                                     getFormattedTimeFromMilliSeconds(
@@ -191,7 +191,7 @@
                                 >
                                     <template #popoverContent>
                                         <span
-                                            class="font-mono cursor-pointer hover:text-primary hover:underline"
+                                            class="font-mono text-blue-400 cursor-pointer hover:text-primary hover:underline"
                                         >
                                             {{
                                                 getFormattedTimeFromMilliSeconds(

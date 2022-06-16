@@ -18,6 +18,7 @@
                     @previewAsset="
                         () => actionClick('info', item, 'quick_action')
                     "
+                    @visibleChange="insightsThreeDotMenuVisibleChange"
                 >
                     <div
                         class="relative flex items-center content-center w-full h-full my-auto overflow-hidden text-sm leading-5 text-gray-700"

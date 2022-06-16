@@ -157,6 +157,7 @@
                     placement="right"
                     mouse-enter-delay="0.6"
                     @previewAsset="openSidebar"
+                    @visibleChange="insightsThreeDotMenuVisibleChange"
                 >
                     <InsightsThreeDotMenu
                         trigger="contextmenu"

@@ -54,7 +54,7 @@ export const purposeScopeList = [
             {
                 value: 'entity-update-business-metadata',
                 label: 'Update Custom Metadata values',
-                desc: 'Update classifications for selected assets',
+                desc: 'Gives access to update custom metadata values for selected assets',
                 gif: updateBusinessMetaGif,
             },
             // {
@@ -320,6 +320,15 @@ export const glossaryPolicyScopeList = [
         label: 'Governance',
     },
 ]
+
+export const mapAllPermission = {
+    glossaryPolicy: glossaryPolicyScopeList.reduce((acc, el)=> acc + el.scopes.length , 0),
+    meta: personaScopeList.reduce((acc, el)=> acc + el.scopes.length , 0)
+}
+
+export const mapAllPermissionPurpose = {
+    meta: purposeScopeList.reduce((acc, el)=> acc + el.scopes.length , 0)
+}
 
 export default function scopeService() {
     // purposes | persona

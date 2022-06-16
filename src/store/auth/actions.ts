@@ -5,6 +5,7 @@ export interface Actions extends State {
     setPermissions(value: any): void
     setEvaluations(value: any): void
     setSecondaryEvaluations(value: any): void
+    setColumnEvaluations(value: any): void
     setFailed(value: any): void
     setPending(value: any): void
     setIsAuthenticated(value: any): void
@@ -14,6 +15,7 @@ export interface Actions extends State {
     setDecentralizedRoles(value: any): void
     setPersonas(value: any): void
     setPurposes(value: any): void
+    setGroups(value: any): void
 }
 
 export const actions: Actions = {
@@ -129,6 +131,50 @@ export const actions: Actions = {
             })
         }
     },
+
+    // For columns widget in asset profile - to keep it separate from main evaluations
+    // FIXME: Merge this with secondary evaluations with proper changes
+
+    setColumnEvaluations(value) {
+        const valueMap = value.map(
+            (evaluation) =>
+                `${evaluation.entityId || evaluation.entityIdEnd2}_${
+                    evaluation.action
+                }`
+        )
+        const evaluationMap = this.columnEvaluations.map(
+            (evaluation) =>
+                `${evaluation.entityGuid || evaluation.entityIdEnd2}_${
+                    evaluation.action
+                }`
+        )
+        const uniqueValues = valueMap.filter(
+            (val) => evaluationMap.indexOf(val) < 0
+        )
+        const uniqueArray = value.filter(
+            (i) =>
+                uniqueValues.indexOf(
+                    `${i.entityId || i.entityIdEnd2}_${i.action}`
+                ) >= 0
+        )
+        if (this.columnEvaluations.length + uniqueArray.length > 1000) {
+            this.columnEvaluations.splice(0, uniqueArray.length)
+        }
+        this.columnEvaluations.push(...uniqueArray)
+        if (this.columnEvaluations.length + uniqueArray.length > 1000) {
+            value.forEach((el) => {
+                const found = this.columnEvaluations.find(
+                    (i) =>
+                        `${i.entityId || i.entityIdEnd2}_${i.action}` ===
+                        `${el.entityId || el.entityIdEnd2}_${el.action}`
+                )
+                if (!found) {
+                    this.columnEvaluations.push(el)
+                }
+            })
+        }
+    },
+
     setRoles(value) {
         this.roles = value
     },
@@ -143,5 +189,8 @@ export const actions: Actions = {
     },
     setPurposes(value) {
         this.purposes = value
+    },
+    setGroups(value) {
+        this.groups = value
     },
 }

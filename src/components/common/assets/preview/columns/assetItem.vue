@@ -26,6 +26,7 @@
                             classes="
                                    font-bold cursor-pointer text-md text-primary hover:underline  "
                             @click="showColumnDrawer = true"
+                            :mouseEnterDelay="0.5"
                         />
                         <CertificateBadge
                             v-if="certificateStatus(item)"
@@ -91,7 +92,7 @@
                     ref="descriptionRef"
                     v-model="localDescription"
                     :selected-asset="item"
-                    :edit-permission="selectedAssetUpdatePermission(item, true)"
+                    :edit-permission="columnUpdatePermission(item)"
                     :used-in-info="false"
                     @change="handleChangeDescription"
                 />
@@ -102,9 +103,7 @@
                     <Suggestion
                         class="mb-1"
                         :button-between="false"
-                        :edit-permission="
-                            selectedAssetUpdatePermission(item, true)
-                        "
+                        :edit-permission="columnUpdatePermission(item)"
                         :list="similarList"
                         :asset="item"
                         @apply="handleApplySuggestion"
@@ -127,6 +126,7 @@
                                 :display-name="classification?.displayName"
                                 :is-propagated="isPropagated(classification)"
                                 :allow-delete="false"
+                                :count="classification?.count"
                                 :color="
                                     classification.options?.color?.toLowerCase()
                                 "
@@ -173,6 +173,7 @@
     import Suggestion from '@/common/assets/preview/info/suggestion.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import useLineageStore from '~/store/lineage'
+    import {groupClassifications} from "~/utils/groupClassifications"
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -239,7 +240,7 @@
                 certificateUpdatedAt,
                 certificateUpdatedBy,
                 certificateStatusMessage,
-                selectedAssetUpdatePermission,
+                columnUpdatePermission,
                 isScrubbed,
                 isIndexed,
             } = useAssetInfo()
@@ -282,7 +283,8 @@
                     'name',
                     'typeName'
                 )
-                return matchingIdsResult
+                const groupedClassifications = groupClassifications(matchingIdsResult, isPropagated)
+                return groupedClassifications
             })
 
             const handleApplySuggestion = (obj) => {
@@ -326,7 +328,7 @@
                 page,
                 descriptionRef,
                 isPropagated,
-                selectedAssetUpdatePermission,
+                columnUpdatePermission,
                 isScrubbed,
                 list,
                 isIndexed,

@@ -1,8 +1,8 @@
 <template>
     <div
+        v-if="isLoading"
         class="flex flex-col items-center justify-center flex-grow"
         style="height: 100px"
-        v-if="isLoading"
     >
         <AtlanLoader icon="Loader" class="h-10 mx-auto mt-1" />
         Loading Credential Configuration
@@ -27,7 +27,7 @@
                         )
                     "
                 >
-                    using <AtlanIcon icon="Key" class="h-3" /> API key
+                    using <AtlanIcon icon="Key" class="h-3" /> API token
                 </template>
                 <template v-else>
                     by
@@ -37,7 +37,7 @@
             <a-divider class="mt-3 mb-2" />
         </div>
 
-        <div class="flex text-gray-500" v-if="isEditVisible">
+        <div v-if="isEditVisible" class="flex text-gray-500">
             <AtlanIcon
                 icon="Lock2"
                 class="h-5 mr-1 text-yellow-500"
@@ -45,7 +45,7 @@
             Sensitive details are not displayed for security reasons. Any
             changes to these fields will be override existing data.
         </div>
-        <div class="flex items-center my-2" v-if="testMessage">
+        <div v-if="testMessage" class="flex items-center my-2">
             <div class="flex items-center">
                 <AtlanIcon :icon="testIcon" class="h-5 mr-1"></AtlanIcon>
                 <span :class="testClass">{{ testMessage }}</span>
@@ -53,9 +53,9 @@
         </div>
         <div v-if="isEditVisible" class="mt-2">
             <FormItem
-                :configMap="configMap"
-                :baseKey="property.id"
-                :isEdit="isCredential"
+                :config-map="configMap"
+                :base-key="property.id"
+                :is-edit="isCredential"
             ></FormItem>
         </div>
 
@@ -123,15 +123,15 @@
     </div>
 
     <template v-else-if="configMap && !isCredential">
-        <FormItem :configMap="configMap" :baseKey="property.id"></FormItem>
+        <FormItem :config-map="configMap" :base-key="property.id"></FormItem>
         <div class="flex">
             <a-button
                 :loading="isLoadingTest"
-                @click="handleTestAuthentication(false)"
                 class="text-white bg-success border-success"
+                @click="handleTestAuthentication(false)"
                 >Test Authentication</a-button
             >
-            <div class="flex items-center ml-2" v-if="testMessage">
+            <div v-if="testMessage" class="flex items-center ml-2">
                 <AtlanIcon :icon="testIcon" class="mr-1"></AtlanIcon>
                 <span :class="testClass">{{ testMessage }}</span>
             </div>
@@ -197,7 +197,7 @@
         setup(props, { emit }) {
             const { property, modelValue } = toRefs(props)
 
-            let formState = inject('formState')
+            const formState = inject('formState')
             const validateForm = inject('validateForm')
 
             const testMessage = ref('')
@@ -245,7 +245,7 @@
 
                     console.log('credBody', formState)
 
-                    //convert body into formState
+                    // convert body into formState
                 })
             }
 

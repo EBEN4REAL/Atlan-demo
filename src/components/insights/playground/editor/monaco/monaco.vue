@@ -1,5 +1,12 @@
 <template>
-    <div ref="monacoRoot" class="relative monacoeditor"></div>
+    <div ref="monacoRoot" class="monacoeditor"></div>
+    <SuggestionList
+        v-model:selectedSuggestionIndex="selectedSuggestionIndex"
+        :suggestions="suggestions"
+        :autosuggestionPopoverActive="autosuggestionPopoverActive"
+        @applySuggestions="handleApplySuggestion"
+        :autoSuggestionLoading="autoSuggestionLoading"
+    />
 </template>
 
 <script lang="ts">
@@ -23,7 +30,6 @@
         ComputedRef,
         nextTick,
     } from 'vue'
-
     import { languageTokens } from './sqlTokens'
     import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
     import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
@@ -39,24 +45,14 @@
     import { useResultPane } from '~/components/insights/playground/resultsPane/common/composables/useResultPane'
     import { editorConfigInterface } from '~/types/insights/editoConfig.interface'
     import { useCustomVariable } from '~/components/insights/playground/editor/common/composables/useCustomVariable'
-    import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
-    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
-    import Column from '~/assets/images/insights/autocomplete/Column.png'
-    import Default from '~/assets/images/insights/autocomplete/default.png'
-    import Table from '~/assets/images/insights/autocomplete/Table.png'
-    import TableDeprecated from '~/assets/images/insights/autocomplete/TableDeprecated.png'
-    import TableDraft from '~/assets/images/insights/autocomplete/TableDraft.png'
-    import TableVerified from '~/assets/images/insights/autocomplete/TableVerified.png'
-    import View from '~/assets/images/insights/autocomplete/View.png'
-    import ViewDeprecated from '~/assets/images/insights/autocomplete/ViewDeprecated.png'
-    import ViewDraft from '~/assets/images/insights/autocomplete/ViewDraft.png'
-    import ViewVerified from '~/assets/images/insights/autocomplete/ViewVerified.png'
     import {
         editorStates,
         updateEditorModelOnTabOpen,
         updateEditorModel,
     } from '~/components/insights/playground/editor/monaco/useModel'
+    import SuggestionList from '~/components/insights/playground/editor/monaco/suggestionList.vue'
+    import { useDebounceFn } from '@vueuse/core'
 
     // @ts-ignore
     self.MonacoEnvironment = {
@@ -68,8 +64,11 @@
     export default defineComponent({
         emits: ['editorInstance'],
         props: {},
+        components: { SuggestionList },
 
         setup(props, { emit }) {
+            const autoSuggestionLoading = ref(false)
+            const autosuggestionPopoverActive = ref(false)
             const cancelTokenSource = ref()
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -124,6 +123,321 @@
             )
 
             let timeout = null
+            /** START CUSTOM DROPDOWN */
+
+            const suggestions = ref([])
+            // declare and update selectedSuggestionIndex /
+            const selectedSuggestionIndex = ref(0)
+            const scrollSuggestionList = () => {
+                const el = document.getElementById(
+                    `sugg-${selectedSuggestionIndex.value}`
+                )
+
+                if (el)
+                    el.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'end',
+                        inline: 'nearest',
+                    })
+            }
+            const traverseUp = () => {
+                if (selectedSuggestionIndex.value - 1 >= 0) {
+                    selectedSuggestionIndex.value =
+                        selectedSuggestionIndex.value - 1
+                }
+                scrollSuggestionList()
+            }
+            const traverseDown = () => {
+                selectedSuggestionIndex.value =
+                    (selectedSuggestionIndex.value + 1) %
+                    suggestions.value.length
+                scrollSuggestionList()
+            }
+            // declare flag to know the state of auto-suggestion dropdown
+            const isAutoComplete = ref(false)
+            const hideAutoCompletion = (unhide?: boolean) => {
+                // debugger
+                const el = document.getElementById('auto-suggestions')
+                el?.classList.add('hidden')
+                isAutoComplete.value = false
+                selectedSuggestionIndex.value = 0
+            }
+            const showAutoCompletion = () => {
+                const el = document.getElementById('auto-suggestions')
+                el?.classList.remove('hidden')
+                isAutoComplete.value = true
+                selectedSuggestionIndex.value = 0
+            }
+
+            function equalArray(a, b) {
+                if (a.length === b.length) {
+                    for (var i = 0; i < a.length; i++) {
+                        if (a[i]?.insertText !== b[i]?.insertText) {
+                            return false
+                        }
+                    }
+                    return true
+                } else {
+                    return false
+                }
+            }
+
+            watch(
+                suggestions,
+                (newSuggestions, oldSuggestions) => {
+                    if (suggestions?.value?.length) {
+                        // FIXME: Exception case when there is alias with single character ( length ==1)
+                        if (
+                            newSuggestions[newSuggestions.length - 1]?.kind ===
+                                'alias' &&
+                            oldSuggestions[newSuggestions.length - 1]?.kind ===
+                                'alias' &&
+                            newSuggestions[newSuggestions.length - 1]?.label
+                                ?.length === 1 &&
+                            oldSuggestions[newSuggestions.length - 1]?.label
+                                ?.length === 1
+                        ) {
+                            hideAutoCompletion()
+                            return
+                        } else showAutoCompletion()
+                    } else hideAutoCompletion(suggestions?.value?.length)
+                },
+                { deep: true }
+            )
+            // fix dropdown's position
+            const setDropdown = () => {
+                let cursor = document.querySelector(
+                    '.cursor.monaco-mouse-cursor-text'
+                )
+
+                const viewportOffset = cursor?.getBoundingClientRect()
+                let left = viewportOffset.left
+                let right = viewportOffset.right
+                const windowRight = window.innerWidth
+                let requiredLeft = left
+                if (left + 447 + 20 >= windowRight) {
+                    requiredLeft = right - (left + 447 + 20 - windowRight)
+                }
+                const autoSuggestionsDropdown =
+                    document.getElementById('auto-suggestions')
+                autoSuggestionsDropdown.style.top = `${
+                    viewportOffset.top + 22
+                }px`
+                autoSuggestionsDropdown.style.left = `${requiredLeft + 5}px`
+            }
+
+            const triggerAutoCompletion = (
+                promise: Promise<{
+                    suggestions: suggestionKeywordInterface[]
+                    incomplete: boolean
+                }>
+            ) => {
+                autoSuggestionLoading.value = true
+                setDropdown()
+                // clearing previous popover register data
+                // if (disposable) disposable.value?.dispose()
+                promise
+                    .then((value) => {
+                        autoSuggestionLoading.value = false
+                        // debugger
+                        const editorPosition =
+                            editor?.getPosition() as monaco.IPosition
+                        // use current cursor position to get position of the word to be replaced
+                        const wordPosition = editor
+                            ?.getModel()
+                            ?.getWordAtPosition(editorPosition)
+                        // debugger
+                        // const regex = /^${wordPosition?.word ?? ''}/
+                        const regex = new RegExp(
+                            `^${wordPosition?.word ?? ''}`,
+                            'i'
+                        )
+                        suggestions.value = value?.suggestions?.filter(
+                            (suggestion) => {
+                                return regex?.test(suggestion.label)
+                            }
+                        )
+                    })
+                    .catch(() => {
+                        autoSuggestionLoading.value = false
+                    })
+                // disposable.value =
+                //     monaco.languages.registerCompletionItemProvider(
+                //         'atlansql',
+                //         {
+                //             triggerCharacters: triggerCharacters,
+                //             provideCompletionItems() {
+                //                 // For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
+                //                 return promise
+                //             },
+                //         }
+                //     )
+
+                // editor autosuggestion icons
+            }
+
+            const handleApplySuggestion = (suggestion) => {
+                // get current cursor position
+                const editorPosition = editor?.getPosition() as monaco.IPosition
+                // use current cursor position to get position of the word to be replaced
+                const wordPosition = editor
+                    ?.getModel()
+                    ?.getWordAtPosition(editorPosition)
+
+                // for stripping quotes if cursor is in b/w quotes
+                let matches1 = 0
+                let matches2 = 0
+                let matches3 = 0
+                debugger
+
+                editor
+                    ?.getModel()
+                    .findMatches('`.*`', true, true, false, null, true)
+                    ?.forEach((_el) => {
+                        if (
+                            _el?.matches?.filter(
+                                (_ely) =>
+                                    _ely.length > 0 &&
+                                    _ely?.split('.').length < 2
+                            ).length
+                        ) {
+                            matches1 += 1
+                        }
+                    })
+                editor
+                    ?.getModel()
+                    .findMatches(`'.*'`, true, true, false, null, true)
+                    ?.forEach((_el) => {
+                        if (
+                            _el?.matches?.filter((_ely) => {
+                                debugger
+                                return (
+                                    _ely.length > 0 &&
+                                    _ely?.split('.').length < 2
+                                )
+                            }).length
+                        ) {
+                            matches2 += 1
+                        }
+                    })
+                editor
+                    ?.getModel()
+                    .findMatches('".*"', true, true, false, null, true)
+                    ?.forEach((_el) => {
+                        if (
+                            _el?.matches?.filter((_ely) => {
+                                debugger
+                                return (
+                                    _ely.length > 0 &&
+                                    _ely?.split('.').length < 2
+                                )
+                            }).length
+                        ) {
+                            matches3 += 1
+                        }
+                    })
+
+                let stripQuotes = false
+                // necessary for checking if current word have any quote
+                const typeofQuote = editor?.getModel()?.getValueInRange({
+                    startColumn:
+                        (wordPosition?.startColumn ?? editorPosition.column) -
+                        1,
+                    endColumn:
+                        wordPosition?.startColumn ?? editorPosition.column,
+                    endLineNumber: editorPosition.lineNumber,
+                    start: editorPosition.lineNumber,
+                })
+
+                if (
+                    matches1 > 0 ||
+                    matches2 > 0 ||
+                    (matches3 > 0 && [`"`, `'`, '`'].includes(typeofQuote))
+                ) {
+                    stripQuotes = true
+                }
+
+                const endColumn =
+                    wordPosition?.endColumn ?? editorPosition.column
+                const startColumn =
+                    wordPosition?.startColumn ?? editorPosition.column
+                const lineNumber = editorPosition.lineNumber
+                if (endColumn && startColumn && lineNumber) {
+                    // edit the word at the position calculated above
+                    editor?.getModel()?.pushEditOperations(
+                        [],
+                        [
+                            {
+                                range: {
+                                    endColumn: stripQuotes
+                                        ? endColumn + 1
+                                        : endColumn,
+                                    startColumn: stripQuotes
+                                        ? startColumn - 1
+                                        : startColumn,
+                                    startLineNumber: editorPosition.lineNumber,
+                                    endLineNumber: editorPosition.lineNumber,
+                                },
+                                text: suggestion.insertText,
+                            },
+                        ],
+                        () => null
+                    )
+
+                    if (suggestion?.kind && suggestion?.kind === 'snippet') {
+                        // debugger
+                        const position: any =
+                            editor?.getPosition() as monaco.IPosition
+                        const startColumn =
+                            position.column -
+                            1 +
+                            suggestion?.selectionColumnStart -
+                            suggestion?.insertText?.length
+                        const endColumn =
+                            startColumn +
+                            (suggestion?.selectionColumnEnd -
+                                suggestion?.selectionColumnStart)
+
+                        // provide completed word's line number and end column number to reset selection (we do this by creating a new selection with same end and start position which is the end of the completed word - so the cursor gets set at the end of the completed word and no text is selected/highlighted)
+                        editor?.setSelection(
+                            new monaco.Selection(
+                                editorPosition.lineNumber,
+                                startColumn,
+                                editorPosition.lineNumber,
+                                endColumn
+                            )
+                        )
+                    } else {
+                        // provide completed word's line number and end column number to reset selection (we do this by creating a new selection with same end and start position which is the end of the completed word - so the cursor gets set at the end of the completed word and no text is selected/highlighted)
+                        editor?.setSelection(
+                            new monaco.Selection(
+                                editorPosition.lineNumber,
+                                startColumn + suggestion?.insertText?.length,
+                                editorPosition.lineNumber,
+                                startColumn + suggestion?.insertText?.length
+                            )
+                        )
+                    }
+
+                    // for aggregation position shift ( here)
+                    if (suggestion?.insertText.includes('()')) {
+                        const position: any =
+                            editor?.getPosition() as monaco.IPosition
+                        editor?.setPosition({
+                            ...position,
+                            column: position.column - 1,
+                        })
+                    }
+                    // for aggregation position shift ( here)
+
+                    // if (endColumn && endLine)
+                    // restore focus on the editor (gets hidden after we insert the suggestion)
+                    editor?.focus()
+                    selectedSuggestionIndex.value = 0
+                }
+            }
+
+            /** END CUSTOM DROPDOWN */
 
             function createDebounce() {
                 return function (fnc, delayMs) {
@@ -195,107 +509,6 @@
                 languageTokens
             )
 
-            const { assetType, certificateStatus } = useAssetInfo()
-
-            const triggerAutoCompletion = (
-                promise: Promise<{
-                    suggestions: suggestionKeywordInterface[]
-                    incomplete: boolean
-                }>
-            ) => {
-                // clearing previous popover register data
-                if (disposable) disposable.value?.dispose()
-                disposable.value =
-                    monaco.languages.registerCompletionItemProvider(
-                        'atlansql',
-                        {
-                            triggerCharacters: triggerCharacters,
-                            provideCompletionItems() {
-                                // For object properties https://microsoft.github.io/monaco-editor/api/interfaces/monaco.languages.completionitem.html
-                                return promise
-                            },
-                        }
-                    )
-
-                // editor autosuggestion icons
-
-                setTimeout(() => {
-                    promise.then((item) => {
-                        let items = item.suggestions
-
-                        let data1 = document.getElementsByClassName(
-                            'suggest-icon codicon codicon-symbol-field'
-                        )
-
-                        let data2 = document.getElementsByClassName(
-                            'suggest-icon codicon codicon-symbol-keyword'
-                        )
-
-                        for (var i = 0; i < items.length; i++) {
-                            let item = items[i].documentation?.entity
-
-                            if (
-                                (item && assetType(item) === 'Table') ||
-                                assetType(item) === 'View'
-                            ) {
-                                let component =
-                                    assetType(item) === 'Table'
-                                        ? getEntityStatusIcon(
-                                              assetType(item),
-                                              certificateStatus(item)
-                                          ) === 'Table'
-                                            ? Table
-                                            : getEntityStatusIcon(
-                                                  assetType(item),
-                                                  certificateStatus(item)
-                                              ) === 'TableVerified'
-                                            ? TableVerified
-                                            : getEntityStatusIcon(
-                                                  assetType(item),
-                                                  certificateStatus(item)
-                                              ) === 'TableDraft'
-                                            ? TableDraft
-                                            : TableDeprecated
-                                        : getEntityStatusIcon(
-                                              assetType(item),
-                                              certificateStatus(item)
-                                          ) === 'View'
-                                        ? View
-                                        : getEntityStatusIcon(
-                                              assetType(item),
-                                              certificateStatus(item)
-                                          ) === 'ViewVerified'
-                                        ? ViewVerified
-                                        : getEntityStatusIcon(
-                                              assetType(item),
-                                              certificateStatus(item)
-                                          ) === 'ViewDraft'
-                                        ? ViewDraft
-                                        : ViewDeprecated
-
-                                if (data1[i] && data1[i]?.style) {
-                                    data1[
-                                        i
-                                    ].style.backgroundImage = `url(${component})`
-                                }
-                            } else if (item && assetType(item) === 'Column') {
-                                if (data1[i] && data1[i]?.style) {
-                                    data1[
-                                        i
-                                    ].style.backgroundImage = `url(${Column})`
-                                }
-                            } else {
-                                if (data2[i] && data2[i].style) {
-                                    data2[
-                                        i
-                                    ].style.backgroundImage = `url(${Default})`
-                                }
-                            }
-                        }
-                    })
-                }, 150)
-            }
-
             /* ---------------- Autoclosing pairs ------------------*/
             monaco.languages.setLanguageConfiguration(
                 'atlansql',
@@ -313,9 +526,10 @@
                     value: activeInlineTab.value.playground.editor.text,
                     theme: editorConfig.value.theme,
                     fontSize: 14,
-                    cursorStyle: 'line',
+                    cursorStyle: editorConfig?.value?.cursorStyle,
                     cursorWidth: 2,
                     letterSpacing: 0.1,
+                    // cursorSmoothCaretAnimation: true,
                     minimap: {
                         enabled: false,
                     },
@@ -328,7 +542,7 @@
                     quickSuggestions: {
                         other: true,
                         comments: false,
-                        strings: true,
+                        strings: false,
                     },
                     scrollbar: {
                         useShadows: false,
@@ -347,7 +561,8 @@
                     activeInlineTab.value.playground.resultsPane.result
                         .isQueryRunning
             )
-            let suggestionsList = ref(null)
+            // let suggestionsList = ref(null)
+            monaco?.sc
 
             onMounted(() => {
                 loadThemes(monaco)
@@ -510,6 +725,54 @@
                         multiLineComment()
                     }
                 }
+                // CUSTOM DROPDOWN: Add event to enable keyboard actions for autoSuggestions dropdown
+                editor?.onKeyDown((e) => {
+                    console.log(e, 'event')
+                    if (e.keyCode === 9 && isAutoComplete.value) {
+                        hideAutoCompletion()
+
+                        e.preventDefault()
+                        e.stopPropagation()
+                    }
+                    if (e.keyCode === 18 && isAutoComplete.value) {
+                        // debugger
+                        traverseDown()
+                        e.preventDefault()
+                        e.stopPropagation()
+                    }
+                    if (e.keyCode === 16 && isAutoComplete.value) {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        traverseUp()
+                    }
+                    if (
+                        e.keyCode === 3 &&
+                        isAutoComplete.value &&
+                        !e.ctrlKey &&
+                        !e.metaKey &&
+                        !e.shiftKey
+                    ) {
+                        // document.activeElement.blur()
+                        e.preventDefault()
+                        e.stopPropagation()
+                        handleApplySuggestion(
+                            suggestions.value[selectedSuggestionIndex.value]
+                        )
+                    }
+                    if (
+                        e.keyCode === 3 &&
+                        isAutoComplete.value &&
+                        !e.ctrlKey &&
+                        !e.metaKey &&
+                        e.shiftKey
+                    ) {
+                        // document.activeElement.blur()
+                        e.preventDefault()
+                        e.stopPropagation()
+                        autosuggestionPopoverActive.value =
+                            !autosuggestionPopoverActive.value
+                    }
+                })
 
                 /* IMP for cmd+enter/ ctrl+enter to run query when editor is focused */
                 editor?.addCommand(
@@ -551,10 +814,19 @@
 
                 /* -------------------------------------------- */
                 editor?.getModel().onDidChangeContent((event) => {
+                    const changes = event?.changes[0]
+                    if (
+                        changes.text === '""' ||
+                        changes.text === `''` ||
+                        changes.text === '``'
+                    ) {
+                        return
+                    }
+
                     const text = editor?.getValue()
                     onEditorContentChange(event, text, editor)
                     findAndChangeCustomVariablesColor(false)
-                    const changes = event?.changes[0]
+
                     /* Preventing network request when pasting name of table */
                     const suggestions = useAutoSuggestions(
                         changes,
@@ -565,11 +837,27 @@
                         suggestions: suggestionKeywordInterface[]
                         incomplete: boolean
                     }>
-                    suggestionsList.value = suggestions
+                    // suggestionsList.value = suggestions
                     triggerAutoCompletion(suggestions)
                 })
+                // editor?.cursorPositionChangedEvent(()=>{
+
+                // })
+
                 editor?.onDidChangeCursorPosition((pos) => {
+                    // console.log('POSTION', pos)
+
                     setEditorPos(pos.position, editorPos)
+                    // hideAutoCompletion()
+                    // setTimeout(setDropdown, 300)
+                    // setDropdown()
+                })
+                editor?.onDidScrollChange((scrollEvent) => {
+                    const t = useDebounceFn(() => {
+                        // debugger
+                        // setDropdown()
+                    }, 500)
+                    t()
                 })
 
                 editor?.onDidBlurEditorWidget(() => {
@@ -577,11 +865,21 @@
                         true,
                         editor,
                         monaco,
-                        editor?.getPosition()
+                        editor?.getPosition(),
+                        editorConfig
                     )
+                    setTimeout(() => {
+                        hideAutoCompletion()
+                    }, 150)
                 })
                 editor?.onDidFocusEditorWidget(() => {
-                    toggleGhostCursor(false, editor, monaco, editorPos)
+                    toggleGhostCursor(
+                        false,
+                        editor,
+                        monaco,
+                        editorPos,
+                        editorConfig
+                    )
                     setEditorFocusedState(true, editorFocused)
                 })
             })
@@ -626,7 +924,7 @@
                 } else {
                     editor?.focus()
 
-                    if (!editorStates.get(newKey).viewState) {
+                    if (!editorStates.get(newKey)?.viewState) {
                         setEditorFocusedState(false, editorFocused)
                         setEditorPos(editor?.getPosition(), editorPos)
                     }
@@ -636,9 +934,17 @@
                     }
                     editor?.onDidChangeCursorPosition((pos) => {
                         setEditorPos(pos.position, editorPos)
+                        // setDropdown()
                     })
                     editor?.onDidFocusEditorWidget(() => {
-                        toggleGhostCursor(false, editor, monaco, editorPos)
+                        toggleGhostCursor(
+                            false,
+                            editor,
+                            monaco,
+                            editorPos,
+                            editorConfig,
+                            editorConfig
+                        )
                         setEditorPos(editor?.getPosition(), editorPos)
                         setEditorFocusedState(true, editorFocused)
                     })
@@ -650,6 +956,12 @@
                             monaco,
                             editor?.getPosition()
                         )
+                    })
+                    editor?.onDidScrollChange((scrollEvent) => {
+                        const t = useDebounceFn(() => {
+                            setDropdown()
+                        }, 500)
+                        t()
                     })
 
                     // old
@@ -674,25 +986,29 @@
                     const index = tabs.value.findIndex(
                         (tab) => tab.key === newKey
                     )
-                    if (!editorStates.get(tabs.value[index].key)?.model) {
+                    if (!editorStates.get(tabs.value[index]?.key)?.model) {
                         const newModel = monaco.editor.createModel(
                             String(
-                                toRaw(tabs.value)[index].playground.editor.text
+                                toRaw(tabs.value)[index]?.playground.editor.text
                             ),
                             'atlansql'
                         )
 
-                        updateEditorModel(editorStates, tabs.value[index].key, {
-                            model: newModel,
-                            viewState: {},
-                        })
+                        updateEditorModel(
+                            editorStates,
+                            tabs.value[index]?.key,
+                            {
+                                model: newModel,
+                                viewState: {},
+                            }
+                        )
 
                         editor?.setModel(null)
                         editor?.setModel(newModel)
                         setEditorPos(editor?.getPosition(), editorPos)
                     } else {
                         editor?.setModel(
-                            editorStates.get(tabs.value[index].key).model
+                            editorStates.get(tabs.value[index]?.key).model
                         )
 
                         const newViewState = editorStates.get(
@@ -704,8 +1020,15 @@
 
                     editor?.getModel()?.onDidChangeContent(async (event) => {
                         const text = editor?.getValue()
-                        onEditorContentChange(event, text, editor)
                         const changes = event?.changes[0]
+                        if (
+                            changes.text === '""' ||
+                            changes.text === `''` ||
+                            changes.text === '``'
+                        ) {
+                            return
+                        }
+                        onEditorContentChange(event, text, editor)
                         /* ------------- custom variable color change */
                         findAndChangeCustomVariablesColor(false)
                         /* ------------------------------------------ */
@@ -718,7 +1041,7 @@
                             suggestions: suggestionKeywordInterface[]
                             incomplete: boolean
                         }>
-                        suggestionsList.value = suggestions
+                        // suggestionsList.value = suggestions
                         triggerAutoCompletion(suggestions)
                     })
                 }
@@ -731,13 +1054,31 @@
             )
 
             watch(
-                () => tabs.value[_index.value].playground.editor,
+                () => tabs.value[_index.value]?.playground.editor,
                 () => {
                     if (activeInlineTab.value) {
                         if (tabs.value[_index.value]?.playground?.isVQB) return
                         findAndChangeCustomVariablesColor(true)
                     }
                 }
+            )
+            watch(
+                () => tabs.value[_index.value].playground.editor,
+                () => {
+                    if (activeInlineTab.value) {
+                        // when active tab changes, create and append auto-suggestions dropdown to the active tab's editor
+                        const parentElementForAutoSuggestions =
+                            document.getElementsByClassName('monacoeditor')[0]
+                        if (parentElementForAutoSuggestions) {
+                            const autoSuggestionsDropdown =
+                                document.getElementById('auto-suggestions')
+                            parentElementForAutoSuggestions.appendChild(
+                                autoSuggestionsDropdown
+                            )
+                        }
+                    }
+                },
+                { immediate: true }
             )
             watch(outputPaneSize, () => {
                 if (monacoRoot.value) {
@@ -768,11 +1109,24 @@
                     }
                 })
             })
+            // closing the popover once autosuggestion dropdown closed
+            watch(isAutoComplete, () => {
+                if (!isAutoComplete.value) {
+                    autosuggestionPopoverActive.value = false
+                }
+            })
 
             return {
+                autoSuggestionLoading,
+                autosuggestionPopoverActive,
+                editor,
+                isAutoComplete,
                 editorStates,
                 outputPaneSize,
                 monacoRoot,
+                suggestions,
+                handleApplySuggestion,
+                selectedSuggestionIndex,
             }
         },
     })
@@ -830,10 +1184,38 @@
     .ghostCursor::after {
         position: absolute;
         content: '';
+        // width: 2px !important;
+        @apply bg-gray-400;
+        top: -10%;
+        height: 120%;
+    }
+    .ghostCurosr-block {
+        position: absolute;
+        width: 9px !important;
+        @apply bg-gray-400;
+        top: -10%;
+        height: 120%;
+        opacity: 0.5;
+        color: #fff !important;
+    }
+    .ghostCurosr-line {
+        position: absolute;
         width: 2px !important;
         @apply bg-gray-400;
         top: -10%;
         height: 120%;
+        opacity: 1;
+        color: #fff;
+    }
+    .ghostCurosr-underline {
+        position: absolute;
+        width: 8.5px !important;
+        height: 2px !important;
+        @apply bg-gray-400;
+        bottom: -10%;
+        height: 120%;
+        opacity: 1;
+        color: #fff;
     }
 
     .suggest-icon.codicon.codicon-symbol-keyword::before {
@@ -857,6 +1239,11 @@
         height: 15px !important;
         background-size: 15px 15px;
         margin-top: 3px !important;
+    }
+    .monaco-editor .cursors-layer .cursor {
+        @apply bg-primary !important;
+        @apply border-primary !important;
+        color: #ffffff;
     }
 </style>
 

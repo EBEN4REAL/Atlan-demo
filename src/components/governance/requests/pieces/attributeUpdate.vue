@@ -2,8 +2,8 @@
     <template v-if="name === 'certificateStatus'">
         <div class="flex flex-col">
             <span class="pb-1 mr-2 text-sm text-gray-500">
-                Update Certificate</span
-            >
+                Update Certificate
+            </span>
             <StatusBadge :status-id="value" show-no-status show-label />
         </div>
     </template>
@@ -19,7 +19,7 @@
                     class="flex items-center"
                 >
                     <template v-for="el in valueArray.slice(0, 1)" :key="el">
-                        <UserPill v-if="name==='ownerUsers'" :username="el" />
+                        <UserPill v-if="name === 'ownerUsers'" :username="el" />
                         <GroupPill v-else :name="el" />
                     </template>
                     <a-popover>
@@ -30,10 +30,10 @@
                                     :key="i"
                                 >
                                     <span
-                                        class="border-gray-200 px-2 py-1 flex items-center"
+                                        class="flex items-center px-2 py-1 border-gray-200"
                                         ><atlan-icon
                                             icon="User"
-                                            class="mr-1 h-3"
+                                            class="h-3 mr-1"
                                         />{{ i }}</span
                                     >
                                 </template>
@@ -42,31 +42,74 @@
 
                         <span
                             v-if="valueArray?.length > 1"
-                            class="text-primary flex items-center cursor-pointer ml-1"
+                            class="flex items-center ml-1 cursor-pointer text-primary"
                             >+ {{ valueArray?.length - 1 }}
                         </span>
                     </a-popover>
                 </div>
-                <Truncate v-else :tooltip-text="value" />
+
+                <div v-else class="relative">
+                    <Truncate
+                        v-if="name !== 'userDescription'"
+                        :tooltip-text="value"
+                    />
+
+                    <description-popover
+                        v-else
+                        :request="request"
+                        :loading="loading"
+                        :is-approval-loading="isApprovalLoading"
+                        :show-actions="request.status === 'active' && hasAccess"
+                        @switch-update-popover="
+                            (val) => {
+                                $emit('switchPopover', val)
+                            }
+                        "
+                        @accept="(message) => $emit('accept', message || '')"
+                        @reject="(message) => $emit('reject', message || '')"
+                    />
+                </div>
             </span>
         </div>
     </template>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, toRefs } from 'vue'
+    import { computed, defineComponent, toRefs, PropType } from 'vue'
     import StatusBadge from '@common/badge/status/index.vue'
-    import Truncate from '@/common/ellipsis/index.vue'
     import UserPill from '@common/pills/user.vue'
+    import Truncate from '@/common/ellipsis/index.vue'
     import GroupPill from '@/common/pills/group.vue'
+    import DescriptionPopover from './descriptionPopover.vue'
+    import { RequestAttributes } from '~/types/atlas/requests'
 
     export default defineComponent({
+        components: {
+            StatusBadge,
+            Truncate,
+            UserPill,
+            GroupPill,
+            DescriptionPopover,
+        },
+
         props: {
             name: { type: String, required: true },
             value: { type: String, required: true },
             valueArray: { type: Array, required: true },
+            loading: { type: Boolean, required: true },
+            isApprovalLoading: { type: Boolean, required: true },
+            request: {
+                type: Object as PropType<RequestAttributes>,
+                required: true,
+            },
+            hasAccess: {
+                type: Boolean,
+                required: true,
+            },
         },
-        components: { StatusBadge, Truncate, UserPill , GroupPill },
+
+        emits: ['accept', 'reject', 'switchPopover'],
+
         setup(props) {
             const { name } = toRefs(props)
             const labelMap = {
@@ -83,3 +126,12 @@
         },
     })
 </script>
+
+<style scoped>
+    .desc-wrapper {
+        max-height: 6.5rem;
+    }
+    .w-fit {
+        width: fit-content;
+    }
+</style>

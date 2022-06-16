@@ -126,6 +126,40 @@ export const summaryVariants = [
         includes: ['PowerBITile'],
     },
     {
+        id: 'powerBITable',
+        label: 'Table',
+        components: [
+            'ParentContext',
+            'PowerBITableCounts',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
+        includes: ['PowerBITable'],
+    },
+    {
+        id: 'powerBIColumn',
+        label: 'Column',
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
+        includes: ['PowerBIColumn'],
+    },
+    {
+        id: 'powerBIMeasure',
+        label: 'Measure',
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
+        includes: ['PowerBIMeasure'],
+    },
+    {
         id: 'site',
         label: 'Site',
         components: ['Connection', 'SourceCreated', 'SourceUpdated'],
@@ -384,5 +418,11 @@ export const summaryVariants = [
         label: 'Object',
         components: ['ParentContext', 'Connection'],
         includes: ['S3Object'],
+    },
+    {
+        id: 'dataStudioAsset',
+        label: 'Data Studio Asset',
+        components: ['Connection'],
+        includes: ['DataStudioAsset'],
     },
 ]

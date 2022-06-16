@@ -48,12 +48,12 @@ const updateCustomMetadata = (
     options?: useOptions
 ) => useAPI<TypedefsInterface>(map.GET_TYPEDEFS, 'PUT', { body }, options || {})
 
-const updateAssetBMChanges = (guid: any, payload: any, options?: useOptions) =>
+const updateAssetBMChanges = (guid: any, payload: any, options?: useOptions, isOverwrite = false) =>
     useAPI<TypedefsInterface>(
         map.UPDATE_ASSET_BUSINESS_METADATA,
         'POST',
         {
-            params: { isOverwrite: false },
+            params: { isOverwrite },
             pathVariables: { guid },
             body: payload,
         },

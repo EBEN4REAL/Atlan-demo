@@ -70,11 +70,11 @@ const keyMap = {
                 action: 'discovery_cta_action_clicked',
                 properties: (props: {
                     action:
-                    | 'open_asset'
-                    | 'vqb_query'
-                    | 'sql_query'
-                    | 'copy_link'
-                    | 'open_in_source'
+                        | 'open_asset'
+                        | 'vqb_query'
+                        | 'sql_query'
+                        | 'copy_link'
+                        | 'open_in_source'
                     asset_type: string
                 }) => ({
                     ...props,
@@ -548,12 +548,11 @@ const keyMap = {
                             is_full_screen: props?.is_full_screen,
                             description_added: props?.description_added,
                         }
-                    } else {
-                        return {
-                            action: props.action,
-                            query_tab_id: props?.query_tab_id,
-                            is_full_screen: props?.is_full_screen,
-                        }
+                    }
+                    return {
+                        action: props.action,
+                        query_tab_id: props?.query_tab_id,
+                        is_full_screen: props?.is_full_screen,
                     }
                 },
             },
@@ -608,10 +607,36 @@ const keyMap = {
             closed: {
                 action: 'insights_tab_closed',
             },
+            dragged: {
+                action: 'insights_tab_dragged',
+                properties: (props) => ({
+                    total_tab_count: props?.tab_count,
+                }),
+            },
         },
     },
     governance: {
         persona: {
+            cta_clicked: {
+                action: 'governance_persona_cta_clicked',
+                properties: (props) => props,
+            },
+            home_tab: {
+                action: 'governance_persona_sidebar_tab_changed',
+                properties: (props) => props,
+            },
+            readme_expanded: {
+                action: 'governance_persona_sidebar_readme_viewed',
+                properties: (props) => props,
+            },
+            home_card_asset: {
+                action: 'home_persona_card_view_assets_clicked',
+                properties: (props) => props,
+            },
+            home_card: {
+                action: 'home_persona_card_clicked',
+                properties: (props) => props,
+            },
             created: {
                 action: 'governance_persona_created',
                 properties: (props) => ({
@@ -677,6 +702,26 @@ const keyMap = {
             },
         },
         purpose: {
+            cta_clicked: {
+                action: 'governance_purpose_cta_clicked',
+                properties: (props) => props,
+            },
+            home_tab: {
+                action: 'governance_purpose_sidebar_tab_changed',
+                properties: (props) => props,
+            },
+            readme_expanded: {
+                action: 'governance_purpose_sidebar_readme_viewed',
+                properties: (props) => props,
+            },
+            home_card_asset: {
+                action: 'home_purpose_card_view_assets_clicked',
+                properties: (props) => props,
+            },
+            home_card: {
+                action: 'home_purpose_card_clicked',
+                properties: (props) => props,
+            },
             created: {
                 action: 'governance_purpose_created',
                 properties: (props) => ({
@@ -769,6 +814,16 @@ const keyMap = {
                     title: props.title,
                 }),
             },
+            asset_data_deleted: {
+                action: 'governance_custom_metadata_asset_data_deleted',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    cm_id: props.cm_id,
+                    total_asset_count: props.total_asset_count,
+                    title: props.title,
+                    filled_property_count: props.filled_property_count,
+                }),
+            },
             property_added: {
                 action: 'governance_custom_metadata_property_added',
                 properties: (props) => ({
@@ -838,7 +893,6 @@ const keyMap = {
                 }),
             },
         },
-
         options: {
             created: {
                 action: 'governance_options_created',
@@ -851,6 +905,11 @@ const keyMap = {
                 properties: (props: { title: string }) => ({
                     ...props,
                 }),
+            },
+        },
+        connection: {
+            card_clicked: {
+                action: 'governance_connection_card_clicked',
             },
         },
     },
@@ -1123,6 +1182,18 @@ const keyMap = {
                     asset_type: assetType,
                     application,
                     trigger,
+                }),
+            },
+        },
+    },
+    marketplace: {
+        package_documentation_link: {
+            clicked: {
+                action: 'imarketplace_package_documentation_link_clicked',
+                properties: (props) => ({
+                    package_alias: props?.packageId,
+                    package_name: props?.packageName,
+                    doc_link: props?.docLink,
                 }),
             },
         },

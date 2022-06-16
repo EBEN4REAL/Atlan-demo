@@ -76,6 +76,7 @@ export function useInlineTab(
 
     const setActiveInlineTabKey = () => {
         // checking if localstorage already have active tab key
+
         const localStorageActiveInlineKey =
             getActiveInlineTabKeyFromLocalStorage()
         if (localStorageActiveInlineKey !== undefined) {

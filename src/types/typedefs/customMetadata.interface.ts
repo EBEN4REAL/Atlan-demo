@@ -7,6 +7,7 @@ export interface CUSTOM_METADATA_ATTRIBUTE {
     name: string
     displayName: string
     enumValues?: string
+    description: string
     options: {
         applicableEntityTypes: string
         customApplicableEntityTypes: string | string[]

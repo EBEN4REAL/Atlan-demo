@@ -99,7 +99,6 @@ export const filteredPurposes = computed(() => {
                     groups.push(...policy.groups)
                 }
             })
-            console.log('users', users)
             let found = false
             if (ownerUsers && ownerUsers.length) {
                 found = found || users.some((user) => ownerUsers.includes(user))

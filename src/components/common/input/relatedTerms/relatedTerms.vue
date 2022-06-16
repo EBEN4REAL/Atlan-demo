@@ -1,5 +1,7 @@
 <template>
     <div>
+        <div v-if="isEdit" class="freeze-clicks-outside-popover"></div>
+
         <a-popover
             v-if="editPermission"
             v-model:visible="isEdit"

@@ -1,48 +1,47 @@
 <template>
-    <teleport to="#overAssetSidebar">
-        <a-drawer
-            v-if="visible"
-            :key="data?.guid"
-            v-model:visible="visible"
-            placement="right"
-            :get-container="false"
-            :class="$style.drawerStyles"
-            :closable="false"
-            :mask-closable="showMask"
-            :style="{ position: 'absolute' }"
-            :width="420"
-            :mask="showMask"
-            @close="$emit('closeDrawer')"
+    <a-drawer
+        :key="data?.guid"
+        v-model:visible="visible"
+        placement="right"
+        :class="$style.drawerStyles"
+        :closable="false"
+        :mask-closable="showMask"
+        :width="420"
+        :mask="showMask"
+        @close="$emit('closeDrawer')"
+    >
+        <div
+            v-if="showCloseBtn && visible"
+            class="close-btn"
+            @click="() => $emit('closeDrawer')"
         >
-            <div
-                v-if="showCloseBtn && visible"
-                class="close-btn"
-                @click="() => $emit('closeDrawer')"
-            >
-                <AtlanIcon icon="Add" class="text-white" />
-            </div>
-            <DrawerNavigator
-                v-if="showDrawerNavigator"
-                @close="$emit('closeDrawer')"
-            />
-            <transition name="fade">
-                <div
-                    v-if="deferredLoading"
-                    class="flex items-center justify-center w-full h-full"
-                >
-                    <AtlanLoader class="h-12 mx-auto my-auto" />
-                </div>
+            <AtlanIcon icon="Add" class="text-white" />
+        </div>
 
-                <AssetPreview
-                    v-else
-                    :selected-asset="drawerData"
-                    :is-drawer="true"
-                    :drawer-active-key="drawerActiveKey"
-                    @closeDrawer="$emit('closeDrawer')"
-                ></AssetPreview>
-            </transition>
-        </a-drawer>
-    </teleport>
+        <div
+            v-if="showCollapseButton && visible"
+            class="collapse-btn"
+            @click="() => $emit('closeDrawer')"
+        >
+            <AtlanIcon icon="CaretRight" class="w-auto h-4" />
+        </div>
+
+        <transition name="fade">
+            <div
+                v-if="deferredLoading"
+                class="flex items-center justify-center w-full h-full"
+            >
+                <AtlanLoader class="h-12 mx-auto my-auto" />
+            </div>
+            <AssetPreview
+                v-else
+                :selected-asset="drawerData"
+                :is-drawer="true"
+                :drawer-active-key="drawerActiveKey"
+                @closeDrawer="$emit('closeDrawer')"
+            ></AssetPreview>
+        </transition>
+    </a-drawer>
 </template>
 
 <script lang="ts">
@@ -111,6 +110,11 @@
                 default: '',
             },
             watchGuid: {
+                type: Boolean,
+                required: false,
+                default: false,
+            },
+            showCollapseButton: {
                 type: Boolean,
                 required: false,
                 default: false,
@@ -190,9 +194,13 @@
                 }
             })
 
-            watch(data, () => {
-                drawerData.value = data.value
-            })
+            watch(
+                data,
+                () => {
+                    drawerData.value = data.value
+                },
+                { deep: true }
+            )
 
             watch(isLoading, () => {
                 if (isLoading.value) {
@@ -247,5 +255,11 @@
         right: 430px;
         top: 60px;
         cursor: pointer;
+    }
+
+    .collapse-btn {
+        @apply p-1 border-t border-b border-l fixed cursor-pointer bg-white rounded-l-md border-gray-300 shadow-sm;
+        right: 420px;
+        top: 90px;
     }
 </style>

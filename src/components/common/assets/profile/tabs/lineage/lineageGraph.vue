@@ -44,13 +44,13 @@
 
         <!-- AssetDrawer -->
         <AssetDrawer
+            :guid="selectedAsset?.guid"
             :watch-guid="true"
-            :guid="selectedAsset?.guid || ''"
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
-            :show-close-btn="false"
+            :show-collapse-button="true"
+            :show-drawer="showDrawer"
             @close-drawer="onCloseDrawer"
-            @update="handleDrawerUpdate"
         />
 
         <!-- GroupProcessesDrawer -->
@@ -70,6 +70,7 @@
         onUnmounted,
         provide,
         inject,
+        watch,
     } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
 
@@ -115,6 +116,7 @@
             const guidToSelectOnGraph = ref('')
             const selectedTypeInRelationDrawer = ref('__all')
             const groupedProcessIds = ref([])
+            const showDrawer = ref(false)
 
             /** EVENT DEFINITION */
             const sendPanelZoomOut = useDebounceFn((percentage) => {
@@ -151,10 +153,19 @@
             const onSelectAsset = (item, selectOnGraph = false) => {
                 const { isGroupEdge, processIds } = item || {}
 
-                if (typeof control === 'function' && !isGroupEdge)
+                if (typeof control === 'function' && !isGroupEdge) {
                     control('selectedAsset', item)
+                    if (item?.guid) {
+                        graphWidth.value = window.outerWidth - 480
+                        graph.value.resize(
+                            graphWidth.value,
+                            graphHeight.value / 1.35
+                        )
+                        showDrawer.value = true
+                    }
+                }
 
-                if (!item) return
+                if (!item?.guid) return
 
                 if (isGroupEdge && processIds.length)
                     groupedProcessIds.value = processIds
@@ -164,17 +175,15 @@
 
             // onCloseDrawer
             const onCloseDrawer = () => {
+                onSelectAsset('')
+                graphWidth.value = window.outerWidth - 60
+                graph.value.resize(graphWidth.value, graphHeight.value / 1.35)
+                showDrawer.value = false
                 onSelectAsset(null)
             }
             const handleCloseProcessDrawer = () => {
                 console.log('closing drawer')
                 groupedProcessIds.value = []
-            }
-
-            // handleDrawerUpdate
-            const handleDrawerUpdate = (asset) => {
-                if (typeof control === 'function')
-                    control('selectedAsset', asset)
             }
 
             // handleMinimapAction
@@ -228,6 +237,7 @@
                     sameTargetCount,
                     nodes,
                     edges,
+                    showDrawer,
                     groupedProcessIds,
                     onSelectAsset,
                     onCloseDrawer,
@@ -269,11 +279,11 @@
                 graphContainer,
                 minimapContainer,
                 onCloseDrawer,
-                handleDrawerUpdate,
                 handleZoom,
                 groupedProcessIds,
                 handleCloseProcessDrawer,
                 handleMinimapAction,
+                showDrawer,
             }
         },
     })

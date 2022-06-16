@@ -1,8 +1,18 @@
+import Legend from '~/assets/images/lineage/legend.svg'
 import LegendExpand from '~/assets/images/lineage/legendExpand.svg'
 import LegendCollapse from '~/assets/images/lineage/legendCollapse.svg'
 import LegendAnomaly from '~/assets/images/lineage/legendAnomaly.svg'
 import LegendSelected from '~/assets/images/lineage/legendSelected.svg'
 import LegendHighlighted from '~/assets/images/lineage/legendHighlighted.svg'
+import LegendProcess from '~/assets/images/lineage/legendProcess.svg'
+import LegendProcessDefault from '~/assets/images/lineage/legendProcessDefault.svg'
+import LegendProcessHighlighted from '~/assets/images/lineage/legendProcessHighlighted.svg'
+import LegendProcessAnomaly from '~/assets/images/lineage/legendProcessAnomaly.svg'
+import LegendTableauDSField from '~/assets/images/lineage/legendTableauDSField.svg'
+import LegendTableauCField from '~/assets/images/lineage/legendTableauCField.svg'
+import LegendLookerField from '~/assets/images/lineage/legendLookerField.svg'
+import LegendMeasures from '~/assets/images/lineage/legendMeasures.svg'
+import LegendDimensions from '~/assets/images/lineage/legendDimensions.svg'
 import Time from '~/assets/images/icons/time.svg'
 import BookmarkFilled from '~/assets/images/icons/bookmark-filled.svg'
 import Bookmark from '~/assets/images/icons/bookmark.svg'
@@ -103,6 +113,7 @@ import KebabMenuHorizontal from '~/assets/images/icons/kebab-menu.svg'
 import Overview from '~/assets/images/icons/overview.svg'
 import OverviewActive from '~/assets/images/icons/overview_active.svg'
 import Lineage from '~/assets/images/icons/lineage.svg'
+import LineageNew from '~/assets/images/icons/lineage-new.svg'
 import LineageSmall from '~/assets/images/icons/lineage-small.svg'
 import Activity from '~/assets/images/icons/activity.svg'
 import Columns from '~/assets/images/icons/columns.svg'
@@ -230,6 +241,7 @@ import Policy from '~/assets/images/icons/policy.svg'
 import PolicyAlt from '~/assets/images/icons/policy-alt.svg'
 import Key from '~/assets/images/icons/key.svg'
 import EmptyDiscover from '~/assets/images/illustrations/empty_discover.svg'
+import EmptyAssetProfile from '~/assets/images/icons/empty_asset_profile.svg'
 import EmptyLineage from '~/assets/images/illustrations/empty_lineage.svg'
 import EmptyLineageTab from '~/assets/images/illustrations/empty_lineage_tab.svg'
 import Property from '~/assets/images/icons/property.svg'
@@ -243,6 +255,11 @@ import CollapseControl from '~/assets/images/icons/collapse-control.svg'
 import ColumnGray from '~/assets/images/icons/column-gray.svg'
 import MaterialisedView from '~/assets/images/icons/materialised-view.svg'
 import TablePartition from '~/assets/images/icons/table-partition.svg'
+
+// autosuggetions
+import Function from '~/assets/images/insights/autocomplete/function.svg'
+import Nut from '~/assets/images/insights/autocomplete/nut.svg'
+import Snippet from '~/assets/images/insights/autocomplete/snippet.svg'
 
 import Gdoc from '~/assets/images/admin/integrations/gDoc.svg'
 
@@ -362,6 +379,7 @@ import Salesforce from '~/assets/images/source/svg/Salesforce.svg'
 import MySQL from '~/assets/images/source/svg/MySQL.svg'
 import Glue from '~/assets/images/source/svg/glue.svg'
 import S3 from '~/assets/images/source/svg/s3.svg'
+import GDS from '~/assets/images/source/svg/gds.svg'
 
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
@@ -413,7 +431,8 @@ import Vqb24 from '~/assets/images/icons/vqb_24.svg'
 import SidebarSwitch from '~/assets/images/icons/sidebar.svg'
 import InteractiveVariableIllustration from '~/assets/images/illustrations/illustration-interactive-param.svg'
 import EmptyRequest from '~/assets/images/illustrations/empty-request.svg'
-
+import IllustrationPersonaDemo from '~/assets/images/illustrations/illustration-persona-demo.svg'
+import IllustrationPurposeDemo from '~/assets/images/illustrations/illustration-purpose-demo.svg'
 import Vqb from '~/assets/images/icons/Vqb.svg'
 import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
 import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
@@ -486,8 +505,12 @@ import CommonError3 from '~/assets/images/icons/common-error-3.svg'
 import CommonError4 from '~/assets/images/icons/common-error-4.svg'
 import CSVLogo from '~/assets/images/icons/csv-logo.svg'
 import PaperClip from '~/assets/images/icons/paper-clip.svg'
+import FlaskIcon from '~/assets/images/icons/flask.svg'
 
 export default {
+    Function,
+    Nut,
+    Snippet,
     Gift,
     NoSearchResultsQuery,
     SlackTabEmpty,
@@ -497,11 +520,21 @@ export default {
     QueryMetadata,
     QueryOutputSuccess,
     FullScreenSquare,
+    Legend,
     LegendExpand,
     LegendCollapse,
     LegendAnomaly,
     LegendSelected,
     LegendHighlighted,
+    LegendProcess,
+    LegendProcessDefault,
+    LegendProcessHighlighted,
+    LegendProcessAnomaly,
+    LegendTableauDSField,
+    LegendTableauCField,
+    LegendLookerField,
+    LegendMeasures,
+    LegendDimensions,
     Schedule24,
     Mail,
     EmptyJira,
@@ -607,6 +640,7 @@ export default {
     Overview,
     Pin,
     Lineage,
+    LineageNew,
     LineageSmall,
     Activity,
     Columns,
@@ -766,6 +800,7 @@ export default {
     Policy,
     Key,
     EmptyDiscover,
+    EmptyAssetProfile,
     Property,
     PropertyActive,
     OverviewActive,
@@ -836,6 +871,7 @@ export default {
     Looker,
     Salesforce,
     S3,
+    GDS,
     SSO,
     SMTP,
     APIKey,
@@ -955,4 +991,7 @@ export default {
     CommonError4,
     CSVLogo,
     PaperClip,
+    IllustrationPersonaDemo,
+    IllustrationPurposeDemo,
+    FlaskIcon,
 }

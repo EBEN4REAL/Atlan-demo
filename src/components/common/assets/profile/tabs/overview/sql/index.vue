@@ -46,8 +46,8 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import RaisedTab from '@/UI/raisedTab.vue'
-    import OverviewColumns from "../../columns/columnWidget.vue"
-    import SampleDataTable  from "./sampleData.vue"
+    import OverviewColumns from './columnsPreview.vue'
+    import SampleDataTable from './sampleData.vue'
 
     export default defineComponent({
         name: 'NonBiOverview',
@@ -56,13 +56,7 @@
             Summary,
             RaisedTab,
             OverviewColumns,
-            SampleDataTable
-            // OverviewColumns: defineAsyncComponent(
-            //     () => import('../../columns/columnWidget.vue')
-            // ),
-            // SampleDataTable: defineAsyncComponent(
-            //     () => import('./sampleData.vue')
-            // ),
+            SampleDataTable,
         },
         props: {
             selectedAsset: {

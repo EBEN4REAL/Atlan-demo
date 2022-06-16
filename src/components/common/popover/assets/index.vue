@@ -1,10 +1,11 @@
 <template>
     <a-popover
-        v-model:visible="assetPopoverVisible"
+        v-model:visible="localAssetPopoverVisible"
         title=""
-        placement="left"
+        :placement="placement"
         :mouse-enter-delay="mouseEnterDelay"
-        trigger="hover"
+        :trigger="popoverTrigger"
+        :overlayClassName="overlayClassName"
     >
         <template #content>
             <div class="rounded w-96">
@@ -17,7 +18,7 @@
                             <div class="flex mr-3.5">
                                 <div
                                     v-if="
-                                        item.typeName?.toLowerCase() ===
+                                        item?.typeName?.toLowerCase() ===
                                             'column' &&
                                         item.attributes?.dataType
                                     "
@@ -52,7 +53,7 @@
                                 size="icn"
                                 color="minimal"
                                 padding="icon"
-                                @click="handleAssetPreview"
+                                @click="(e, item) => handleAssetPreview(item)"
                             >
                                 <AtlanIcon icon="OpenPreview" />
                             </AtlanBtn>
@@ -63,7 +64,7 @@
                         <AtlanIcon
                             v-if="
                                 ['atlasglossarycategory'].includes(
-                                    item.typeName?.toLowerCase()
+                                    item?.typeName?.toLowerCase()
                                 )
                             "
                             icon="Category"
@@ -72,7 +73,7 @@
                         <AtlanIcon
                             v-if="
                                 ['atlasglossaryterm'].includes(
-                                    item.typeName?.toLowerCase()
+                                    item?.typeName?.toLowerCase()
                                 )
                             "
                             icon="Term"
@@ -99,7 +100,7 @@
                         <!-- DB and Schema context for tables/views etc. -->
                         <div
                             v-if="
-                                db && item.typeName?.toLowerCase() !== 'column'
+                                db && item?.typeName?.toLowerCase() !== 'column'
                             "
                             class="flex items-center text-gray-500"
                         >
@@ -115,7 +116,7 @@
                         <div
                             v-if="
                                 schema &&
-                                item.typeName?.toLowerCase() !== 'column'
+                                item?.typeName?.toLowerCase() !== 'column'
                             "
                             class="flex items-center text-gray-500"
                         >
@@ -156,7 +157,7 @@
                                     'view',
                                     'tablepartition',
                                     'materialisedview',
-                                ].includes(item.typeName?.toLowerCase())
+                                ].includes(item?.typeName?.toLowerCase())
                             "
                             class="flex justify-between flex-grow pb-4"
                         >
@@ -178,8 +179,8 @@
                         <!--data type context for columns -->
                         <div
                             v-if="
-                                item.typeName?.toLowerCase() === 'column' &&
-                                item.attributes?.dataType
+                                item?.typeName?.toLowerCase() === 'column' &&
+                                item?.attributes?.dataType
                             "
                             class="pb-4"
                         >
@@ -189,7 +190,7 @@
                                     :is="dataTypeCategoryImage(item)"
                                     class="h-4 mr-1 text-gray-500 mb-0.5"
                                 />
-                                <span>{{ item.attributes?.dataType }}</span>
+                                <span>{{ item?.attributes?.dataType }}</span>
                                 <div class="flex ml-1 gap-x-2">
                                     <ColumnKeys
                                         :is-primary="isPrimary(item)"
@@ -238,25 +239,42 @@
                             v-if="list?.length"
                             class="flex flex-wrap gap-1 mt-1"
                         >
+                            <!-- v-for="classification in list.slice(0, 3)" -->
                             <template
                                 v-for="classification in list.slice(0, 3)"
                                 :key="classification.guid"
                             >
-                                <ClassificationPill
-                                    :name="classification.name"
-                                    :display-name="classification?.displayName"
-                                    :is-propagated="
-                                        isPropagated(classification)
+                                <PopoverClassification
+                                    :classification="classification"
+                                    :entity-guid="item.guid"
+                                    :mouse-enter-delay="
+                                        classificationMouseEnterDelay
                                     "
-                                    :allow-delete="false"
-                                    :created-by="classification?.createdBy"
-                                ></ClassificationPill>
+                                    @mouse-entered="enteredPill"
+                                    @mouse-left="leftPill"
+                                >
+                                    <ClassificationPill
+                                        :name="classification.name"
+                                        :display-name="
+                                            classification?.displayName
+                                        "
+                                        :is-propagated="
+                                            isPropagated(classification)
+                                        "
+                                        :count="classification?.count"
+                                        :allow-delete="false"
+                                        :color="
+                                            classification.options?.color?.toLowerCase()
+                                        "
+                                        :created-by="classification?.createdBy"
+                                    ></ClassificationPill>
+                                </PopoverClassification>
                             </template>
                             <span
                                 v-if="list.slice(3, list.length).length"
                                 class="bg-gray-100 border border-gray-300 flex items-center px-1.5 py-1 rounded-full text-gray-500"
                             >
-                                +{{ list.slice(3, list.length).length }}
+                                + {{ list.slice(3, list.length).length }}
                             </span>
                         </div>
                         <div
@@ -335,11 +353,8 @@
                         </div>
                     </div>
 
-                    <div class="flex" v-if="showPreviewLink" >
-                        <router-link
-                            :to="path"
-                            class="ml-auto" 
-                        >
+                    <div class="flex" v-if="showPreviewLink">
+                        <router-link :to="path" class="ml-auto">
                             <AtlanBtn
                                 class="flex-none px-0"
                                 size="sm"
@@ -371,7 +386,16 @@
 </template>
 
 <script lang="ts">
-    import { toRefs, computed, inject, onMounted, ref, ComputedRef } from 'vue'
+    import {
+        toRefs,
+        computed,
+        inject,
+        onMounted,
+        ref,
+        ComputedRef,
+        watch,
+    } from 'vue'
+    import { useVModels } from '@vueuse/core'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
@@ -385,6 +409,9 @@
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
     import { useUserPreview } from '~/composables/user/showUserPreview'
     import ColumnKeys from '~/components/common/column/columnKeys.vue'
+    import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import { groupClassifications } from '~/utils/groupClassifications'
+    import PopoverClassification from '@/common/popover/classification/index.vue'
 
     export default {
         name: 'PopoverAsset',
@@ -397,6 +424,7 @@
             TermPill,
             AssetDrawer,
             ColumnKeys,
+            PopoverClassification,
         },
         props: {
             item: {
@@ -418,6 +446,23 @@
             showPreviewCTA: {
                 type: Boolean,
                 default: true,
+            },
+            assetPopoverVisible: {
+                type: Boolean,
+                default: false,
+                required: false,
+            },
+            popoverTrigger: {
+                type: String,
+                default: 'hover',
+            },
+            placement: {
+                type: String,
+                default: 'left',
+            },
+            overlayClassName: {
+                type: String,
+                default: '',
             },
         },
         emits: ['previewAsset'],
@@ -451,8 +496,14 @@
 
             const { showUserPreview: openPreview, setUserUniqueAttribute } =
                 useUserPreview()
+            const { assetPopoverVisible } = useVModels(props, emit)
+            const localAssetPopoverVisible = ref(
+                assetPopoverVisible.value ?? false
+            )
+            watch(assetPopoverVisible, () => {
+                localAssetPopoverVisible.value = localAssetPopoverVisible
+            })
             const { classificationList } = useTypedefData()
-            const assetPopoverVisible = ref(false)
             const showTablePreview = ref(false)
 
             const isPropagated = (classification) => {
@@ -469,8 +520,18 @@
                     'name',
                     'typeName'
                 )
-                return matchingIdsResult
+                const groupedClassifications = groupClassifications(
+                    matchingIdsResult,
+                    isPropagated
+                )
+                return groupedClassifications
             })
+
+            const {
+                mouseEnterDelay: classificationMouseEnterDelay,
+                enteredPill,
+                leftPill,
+            } = useMouseEnterDelay()
 
             const rows = computed(() => {
                 const rawRowCount = rowCount(item.value, true)
@@ -533,7 +594,7 @@
             }
             const handleAssetPreview = () => {
                 closePopover()
-                emit('previewAsset')
+                emit('previewAsset', item)
             }
 
             onMounted(() => {
@@ -541,7 +602,9 @@
             })
 
             return {
+                localAssetPopoverVisible,
                 certificateStatus,
+                enteredPill,
                 certificateUpdatedBy,
                 certificateUpdatedAt,
                 isPropagated,
@@ -567,7 +630,6 @@
                 isSort,
                 isIndexed,
                 isPartition,
-                assetPopoverVisible,
                 handleTableForColumnPreview,
                 handleCloseTablePreview,
                 tableGuid,
@@ -575,6 +637,8 @@
                 handleUserPreview,
                 closePopover,
                 handleAssetPreview,
+                leftPill,
+                classificationMouseEnterDelay,
             }
         },
     }

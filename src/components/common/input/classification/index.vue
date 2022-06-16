@@ -1,9 +1,14 @@
 <template>
-    <div data-test-id="classification-popover">
+    <div data-test-id="classification-popover" class="relative">
+        <div v-if="isEdit" class="freeze-clicks-outside-popover"></div>
         <a-popover
             v-model:visible="isEdit"
             placement="leftTop"
-            :overlay-class-name="$style.classificationPopover"
+            :overlay-class-name="
+                !editPermission && role !== 'Guest'
+                    ? $style.classificationPopover_2
+                    : $style.classificationPopover
+            "
             :trigger="['click']"
             :destroy-tooltip-on-hide="destroyTooltipOnHide"
             @visibleChange="handleVisibleChange"
@@ -25,13 +30,63 @@
                     can review your request.
                 </div>
 
-                <div>
+                <div class="relative">
                     <ClassificationFacet
                         ref="classificationFacetRef"
                         v-model="selectedValue"
                         :show-none="false"
                         @change="handleSelectedChange"
                     ></ClassificationFacet>
+
+                    <div
+                        class="absolute w-full p-2 mx-auto mt-1 mt-5 bg-white rounded-md mix-blend-normal"
+                        :style="{
+                            background: '#F4F6FD',
+                            top:
+                                !editPermission &&
+                                role !== 'Guest' &&
+                                parentAssetChildren?.length > 0
+                                    ? '230px !important'
+                                    : parentAssetChildren?.length > 0
+                                    ? '180px !important'
+                                    : '150px !important',
+                        }"
+                        style="box-shadow: 0px 5px 16px rgba(0, 0, 0, 0.1)"
+                        v-if="parentAssetChildren?.length"
+                    >
+                        <div class="flex">
+                            <div class="mr-2">
+                                <AtlanIcon icon="Overview" />
+                            </div>
+                            <div class="">
+                                Classifications attached to a
+                                {{ assetType }} will propagate to all
+                                <a-popover
+                                    :overlay-class-name="
+                                        $style.childAssetsPopover
+                                    "
+                                    placement="top"
+                                >
+                                    <template #content>
+                                        <div
+                                            class="w-full p-2 pt-3 mx-auto mt-6 text-xs text-white rounded-md left-5"
+                                            style="background: #2a2f45"
+                                        >
+                                            {{ parentAssetChildren }}
+                                        </div>
+                                    </template>
+                                    <span
+                                        class="text-sm text-gray-500 cursor-pointer"
+                                        style="
+                                            text-decoration: underline dotted;
+                                        "
+                                    >
+                                        child assets.
+                                    </span>
+                                </a-popover>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div
                     v-if="!editPermission && role !== 'Guest'"
@@ -74,7 +129,17 @@
                             editPermission:
                                 'hover:bg-primary-light hover:border-primary',
                         }"
-                        @click="handleOpenPopover"
+                        @click="
+                            (e) => {
+                                e.stopPropagation()
+                                handleOpenPopover()
+                            }
+                        "
+                        @dblclick.native="
+                            (e) => {
+                                e.stopPropagation()
+                            }
+                        "
                     >
                         <span
                             ><AtlanIcon icon="Add" class="h-3"></AtlanIcon
@@ -92,6 +157,7 @@
                         :name="classification.name"
                         :display-name="classification?.displayName"
                         :is-propagated="isPropagated(classification)"
+                        :count="classification?.count"
                         :allow-delete="
                             allowDelete && !isPropagated(classification)
                         "
@@ -135,6 +201,8 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import whoami from '~/composables/user/whoami.ts'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import { groupClassifications } from '~/utils/groupClassifications'
+    import { assetTypeList } from '~/constant/assetType'
 
     export default defineComponent({
         name: 'ClassificationWidget',
@@ -192,11 +260,38 @@
                 required: true,
             },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'popoverActive'],
         setup(props, { emit }) {
             const { modelValue } = useVModels(props, emit)
+            const assetType = ref<string>()
 
-            const { guid, editPermission, selectedAsset } = toRefs(props)
+            const { guid, editPermission, selectedAsset, allowDelete } =
+                toRefs(props)
+
+            const parentAssetChildren = ref<string>()
+            const showChildrenAsset = ref<boolean>(false)
+
+            const parentAssets = assetTypeList.map((asset) => asset.id)
+
+            if (parentAssets.includes(selectedAsset.value?.typeName)) {
+                const findAssetType = assetTypeList.find(
+                    (asset) => asset?.id === selectedAsset.value?.typeName
+                )
+                assetType.value = findAssetType?.fullLabel
+                    ? findAssetType?.fullLabel
+                    : findAssetType?.label
+                if (findAssetType?.children?.length) {
+                    parentAssetChildren.value = findAssetType.children
+                        .map((type) => {
+                            const mappedObj = assetTypeList.find(
+                                (ass) => ass.id === type
+                            )
+                            return mappedObj?.fullLabel ?? mappedObj?.label
+                        })
+                        .join(', ')
+                }
+            }
+
             const localValue = ref(modelValue.value)
             const { role } = whoami()
 
@@ -234,8 +329,11 @@
                     'name',
                     'typeName'
                 )
-
-                return matchingIdsResult
+                const groupedClassifications = groupClassifications(
+                    matchingIdsResult,
+                    isPropagated
+                )
+                return groupedClassifications
             })
 
             const handleChange = () => {
@@ -346,7 +444,6 @@
                     }
                 )
 
-                console.log(newClassifications.value)
                 const {
                     error: requestError,
                     isLoading: isRequestLoading,
@@ -380,6 +477,7 @@
             const handleOpenPopover = () => {
                 isEdit.value = true
                 requestLoading.value = false
+                emit('popoverActive')
             }
             const { mouseEnterDelay, enteredPill } = useMouseEnterDelay()
 
@@ -402,6 +500,9 @@
                 requestLoading,
                 mouseEnterDelay,
                 enteredPill,
+                parentAssetChildren,
+                showChildrenAsset,
+                assetType,
             }
         },
     })
@@ -412,5 +513,18 @@
             @apply px-0 py-3 !important;
             width: 250px !important;
         }
+        @apply p-3;
+        top: 250px !important;
+    }
+    .classificationPopover_2 {
+        :global(.ant-popover-inner-content) {
+            @apply px-0 py-3 !important;
+            width: 250px !important;
+        }
+        @apply p-3;
+        top: 50px !important;
+    }
+    .childAssetsPopover {
+        width: 200px !important;
     }
 </style>

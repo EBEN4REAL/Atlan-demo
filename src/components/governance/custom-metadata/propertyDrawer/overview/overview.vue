@@ -71,7 +71,7 @@
             <div v-if="readOnly" class="space-y-2">
                 <div class="text-gray-500">Description</div>
                 <div v-if="internal" class="text-gray-700">
-                    {{ form.options.description || '-' }}
+                    {{ form.description || form.options.description || '-' }}
                 </div>
             </div>
             <a-form-item
@@ -81,7 +81,7 @@
                 class="col-span-2 mb-0 ant-form-undo-flex-direction"
             >
                 <a-textarea
-                    v-model:value="form.options.description"
+                    v-model:value="form.description"
                     type="text"
                     class=""
                 />

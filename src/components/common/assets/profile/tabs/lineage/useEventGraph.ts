@@ -1653,6 +1653,8 @@ export default function useEventGraph({
 
     // resetState
     const resetState = (all?, closeDrawer = true) => {
+        groupedProcessIds.value = []
+
         if (closeDrawer) {
             onCloseDrawer()
             if (selectedNodeId.value) resetSelectedNode()
@@ -1930,9 +1932,5 @@ export default function useEventGraph({
             fit(newVal)
             guidToSelectOnGraph.value = ''
         }
-    })
-
-    watch(groupedProcessIds, (newVal) => {
-        if (!newVal.length) resetState()
     })
 }

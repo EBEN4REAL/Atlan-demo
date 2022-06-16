@@ -54,10 +54,7 @@
         />
 
         <!-- GroupProcessesDrawer -->
-        <GroupProcessesDrawer
-            :grouped-process-ids="groupedProcessIds"
-            @close-drawer="handleCloseProcessDrawer"
-        />
+        <GroupProcessesDrawer :grouped-process-ids="groupedProcessIds" />
     </div>
 </template>
 
@@ -77,7 +74,7 @@
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
     import LineageFooter from './lineageFooter.vue'
-    import GroupProcessesDrawer from './GroupProcessesDrawer.vue'
+    import GroupProcessesDrawer from '@/common/assets/preview/GroupProcessesDrawer.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     /** COMPOSABLES */
@@ -181,10 +178,6 @@
                 showDrawer.value = false
                 onSelectAsset(null)
             }
-            const handleCloseProcessDrawer = () => {
-                console.log('closing drawer')
-                groupedProcessIds.value = []
-            }
 
             // handleMinimapAction
             const handleMinimapAction = () => {
@@ -278,12 +271,11 @@
                 lineageContainer,
                 graphContainer,
                 minimapContainer,
+                groupedProcessIds,
+                showDrawer,
                 onCloseDrawer,
                 handleZoom,
-                groupedProcessIds,
-                handleCloseProcessDrawer,
                 handleMinimapAction,
-                showDrawer,
             }
         },
     })

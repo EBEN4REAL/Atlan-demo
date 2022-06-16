@@ -592,10 +592,15 @@
                         </div> -->
                         <!-- </div> -->
                     </div>
+
+                    <!-- hide Masking setting from Persona Data policy, only allow if pre-existing value -->
                     <div
                         v-if="
                             policyType === 'data' &&
-                            connectorData.attributeValue
+                            connectorData.attributeValue &&
+                            isEdit &&
+                            selectedPolicy.type &&
+                            selectedPolicy.type !== 'null'
                         "
                         class="mt-5 bg-white shadow-section"
                     >
@@ -603,6 +608,15 @@
                             class="p-3 text-base font-bold text-gray-700 border-b"
                         >
                             Configure permissions
+                            <a-tooltip
+                                title="Masking configuration for Persona is deprecated, and it will be completely removed in further updates."
+                            >
+                                <span
+                                    class="px-2 py-1 text-xs rounded text-new-yellow-700 bg-new-yellow-100"
+                                >
+                                    Deprecated
+                                </span>
+                            </a-tooltip>
                         </div>
                         <!-- <div class="flex flex-col mt-7 gap-y-2">
                         <div class="flex gap-1">
@@ -625,7 +639,7 @@
                         <div class="p-3">
                             <div class="flex items-center mb-2 gap-x-1">
                                 <span class="text-sm text-gray-500"
-                                    >Masking(Optional)</span
+                                    >Masking (Optional)</span
                                 >
                             </div>
 
@@ -914,6 +928,7 @@
             selectedPolicy: {
                 type: Object,
                 required: false,
+                default: () => ({}),
             },
             whitelistedConnectionIds: {
                 type: Array,
@@ -1035,7 +1050,9 @@
                     },
                 }
                 if (isEdit.value) {
-                    policy.value = selectedPolicy.value
+                    policy.value = JSON.parse(
+                        JSON.stringify(selectedPolicy.value)
+                    )
                     policyType.value = type.value
                 } else {
                     policyType.value = type.value

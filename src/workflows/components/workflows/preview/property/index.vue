@@ -1,16 +1,13 @@
 <template>
-    <div class="flex flex-col w-full px-5 py-3 overflow-auto gap-y-3">
+    <div class="flex flex-col w-full px-5 py-4 overflow-auto gap-y-4">
         <div class="flex flex-col text-sm">
             <span class="mb-1 text-gray-500">Description</span>
-
-            <div class="flex flex-col">
-                <div class="flex mb-2">
-                    {{
-                        item?.metadata?.annotations[
-                            'package.argoproj.io/description'
-                        ]
-                    }}
-                </div>
+            <div class="flex">
+                {{
+                    item?.metadata?.annotations[
+                        'package.argoproj.io/description'
+                    ]
+                }}
             </div>
         </div>
 
@@ -27,12 +24,6 @@
                 >
             </div>
         </div>
-        <div class="flex flex-col text-sm" v-if="supportLink(item)">
-            <span class="mb-1 text-gray-500">Resources</span>
-            <a :href="supportLink(item)" class="text-primary" target="_blank"
-                >Documentation</a
-            >
-        </div>
 
         <div class="flex flex-col text-sm">
             <span class="mb-1 text-gray-500">Type</span>
@@ -41,6 +32,19 @@
             </div>
         </div>
 
+        <div class="flex flex-col text-sm" v-if="docsUrl(item)">
+            <span class="mb-1 text-gray-500">Documentation</span>
+            <a
+                :href="docsUrl(item)"
+                class="text-primary hover:underline"
+                target="_blank"
+                @click="docLinkClicked"
+                >{{
+                    item?.metadata?.annotations['orchestration.atlan.com/name']
+                }}
+                Docs</a
+            >
+        </div>
         <div class="flex flex-col text-sm">
             <span class="mb-1 text-gray-500">Package Version</span>
             <div class="flex">
@@ -74,6 +78,7 @@
     import PopOverUser from '@/common/popover/user/user.vue'
     import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import AtlanIcon from '~/components/common/icon/atlanIcon.vue'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'PropertiesWidget',
@@ -90,10 +95,25 @@
         },
         setup(props, { emit }) {
             const { item } = toRefs(props)
+            const { useCases, docsUrl, packageName } = useWorkflowInfo()
 
-            const { useCases, supportLink } = useWorkflowInfo()
+            const docLinkClicked = () => {
+                useAddEvent(
+                    'marketplace',
+                    'package_documentation_link',
+                    'clicked',
+                    {
+                        packageId: packageName(item.value),
+                        packageName:
+                            item.value?.metadata?.annotations[
+                                'orchestration.atlan.com/name'
+                            ],
+                        docLink: docsUrl(item.value),
+                    }
+                )
+            }
 
-            return { item, useCases, supportLink }
+            return { item, useCases, docsUrl, docLinkClicked }
         },
     })
 </script>

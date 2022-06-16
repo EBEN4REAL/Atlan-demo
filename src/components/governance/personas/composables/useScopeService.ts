@@ -326,6 +326,10 @@ export const mapAllPermission = {
     meta: personaScopeList.reduce((acc, el)=> acc + el.scopes.length , 0)
 }
 
+export const mapAllPermissionPurpose = {
+    meta: purposeScopeList.reduce((acc, el)=> acc + el.scopes.length , 0)
+}
+
 export default function scopeService() {
     // purposes | persona
     function listScopes(type: string) {

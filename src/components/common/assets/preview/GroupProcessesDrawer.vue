@@ -1,6 +1,5 @@
 <template>
     <a-drawer
-        :key="data?.guid"
         v-model:visible="visible"
         placement="right"
         :class="$style.drawerStyles"
@@ -9,82 +8,78 @@
         :width="420"
         :mask="false"
     >
-        <div class="px-5 py-2 pt-4 flex items-center border-b">
-            <div class="flex items-center justify-center p-2 border rounded">
-                <atlan-icon icon="Code" class="h-4" />
-            </div>
-            <div class="flex flex-col ml-2">
-                <span class="text-gray-700 font-bold text-base"
-                    >All Process</span
+        <transition name="fade">
+            <div class="h-full w-full">
+                <div
+                    v-if="isLoading || isValidating"
+                    class="flex items-center justify-center w-full h-full"
                 >
-                <span class="text-gray-500">{{ totalCount }} processes </span>
-            </div>
-        </div>
-        <div class="mx-5 pb-0 border-b mt-2">
-            <SearchAdvanced
-                v-model:value="queryText"
-                :autofocus="true"
-                :placeholder="`Search processes`"
-                @change="handleSearchChange"
-            >
-                <template #postFilter>
-                    <div style="max-width: 330px">
-                        <PreferenceSelector
-                            v-model="preference.display"
-                            @change="handleDisplayChange"
-                        />
+                    <AtlanLoader class="h-12 mx-auto my-auto" />
+                </div>
+                <div v-if="!isLoading && !isValidating && !error">
+                    <div class="px-5 py-2 pt-4 flex items-center border-b">
+                        <div
+                            class="flex items-center justify-center p-2 border rounded"
+                        >
+                            <atlan-icon icon="Code" class="h-4" />
+                        </div>
+                        <div class="flex flex-col ml-2">
+                            <span class="text-gray-700 font-bold text-base"
+                                >All Process</span
+                            >
+                            <span class="text-gray-500"
+                                >{{ totalCount }} processes
+                            </span>
+                        </div>
                     </div>
-                </template>
-            </SearchAdvanced>
-        </div>
 
-        <div
-            v-if="isLoading"
-            class="flex items-center justify-center flex-grow"
-        >
-            <AtlanLoader class="h-10" />
-        </div>
-        <div
-            v-if="!isLoading && error"
-            class="flex items-center justify-center flex-grow"
-        >
-            <ErrorView></ErrorView>
-        </div>
-        <div
-            v-else-if="
-                (list?.length === 0 || groupedProcessIds?.length === 0) &&
-                !isLoading
-            "
-            class="flex-grow flex items-center justify-center mt-24"
-        >
-            <EmptyView
-                empty-screen="NoAssetsFound"
-                image-class="h-44"
-                desc="No related assets found"
-            ></EmptyView>
-        </div>
+                    <div class="mx-5 pb-0 border-b mt-2">
+                        <SearchAdvanced
+                            v-model:value="queryText"
+                            :autofocus="true"
+                            :placeholder="`Search processes`"
+                            @change="handleSearchChange"
+                        >
+                            <template #postFilter>
+                                <div style="max-width: 330px">
+                                    <PreferenceSelector
+                                        v-model="preference.display"
+                                        @change="handleDisplayChange"
+                                    />
+                                </div>
+                            </template>
+                        </SearchAdvanced>
+                    </div>
 
-        <AssetList
-            v-else
-            :list="list"
-            :is-load-more="isLoadMore"
-            :is-loading="isValidating"
-            @load-more="handleLoadMore"
-        >
-            <template #default="{ item, itemIndex }">
-                <AssetItem
-                    ref="assetItemRef"
-                    :item="item"
-                    :item-index="itemIndex"
-                    :preference="preference"
-                    :enable-sidebar-drawer="false"
-                    :asset-name-truncate-percentage="'80%'"
-                    class="px-2 hover:bg-primary-menu text-primary cursor-pointer"
-                    is-compact
-                    @click="handleItemClick(item, itemIndex)"
-                ></AssetItem>
-            </template>
-        </AssetList>
+                    <AssetList
+                        :list="list"
+                        :is-load-more="isLoadMore"
+                        :is-loading="isValidating"
+                        @load-more="handleLoadMore"
+                    >
+                        <template #default="{ item, itemIndex }">
+                            <AssetItem
+                                ref="assetItemRef"
+                                :item="item"
+                                :item-index="itemIndex"
+                                :preference="preference"
+                                :enable-sidebar-drawer="false"
+                                :asset-name-truncate-percentage="'80%'"
+                                class="px-2 hover:bg-primary-menu text-primary cursor-pointer"
+                                is-compact
+                                @click="handleItemClick(item, itemIndex)"
+                            ></AssetItem>
+                        </template>
+                    </AssetList>
+                </div>
+                <div
+                    v-if="!isLoading && error"
+                    class="flex items-center justify-center flex-grow"
+                >
+                    <ErrorView></ErrorView>
+                </div>
+            </div>
+        </transition>
     </a-drawer>
 
     <AssetDrawer
@@ -93,6 +88,7 @@
         :show-mask="false"
         :show-collapse-button="true"
         :show-drawer="showAssetSidebarDrawer"
+        class="z-99"
         @close-drawer="handleCloseDrawer"
         @update="updateCurrentList"
     />
@@ -273,6 +269,8 @@
 
             watch(groupedProcessIds, () => {
                 if (groupedProcessIds.value?.length) {
+                    if (showAssetSidebarDrawer.value) handleCloseDrawer()
+
                     visible.value = true
                     dependentKey.value = `RELATED_ASSET_LIST_PROCESS_NODES`
                     updateFacet()

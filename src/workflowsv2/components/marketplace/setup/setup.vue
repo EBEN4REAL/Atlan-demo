@@ -1,12 +1,10 @@
 <template>
     <div
-        class="flex flex-col w-full h-full overflow-hidden bg-white"
-        :class="{ 'border rounded-lg': !isEdit }"
-        :style="
-            isEdit ? '' : 'box-shadow: 0px 9px 32px 0px hsla(0, 0%, 0%, 0.12);'
-        "
+        class="flex flex-col w-full h-full overflow-hidden bg-white border rounded-lg"
+        style="box-shadow: 0px 9px 32px 0px hsla(0, 0%, 0%, 0.12)"
     >
-        <div v-if="!isEdit" class="flex items-center px-5 py-4 border-b">
+        <!-- Header -->
+        <div class="flex items-center px-5 py-4 border-b">
             <a-tooltip
                 :mouseEnterDelay="1"
                 placement="bottomLeft"
@@ -32,8 +30,9 @@
         </div>
 
         <div class="flex h-full overflow-hidden">
+            <!-- Stepper -->
             <div
-                v-if="!status && steps.length > 0"
+                v-if="steps.length > 0"
                 class="flex flex-col flex-none px-6 py-8 overflow-y-auto w-52 gap-y-7"
             >
                 <div
@@ -65,52 +64,60 @@
                 </div>
             </div>
 
-            <div
-                class="flex flex-col flex-grow h-full border-r"
-                :class="{ 'items-center justify-center': status }"
-            >
-                <template v-if="!status">
-                    <div
-                        class="flex-1 px-6 py-8 overflow-y-auto"
-                        v-if="workflowTemplate && currentStep < steps.length"
-                    >
-                        <DynamicForm
-                            :key="`form_${currentStep}`"
-                            ref="stepForm"
-                            :config="localConfigMap"
-                            :currentStep="currentStepConfig"
-                            :workflowTemplate="workflowTemplate"
-                            v-model="modelValue"
-                            labelAlign="left"
-                            :isEdit="isEdit"
-                        ></DynamicForm>
-                    </div>
+            <div class="flex flex-col flex-grow h-full border-r">
+                <!-- Form -->
+                <div
+                    class="flex-1 px-6 py-8 overflow-y-auto"
+                    v-if="workflowTemplate && currentStep < steps.length"
+                >
+                    <DynamicForm
+                        :key="`form_${currentStep}`"
+                        ref="stepForm"
+                        :config="localConfigMap"
+                        :currentStep="currentStepConfig"
+                        :workflowTemplate="workflowTemplate"
+                        v-model="modelValue"
+                        labelAlign="left"
+                    ></DynamicForm>
+                </div>
+
+                <!-- Footer -->
+                <div
+                    class="flex justify-between px-6 py-3 border-t"
+                    v-if="currentStep < steps.length"
+                >
+                    <AtlanButton2
+                        v-if="currentStep !== 0"
+                        label="Back"
+                        color="secondary"
+                        prefix-icon="CaretLeft"
+                        :disabled="isLoading"
+                        @click="handlePrevious"
+                    />
+
+                    <AtlanButton2
+                        v-if="currentStep < steps.length - 1"
+                        label="Next"
+                        class="ml-auto"
+                        suffix-icon="ChevronRight"
+                        :disabled="isLoading"
+                        @click="handleNext"
+                    />
 
                     <div
-                        class="flex justify-between px-6 py-3 border-t"
-                        v-if="currentStep < steps.length"
+                        v-else-if="currentStep === steps.length - 1"
+                        class="flex ml-auto gap-x-2"
                     >
                         <AtlanButton2
-                            v-if="currentStep !== 0"
-                            label="Back"
-                            color="secondary"
-                            prefixIcon="CaretLeft"
-                            @click="handlePrevious"
-                        />
-
-                        <AtlanButton2
-                            v-if="currentStep < steps.length - 1"
-                            label="Next"
-                            class="ml-auto"
-                            suffixIcon="ChevronRight"
-                            @click="handleNext"
+                            :color="allowSchedule ? 'secondary' : 'primary'"
+                            :loading="isLoading"
+                            label="Run"
+                            @click="handleSubmit"
                         />
 
                         <a-popconfirm
-                            v-else-if="
-                                currentStep === steps.length - 1 && isEdit
-                            "
-                            ok-text="Yes"
+                            v-if="allowSchedule"
+                            ok-text="Confirm"
                             :overlay-class-name="$style.popConfirm"
                             cancel-text="Cancel"
                             placement="topRight"
@@ -120,170 +127,19 @@
                         >
                             <template #icon> </template>
                             <template #title>
-                                <p class="font-bold">
-                                    Are you sure you want to update the
-                                    configuration for this workflow?
-                                </p>
-                                <p class="text-gray-500">
-                                    All future runs will use this new
-                                    configuration
-                                </p>
-                                <a-checkbox
-                                    v-model:checked="runOnUpdate"
-                                    class="mt-3"
-                                    >Start a new run</a-checkbox
-                                >
+                                <Schedule v-model="cron" class="mb-3" />
                             </template>
-                            <AtlanButton2 class="ml-auto" label="Update" />
-                        </a-popconfirm>
 
-                        <div
-                            v-else-if="
-                                currentStep === steps.length - 1 && !isEdit
-                            "
-                            class="flex ml-auto gap-x-2"
-                        >
                             <AtlanButton2
-                                :color="allowSchedule ? 'secondary' : 'primary'"
-                                label="Run"
-                                @click="handleSubmit"
-                            />
-
-                            <a-popconfirm
                                 v-if="allowSchedule"
-                                ok-text="Confirm"
-                                :overlay-class-name="$style.popConfirm"
-                                cancel-text="Cancel"
-                                placement="topRight"
-                                :ok-button-props="{ size: 'default' }"
-                                :cancel-button-props="{ size: 'default' }"
-                                @confirm="handleSubmit"
-                            >
-                                <template #icon> </template>
-                                <template #title>
-                                    <Schedule
-                                        class="mb-3"
-                                        v-model="cron"
-                                    ></Schedule>
-                                </template>
-
-                                <AtlanButton2
-                                    v-if="allowSchedule"
-                                    suffixIcon="ChevronRight"
-                                    label="Schedule & Run"
-                                />
-                            </a-popconfirm>
-                        </div></div
-                ></template>
-
-                <!-- Finish Page -->
-                <template v-else>
-                    <div
-                        v-if="isLoading || (!run?.status && runLoading)"
-                        class="flex flex-col justify-center"
-                    >
-                        <AtlanLoader class="h-10 mb-2" />
-                        <div>Setting up your workflow</div>
+                                suffix-icon="ChevronRight"
+                                label="Schedule & Run"
+                                :loading="isLoading"
+                                :disabled="isLoading"
+                            />
+                        </a-popconfirm>
                     </div>
-
-                    <!-- Update details, but don't run now -->
-                    <template v-else-if="isEdit && !runOnUpdate">
-                        <a-result
-                            :status="updateStatus.status"
-                            :title="updateStatus.title"
-                        >
-                            <template
-                                v-if="updateStatus.status === 'loading'"
-                                #icon
-                            >
-                                <AtlanLoader class="h-14" />
-                            </template>
-                            <template #extra>
-                                <div class="flex items-center justify-center">
-                                    <router-link to="/workflows">
-                                        <AtlanButton2
-                                            v-if="
-                                                updateStatus.status ===
-                                                'success'
-                                            "
-                                            color="secondary"
-                                        >
-                                            Back to Workflows
-                                        </AtlanButton2>
-                                    </router-link>
-                                </div>
-
-                                <div
-                                    v-if="isUpdateError"
-                                    class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
-                                >
-                                    <span>{{ isUpdateError }}</span>
-
-                                    <AtlanButton2
-                                        v-if="updateStatus.status === 'error'"
-                                        prefixIcon="ChevronLeft"
-                                        color="secondary"
-                                        @click="handleBackToSetup"
-                                        label="Back to setup"
-                                    />
-                                </div>
-                            </template>
-                        </a-result>
-                    </template>
-
-                    <a-result
-                        v-else-if="run"
-                        :status="status"
-                        :title="title"
-                        :sub-title="subTitle"
-                    >
-                        <template #extra>
-                            <div>
-                                <Run
-                                    v-if="run && !errorMesssage"
-                                    :run="run"
-                                    :is-loading="
-                                        runLoading || !run?.status?.progress
-                                    "
-                                ></Run>
-
-                                <div class="flex justify-center mt-6 gap-x-6">
-                                    <router-link
-                                        v-if="status === 'success'"
-                                        to="/assets"
-                                    >
-                                        <AtlanButton2
-                                            color="secondary"
-                                            label="Back to Assets"
-                                        />
-                                    </router-link>
-
-                                    <AtlanButton2
-                                        v-if="run?.metadata"
-                                        label="Monitor Run"
-                                        @click="handleTrackLink"
-                                    />
-                                </div>
-                            </div>
-
-                            <div
-                                v-if="errorMesssage"
-                                class="flex flex-col items-center justify-center p-2 bg-gray-100 rounded gap-y-2"
-                            >
-                                <span class="text-error">{{
-                                    errorMesssage
-                                }}</span>
-                                <AtlanButton2
-                                    v-if="status === 'error'"
-                                    label="Back to setup"
-                                    color="secondary"
-                                    prefixIcon="ChevronLeft"
-                                    @click="handleBackToSetup"
-                                />
-                            </div>
-                        </template>
-                    </a-result>
-                </template>
+                </div>
             </div>
 
             <WorkflowPreview
@@ -291,8 +147,8 @@
                 :item="workflowTemplate"
                 mode="package"
                 style="width: 360px"
-                class="flex-none"
-            ></WorkflowPreview>
+                class="flex-none hidden md:block"
+            />
         </div>
     </div>
 </template>
@@ -306,18 +162,12 @@
         toRefs,
         computed,
         provide,
-        inject,
         Ref,
     } from 'vue'
 
-    import { message } from 'ant-design-vue'
-    import {
-        useIntervalFn,
-        watchOnce,
-        useThrottleFn,
-        until,
-    } from '@vueuse/core'
-    import { useRoute, useRouter } from 'vue-router'
+    import { message, Modal } from 'ant-design-vue'
+    import { useThrottleFn } from '@vueuse/core'
+    import { useRouter } from 'vue-router'
 
     // Components
     import DynamicForm from '~/workflowsv2/components/dynamicForm2/index.vue'
@@ -325,17 +175,10 @@
     import Schedule from './schedule.vue'
     import Run from './run.vue'
 
+    // Composables
     import { createWorkflow } from '~/workflowsv2/composables/useWorkflow'
     import { useWorkflowHelper } from '~/workflowsv2/composables/useWorkflowHelper'
-    import useWorkflowSubmit from '~/workflowsv2/composables/useWorkflowSubmit'
-    import useWorkflowUpdate from '~/workflowsv2/composables/useWorkflowUpdate'
-
-    import { useRunDiscoverList } from '~/workflowsv2/composables/useRunDiscoverList'
-
-    import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
     import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
-
-    // Composables
 
     export default defineComponent({
         name: 'WorkflowSetupTab',
@@ -351,22 +194,7 @@
                 required: false,
                 default: () => ({}),
             },
-            workflowObject: {
-                type: Object,
-                required: false,
-                default: () => ({}),
-            },
             configMap: {
-                type: Object,
-                required: false,
-                default: () => ({}),
-            },
-            isEdit: {
-                type: Boolean,
-                required: false,
-                default: () => false,
-            },
-            defaultValue: {
                 type: Object,
                 required: false,
                 default: () => ({}),
@@ -379,18 +207,13 @@
             const stepForm = ref()
             const currentStep = ref(0)
             const runOnUpdate = ref(false)
-            const {
-                workflowTemplate,
-                configMap,
-                isEdit,
-                defaultValue,
-                workflowObject,
-            } = toRefs(props)
+            const { workflowTemplate, configMap } = toRefs(props)
+
             const localTemplate = ref(workflowTemplate.value)
             const localConfigMap = ref(configMap.value)
-            const route = useRoute()
-            const modelValue = ref(defaultValue.value)
+            const modelValue = ref({})
             const selectedStep = ref('')
+            const messageKey = 'mk'
 
             const cron = ref({
                 cron: workflowTemplate.value?.metadata?.annotations[
@@ -404,12 +227,8 @@
 
             provide('workflowTemplate', localTemplate)
             provide('configMap', localConfigMap)
-            const isWorkflowDirty = inject('isWorkflowDirty')
 
-            const { name } = useWorkflowInfo()
             const { name: packageName, icon, emoji } = usePackageInfo()
-
-            const isSandbox = computed(() => route?.query?.sandbox || '')
 
             const allowSchedule = computed(() => {
                 if (
@@ -446,7 +265,7 @@
                         }
                     }
                 },
-                isEdit.value ? 250 : 600,
+                600,
                 false
             )
 
@@ -465,125 +284,41 @@
             const { isLoading, execute, error, data, workflow } =
                 createWorkflow(body)
 
-            const path = ref({})
-            const {
-                mutate: updateWorkflow,
-                isLoading: isUpdateLoading,
-                error: isUpdateError,
-            } = useWorkflowUpdate(path, body, false)
-
-            const updateStatus = computed(() => {
-                if (isUpdateLoading.value)
-                    return { status: 'loading', title: 'Saving your changes' }
-                if (isUpdateError.value)
-                    return {
-                        status: 'error',
-                        title: 'Failed to update workflow',
-                    }
-                return {
-                    status: 'success',
-                    title: 'Your workflow has been updated',
-                }
-            })
-
-            const limit = ref(1)
-            const offset = ref(0)
-            const facets = ref({
-                workflowTemplate: '',
-            })
-
-            const {
-                list: runList,
-                fetch: fetchRun,
-                isLoading: runLoading,
-            } = useRunDiscoverList({
-                isCache: false,
-                facets,
-                limit,
-                offset,
-                source: ref({}),
-                refreshInterval: 5000,
-            })
-
-            const { pause, resume } = useIntervalFn(fetchRun, 5000, {
-                immediate: false,
-                immediateCallback: true,
-            })
-
-            const run = ref({})
-
-            watch(runList, () => {
-                if (runList.value?.length) {
-                    run.value = runList.value[0]
-
-                    if (
-                        !run.value.status?.startedAt ||
-                        !run.value.status?.phase
-                    )
-                        fetchRun()
-
-                    if (run.value.status?.phase !== 'Running') pause()
-
-                    if (run?.value.status?.phase === 'Succeeded')
-                        setRunState('success', 'Workflow completed 🎉')
-
-                    if (run?.value.status?.phase === 'Failed')
-                        setRunState(
-                            'error',
-                            'Worflow run has failed',
-                            'Go to Monitor Run > Failed Node > Logs for more details'
-                        )
-                } else fetchRun()
-            })
-
-            const handleTrackLink = () => {
-                if (run.value?.metadata?.name) {
-                    router.push(
-                        `/workflows/profile/${
-                            data.value?.metadata?.name ||
-                            run.value?.metadata?.labels[
-                                'workflows.argoproj.io/workflow-template'
-                            ]
-                        }/runs?name=${run.value?.metadata?.name}`
-                    )
-                }
-            }
-
-            const status: Ref<undefined | string> = ref(undefined)
-            const title = ref('Setting up a workflow')
-            const subTitle = ref(
-                'Saving & validating your inputs and credentials'
-            )
-            const errorMesssage = ref('')
-
-            const setRunState = (st: string, tl = '', sbtl = '', err = '') => {
-                status.value = st
-                title.value = tl
-                subTitle.value = sbtl
-                errorMesssage.value = err
-            }
-
             watch(data, () => {
-                setRunState(
-                    'success',
-                    'Workflow is in progress',
-                    'You can also track the progress of workflows in the Workflow Center'
-                )
-                facets.value = {
-                    workflowTemplate: data.value?.metadata.name,
-                }
-                fetchRun()
-                resume()
+                message.success({
+                    key: messageKey,
+                    content: 'Workflow is in progress',
+                })
+                let timeRemaining = 5
+                const modal = Modal.success({
+                    content: `Redirecting to workflow profile in ${timeRemaining} seconds`,
+                })
+
+                const interval = setInterval(() => {
+                    modal.update({
+                        content: `Redirecting to workflow profile in ${timeRemaining} seconds`,
+                    })
+                    timeRemaining -= 1
+                }, 1000)
+
+                setTimeout(() => {
+                    clearInterval(interval)
+                    modal.destroy()
+                    router.push(
+                        data.value?.metadata?.name
+                            ? `/workflows/profile/${data.value?.metadata?.name}`
+                            : '/workflows/monitor'
+                    )
+                }, 5000)
             })
 
             watch(error, () => {
                 if (error.value) {
-                    setRunState(
-                        'error',
-                        'Workflow setup has failed',
-                        'Something went wrong during setup process. Reach out to support@atlan.com for any help.',
-                        error.value?.response?.data?.message
-                    )
+                    message.error({
+                        key: messageKey,
+                        content: 'Workflow setup has failed',
+                    })
+                    // error.value?.response?.data?.message
                 }
             })
 
@@ -593,92 +328,79 @@
                 getConnectionBody,
             } = useWorkflowHelper()
 
-            const handleRetry = () => {
-                execute(true)
-            }
-
             const handleSubmit = async () => {
                 if (stepForm.value) {
                     const err = await stepForm.value.validateForm()
-                    if (err) {
-                        // message.error('Please review the entered details')
-                        return
-                    }
+                    if (err) return
                 }
-                if (isEdit.value) {
-                    body.value.metadata = workflowObject.value.metadata
-                } else {
-                    // Copy labels and annotations of the worfklow template
-                    body.value.metadata.labels =
-                        workflowTemplate.value.metadata.labels
-                    body.value.metadata.annotations =
-                        workflowTemplate.value.metadata.annotations
 
-                    // Schedule Changes
-                    if (cron.value.cron && cron.value.timezone) {
-                        body.value.metadata.annotations[
-                            'orchestration.atlan.com/schedule'
-                        ] = cron.value.cron
-                        body.value.metadata.annotations[
-                            'orchestration.atlan.com/timezone'
-                        ] = cron.value.timezone
-                    }
+                // Copy labels and annotations of the worfklow template
+                body.value.metadata.labels =
+                    workflowTemplate.value.metadata.labels
+                body.value.metadata.annotations =
+                    workflowTemplate.value.metadata.annotations
 
-                    // New Connection Body
-                    const connectionBody = getConnectionBody(
-                        configMap.value,
-                        modelValue.value
-                    )
-                    let connectionQualifiedName = ''
-                    const credentialParam = 'credentialGuid'
-
-                    connectionBody.forEach((i) => {
-                        const temp = i.body
-                        temp.attributes.defaultCredentialGuid = `{{${credentialParam}}}`
-
-                        modelValue.value[i.parameter] = i.body
-                        connectionQualifiedName =
-                            i.body.attributes.qualifiedName?.replaceAll(
-                                '/',
-                                '-'
-                            )
-                        // add qualifiedname to label
-                        if (connectionQualifiedName) {
-                            body.value.metadata.labels[
-                                `orchestration.atlan.com/${connectionQualifiedName}`
-                            ] = 'true'
-                        }
-                    })
-
-                    const seconds = Math.round(new Date().getTime() / 1000)
-                    const pkgName = workflowTemplate.value.metadata.name
-                    let workflowName: string
-                    let workflowRef: string
-
-                    if (connectionQualifiedName) {
-                        workflowName = `${pkgName}-${connectionQualifiedName}`
-                        workflowRef = `${pkgName}-${connectionQualifiedName
-                            .split('-')
-                            .pop()}`
-                    } else {
-                        workflowName = `${pkgName}-${seconds.toString()}`
-                        workflowRef = workflowName
-                    }
-
+                // Schedule Changes
+                if (cron.value.cron && cron.value.timezone) {
                     body.value.metadata.annotations[
-                        'orchestration.atlan.com/atlanName'
-                    ] = workflowName // Old Format
-                    body.value.metadata.name = workflowRef //New Format
-
-                    body.value.metadata.namespace = 'default'
-                    const credentialBody = getCredentialBody(
-                        configMap.value,
-                        modelValue.value,
-                        connectionQualifiedName || workflowName,
-                        credentialParam
-                    )
-                    body.value.payload = [...credentialBody]
+                        'orchestration.atlan.com/schedule'
+                    ] = cron.value.cron
+                    body.value.metadata.annotations[
+                        'orchestration.atlan.com/timezone'
+                    ] = cron.value.timezone
                 }
+
+                // New Connection Body
+                const connectionBody = getConnectionBody(
+                    configMap.value,
+                    modelValue.value
+                )
+                let connectionQualifiedName = ''
+                const credentialParam = 'credentialGuid'
+
+                connectionBody.forEach((i) => {
+                    const temp = i.body
+                    temp.attributes.defaultCredentialGuid = `{{${credentialParam}}}`
+
+                    modelValue.value[i.parameter] = i.body
+                    connectionQualifiedName =
+                        i.body.attributes.qualifiedName?.replaceAll('/', '-')
+                    // add qualifiedname to label
+                    if (connectionQualifiedName) {
+                        body.value.metadata.labels[
+                            `orchestration.atlan.com/${connectionQualifiedName}`
+                        ] = 'true'
+                    }
+                })
+
+                const seconds = Math.round(new Date().getTime() / 1000)
+                const pkgName = workflowTemplate.value.metadata.name
+                let workflowName: string
+                let workflowRef: string
+
+                if (connectionQualifiedName) {
+                    workflowName = `${pkgName}-${connectionQualifiedName}`
+                    workflowRef = `${pkgName}-${connectionQualifiedName
+                        .split('-')
+                        .pop()}`
+                } else {
+                    workflowName = `${pkgName}-${seconds.toString()}`
+                    workflowRef = workflowName
+                }
+
+                body.value.metadata.annotations[
+                    'orchestration.atlan.com/atlanName'
+                ] = workflowName // Old Format
+                body.value.metadata.name = workflowRef //New Format
+
+                body.value.metadata.namespace = 'default'
+                const credentialBody = getCredentialBody(
+                    configMap.value,
+                    modelValue.value,
+                    connectionQualifiedName || workflowName,
+                    credentialParam
+                )
+                body.value.payload = [...credentialBody]
 
                 const parameters = []
 
@@ -710,7 +432,10 @@
                         }
                     )
                 } else {
-                    message.error('Something went wrong. Package is not valid.')
+                    message.error({
+                        key: messageKey,
+                        content: 'Invalid Package',
+                    })
                 }
 
                 body.value.metadata.labels['orchestration.atlan.com/atlan-ui'] =
@@ -746,55 +471,11 @@
                         workflowTemplate.value.spec.volumeClaimTemplates
                 }
 
-                status.value = 'loading'
-                errorMesssage.value = ''
-
-                if (isEdit.value) {
-                    path.value = {
-                        name: workflowObject.value.metadata.name,
-                    }
-                    updateWorkflow()
-                    await until(isUpdateLoading).toBe(false)
-                    isWorkflowDirty.value = true
-
-                    if (runOnUpdate.value) {
-                        const { data: nrd, error: nre } = useWorkflowSubmit(
-                            {
-                                namespace: 'default',
-                                resourceKind: 'WorkflowTemplate',
-                                resourceName: name(workflowObject.value),
-                            },
-                            true
-                        )
-
-                        watchOnce(nrd, () => {
-                            setRunState(
-                                'success',
-                                'Workflow is in progress',
-                                'Workflow is running with the updated configuration'
-                            )
-                            facets.value = {
-                                runName: nrd.value.metadata.name,
-                            }
-                            resume()
-                        })
-
-                        watchOnce(nre, () => {
-                            setRunState(
-                                'error',
-                                'Workflow run has failed',
-                                '',
-                                nre.value
-                            )
-                        })
-                    }
-                } else {
-                    execute(true)
-                }
-            }
-
-            const handleBackToSetup = () => {
-                status.value = undefined
+                message.loading({
+                    key: messageKey,
+                    content: 'Setting up your workflow',
+                })
+                execute(true)
             }
 
             const handleExit = () => {
@@ -820,35 +501,16 @@
                 handlePrevious,
                 handleSubmit,
                 getCredentialPropertyList,
-                status,
                 error,
                 isLoading,
-                subTitle,
-                title,
                 data,
                 workflow,
-                handleRetry,
-                errorMesssage,
-                handleBackToSetup,
                 handleExit,
                 handleStepClick,
                 cron,
-                isSandbox,
                 localTemplate,
                 localConfigMap,
                 allowSchedule,
-                fetchRun,
-                runList,
-                runLoading,
-                run,
-                pause,
-                resume,
-                handleTrackLink,
-                updateWorkflow,
-                isUpdateLoading,
-                isUpdateError,
-                updateStatus,
-                path,
                 runOnUpdate,
                 router,
                 packageName,

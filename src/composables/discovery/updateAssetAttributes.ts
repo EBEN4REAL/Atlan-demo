@@ -564,7 +564,8 @@ export default function updateAssetAttributes(
         })
         mutate()
     }
-    const handleSeeAlsoUpdate = () => {
+    const handleAssetsToUpdate = inject('handleAssetsToUpdate')
+   const handleSeeAlsoUpdate = () => {
         entity.value = {
             ...entity.value,
             relationshipAttributes: {
@@ -581,6 +582,16 @@ export default function updateAssetAttributes(
             count: localSeeAlso.value?.length,
         })
         mutate()
+        const localSeeAlsoGuids = localSeeAlso.value.map((el) => el?.guid)
+        const assetSeeAlsoGuids =
+            selectedAsset?.value?.attributes?.seeAlso?.map((el) => el?.guid)
+        console.log(assetSeeAlsoGuids, localSeeAlsoGuids)
+        const difference = localSeeAlsoGuids.concat(
+            assetSeeAlsoGuids.filter(
+                (x: string) => !localSeeAlsoGuids.includes(x)
+            )
+        )
+        handleAssetsToUpdate(difference)
     }
 
     const handleAntonymsUpdate = () => {
@@ -602,6 +613,16 @@ export default function updateAssetAttributes(
             count: localSeeAlso.value?.length,
         })
         mutate()
+        const localAntonymsGuids = localAntonyms.value?.map((el) => el?.guid)
+        const assetAntonymsGuids =
+            selectedAsset?.value?.attributes?.antonyms?.map((el) => el?.guid)
+        const difference = localAntonymsGuids.concat(
+            assetAntonymsGuids.filter(
+                (x: string) => !localAntonymsGuids.includes(x)
+            )
+        )
+        handleAssetsToUpdate(difference)
+ 
     }
     const handlePreferredTermsUpdate = () => {
         console.log(localPreferredTerms.value)
@@ -622,8 +643,18 @@ export default function updateAssetAttributes(
             count: localSeeAlso.value?.length,
         })
         mutate()
-    }
+        const localPreferredTermsGuids = localPreferredTerms.value?.map((el) => el?.guid)
+        const assetPreferredTermsGuids =
+            selectedAsset?.value?.attributes?.preferredTerms?.map((el) => el?.guid)
+        const difference = localPreferredTermsGuids.concat(
+            assetPreferredTermsGuids.filter(
+                (x: string) => !localPreferredTermsGuids.includes(x)
+            )
+        )
+        handleAssetsToUpdate(difference)
  
+    }
+
     const handleParentCategoryUpdate = () => {
         entity.value = {
             ...entity.value,
@@ -823,11 +854,11 @@ export default function updateAssetAttributes(
         if (antonyms(selectedAsset?.value) !== localAntonyms.value) {
             localAntonyms.value = antonyms(selectedAsset.value)
         }
-        if (preferredTerms(selectedAsset?.value) !== localPreferredTerms.value) {
+        if (
+            preferredTerms(selectedAsset?.value) !== localPreferredTerms.value
+        ) {
             localPreferredTerms.value = preferredTerms(selectedAsset.value)
         }
-
-
 
         if (error.value?.response?.data?.errorCode) {
             message.error(

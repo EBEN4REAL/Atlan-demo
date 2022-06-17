@@ -1185,6 +1185,7 @@
                     class="px-5"
                     :edit-permission="editPermission"
                     :allow-delete="editPermission"
+                    attribute-type="antonyms"
                     @change="handleAntonymsUpdate"
                 >
                 </RelatedTerms>
@@ -1211,6 +1212,7 @@
                     class="px-5"
                     :edit-permission="editPermission"
                     :allow-delete="editPermission"
+                    attribute-type="preferredTerms"
                     @change="handlePreferredTermsUpdate"
                 >
                 </RelatedTerms>

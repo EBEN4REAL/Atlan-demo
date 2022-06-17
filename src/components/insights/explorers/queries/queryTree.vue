@@ -32,6 +32,7 @@
                             :nodeError="nodeError"
                             :errorNode="errorNode"
                             @createFolderInput="createFolderInput"
+                            :updateNode="updateNode"
                             class="this-is-a-treenode"
                         />
                         <!-- <div v-else-if="isNodeLoading === false && nodeError">
@@ -262,6 +263,11 @@
                 required: false,
                 default: () => {},
             },
+            updateNode: {
+                type: Function,
+                required: false,
+                default: () => {},
+            },
             QueriesFetchError: {
                 type: Object,
             },
@@ -285,7 +291,7 @@
             // },
         },
         setup(props, { emit }) {
-            const { savedQueryType, QueriesFetchError, isLoading } =
+            const { savedQueryType, QueriesFetchError, isLoading, updateNode } =
                 toRefs(props)
             // data
             const inlineTabs = inject('inlineTabs') as Ref<
@@ -342,6 +348,7 @@
             }
 
             return {
+                updateNode,
                 isLoading,
                 QueriesFetchError,
                 createFolderInput,

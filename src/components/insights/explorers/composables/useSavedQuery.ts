@@ -438,6 +438,7 @@ export function useSavedQuery(
                         })
                         message.success({
                             content: `${name} query saved!`,
+                            key: 'saved',
                         })
 
                         /* Not present in response */
@@ -614,6 +615,7 @@ export function useSavedQuery(
                         showSaveQueryModal.value = false
                         message.success({
                             content: `${name} query saved!`,
+                            key: 'saved',
                         })
                         saveModalRef.value?.clearData()
                         const guid = data.value.mutatedEntities.CREATE[0].guid
@@ -826,7 +828,10 @@ export function useSavedQuery(
                     }
 
                     showSaveQueryModal.value = false
-                    message.success(`${name} query saved!`)
+                    message.success({
+                        content: `${name} query saved!`,
+                        key: 'saved',
+                    })
                     saveModalRef.value?.clearData()
                     // const guid = savedQuery.guid
                     console.log(data.value, 'saved')
@@ -1110,6 +1115,7 @@ export function useSavedQuery(
                         showSaveQueryModal.value = false
                         message.success({
                             content: `${name} query saved!`,
+                            key: 'saved',
                         })
                         saveModalRef.value?.clearData()
 
@@ -1184,11 +1190,24 @@ export function useSavedQuery(
     }
 
     const getVariableCount = () => {
-        const variables = activeInlineTab.value.playground.editor.variables
-        if (!variables || !variables.length) {
-            return 0
+        if (activeInlineTab.value.playground.isVQB) {
+            const filter = activeInlineTab.value.playground.vqb.panels.find(
+                (panel) => panel.id.toLowerCase() === 'filter'
+            )
+            let variableCount = 0
+
+            filter?.subpanels.forEach((subpanel) => {
+                if (subpanel?.filter?.isVariable)
+                    variableCount = variableCount + 1
+            })
+            return variableCount
+        } else {
+            const variables = activeInlineTab.value.playground.editor.variables
+            if (!variables || !variables.length) {
+                return 0
+            }
+            return variables.length
         }
-        return variables.length
     }
 
     const linkTerms = (assetTerms, assetData, type): Promise<any> => {

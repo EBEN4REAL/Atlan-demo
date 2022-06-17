@@ -59,7 +59,7 @@
                         :request="request"
                         :loading="loading"
                         :is-approval-loading="isApprovalLoading"
-                        :show-actions="request.status === 'active'"
+                        :show-actions="request.status === 'active' && hasAccess"
                         @switch-update-popover="
                             (val) => {
                                 $emit('switchPopover', val)
@@ -100,6 +100,10 @@
             isApprovalLoading: { type: Boolean, required: true },
             request: {
                 type: Object as PropType<RequestAttributes>,
+                required: true,
+            },
+            hasAccess: {
+                type: Boolean,
                 required: true,
             },
         },

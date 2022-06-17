@@ -129,6 +129,9 @@ export function useBody(
                         } else {
                             q.orFilter('wildcard', 'qualifiedName', `${i}/*`)
                             q.orFilter('term', 'qualifiedName', `${i}`)
+
+                            // For GTC
+                            q.orFilter('wildcard', 'qualifiedName', `*@${i}`)
                         }
                     })
 
@@ -978,6 +981,14 @@ export function useBody(
                 }
                 break
             }
+            case 'connectorName': {
+                if (filterObject) {
+                    if (filterObject !== '__all') {
+                        postFilter.filter('term', 'connectorName', filterObject)
+                    }
+                }
+                break
+            }
         }
     })
     base.rawOption('post_filter', postFilter.build().query)
@@ -1036,6 +1047,17 @@ export function useBody(
                         base.aggregation(
                             'terms',
                             'connectionQualifiedName',
+                            { size: 100 },
+                            `${agg_prefix}_${mkey}`
+                        )
+                    }
+                    break
+                }
+                case 'connectorName': {
+                    if (mkey) {
+                        base.aggregation(
+                            'terms',
+                            'connectorName',
                             { size: 100 },
                             `${agg_prefix}_${mkey}`
                         )

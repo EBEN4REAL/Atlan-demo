@@ -52,7 +52,10 @@ export function getSuggestionsListIcon(suggestion: any) {
     }
     if (suggestion?.documentation?.entity) {
         if (suggestion.documentation.entity?.typeName == 'Column') {
-            return dataTypeCategoryImage(suggestion.documentation.entity)
+            return (
+                dataTypeCategoryImage(suggestion.documentation.entity) ??
+                'Column'
+            )
         } else
             return getAssetIconWithCertification(
                 suggestion.documentation.entity

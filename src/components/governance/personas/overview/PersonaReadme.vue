@@ -22,6 +22,7 @@
         updatedSelectedData,
     } from '../composables/useEditPersona'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import AtlanReadme from '~/components/common/readme/index.vue'
 
     export default {
         name: 'PersonaReadme',
@@ -30,6 +31,9 @@
                 type: Object,
                 required: true,
             },
+        },
+        components: {
+            AtlanReadme,
         },
         emits: ['addReadme'],
         setup(props) {
@@ -64,6 +68,7 @@
                 const payload = { ...persona.value }
                 delete payload.dataPolicies
                 delete payload.metadataPolicies
+                delete payload.glossaryPolicies
                 return savePersona({
                     ...payload,
                     readme: dataEditor,

@@ -280,6 +280,7 @@
                 'activeResultPreviewTab'
             ) as Ref<boolean>
             const selectActiveResultTab = () => {
+                if (activeResultPreviewTab.value) return
                 const index = insights_Store.previewTabs.findIndex(
                     (el) => el.asset.guid === insights_Store.activePreviewGuid
                 )

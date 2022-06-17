@@ -21,10 +21,11 @@
     import { ref, toRefs } from 'vue'
     import UserMention from './user.vue'
     import GroupMention from './group.vue'
+    import AtlanLoader from '@common/loaders/atlanLoader.vue'
 
     export default {
         name: 'MentionList',
-        components: { UserMention, GroupMention },
+        components: { AtlanLoader, UserMention, GroupMention },
         props: {
             items: {
                 type: Array,
@@ -40,6 +41,12 @@
                 type: String,
                 required: false,
                 default: '',
+            },
+
+            isListLoading: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
         setup(props) {

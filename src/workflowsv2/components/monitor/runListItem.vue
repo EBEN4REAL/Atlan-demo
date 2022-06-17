@@ -158,10 +158,6 @@
                 type: Object,
                 default: () => ({}),
             },
-            wfLoading: {
-                type: Boolean,
-                default: () => false,
-            },
         },
         emits: [],
         setup(props) {

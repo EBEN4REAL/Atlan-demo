@@ -547,7 +547,7 @@ export function useEditor(
                 const el = document.querySelector('.ghostCursor')
                 let newSpan = document.createElement('span')
                 newSpan.classList.add(
-                    `ghostCurosr-${editorConfig.value?.cursorStyle}`
+                    `ghostCurosr-${editorConfig?.value?.cursorStyle}`
                 )
                 el?.appendChild(newSpan)
             }, 500)

@@ -14,7 +14,7 @@
         components: { ApiKeysView, NoAccess },
         setup() {
             useHead({
-                title: 'API keys',
+                title: 'API tokens',
             })
             const { isAccess } = useAuth()
             onMounted(() => {

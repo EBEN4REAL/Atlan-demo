@@ -1,7 +1,7 @@
 import {
     NAME_OF_EVENTS,
     README_TRIGGERS,
-} from '~/modules/editor/analytics/useTrackEvent'
+} from '~/components/common/editor/analytics/useTrackEvent'
 
 interface BLOCK_README_EVENT_INTERFACE {
     assetType: string

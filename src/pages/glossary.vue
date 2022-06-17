@@ -88,9 +88,12 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import useGlossaryStore from '~/store/glossary'
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
+    import { Splitpanes, Pane } from '~/components/common/splitpanes/index'
 
     export default defineComponent({
         components: {
+            Splitpanes,
+            Pane,
             GlossaryDiscovery,
             GlossaryPreview,
             AddGTCModal,

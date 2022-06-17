@@ -164,7 +164,7 @@
 
     import { useRunQueryUtils } from '~/components/insights/common/composables/useRunQueryUtils'
     import { instances } from '~/components/insights/playground/editor/monaco/useMonaco'
-
+    import { Splitpanes, Pane } from '~/components/common/splitpanes/index'
     import {
         explorerPaneSize,
         minExplorerSize,
@@ -173,6 +173,8 @@
     } from './common/composables/useSpiltPanes'
     export default defineComponent({
         components: {
+            Splitpanes,
+            Pane,
             Playground,
             AssetSidebar,
             schema: defineAsyncComponent(

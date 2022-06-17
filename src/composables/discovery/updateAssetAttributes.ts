@@ -843,7 +843,9 @@ export default function updateAssetAttributes(
                 guidHeaderMap: {
                     [selectedAsset.value.guid]: {
                         ...entity.value,
-                        classifications: localClassifications.value,
+                        classifications: localClassifications.value.filter(
+                            (i) => selectedAsset.value?.guid === i?.entityGuid
+                        ),
                     },
                 },
             }

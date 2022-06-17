@@ -55,7 +55,7 @@
                             >
                                 using
                                 <AtlanIcon icon="Key" class="h-3" />
-                                API key
+                                API token
                             </template>
                             <template v-else>
                                 by
@@ -76,7 +76,7 @@
                             <a-tooltip
                                 color="#2A2F45"
                                 placement="bottom"
-                                overlayClassName="max-w-md"
+                                overlay-class-name="max-w-md"
                             >
                                 <template #title>
                                     <p class="text-sm font-semibold">

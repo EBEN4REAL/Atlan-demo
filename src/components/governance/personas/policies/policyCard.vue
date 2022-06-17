@@ -239,16 +239,22 @@
                         </div>
                     </a-tooltip>
                     <span
-                        v-if="computedActions || maskComputed"
+                        v-if="
+                            (computedActions && type !== 'data') || maskComputed
+                        "
                         class="text-gray-300 mx-1.5"
                         >•</span
                     >
-                    <a-tooltip v-if="computedActions" placement="top">
+                    <a-tooltip
+                        v-if="computedActions && type !== 'data'"
+                        placement="top"
+                    >
                         <template #title>
                             <div
                                 v-if="
                                     computedActions <
-                                    (type !== 'glossaryPolicy' ? 9 : 5)
+                                    mapAllPermission[type] -
+                                        (type === 'meta' ? 1 : 0)
                                 "
                             >
                                 {{ computedActions }}
@@ -268,7 +274,8 @@
 
                             {{
                                 computedActions >=
-                                (type !== 'glossaryPolicy' ? 9 : 5)
+                                mapAllPermission[type] -
+                                    (type === 'meta' ? 1 : 0)
                                     ? 'All'
                                     : computedActions
                             }}
@@ -410,6 +417,7 @@
     import useScopeService from '../composables/useScopeService'
     import { splitArray } from '~/utils/string'
     import { maskPersona } from '~/constant/policy'
+    import { mapAllPermission } from '~/components/governance/personas/composables/useScopeService'
 
     export default defineComponent({
         name: 'DataPolicy',
@@ -522,11 +530,15 @@
                     policy?.value?.connectionId
                 )
             })
-            const maskComputed = computed(
-                () =>
-                    maskPersona.find((el) => el.value === policy.value.type)
-                        ?.label
-            )
+            const maskComputed = computed(() => {
+                const finded = maskPersona.find(
+                    (el) => el.value === policy.value.type
+                )
+                const label = finded?.label || ''
+                if (label === 'None') return ''
+
+                return finded?.label
+            })
             const createdAtFormated = useTimeAgo(policy.value.createdAt)
             const isAllAssets = (name) => {
                 const splited = name.split('/')
@@ -565,6 +577,7 @@
                 createdAtFormated,
                 isAllAssets,
                 computedActions,
+                mapAllPermission,
             }
         },
     })

@@ -111,7 +111,10 @@
                         <a-tooltip placement="top">
                             <template #title>
                                 {{
-                                    permissions.length > 1
+                                    mapAllPermissionPurpose[type] <=
+                                    permissions.length
+                                        ? 'All permissions'
+                                        : permissions.length > 1
                                         ? `${permissions.length} permissions`
                                         : `${permissions.length} permission`
                                 }}
@@ -121,7 +124,12 @@
                                     icon="ShieldBlank"
                                     class="-mt-1 icon-gray"
                                 />
-                                {{ permissions.length }}
+                                {{
+                                    mapAllPermissionPurpose[type] <=
+                                    permissions.length
+                                        ? 'All'
+                                        : permissions.length
+                                }}
                             </span>
                         </a-tooltip>
                     </div>
@@ -252,7 +260,9 @@
         MetadataPolicies,
     } from '~/types/accessPolicies/purposes'
     import Owners from '~/components/common/input/owner/index.vue'
-    import useScopeService from '~/components/governance/personas/composables/useScopeService'
+    import useScopeService, {
+        mapAllPermissionPurpose,
+    } from '~/components/governance/personas/composables/useScopeService'
     import { splitArray } from '~/utils/string'
     import UserPill from '@/common/pills/user.vue'
     import GroupPill from '@/common/pills/group.vue'
@@ -347,6 +357,7 @@
                 permissions,
                 maskComputed,
                 visibleDelete,
+                mapAllPermissionPurpose,
             }
         },
     })

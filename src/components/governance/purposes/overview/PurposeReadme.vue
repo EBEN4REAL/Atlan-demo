@@ -16,6 +16,8 @@
 <script lang="ts">
     import { watch, ref, toRefs } from 'vue'
     import { message } from 'ant-design-vue'
+    import AtlanReadme from '~/components/common/readme/index.vue'
+
     // import { Files } from '~/services/service/files/index'
     import {
         savePersona,
@@ -31,6 +33,9 @@
                 required: true,
             },
         },
+        components: {
+            AtlanReadme,
+        },
         emits: ['addReadme'],
         setup(props) {
             const { purpose } = toRefs(props)
@@ -43,6 +48,7 @@
 
             const handleUpdatePurposeReadme = (dataEditor) => {
                 const payload = { ...purpose.value }
+
                 return savePersona({
                     ...payload,
                     readme: dataEditor,
@@ -65,9 +71,8 @@
                         'Some error occured...Please try again later.'
                 )
             }
-            const handleSave = () => {
+            const handleSave = () =>
                 handleUpdatePurposeReadme(editorValue.value)
-            }
             return {
                 isLoading,
                 editorValue,

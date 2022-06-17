@@ -25,7 +25,7 @@
         />
 
         <div :class="`ml-1 overflow-ellipsis truncate ${classCopy}`">
-            {{ displayName || name }}
+            {{ displayName || name }} {{count > 1 ? `(${count})` : ''}}
         </div>
         <a-popconfirm
             :title="`Are you sure you want to remove ${displayName}?`"
@@ -136,6 +136,12 @@
                 required: false,
                 default: '',
             },
+            count: {
+                type: Number,
+                required: false,
+                default: 1,
+            },
+            
         },
         emits: ['delete'],
         setup(props, { emit }) {
@@ -146,6 +152,7 @@
                 createdBy,
                 isPropagated,
                 noHover,
+                count
             } = toRefs(props)
             const originalColour = ref(unref(color).toLowerCase())
 
@@ -198,6 +205,7 @@
             return {
                 name,
                 displayName,
+                count,
                 handleRemove,
                 color,
                 bgHover,

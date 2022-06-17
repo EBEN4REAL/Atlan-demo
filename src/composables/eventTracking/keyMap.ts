@@ -1,7 +1,7 @@
 import {
     NAME_OF_EVENTS,
     README_TRIGGERS,
-} from '~/modules/editor/analytics/useTrackEvent'
+} from '~/components/common/editor/analytics/useTrackEvent'
 
 interface BLOCK_README_EVENT_INTERFACE {
     assetType: string
@@ -832,6 +832,16 @@ const keyMap = {
                     title: props.title,
                 }),
             },
+            asset_data_deleted: {
+                action: 'governance_custom_metadata_asset_data_deleted',
+                properties: (props) => ({
+                    asset_type: props.asset_type,
+                    cm_id: props.cm_id,
+                    total_asset_count: props.total_asset_count,
+                    title: props.title,
+                    filled_property_count: props.filled_property_count,
+                }),
+            },
             property_added: {
                 action: 'governance_custom_metadata_property_added',
                 properties: (props) => ({
@@ -1190,6 +1200,18 @@ const keyMap = {
                     asset_type: assetType,
                     application,
                     trigger,
+                }),
+            },
+        },
+    },
+    marketplace: {
+        package_documentation_link: {
+            clicked: {
+                action: 'imarketplace_package_documentation_link_clicked',
+                properties: (props) => ({
+                    package_alias: props?.packageId,
+                    package_name: props?.packageName,
+                    doc_link: props?.docLink,
                 }),
             },
         },

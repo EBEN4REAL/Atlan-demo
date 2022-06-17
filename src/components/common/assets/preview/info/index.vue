@@ -941,7 +941,7 @@
                             "
                             label="Add all admins"
                             color="link"
-                            class="h-6 ml-auto"
+                            class="h-6 ml-auto -mr-4"
                             @click="setAllAdmins"
                         />
                     </div>
@@ -955,17 +955,24 @@
                         :edit-permission="editPermission"
                         @change="handleChangeAdmins"
                     >
-                        <div
-                            v-if="localAdmins.adminRoles?.length"
-                            class="flex items-center justify-between flex-none px-2 py-1 border border-gray-200 rounded-full cursor-pointer text-new-gray-800 hover:bg-primary hover:text-white"
-                        >
-                            <span> All admins </span>
-                            <AtlanIcon
-                                icon="Cross"
-                                class="h-3 ml-3 rotate-45"
-                                @click="setAllAdmins(false)"
-                            />
-                        </div>
+                        <a-tooltip color="#2A2F45">
+                            <template #title>
+                                All users with admin role are connection admins
+                            </template>
+                            <div
+                                v-if="localAdmins.adminRoles?.length"
+                                class="flex items-center justify-between flex-none px-2 py-1 border border-gray-200 rounded-full cursor-pointer text-new-gray-800 hover:bg-primary hover:text-white"
+                            >
+                                <AtlanIcon icon="Admin" class="h-4 mr-1" />
+
+                                <span> All Admins </span>
+                                <AtlanIcon
+                                    icon="Cross"
+                                    class="h-3 ml-3 rotate-45"
+                                    @click="setAllAdmins(false)"
+                                />
+                            </div>
+                        </a-tooltip>
                     </Admins>
                 </div>
             </div>
@@ -1248,8 +1255,9 @@
 
             <div
                 v-if="
-                    selectedAsset.typeName === 'Column' ||
-                    readmeGuid(selectedAsset)
+                    (selectedAsset.typeName === 'Column' ||
+                        readmeGuid(selectedAsset)) &&
+                    !isProfile
                 "
                 class="flex flex-col px-5"
             >

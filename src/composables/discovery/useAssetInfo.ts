@@ -230,7 +230,7 @@ export default function useAssetInfo() {
 
     const viewName = (asset: assetInterface) =>
         attributes(asset)?.viewName ?? ''
-    // const assetState = (asset: assetInterface) => asset?.status?.toLowerCase()
+    const assetState = (asset: assetInterface) => asset?.status?.toLowerCase()
     // const assetTypeLabel = (asset: assetInterface) => {
     //     const found = assetTypeList.find((d) => d.id === assetType(asset))
     //     return found?.label
@@ -628,7 +628,15 @@ export default function useAssetInfo() {
 
     const dataType = (asset: assetInterface) => attributes(asset)?.dataType
 
-    const dataTypeCategory = (asset: assetInterface) => {}
+    const dataTypeCategory = (asset: assetInterface) => {
+        return dataTypeCategoryList.find((item) =>
+            item.type.some(
+                (i) =>
+                    i.toLowerCase() ===
+                    attributes(asset)?.dataType?.toLowerCase()
+            )
+        )
+    }
 
     const dataTypeCategoryLabel = (asset: assetInterface) =>
         dataTypeCategory(asset)?.label
@@ -829,7 +837,7 @@ export default function useAssetInfo() {
     const certificateUpdatedBy = (asset: assetInterface) => {
         const username = attributes(asset)?.certificateUpdatedBy
         return username?.startsWith('service-account-apikey-')
-            ? 'API key'
+            ? 'API token'
             : username
     }
 
@@ -1405,6 +1413,7 @@ export default function useAssetInfo() {
     return {
         dataTypeCategory,
         attributes,
+        assetState,
         title,
         getConnectorImage,
         getConnectorName,

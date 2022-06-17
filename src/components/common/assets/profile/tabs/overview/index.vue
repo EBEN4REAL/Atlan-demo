@@ -201,6 +201,7 @@
     import GeneralOverview from './general/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
+    import AtlanReadme from '~/components/common/readme/index.vue'
 
     export default defineComponent({
         name: 'OverviewTab',
@@ -211,6 +212,7 @@
             GeneralOverview,
             SaasOverview,
             ObjectOverview,
+            AtlanReadme,
         },
         props: {
             selectedAsset: {

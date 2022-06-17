@@ -465,15 +465,14 @@
                                         :selected="policy.allow"
                                         heading="Allow query on selected assets"
                                         icon-name="QueryOutputSuccess"
-                                        sub-heading="Users can query on only assets mentioned
-                                        above."
+                                        sub-heading="Users can query only on assets mentioned above."
                                         @click="policy.allow = true"
                                     />
                                     <ToggleOption
                                         :selected="!policy.allow"
                                         heading="Deny query on selected assets"
                                         icon-name="QueryOutputFail"
-                                        sub-heading="Users can't query the assets mentioned above.
+                                        sub-heading="Users can't query on the assets mentioned above.
                                     <br/>This will override all other permissions the user may have on these assets."
                                         @click="policy.allow = false"
                                     />
@@ -611,7 +610,7 @@
             </AtlanBtn>
         </div>
         <div v-else-if="isEdit && !canEdit">
-            <div class="flex p-3 rounded bg-primary-light text-primary">
+            <div class="flex p-3 bg-primary-light text-primary">
                 <AtlanIcon icon="Overview" class="mt-1 mr-1"></AtlanIcon>
                 <div>
                     You can only edit policies for connections in which you're

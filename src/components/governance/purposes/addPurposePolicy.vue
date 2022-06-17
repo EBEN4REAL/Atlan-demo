@@ -3,49 +3,32 @@
         <AtlanIcon icon="Add" class="text-gray-700" />
     </div>
     <div class="bg-gray-100 add-policy-container">
-        <div>
-            <div class="relative p-4 bg-white border-b border-gray-300">
-                <div class="flex items-center">
-                    <div
-                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light -mt-0.5"
-                    >
-                        <AtlanIcon
-                            v-if="policyType === 'meta'"
-                            icon="Policies"
-                            class="icon-blue"
-                        />
-                        <AtlanIcon
-                            v-if="policyType === 'data'"
-                            icon="QueryGrey"
-                            class="icon-blue-stroke"
-                        />
-                    </div>
-                    <span class="ml-1 text-base font-bold"
-                        >{{
-                            policyType === 'meta'
-                                ? 'Metadata Policy'
-                                : 'Data Policy'
-                        }}
-                    </span>
-                    <!-- <div class="ml-1 font-semibold">
-                        {{ isEdit ? selectedPolicy.name : 'New policy' }}
-                    </div> -->
+        <div class="relative p-4 bg-white border-b border-gray-300">
+            <div class="flex items-center">
+                <div
+                    class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light -mt-0.5"
+                >
+                    <AtlanIcon
+                        v-if="policyType === 'meta'"
+                        icon="Policies"
+                        class="icon-blue"
+                    />
+                    <AtlanIcon
+                        v-if="policyType === 'data'"
+                        icon="QueryGrey"
+                        class="icon-blue-stroke"
+                    />
                 </div>
-                <!-- <div class="flex items-center">
-                    <AtlanIcon icon="Policies" class="mr-1" />
-                    <span class="mr-1 text-neutral-600"
-                        >{{
-                            policyType === 'meta'
-                                ? 'Metadata Policy'
-                                : 'Data Policy'
-                        }}
-                    </span>
-                    <div class="ml-1 mr-1 dot" />
-                    <span class="text-neutral-600">
-                        {{ persona?.displayName }}
-                    </span>
-                </div> -->
+                <span class="ml-1 text-base font-bold"
+                    >{{
+                        policyType === 'meta'
+                            ? 'Metadata Policy'
+                            : 'Data Policy'
+                    }}
+                </span>
             </div>
+        </div>
+        <div class="flex-grow overflow-auto">
             <div
                 v-if="policy.updatedBy || policy.createdBy"
                 class="flex items-center px-6 py-4 text-sm text-gray-700 bg-gray-200"
@@ -82,7 +65,7 @@
                     {{ useTimeAgo(policy.updatedAt || policy.createdAt).value }}
                 </div>
             </div>
-            <div class="mt-4">
+            <div class="my-4">
                 <div class="px-4">
                     <div class="relative mt-2 bg-white shadow-section">
                         <div
@@ -118,7 +101,6 @@
                                     "
                                 />
                             </div>
-                            <!-- <div v-else>{{ policy.name }}</div> -->
                             <div
                                 v-if="rules.policyName.show"
                                 class="mt-1 text-xs text-red-500"
@@ -205,6 +187,7 @@
                         </div>
                     </div>
                     <div class="mt-4 bg-white shadow-section">
+                        <!-- meta policy  -->
                         <template v-if="policyType === 'meta'">
                             <div
                                 class="flex items-center justify-between p-3 pb-2"
@@ -316,9 +299,7 @@
                             </div>
                         </template>
 
-                        <!-- /// -->
-                        <!-- <div v-if="policyType === 'data'" class="">
-                            </div> -->
+                        <!-- for data policy only -->
                         <div v-if="policyType === 'data'">
                             <div
                                 class="p-3 text-sm font-bold text-gray-700 border-b"
@@ -353,24 +334,11 @@
 
                                 <DataMaskingSelector
                                     v-model:maskType="policy.mask"
+                                    :type="'purpose'"
                                     class="w-80"
                                 />
                             </div>
-                            <!-- <div class="p-3">
-                                <div class="flex items-center mb-2 gap-x-1">
-                                    <span class="text-sm text-gray-500"
-                                        >Masking (Optional)</span
-                                    >
-                                </div>
-
-                                <DataMaskingSelector
-                                    v-model:maskType="policy.mask"
-                                    class="w-80"
-                                    :type="'purpose'"
-                                />
-                            </div> -->
                         </div>
-                        <!-- /// -->
                     </div>
 
                     <a-drawer
@@ -433,9 +401,7 @@
     import ManagePermission from './policies/managePermission.vue'
     import DataMaskingSelector from '~/components/governance/personas/policies/dataMaskingSelector.vue'
     import useScopeService from '../personas/composables/useScopeService'
-    // import DataMaskingSelector from './policies/dataMaskingSelector.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
-    // import useScopeService from './composables/useScopeService'
     import Avatar from '~/components/common/avatar/index.vue'
     import ToggleOption from '@/governance/shared/customToggleOption.vue'
 
@@ -791,7 +757,6 @@
         height: 100vh;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
         .icon-blue {
             path {
                 fill: #5277d7 !important;

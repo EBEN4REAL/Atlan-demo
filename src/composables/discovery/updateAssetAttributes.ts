@@ -611,8 +611,8 @@ export default function updateAssetAttributes(
         body.value.entities = [entity.value]
         currentMessage.value = 'Antonyms have been updated'
         // TODO: change event name to be more specific ?
-        sendMetadataTrackEvent('related_terms_updated', {
-            count: localSeeAlso.value?.length,
+        sendMetadataTrackEvent('antonyms_updated', {
+            count: localAntonyms.value?.length,
         })
         mutate()
         const localAntonymsGuids = localAntonyms.value?.map((el) => el?.guid)
@@ -641,8 +641,8 @@ export default function updateAssetAttributes(
         body.value.entities = [entity.value]
         currentMessage.value = 'Synonyms have been updated'
         // TODO: change event name to be more specific ?
-        sendMetadataTrackEvent('related_terms_updated', {
-            count: localSeeAlso.value?.length,
+        sendMetadataTrackEvent('synonyms_updated', {
+            count: localSynonyms.value?.length,
         })
         mutate()
         const localSynonymsGuids = localSynonyms.value?.map((el) => el?.guid)
@@ -672,8 +672,8 @@ export default function updateAssetAttributes(
         body.value.entities = [entity.value]
         currentMessage.value = 'Preferred Terms have been updated'
         // TODO: change event name to be more specific ?
-        sendMetadataTrackEvent('related_terms_updated', {
-            count: localSeeAlso.value?.length,
+        sendMetadataTrackEvent('preferred_terms_updated', {
+            count: localPreferredTerms.value?.length,
         })
         mutate()
         const localPreferredTermsGuids = localPreferredTerms.value?.map((el) => el?.guid)

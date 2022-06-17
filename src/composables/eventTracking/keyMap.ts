@@ -207,6 +207,24 @@ const keyMap = {
                     count: props.count,
                 }),
             },
+            preferred_terms_updated: {
+                action: 'discovery_metadata_preferred_terms_updated',
+                properties: (props) => ({
+                    count: props.count,
+                }),
+            },
+            antonyms_updated: {
+                action: 'discovery_metadata_antonyms_updated',
+                properties: (props) => ({
+                    count: props.count,
+                }),
+            },
+            synonyms_updated: {
+                action: 'discovery_metadata_synonyms_updated',
+                properties: (props) => ({
+                    count: props.count,
+                }),
+            },
             suggestion_applied: {
                 action: 'discovery_metadata_suggestion_applied',
                 properties: (props) => ({
@@ -548,13 +566,12 @@ const keyMap = {
                             is_full_screen: props?.is_full_screen,
                             description_added: props?.description_added,
                         }
-                    } 
-                        return {
-                            action: props.action,
-                            query_tab_id: props?.query_tab_id,
-                            is_full_screen: props?.is_full_screen,
-                        }
-                    
+                    }
+                    return {
+                        action: props.action,
+                        query_tab_id: props?.query_tab_id,
+                        is_full_screen: props?.is_full_screen,
+                    }
                 },
             },
             tab_switched: {
@@ -613,30 +630,30 @@ const keyMap = {
                 properties: (props) => ({
                     total_tab_count: props?.tab_count,
                 }),
-            }
+            },
         },
     },
     governance: {
         persona: {
             cta_clicked: {
-                action: "governance_persona_cta_clicked",
-                 properties: (props) => (props),
+                action: 'governance_persona_cta_clicked',
+                properties: (props) => props,
             },
             home_tab: {
-                 action: 'governance_persona_sidebar_tab_changed',
-                properties: (props) => (props),
+                action: 'governance_persona_sidebar_tab_changed',
+                properties: (props) => props,
             },
             readme_expanded: {
                 action: 'governance_persona_sidebar_readme_viewed',
-                properties: (props) => (props),
+                properties: (props) => props,
             },
             home_card_asset: {
                 action: 'home_persona_card_view_assets_clicked',
-                properties: (props) => (props),
+                properties: (props) => props,
             },
             home_card: {
                 action: 'home_persona_card_clicked',
-                properties: (props) => (props),
+                properties: (props) => props,
             },
             created: {
                 action: 'governance_persona_created',
@@ -704,24 +721,24 @@ const keyMap = {
         },
         purpose: {
             cta_clicked: {
-                action: "governance_purpose_cta_clicked",
-                 properties: (props) => (props),
+                action: 'governance_purpose_cta_clicked',
+                properties: (props) => props,
             },
             home_tab: {
                 action: 'governance_purpose_sidebar_tab_changed',
-                properties: (props) => (props),
+                properties: (props) => props,
             },
             readme_expanded: {
                 action: 'governance_purpose_sidebar_readme_viewed',
-                properties: (props) => (props),
+                properties: (props) => props,
             },
             home_card_asset: {
                 action: 'home_purpose_card_view_assets_clicked',
-                properties: (props) => (props),
+                properties: (props) => props,
             },
             home_card: {
                 action: 'home_purpose_card_clicked',
-                properties: (props) => (props),
+                properties: (props) => props,
             },
             created: {
                 action: 'governance_purpose_created',

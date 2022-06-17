@@ -55,10 +55,11 @@
         onMounted,
         nextTick,
     } from 'vue'
+    import AtlanEditor from '~/components/common/editor/index.vue'
 
     export default defineComponent({
         name: 'ReadmeView',
-        components: {},
+        components: { AtlanEditor },
         props: {
             readme: {
                 type: String,

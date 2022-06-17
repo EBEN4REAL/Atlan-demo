@@ -173,6 +173,10 @@
             })
 
             watch(guid, () => {
+                // TODO: Added this for lineage - do let me know if it breaks other places it's being used
+                visible.value = showDrawer.value
+                if (!visible.value) return
+
                 if (!watchGuid.value) return
 
                 if (guid.value) {
@@ -182,6 +186,10 @@
             })
 
             watch(showDrawer, () => {
+                // TODO: Added this for lineage - do let me know if it breaks other places it's being used
+                visible.value = showDrawer.value
+                if (!visible.value) return
+
                 if (watchGuid.value) return
 
                 if (
@@ -190,7 +198,7 @@
                 )
                     fetch()
 
-                visible.value = showDrawer.value
+                // visible.value = showDrawer.value
             })
 
             watch(list, () => {

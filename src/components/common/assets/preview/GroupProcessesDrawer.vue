@@ -17,14 +17,14 @@
                 <span class="text-gray-700 font-bold text-base"
                     >All Process</span
                 >
-                <span class="text-gray-500">process ({{ totalCount }}) </span>
+                <span class="text-gray-500">{{ totalCount }} processes </span>
             </div>
         </div>
         <div class="mx-5 pb-0 border-b mt-2">
             <SearchAdvanced
                 v-model:value="queryText"
                 :autofocus="true"
-                :placeholder="`Search ${totalCount} processes`"
+                :placeholder="`Search processes`"
                 @change="handleSearchChange"
             >
                 <template #postFilter>
@@ -238,6 +238,7 @@
                 visible.value = false
                 queryText.value = ''
                 offset.value = 0
+                showAssetSidebarDrawer.value = false
             }
             const handleItemClick = (item, index: Number) => {
                 currentIndex.value = index
@@ -276,9 +277,7 @@
                     dependentKey.value = `RELATED_ASSET_LIST_PROCESS_NODES`
                     updateFacet()
                     fetch()
-                } else {
-                    reset()
-                }
+                } else reset()
             })
 
             onMounted(() => updateFacet())

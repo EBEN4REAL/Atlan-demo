@@ -1,0 +1,36 @@
+<template>
+    <div
+        style="border-width: 1.5px !important"
+        :class="
+            selected
+                ? ' border-new-blue-400 bg-new-blue-100'
+                : 'hover:border-new-blue-100'
+        "
+        class="p-3 text-sm border border-white rounded-lg cursor-pointer"
+        @click="emit('click')"
+    >
+        <div class="flex items-center gap-x-2 gap-y-2">
+            <AtlanIcon :icon="iconName" />
+            <span class="text-new-gray-800">
+                {{ heading }}
+            </span>
+            <div class="flex-grow" />
+            <AtlanIcon v-if="selected" icon="Check" class="text-new-blue-400" />
+        </div>
+        <div v-if="subHeading" class="pr-10 text-new-gray-700">
+            {{ subHeading }}
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+    const props = defineProps({
+        selected: { type: Boolean, required: true },
+        heading: { type: String, required: true },
+        iconName: { type: String, required: true },
+        subHeading: { type: Boolean, required: false },
+    })
+    const emit = defineEmits(['click'])
+</script>
+
+<style scoped></style>

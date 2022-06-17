@@ -280,10 +280,6 @@
                         >
                             <div class="text-sm font-bold text-gray-700">
                                 Asset selector
-
-                                <span v-if="policyType === 'data'" class=""
-                                    >to allow <b>Query</b>
-                                </span>
                                 <span class="text-red-500">*</span>
                             </div>
                             <div
@@ -724,67 +720,24 @@
                             >
 
                             <div v-if="type === 'data'" class="space-y-2">
-                                <div
-                                    style="border-width: 1.5px !important"
+                                <ToggleOption
                                     @click="policy.allow = !policy.allow"
-                                    :class="
-                                        policy.allow
-                                            ? ' border-new-blue-400 bg-new-blue-100'
-                                            : 'hover:border-new-blue-100'
-                                    "
-                                    class="p-3 text-sm border border-white rounded-lg cursor-pointer"
-                                >
-                                    <div
-                                        class="flex items-center gap-x-2 gap-y-2"
-                                    >
-                                        <AtlanIcon icon="QueryOutputSuccess" />
-                                        <span class="text-new-gray-800">
-                                            Allow query on selected assets
-                                        </span>
-                                        <div class="flex-grow" />
-                                        <AtlanIcon
-                                            v-if="policy.allow"
-                                            icon="Check"
-                                            class="text-new-blue-400"
-                                        />
-                                    </div>
-                                    <div class="text-new-gray-700">
-                                        Users can query on only assets mentioned
-                                        below. <br />
-                                        Other policies can affect this.
-                                    </div>
-                                </div>
-                                <div
-                                    style="border-width: 1.5px !important"
+                                    :selected="policy.allow"
+                                    heading="Allow query on selected assets"
+                                    iconName="QueryOutputSuccess"
+                                    subHeading="Users can query on only assets mentioned
+                                        below."
+                                />
+                                <ToggleOption
                                     @click="policy.allow = !policy.allow"
-                                    :class="
-                                        !policy.allow
-                                            ? ' border-new-blue-400 bg-new-blue-100'
-                                            : 'hover:border-new-blue-200'
-                                    "
-                                    class="p-3 text-sm border border-white rounded-lg cursor-pointer"
-                                >
-                                    <div
-                                        class="flex items-center gap-x-2 gap-y-2"
-                                    >
-                                        <AtlanIcon icon="QueryOutputFail" />
-                                        <span class="text-new-gray-800">
-                                            Deny query on selected assets
-                                        </span>
-                                        <div class="flex-grow" />
-                                        <AtlanIcon
-                                            v-if="!policy.allow"
-                                            icon="Check"
-                                            class="text-new-blue-400"
-                                        />
-                                    </div>
-                                    <div class="text-new-gray-700">
-                                        Users can’t query on only assets
-                                        mentioned below.<br />
+                                    :selected="!policy.allow"
+                                    heading="Deny query on selected assets"
+                                    iconName="QueryOutputFail"
+                                    subHeading="Users can’t query on only assets
+                                        mentioned below.
                                         Deny policy overrides all allow
-                                        policies.
-                                    </div>
-                                </div>
+                                        policies."
+                                />
                             </div>
                             <template v-else>
                                 <a-switch
@@ -925,10 +878,12 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import Avatar from '~/components/common/avatar/index.vue'
     import SameAssetPolicy from './sameAssetPolicy.vue'
+    import ToggleOption from '@/governance/shared/customToggleOption.vue'
 
     export default defineComponent({
         name: 'AddPolicy',
         components: {
+            ToggleOption,
             AtlanBtn,
             Connector,
             AssetSelectorDrawer,

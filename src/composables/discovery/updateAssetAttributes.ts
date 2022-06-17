@@ -42,6 +42,7 @@ export default function updateAssetAttributes(
         preferredTerms,
         preferredToTerms,
         antonyms,
+        synonyms,
         assignedEntities,
         allowQuery,
         allowQueryPreview,
@@ -145,6 +146,7 @@ export default function updateAssetAttributes(
     const localPreferredTerms = ref(preferredTerms(selectedAsset.value))
     const localPreferredToTerms = ref(preferredToTerms(selectedAsset.value))
     const localAntonyms = ref(antonyms(selectedAsset.value))
+    const localSynonyms = ref(synonyms(selectedAsset.value))
     const localParentCategory = ref(
         selectedAsset.value?.attributes?.parentCategory
     )
@@ -624,6 +626,37 @@ export default function updateAssetAttributes(
         handleAssetsToUpdate(difference)
  
     }
+    const handleSynonymsUpdate = () => {
+        console.log(localSynonyms.value)
+        entity.value = {
+            ...entity.value,
+            relationshipAttributes: {
+                synonyms: localSynonyms.value.map((term) => ({
+                    typeName: 'AtlasGlossaryTerm',
+                    guid: term.guid,
+                })),
+                anchor: selectedAsset?.value?.attributes?.anchor,
+            },
+        }
+        body.value.entities = [entity.value]
+        currentMessage.value = 'Synonyms have been updated'
+        // TODO: change event name to be more specific ?
+        sendMetadataTrackEvent('related_terms_updated', {
+            count: localSeeAlso.value?.length,
+        })
+        mutate()
+        const localSynonymsGuids = localSynonyms.value?.map((el) => el?.guid)
+        const assetSynonymsGuids =
+            selectedAsset?.value?.attributes?.antonyms?.map((el) => el?.guid)
+        const difference = localSynonymsGuids.concat(
+            assetSynonymsGuids.filter(
+                (x: string) => !localSynonymsGuids.includes(x)
+            )
+        )
+        handleAssetsToUpdate(difference)
+ 
+    }
+ 
     const handlePreferredTermsUpdate = () => {
         console.log(localPreferredTerms.value)
         entity.value = {
@@ -854,6 +887,10 @@ export default function updateAssetAttributes(
         if (antonyms(selectedAsset?.value) !== localAntonyms.value) {
             localAntonyms.value = antonyms(selectedAsset.value)
         }
+        if (synonyms(selectedAsset?.value) !== localSynonyms.value) {
+            localSynonyms.value = synonyms(selectedAsset.value)
+        }
+ 
         if (
             preferredTerms(selectedAsset?.value) !== localPreferredTerms.value
         ) {
@@ -972,6 +1009,7 @@ export default function updateAssetAttributes(
         localCategories,
         localSeeAlso,
         localAntonyms,
+        localSynonyms,
         localPreferredTerms,
         localViewers,
         handleChangeName,
@@ -999,6 +1037,7 @@ export default function updateAssetAttributes(
         handleCategoriesUpdate,
         handleSeeAlsoUpdate,
         handleAntonymsUpdate,
+        handleSynonymsUpdate,
         handlePreferredTermsUpdate,
         shouldDrawerUpdate,
         asset,

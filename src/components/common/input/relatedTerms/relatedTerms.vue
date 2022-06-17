@@ -152,7 +152,7 @@
         setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
-            const { seeAlso, preferredTerms, antonyms } = useAssetInfo()
+            const { synonyms,seeAlso, preferredTerms, antonyms } = useAssetInfo()
             const localValue = ref(modelValue.value)
             const checkedGuids = ref(modelValue.value.map((term) => term.guid))
             const hasBeenEdited = ref(false)
@@ -265,6 +265,7 @@
                     seeAlso: seeAlso(selectedAsset.value),
                     preferredTerms: preferredTerms(selectedAsset.value),
                     antonyms: antonyms(selectedAsset.value),
+                    synonyms:synonyms(selectedAsset.value)
                 }
                 modelValue.value = attributeMap[props?.attributeType]
             })

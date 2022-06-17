@@ -1189,6 +1189,34 @@
                     @change="handleAntonymsUpdate"
                 >
                 </RelatedTerms>
+                <!-- Synonyms widget -->
+                <p
+                    v-if="showSynonyms"
+                    class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4"
+                >
+                    Synonyms
+                    <span class="mx-2">
+                        <a-tooltip>
+                            <template #title>
+                                Interchangeable terms. Example: "customer" and
+                                "client"
+                            </template>
+                            <atlan-icon icon="Info" class="h-3" />
+                        </a-tooltip>
+                    </span>
+                </p>
+                <RelatedTerms
+                    v-if="showSynonyms"
+                    v-model="localSynonyms"
+                    :selected-asset="selectedAsset"
+                    class="px-5"
+                    :edit-permission="editPermission"
+                    :allow-delete="editPermission"
+                    attribute-type="synonyms"
+                    @change="handleSynonymsUpdate"
+                >
+                </RelatedTerms>
+
                 <!-- Preferred terms widget -->
                 <p
                     v-if="showPreferredTerms"
@@ -1329,6 +1357,7 @@
     import {
         featureEnabledMap,
         ANTONYMS,
+        SYNONYMS,
         PREFERRED_TERMS,
     } from '~/composables/labs/labFeatureList'
 
@@ -1486,10 +1515,11 @@
                 localMeanings,
                 localCategories,
                 localSeeAlso,
-                localAntonyms,
+                localAntonyms,localSynonyms,
                 localPreferredTerms,
                 handleSeeAlsoUpdate,
                 handleAntonymsUpdate,
+                handleSynonymsUpdate,
                 handlePreferredTermsUpdate,
                 handleCategoriesUpdate,
                 handleMeaningsUpdate,
@@ -1514,6 +1544,10 @@
             const showAntonyms = computed(
                 () => featureEnabledMap.value[ANTONYMS]
             )
+            const showSynonyms = computed(
+                () => featureEnabledMap.value[SYNONYMS]
+            )
+
 
             const limit = ref(0)
             const offset = ref(0)
@@ -1655,11 +1689,13 @@
                 handleCategoriesUpdate,
                 handleSeeAlsoUpdate,
                 handleAntonymsUpdate,
+                handleSynonymsUpdate,
                 handlePreferredTermsUpdate,
                 isUserDescription,
                 localCategories,
                 localSeeAlso,
                 localAntonyms,
+                localSynonyms,
                 localPreferredTerms,
                 handleChangeAdmins,
                 localAdmins,
@@ -1716,6 +1752,7 @@
                 setAllAdmins,
                 showPreferredTerms,
                 showAntonyms,
+                showSynonyms
             }
         },
     })

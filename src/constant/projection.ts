@@ -197,6 +197,7 @@ export const GlossaryAttributes = [
     'assignedEntities',
     'seeAlso',
     'antonyms',
+    'synonyms',
     'preferredTerms',
     'preferredToTerms',
 ]

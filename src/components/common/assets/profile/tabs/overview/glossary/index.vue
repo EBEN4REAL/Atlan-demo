@@ -97,7 +97,7 @@
             v-if="
                 selectedAsset?.typeName === 'AtlasGlossaryTerm' &&
                 (seeAlso(selectedAsset)?.length ||
-                    antonyms(selectedAsset)?.length)
+                    antonyms(selectedAsset)?.length || synonyms(selectedAsset)?.length)
             "
             :asset="selectedAsset"
         />
@@ -136,13 +136,14 @@
             const showPreferredTerms = computed(
                 () => featureEnabledMap.value[PREFERRED_TERMS]
             )
-            const { preferredTerms, seeAlso, antonyms, preferredToTerms } =
+            const { preferredTerms, seeAlso, antonyms, preferredToTerms , synonyms} =
                 useAssetInfo()
             return {
                 showPreferredTerms,
                 preferredTerms,
                 preferredToTerms,
                 antonyms,
+                synonyms,
                 seeAlso,
             }
         },

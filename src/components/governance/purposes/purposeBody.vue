@@ -338,7 +338,7 @@
     import AggregationTabs from '@/common/tabs/aggregationTabs.vue'
     import EmptyPolicyIllustration from '~/assets/images/empty_policy.svg'
     import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
-    import Addpolicy from './addpolicy.vue'
+    import Addpolicy from './addPurposePolicy.vue'
     import PolicyCard from './policies/collapsedPolicyCard.vue'
     import MetadataPolicy from './policies/metadataPolicyItem.vue'
     import DataPolicy from './policies/dataPolicyItem.vue'

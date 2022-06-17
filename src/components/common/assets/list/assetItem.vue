@@ -536,6 +536,7 @@
                                     <a-tooltip
                                         placement="bottomLeft"
                                         :mouseEnterDelay="0.3"
+                                        overlay-class-name="min-w-max"
                                     >
                                         <div
                                             v-if="databaseName(item)"
@@ -552,9 +553,7 @@
                                             </div>
                                         </div>
                                         <template #title>
-                                            <div
-                                                class="flex items-center justify-between"
-                                            >
+                                            <div class="flex items-center">
                                                 <div class="flex flex-col">
                                                     <div class="text-xs">
                                                         Database
@@ -564,7 +563,7 @@
                                                 </div>
                                                 <div
                                                     v-if="page === 'assets'"
-                                                    class="pl-3 font-bold"
+                                                    class="ml-3 font-bold"
                                                 >
                                                     <a-button
                                                         shape="circle"
@@ -582,7 +581,11 @@
                                             </div>
                                         </template>
                                     </a-tooltip>
-                                    <a-tooltip placement="bottomLeft">
+                                    <a-tooltip
+                                        placement="bottomLeft"
+                                        overlay-class-name="min-w-max"
+                                        :mouseEnterDelay="0.3"
+                                    >
                                         <div
                                             v-if="schemaName(item)"
                                             class="flex items-center text-gray-500"
@@ -598,9 +601,7 @@
                                             </div>
                                         </div>
                                         <template #title>
-                                            <div
-                                                class="flex items-center justify-between"
-                                            >
+                                            <div class="flex items-center">
                                                 <div class="flex flex-col">
                                                     <div class="text-xs">
                                                         Schema
@@ -610,7 +611,7 @@
                                                 </div>
                                                 <div
                                                     v-if="page === 'assets'"
-                                                    class="pl-3 font-bold"
+                                                    class="ml-3 font-bold"
                                                 >
                                                     <a-button
                                                         shape="circle"
@@ -1304,7 +1305,7 @@
                                     <template
                                         v-for="classification in clsfList"
                                         :key="classification.guid"
-                                    > 
+                                    >
                                         <PopoverClassification
                                             :classification="classification"
                                             :entity-guid="item.guid"
@@ -1523,7 +1524,7 @@
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
-    import {groupClassifications} from "~/utils/groupClassifications"
+    import { groupClassifications } from '~/utils/groupClassifications'
     import AssetTitle from '@/common/assets/list/assetTitle.vue'
 
     export default defineComponent({
@@ -1782,7 +1783,10 @@
                     'name',
                     'typeName'
                 )
-                const groupedClassifications = groupClassifications(matchingIdsResult, isPropagated)
+                const groupedClassifications = groupClassifications(
+                    matchingIdsResult,
+                    isPropagated
+                )
                 return groupedClassifications
             })
 

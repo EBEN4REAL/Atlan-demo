@@ -1873,7 +1873,7 @@ export default function useEventGraph({
 
     /** WATCHERS */
     watch(showDrawer, (newVal) => {
-        if (!newVal) resetState()
+        if (!newVal && !groupedProcessIds.value.length) resetState()
     })
 
     watch(

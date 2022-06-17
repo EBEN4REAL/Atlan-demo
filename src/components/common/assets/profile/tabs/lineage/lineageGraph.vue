@@ -67,7 +67,6 @@
         onUnmounted,
         provide,
         inject,
-        watch,
     } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
 
@@ -149,23 +148,21 @@
             // onSelectAsset
             const onSelectAsset = (item, selectOnGraph = false) => {
                 const { isGroupEdge, processIds } = item || {}
+                control('selectedAsset', item)
 
-                if (typeof control === 'function' && !isGroupEdge) {
-                    control('selectedAsset', item)
-                    if (item?.guid) {
-                        graphWidth.value = window.outerWidth - 480
-                        graph.value.resize(
-                            graphWidth.value,
-                            graphHeight.value / 1.35
-                        )
-                        showDrawer.value = true
-                    }
+                if (item?.guid) {
+                    graph.value.resize(
+                        graphWidth.value - 480,
+                        graphHeight.value / 1.35
+                    )
                 }
 
-                if (!item?.guid) return
-
-                if (isGroupEdge && processIds.length)
+                if (isGroupEdge && processIds.length) {
+                    showDrawer.value = false
                     groupedProcessIds.value = processIds
+                }
+
+                if (!isGroupEdge && item?.guid) showDrawer.value = true
 
                 if (selectOnGraph) guidToSelectOnGraph.value = item?.guid
             }
@@ -173,8 +170,10 @@
             // onCloseDrawer
             const onCloseDrawer = () => {
                 onSelectAsset('')
-                graphWidth.value = window.outerWidth - 60
-                graph.value.resize(graphWidth.value, graphHeight.value / 1.35)
+                graph.value.resize(
+                    graphWidth.value - 60,
+                    graphHeight.value / 1.35
+                )
                 showDrawer.value = false
                 onSelectAsset(null)
             }

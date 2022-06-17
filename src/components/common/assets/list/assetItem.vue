@@ -83,9 +83,12 @@
                                                     type="dashed"
                                                     v-if="page === 'assets'"
                                                     @click="
-                                                        handleSwitchTabLineage(
-                                                            item
-                                                        )
+                                                        (e) => {
+                                                            e.stopPropagation()
+                                                            handleSwitchTabLineage(
+                                                                item
+                                                            )
+                                                        }
                                                     "
                                                     ><AtlanIcon
                                                         icon="Search"
@@ -1722,6 +1725,7 @@
                 powerBITableMeasureCount,
                 powerBIColumnDataType,
                 powerBIColumnDataTypeImage,
+                selectedAsset,
             } = useAssetInfo()
 
             const icon = computed(() => {
@@ -1749,9 +1753,15 @@
                 }
             }
 
-            const handleSwitchTabLineage = (item) => {
-                handlePreview(item)
-                emit('switch', { asset: item, tab: 'Lineage' })
+            const handleSwitchTabLineage = (asset) => {
+                if (selectedAsset.value?.guid !== asset.guid) {
+                    handlePreview(asset)
+                    setTimeout(() => {
+                        emit('switch', { asset, tab: 'Lineage' })
+                    }, 500)
+                } else {
+                    emit('switch', { asset, tab: 'Lineage' })
+                }
             }
 
             const handleCloseDrawer = () => {

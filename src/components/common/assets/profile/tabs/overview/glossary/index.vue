@@ -35,7 +35,7 @@
                             >
                         </router-link>
                     </div>
-                    <span class="mx-1"> is preferred over </span>
+                    <span class="mx-1"> is recommended over </span>
 
                     <router-link
                         :to="`/glossary/${selectedAsset?.guid}`"
@@ -47,41 +47,41 @@
                         }}
                     </router-link>
                 </div>
-                <div
-                    v-if="preferredToTerms(selectedAsset)?.length"
-                    class="flex items-center flex-wrap"
-                >
-                    <span class="mx-1">
-                        <router-link
-                            :to="`/glossary/${selectedAsset?.guid}`"
-                            class="font-bold text-primary hover:underline"
-                        >
-                            {{
-                                selectedAsset?.attributes?.name ||
-                                selectedAsset?.displayText
-                            }}
-                        </router-link>
-                    </span>
-                    <span class="mx-1"> is preferred over </span>
-                    <div
-                        v-for="(el, i) in preferredToTerms(selectedAsset)"
-                        :key="el?.guid"
-                    >
-                        <router-link
-                            :to="`/glossary/${el?.guid}`"
-                            class="font-bold text-primary hover:underline"
-                        >
-                            {{ el?.attributes?.name }}
-                            <span
-                                v-if="
-                                    i !==
-                                    preferredToTerms(selectedAsset)?.length - 1
-                                "
-                                >,</span
-                            >
-                        </router-link>
-                    </div>
-                </div>
+                <!-- <div -->
+                <!--     v-if="preferredToTerms(selectedAsset)?.length" -->
+                <!--     class="flex items-center flex-wrap" -->
+                <!-- > -->
+                <!--     <span class="mx-1"> -->
+                <!--         <router-link -->
+                <!--             :to="`/glossary/${selectedAsset?.guid}`" -->
+                <!--             class="font-bold text-primary hover:underline" -->
+                <!--         > -->
+                <!--             {{ -->
+                <!--                 selectedAsset?.attributes?.name || -->
+                <!--                 selectedAsset?.displayText -->
+                <!--             }} -->
+                <!--         </router-link> -->
+                <!--     </span> -->
+                <!--     <span class="mx-1"> is preferred over </span> -->
+                <!--     <div -->
+                <!--         v-for="(el, i) in preferredToTerms(selectedAsset)" -->
+                <!--         :key="el?.guid" -->
+                <!--     > -->
+                <!--         <router-link -->
+                <!--             :to="`/glossary/${el?.guid}`" -->
+                <!--             class="font-bold text-primary hover:underline" -->
+                <!--         > -->
+                <!--             {{ el?.attributes?.name }} -->
+                <!--             <span -->
+                <!--                 v-if=" -->
+                <!--                     i !== -->
+                <!--                     preferredToTerms(selectedAsset)?.length - 1 -->
+                <!--                 " -->
+                <!--                 >,</span -->
+                <!--             > -->
+                <!--         </router-link> -->
+                <!--     </div> -->
+                <!-- </div> -->
             </div>
         </div>
         <Summary :asset="selectedAsset">

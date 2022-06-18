@@ -1224,12 +1224,12 @@
                 >
                 </RelatedTerms>
 
-                <!-- Preferred terms widget -->
+                <!-- Recommended terms widget -->
                 <p
                     v-if="showPreferredTerms"
                     class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4"
                 >
-                    Preferred terms
+                    Recommended terms
                     <span class="mx-2">
                         <a-tooltip>
                             <template #title>

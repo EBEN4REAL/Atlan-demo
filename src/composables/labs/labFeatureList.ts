@@ -6,6 +6,7 @@ import ScheduledQueryPreview from '~/assets/images/preference/Schedule-queries-t
 import DownloadDataPreview from '~/assets/images/preference/Download-Data-toggle.gif'
 import WorkflowPreview from '~/assets/images/preference/Worflow-Center-Image.png'
 import LookerFieldPreview from '~/assets/images/preference/Looker-level-lineage.png'
+import TermsAttributesPreview from '~/assets/images/preference/terms-attributes-preferences.gif'
 
 export const orgPrefrencesKey = 'orgLabPreferences'
 
@@ -21,7 +22,7 @@ export const LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE =
 export const PREFERRED_TERMS = 'PREFERRED_TERMS'
 export const ANTONYMS = 'ANTONYMS'
 export const SYNONYMS = 'SYNONYMS'
-
+export const TERM_ATTRIBUTES = 'TERM_ATTRIBUTES'
 
 export const featureList = {
     insightsFeatures: [
@@ -138,11 +139,12 @@ export const featureList = {
             previewIllustration: LookerFieldPreview,
         },
         {
-            name: 'Preferred Terms',
-            key: PREFERRED_TERMS,
-            description: 'Preferred terms in Glossary',
+            name: 'Term attributes',
+            key: TERM_ATTRIBUTES,
+            description:
+                'Enable/disable Antonyms, Synonyms, Recommended Terms attributes for terms',
             // if the config isn't present in tenant/user preferences, default value will be picked up from here
-            defaultValue: true,
+            defaultValue: false,
             // only these users will be allowed
             allowedUsers: [],
             allowedGroups: [],
@@ -153,43 +155,65 @@ export const featureList = {
             isAdminLevel: true,
             // should it show up in user preferences
             isUserLevel: false,
-            isBeta: false,
-        },
-        {
-            name: 'Antonyms',
-            key: ANTONYMS,
-            description: 'Antonyms in Glossary',
-            // if the config isn't present in tenant/user preferences, default value will be picked up from here
-            defaultValue: true,
-            // only these users will be allowed
-            allowedUsers: [],
-            allowedGroups: [],
-            // these users will be deined even if its enabled for whole org
-            deniedUsers: [],
-            deniedGroups: [],
-            // should it show up in admin center to configure for organisation
-            isAdminLevel: true,
-            // should it show up in user preferences
-            isUserLevel: false,
-            isBeta: false,
-        },
-        {
-            name: 'Synonyms',
-            key: SYNONYMS,
-            description: 'Synonyms in Glossary',
-            // if the config isn't present in tenant/user preferences, default value will be picked up from here
-            defaultValue: true,
-            // only these users will be allowed
-            allowedUsers: [],
-            allowedGroups: [],
-            // these users will be deined even if its enabled for whole org
-            deniedUsers: [],
-            deniedGroups: [],
-            // should it show up in admin center to configure for organisation
-            isAdminLevel: true,
-            // should it show up in user preferences
-            isUserLevel: false,
-            isBeta: false,
+            isBeta: true,
+            previewIllustration: TermsAttributesPreview,
+            type: 'checkbox',
+            values: [
+                {
+                    name: 'Recommended Terms',
+                    key: PREFERRED_TERMS,
+                    description: 'Recommended terms in Glossary',
+                    // if the config isn't present in tenant/user preferences, default value will be picked up from here
+                    defaultValue: true,
+                    // only these users will be allowed
+                    allowedUsers: [],
+                    allowedGroups: [],
+                    // these users will be deined even if its enabled for whole org
+                    deniedUsers: [],
+                    deniedGroups: [],
+                    // should it show up in admin center to configure for organisation
+                    isAdminLevel: true,
+                    // should it show up in user preferences
+                    isUserLevel: false,
+                    isBeta: false,
+                },
+                {
+                    name: 'Antonyms',
+                    key: ANTONYMS,
+                    description: 'Antonyms in Glossary',
+                    // if the config isn't present in tenant/user preferences, default value will be picked up from here
+                    defaultValue: true,
+                    // only these users will be allowed
+                    allowedUsers: [],
+                    allowedGroups: [],
+                    // these users will be deined even if its enabled for whole org
+                    deniedUsers: [],
+                    deniedGroups: [],
+                    // should it show up in admin center to configure for organisation
+                    isAdminLevel: true,
+                    // should it show up in user preferences
+                    isUserLevel: false,
+                    isBeta: false,
+                },
+                {
+                    name: 'Synonyms',
+                    key: SYNONYMS,
+                    description: 'Synonyms in Glossary',
+                    // if the config isn't present in tenant/user preferences, default value will be picked up from here
+                    defaultValue: true,
+                    // only these users will be allowed
+                    allowedUsers: [],
+                    allowedGroups: [],
+                    // these users will be deined even if its enabled for whole org
+                    deniedUsers: [],
+                    deniedGroups: [],
+                    // should it show up in admin center to configure for organisation
+                    isAdminLevel: true,
+                    // should it show up in user preferences
+                    isUserLevel: false,
+                    isBeta: false,
+                },
+            ],
         },
     ],
 }
@@ -201,10 +225,15 @@ export const featureEnabledMap = computed(() => {
     const { tenantRaw } = useTenantData()
     const attributes = tenantRaw.value.attributes || {}
     const preferences = JSON.parse(attributes[orgPrefrencesKey] || '{}') || {}
-
     Object.values(featureList).forEach((features) => {
         features.forEach((feature) => {
             if (!(feature.key in preferences)) {
+                if (feature?.type === 'checkbox') {
+                    feature?.values?.forEach((el) => {
+                        if (!(el.key in preferences))
+                            preferences[el.key] = el.defaultValue
+                    })
+                }
                 preferences[feature.key] = feature.defaultValue
             }
         })

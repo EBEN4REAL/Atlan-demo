@@ -79,7 +79,7 @@
                         <AssetItem
                             :item="item"
                             :item-index="itemIndex"
-                            :asset-name-truncate-percentage="'93%'"
+                            :asset-name-truncate-percentage="'91%'"
                             class="px-2 hover:bg-primary-menu"
                             is-compact
                             @preview="handleOpenDrawer(item.guid)"

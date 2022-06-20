@@ -32,6 +32,7 @@
                 :item-index="itemIndex"
                 :preference="preference"
                 :enable-sidebar-drawer="true"
+                :asset-name-truncate-percentage="'91%'"
                 class="px-2 hover:bg-primary-menu"
                 isCompact
             ></AssetItem>

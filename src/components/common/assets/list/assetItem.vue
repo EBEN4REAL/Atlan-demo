@@ -1758,7 +1758,7 @@
                     handlePreview(asset)
                     setTimeout(() => {
                         emit('switch', { asset, tab: 'Lineage' })
-                    }, 500)
+                    }, 300)
                 } else {
                     emit('switch', { asset, tab: 'Lineage' })
                 }

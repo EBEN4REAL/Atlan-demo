@@ -72,13 +72,7 @@
                                 "
                             >
                                 <div
-                                    class="flex items-center inline_tab"
-                                    :style="{
-                                        width:
-                                            tabs.length == 1 ? '89px' : '73px',
-                                        'max-width':
-                                            tabs.length == 1 ? '89px' : '73px',
-                                    }"
+                                    class="inline_tab"
                                     @mouseenter="setTabHover(tab)"
                                     @mouseleave="setTabHover(null)"
                                     @contextmenu.prevent="showContextMenu"
@@ -718,10 +712,8 @@
         height: calc(100vh - 19rem);
     }
     .inline_tab {
-        max-width: 110px;
-        width: 110px;
-        min-width: 100px;
-        overflow: hidden;
+        min-width: 50px;
+        max-width: 150px;
         height: 28px !important;
         // min-width: 3rem
     }
@@ -730,10 +722,6 @@
         // height: 16px;
         background: #ededed;
         // border-radius: 2px;
-    }
-    .inline_tab_label {
-        max-width: 78px;
-        // overflow: hidden;
     }
     .playground-height {
         // @apply bg-gray-light !important;

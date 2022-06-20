@@ -219,6 +219,7 @@
         "vue-horizontal",
         "vue-i18n",
         "vue-linkify",
+        "vue-plugin-load-script",
         "vue-router",
         "vue-sse",
         "vue3-dnd",

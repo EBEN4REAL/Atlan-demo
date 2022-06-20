@@ -319,8 +319,9 @@
             })
 
             const fullName = (item) => {
-                const  name = item.username;
+                let name = item.username;
                 if (item.firstName) {
+                    name = `${item.firstName} ${item.lastName || ''}`
                     return name
                 }
                 return name

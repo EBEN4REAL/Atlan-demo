@@ -237,6 +237,7 @@
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import updateAssetAttributes from '~/composables/discovery/updateAssetAttributes'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import AtlanReadme from '~/components/common/readme/index.vue'
 
     export default defineComponent({
         props: {
@@ -264,6 +265,9 @@
                 required: false,
                 default: false,
             },
+        },
+        components: {
+            AtlanReadme,
         },
 
         setup(props) {

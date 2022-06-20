@@ -6,7 +6,7 @@ import {
     README_TRIGGERS,
     TYPE_OF_EVENTS,
     useTrackEvent,
-} from '~/modules/editor/analytics/useTrackEvent'
+} from '~/components/common/editor/analytics/useTrackEvent'
 
 declare module '@tiptap/core' {
     interface Commands<ReturnType> {

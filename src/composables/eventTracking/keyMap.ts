@@ -1,7 +1,7 @@
 import {
     NAME_OF_EVENTS,
     README_TRIGGERS,
-} from '~/modules/editor/analytics/useTrackEvent'
+} from '~/components/common/editor/analytics/useTrackEvent'
 
 interface BLOCK_README_EVENT_INTERFACE {
     assetType: string
@@ -203,6 +203,24 @@ const keyMap = {
             },
             related_terms_updated: {
                 action: 'discovery_metadata_related_terms_updated',
+                properties: (props) => ({
+                    count: props.count,
+                }),
+            },
+            preferred_terms_updated: {
+                action: 'discovery_metadata_preferred_terms_updated',
+                properties: (props) => ({
+                    count: props.count,
+                }),
+            },
+            antonyms_updated: {
+                action: 'discovery_metadata_antonyms_updated',
+                properties: (props) => ({
+                    count: props.count,
+                }),
+            },
+            synonyms_updated: {
+                action: 'discovery_metadata_synonyms_updated',
                 properties: (props) => ({
                     count: props.count,
                 }),

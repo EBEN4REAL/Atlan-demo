@@ -182,7 +182,8 @@
             <span
                 v-if="phase(run) === 'Failed'"
                 class="px-4 pt-1 pb-2 text-gray-500 border-b"
-                >Sorry, your upload wasn’t completed successfully.</span
+                >Sorry, we've encountered an error while processing your
+                file.</span
             >
             <span
                 class="flex items-center px-4 pt-2 space-x-1 cursor-pointer text-primary parent"

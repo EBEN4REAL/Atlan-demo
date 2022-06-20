@@ -25,38 +25,42 @@
                     >
                         <div
                             :class="{ active: item.id === selectedTab }"
-                            class="flex items-center"
+                            class="flex items-center gap-x-1"
                         >
-                            <AtlanIcon
-                                v-if="icon"
-                                :icon="icon"
-                                class="self-center mr-1"
-                            ></AtlanIcon>
+                            <div class="w-4">
+                                <AtlanIcon
+                                    v-if="icon"
+                                    :icon="icon"
+                                    class="self-center mr-1"
+                                ></AtlanIcon>
 
-                            <AtlanIcon
-                                v-if="item.label == 'All' && !item.hideIcon"
-                                icon="Globe"
-                                class="self-center mr-1 mb-0.5"
-                            ></AtlanIcon>
-                            <img
-                                v-else-if="
-                                    item.image && !item.hideIcon && useImagePath
-                                "
-                                :src="item.image"
-                                class="mr-1 mb-0.5 h-4 w-4"
-                            />
-                            <AtlanIcon
-                                v-else-if="item.image && !item.hideIcon"
-                                :icon="item.image"
-                                class="self-center mr-1 mb-0.5"
-                            ></AtlanIcon>
+                                <AtlanIcon
+                                    v-if="item.label == 'All' && !item.hideIcon"
+                                    icon="Globe"
+                                    class="self-center mr-1 mb-0.5"
+                                ></AtlanIcon>
+                                <img
+                                    v-else-if="
+                                        item.image &&
+                                        !item.hideIcon &&
+                                        useImagePath
+                                    "
+                                    :src="item.image"
+                                    class="mr-1 mb-0.5 h-4 w-4"
+                                />
+                                <AtlanIcon
+                                    v-else-if="item.image && !item.hideIcon"
+                                    :icon="item.image"
+                                    class="self-center mr-1 mb-0.5"
+                                ></AtlanIcon>
+                            </div>
 
                             <div class="self-center text-sm">
                                 {{ item.label }}
                             </div>
                             <div
                                 :class="$style.chip"
-                                class="self-center text-xs font-bold tracking-wide text-gray-400 mt-0.5 ml-1"
+                                class="self-center text-xs font-bold tracking-wide text-gray-400 mt-0.5"
                             >
                                 {{ getCountString(item.count, item.showZero) }}
                             </div>

@@ -6,7 +6,7 @@ import ScheduledQueryPreview from '~/assets/images/preference/Schedule-queries-t
 import DownloadDataPreview from '~/assets/images/preference/Download-Data-toggle.gif'
 import WorkflowPreview from '~/assets/images/preference/Worflow-Center-Image.png'
 import LookerFieldPreview from '~/assets/images/preference/Looker-level-lineage.png'
-import TermsAttributesPreview from '~/assets/images/preference/terms-attributes-preferences.gif'
+import TermsAttributesPreview from '~/assets/images/preference/terms_attribute_preference.gif'
 
 export const orgPrefrencesKey = 'orgLabPreferences'
 

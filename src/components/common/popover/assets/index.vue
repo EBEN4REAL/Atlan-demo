@@ -467,7 +467,7 @@
         },
         emits: ['previewAsset'],
         setup(props, { slots, emit }) {
-            const { item } = toRefs(props)
+            const { item, overlayClassName, placement } = toRefs(props)
 
             const {
                 certificateStatus,
@@ -602,6 +602,8 @@
             })
 
             return {
+                placement,
+                overlayClassName,
                 localAssetPopoverVisible,
                 certificateStatus,
                 enteredPill,

@@ -105,7 +105,7 @@ export function useUtils() {
         if (subpanels.length > 0 && subpanels[0].columns?.length == 0)
             res = 'No Columns Added for Group'
         subpanels.forEach((subpanel, i) => {
-            res += subpanel.columnsData?.map((e) => e.label).join(', ')
+            res += subpanel.columnsData?.map((e) => e.label).join(', ') ?? ''
         })
         return res
     }

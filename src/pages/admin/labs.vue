@@ -83,7 +83,9 @@
                 const attributes = tenantRaw.value.attributes || {}
                 const preferences =
                     JSON.parse(attributes[orgPrefrencesKey] || '{}') || {}
+                console.log(featureEnabledMap.value[feature.key])
                 const finalStatus = !featureEnabledMap.value[feature.key]
+                console.log(finalStatus)
                 preferences[feature.key] = finalStatus
                 console.log('final preferences', finalStatus, preferences)
                 const updatedTenant = {
@@ -174,7 +176,8 @@
                     hoveredFeature.illustration = ''
                 }
             }
-
+            console.log(featureEnabledMap.value)
+            console.log(featureList)
             return {
                 featureList,
                 handleSwitch,

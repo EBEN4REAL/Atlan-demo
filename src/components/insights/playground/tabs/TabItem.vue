@@ -161,7 +161,6 @@
                     />
                     <div
                         v-else-if="!tab.isSaved"
-                        class="cross-hover"
                     >
                         <div
                             v-if="
@@ -174,13 +173,12 @@
                 </div>
                 <div 
                     v-else
-                    class="pt-1 w-4 h-4"
+                    class="pt-1 w-4"
                 >
-                    <div @click.stop="callOnEdit">
+                    <div class="flex rounded-sm my-0.5 h-4 close-hover" @click.stop="callOnEdit">
                         <AtlanIcon
                             v-if="length >= 2"
                             icon="Close"
-                            class="w-4 h-4 rounded-sm cross-hover"
                         />
                     </div>
                 </div>
@@ -189,7 +187,7 @@
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
     .drop-container {
         color: white;
         text-align: center;
@@ -229,10 +227,11 @@
         width: 16;
         margin: 1px
     }
-    .cross-hover {
+    .close-hover {
         z-index: 4;
+        padding: 0.5px ;
     }
-    .cross-hover:hover {
-        background: #ededed;
+    .close-hover:hover {
+        background-color: #ededed !important;
     }
 </style>

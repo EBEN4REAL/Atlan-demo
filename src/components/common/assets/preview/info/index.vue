@@ -1147,53 +1147,31 @@
                 v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
                 class="flex flex-col"
             >
-                <p class="flex items-center px-5 mb-1 text-sm text-gray-500">
-                    Related Terms
-
-                    <span class="mx-2">
-                        <a-tooltip>
-                            <template #title>
-                                Associated terms. Example: For term "customer",
-                                the related term "account" may be added
-                            </template>
-                            <atlan-icon icon="Info" class="h-3" />
-                        </a-tooltip>
-                    </span>
-                </p>
-                <RelatedTerms
-                    v-model="localSeeAlso"
-                    :selected-asset="selectedAsset"
-                    class="px-5"
-                    :edit-permission="editPermission"
-                    :allow-delete="editPermission"
-                    @change="handleSeeAlsoUpdate"
-                >
-                </RelatedTerms>
-                <!-- Antonyms widget -->
+                <!-- Recommended terms widget -->
                 <p
-                    v-if="showAntonyms"
-                    class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4"
+                    v-if="showPreferredTerms"
+                    class="flex items-center px-5 mb-1 text-sm text-gray-500"
                 >
-                    Antonyms
+                    Recommended terms
                     <span class="mx-2">
                         <a-tooltip>
                             <template #title>
-                                Opposite of this term. Example: For term
-                                "profit", the related term "loss" is an antonym
+                                Related terms which should be used instead of
+                                this one
                             </template>
                             <atlan-icon icon="Info" class="h-3" />
                         </a-tooltip>
                     </span>
                 </p>
                 <RelatedTerms
-                    v-if="showAntonyms"
-                    v-model="localAntonyms"
+                    v-if="showPreferredTerms"
+                    v-model="localPreferredTerms"
                     :selected-asset="selectedAsset"
                     class="px-5"
                     :edit-permission="editPermission"
                     :allow-delete="editPermission"
-                    attribute-type="antonyms"
-                    @change="handleAntonymsUpdate"
+                    attribute-type="preferredTerms"
+                    @change="handlePreferredTermsUpdate"
                 >
                 </RelatedTerms>
                 <!-- Synonyms widget -->
@@ -1224,31 +1202,54 @@
                 >
                 </RelatedTerms>
 
-                <!-- Recommended terms widget -->
+                <!-- Antonyms widget -->
                 <p
-                    v-if="showPreferredTerms"
+                    v-if="showAntonyms"
                     class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4"
                 >
-                    Recommended terms
+                    Antonyms
                     <span class="mx-2">
                         <a-tooltip>
                             <template #title>
-                                Related terms which should be used instead of
-                                this one
+                                Opposite of this term. Example: For term
+                                "profit", the related term "loss" is an antonym
                             </template>
                             <atlan-icon icon="Info" class="h-3" />
                         </a-tooltip>
                     </span>
                 </p>
                 <RelatedTerms
-                    v-if="showPreferredTerms"
-                    v-model="localPreferredTerms"
+                    v-if="showAntonyms"
+                    v-model="localAntonyms"
                     :selected-asset="selectedAsset"
                     class="px-5"
                     :edit-permission="editPermission"
                     :allow-delete="editPermission"
-                    attribute-type="preferredTerms"
-                    @change="handlePreferredTermsUpdate"
+                    attribute-type="antonyms"
+                    @change="handleAntonymsUpdate"
+                >
+                </RelatedTerms>
+
+                <p class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4">
+                    Related Terms
+
+                    <span class="mx-2">
+                        <a-tooltip>
+                            <template #title>
+                                Associated terms. Example: For term "customer",
+                                the related term "account" may be added
+                            </template>
+                            <atlan-icon icon="Info" class="h-3" />
+                        </a-tooltip>
+                    </span>
+                </p>
+                <RelatedTerms
+                    v-model="localSeeAlso"
+                    :selected-asset="selectedAsset"
+                    class="px-5"
+                    :edit-permission="editPermission"
+                    :allow-delete="editPermission"
+                    @change="handleSeeAlsoUpdate"
                 >
                 </RelatedTerms>
             </div>
@@ -1523,7 +1524,8 @@
                 localMeanings,
                 localCategories,
                 localSeeAlso,
-                localAntonyms,localSynonyms,
+                localAntonyms,
+                localSynonyms,
                 localPreferredTerms,
                 handleSeeAlsoUpdate,
                 handleAntonymsUpdate,
@@ -1555,7 +1557,6 @@
             const showSynonyms = computed(
                 () => featureEnabledMap.value[SYNONYMS]
             )
-
 
             const limit = ref(0)
             const offset = ref(0)
@@ -1760,7 +1761,7 @@
                 setAllAdmins,
                 showPreferredTerms,
                 showAntonyms,
-                showSynonyms
+                showSynonyms,
             }
         },
     })

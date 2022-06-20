@@ -6,20 +6,16 @@
             >Associated Terms</span
         >
         <div
-            v-if="showAntonyms && antonyms(asset)?.length"
+            v-if="showSynonyms && synonyms(asset)?.length"
             class="flex items-center py-4"
-            :class="{
-                'border-b':
-                    (showSynonyms && synonyms(asset)?.length) ||
-                    seeAlso(asset)?.length,
-            }"
+            :class="{ 'border-b': seeAlso(asset)?.length }"
         >
-            <span class="w-40">Antonyms ({{ antonyms(asset)?.length }})</span>
+            <span class="w-40">Synonyms ({{ synonyms(asset)?.length }})</span>
             <div
-                v-if="antonyms(asset)?.length"
-                class="flex flex-wrap items-center gap-1 text-sm text-gray-500 mt-2"
+                v-if="synonyms(asset)?.length"
+                class="flex flex-wrap items-center gap-1 text-sm text-gray-500"
             >
-                <template v-for="term in antonyms(asset)" :key="term.guid">
+                <template v-for="term in synonyms(asset)" :key="term.guid">
                     <TermPopover
                         :term="term"
                         trigger="hover"
@@ -44,16 +40,20 @@
             </div>
         </div>
         <div
-            v-if="showSynonyms && synonyms(asset)?.length"
+            v-if="showAntonyms && antonyms(asset)?.length"
             class="flex items-center py-4"
-            :class="{ 'border-b': seeAlso(asset)?.length }"
+            :class="{
+                'border-b':
+                    (showSynonyms && synonyms(asset)?.length) ||
+                    seeAlso(asset)?.length,
+            }"
         >
-            <span class="w-40">Synonyms ({{ synonyms(asset)?.length }})</span>
+            <span class="w-40">Antonyms ({{ antonyms(asset)?.length }})</span>
             <div
-                v-if="synonyms(asset)?.length"
-                class="flex flex-wrap items-center gap-1 text-sm text-gray-500"
+                v-if="antonyms(asset)?.length"
+                class="flex flex-wrap items-center gap-1 text-sm text-gray-500 mt-2"
             >
-                <template v-for="term in synonyms(asset)" :key="term.guid">
+                <template v-for="term in antonyms(asset)" :key="term.guid">
                     <TermPopover
                         :term="term"
                         trigger="hover"

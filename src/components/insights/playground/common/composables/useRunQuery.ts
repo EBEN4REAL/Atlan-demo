@@ -354,6 +354,10 @@ export default function useRunQuery() {
                                 message?.details.executionTime
                             tabsArray.value[
                                 tabIndex
+                            ].playground.resultsPane.result.sourceExecutionTime =
+                                message?.details.executionTime
+                            tabsArray.value[
+                                tabIndex
                             ].playground.resultsPane.result.totalRowsCount =
                                 message?.details.totalRowsStreamed
                             tabsArray.value[

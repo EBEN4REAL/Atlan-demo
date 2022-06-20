@@ -10,22 +10,11 @@
 
         <template v-else-if="configMap">
             <Config
-                v-if="featureEnabledMap[WORKFLOW_CENTER_V2]"
                 :workflow-template="packageObject"
                 :workflow-object="workflowObject"
                 :config-map="configMapParsed"
                 :default-value="getGlobalArguments(workflowObject)"
             />
-            <template v-else>
-                <Setup
-                    :workflowTemplate="packageObject"
-                    :workflowObject="workflowObject"
-                    :configMap="configMapParsed"
-                    :isEdit="true"
-                    :defaultValue="getGlobalArguments(workflowObject)"
-                />
-                <Preview :item="packageObject" mode="package" />
-            </template>
         </template>
     </div>
 </template>
@@ -41,11 +30,6 @@
     import Preview from '~/workflowsv2/migrated/packageSidebar.vue'
 
     import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
-
-    import {
-        featureEnabledMap,
-        WORKFLOW_CENTER_V2,
-    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'WorkflowConfig',
@@ -105,8 +89,6 @@
                 error,
                 configMapParsed,
                 getGlobalArguments,
-                featureEnabledMap,
-                WORKFLOW_CENTER_V2,
             }
         },
     })

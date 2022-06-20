@@ -122,11 +122,6 @@
     import EmptyView from '@common/empty/index.vue'
     import ErrorView from '@common/error/discover.vue'
 
-    import {
-        featureEnabledMap,
-        WORKFLOW_CENTER_V2,
-    } from '~/composables/labs/labFeatureList'
-
     import WorkflowList from './list/index.vue'
     import WorkflowPreview from '~/workflowsv2/migrated/packageSidebar.vue'
     import { useWorkflowDiscoverList } from '~/workflowsv2/composables/useWorkflowDiscoverList'
@@ -150,11 +145,7 @@
             const router = useRouter()
 
             const handleNewWorkflow = () => {
-                router.push(
-                    featureEnabledMap.value[WORKFLOW_CENTER_V2]
-                        ? '/workflows/setup'
-                        : '/workflowsv1/setup'
-                )
+                router.push('/workflows/setup')
             }
 
             const activeKey = ref(['sourceCategory_0'])

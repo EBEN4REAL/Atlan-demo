@@ -113,10 +113,7 @@
             />
 
             <div
-                v-if="
-                    packageType(item) === 'connector' &&
-                    featureEnabledMap[WORKFLOW_CENTER_V2]
-                "
+                v-if="packageType(item) === 'connector'"
                 class="px-5 space-y-1.5 text-sm pb-4"
             >
                 <span class="mb-1 text-gray-500"
@@ -192,11 +189,6 @@
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
     import { useWorkflowDiscoverList } from '~/workflowsv2/composables/useWorkflowDiscoverList'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
-
-    import {
-        featureEnabledMap,
-        WORKFLOW_CENTER_V2,
-    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'PackageSidebar',
@@ -279,7 +271,7 @@
 
             const handleSetupWorkflow = () => {
                 // prettier-ignore
-                router.push(`${featureEnabledMap.value[WORKFLOW_CENTER_V2] ? '/workflows/setup/' : '/workflowsv1/setup/'}${item.value?.metadata?.name}`)
+                router.push(`/workflows/setup/${item.value?.metadata?.name}`)
             }
 
             const {
@@ -342,8 +334,6 @@
                 isDrawerVisible,
                 selectedConnectionId,
                 handleConnectionSelect,
-                featureEnabledMap,
-                WORKFLOW_CENTER_V2,
             }
         },
     })

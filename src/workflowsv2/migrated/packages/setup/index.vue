@@ -162,13 +162,7 @@
                     </template>
                     <template #extra>
                         <div class="flex items-center justify-center">
-                            <router-link
-                                :to="
-                                    featureEnabledMap[WORKFLOW_CENTER_V2]
-                                        ? '/workflows'
-                                        : '/workflowsv1'
-                                "
-                            >
+                            <router-link to="/workflows">
                                 <AtlanButton2
                                     v-if="updateStatus.status === 'success'"
                                     color="secondary"
@@ -269,11 +263,6 @@
         until,
     } from '@vueuse/core'
     import { useRoute, useRouter } from 'vue-router'
-
-    import {
-        featureEnabledMap,
-        WORKFLOW_CENTER_V2,
-    } from '~/composables/labs/labFeatureList'
 
     // Components
     import DynamicForm from '~/workflowsv2/components/dynamicForm2/index.vue'
@@ -492,19 +481,12 @@
             const handleTrackLink = () => {
                 if (run.value?.metadata?.name) {
                     router.push(
-                        featureEnabledMap.value[WORKFLOW_CENTER_V2]
-                            ? `/workflows/profile/${
-                                  data.value?.metadata?.name ||
-                                  run.value?.metadata?.labels[
-                                      'workflows.argoproj.io/workflow-template'
-                                  ]
-                              }/runs?name=${run.value?.metadata?.name}`
-                            : `/workflowsv1/${
-                                  data.value?.metadata?.name ||
-                                  run.value?.metadata?.labels[
-                                      'workflows.argoproj.io/workflow-template'
-                                  ]
-                              }/runs?name=${run.value?.metadata?.name}`
+                        `/workflows/profile/${
+                            data.value?.metadata?.name ||
+                            run.value?.metadata?.labels[
+                                'workflows.argoproj.io/workflow-template'
+                            ]
+                        }/runs?name=${run.value?.metadata?.name}`
                     )
                 }
 
@@ -756,11 +738,7 @@
             }
 
             const handleExit = () => {
-                router.replace(
-                    featureEnabledMap.value[WORKFLOW_CENTER_V2]
-                        ? '/workflows/marketplace'
-                        : '/workflowsv1/setup'
-                )
+                router.replace('/workflows/marketplace')
             }
 
             const handleStepClick = (step) => {
@@ -816,8 +794,6 @@
                 packageName,
                 icon,
                 emoji,
-                featureEnabledMap,
-                WORKFLOW_CENTER_V2,
             }
         },
     })

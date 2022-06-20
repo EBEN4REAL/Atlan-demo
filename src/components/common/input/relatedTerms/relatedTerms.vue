@@ -96,6 +96,7 @@
     } from 'vue'
     import { useVModels } from '@vueuse/core'
     import { assetInterface } from '~/types/assets/asset.interface'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
 
     import GlossaryTree from '~/components/glossary/index.vue'
     import TermPill from '@/common/pills/term.vue'
@@ -140,12 +141,18 @@
                     return []
                 },
             },
+            attributeType: {
+                type: String,
+                required: false,
+                default: () => 'seeAlso',
+            },
         },
         // emits: ['update:selectedAsset'],
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
+            const { synonyms,seeAlso, preferredTerms, antonyms } = useAssetInfo()
             const localValue = ref(modelValue.value)
             const checkedGuids = ref(modelValue.value.map((term) => term.guid))
             const hasBeenEdited = ref(false)
@@ -252,6 +259,16 @@
                 enteredPill: termEnteredPill,
                 leftPill: termLeftPill,
             } = useMouseEnterDelay()
+
+            watch(selectedAsset, () => {
+                const attributeMap = {
+                    seeAlso: seeAlso(selectedAsset.value),
+                    preferredTerms: preferredTerms(selectedAsset.value),
+                    antonyms: antonyms(selectedAsset.value),
+                    synonyms:synonyms(selectedAsset.value)
+                }
+                modelValue.value = attributeMap[props?.attributeType]
+            })
 
             return {
                 getFetchedTerm,

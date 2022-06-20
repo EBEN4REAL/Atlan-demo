@@ -27,6 +27,7 @@ import {
     mssql,
     glue,
     salesforce,
+    s3,
 } from './icons'
 
 const lineageStore = useLineageStore()
@@ -82,6 +83,8 @@ export const getNodeTypeText = {
     SalesforceReport: 'Report',
     SalesforceObject: 'Object',
     SalesforceField: 'Field',
+    // S3
+    S3Object: 'Object',
 }
 
 /* This is a mapping of the source of the asset to the image. */
@@ -99,6 +102,7 @@ export const getNodeSourceImage = {
     mssql,
     glue,
     salesforce,
+    s3,
 }
 
 /* A list of the types of ports that we are interested in. */

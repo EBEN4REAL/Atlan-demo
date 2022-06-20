@@ -209,6 +209,7 @@
         "swrv",
         "swrv/dist/cache/adapters/localStorage",
         "tippy.js",
+        "turndown",
         "userflow.js",
         "vue",
         "vue-axios",
@@ -216,6 +217,7 @@
         "vue-horizontal",
         "vue-i18n",
         "vue-linkify",
+        "vue-plugin-load-script",
         "vue-router",
         "vue3-dnd",
         "vue3-json-editor"

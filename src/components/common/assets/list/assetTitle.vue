@@ -39,7 +39,7 @@
         :classes="
             isScrubbed(asset)
                 ? 'mb-0 font-semibold text-gray-500 opacity-80 tracking-wide'
-                : 'font-bold mb-0 text-gray-500 tracking-wide'
+                : 'font-bold mb-0 text-gray-700 tracking-wide'
         "
     />
 

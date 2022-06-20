@@ -129,6 +129,9 @@ export function useBody(
                         } else {
                             q.orFilter('wildcard', 'qualifiedName', `${i}/*`)
                             q.orFilter('term', 'qualifiedName', `${i}`)
+
+                            // For GTC
+                            q.orFilter('wildcard', 'qualifiedName', `*@${i}`)
                         }
                     })
 

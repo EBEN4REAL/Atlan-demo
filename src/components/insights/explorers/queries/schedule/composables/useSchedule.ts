@@ -49,7 +49,7 @@ export function useSchedule() {
             if (savedQueryId) {
                 workflowName = `asq-${savedQueryId}-${generateUUID().slice(
                     0,
-                    5
+                    4
                 )}`
             } else {
                 workflowName = `${workflowName}-${seconds.toString()}`

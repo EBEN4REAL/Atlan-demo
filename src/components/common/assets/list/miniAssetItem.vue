@@ -620,6 +620,7 @@
                                     :is-propagated="
                                         isPropagated(classification)
                                     "
+                                    :count="classification?.count"
                                     :color="
                                         classification.options?.color?.toLowerCase()
                                     "
@@ -646,6 +647,7 @@
     import ClassificationPill from '@/common/pills/classification.vue'
     import PopoverClassification from '@/common/popover/classification/index.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
+    import {groupClassifications} from "~/utils/groupClassifications"
 
     export default defineComponent({
         name: 'MiniAssetListItem',
@@ -775,7 +777,8 @@
                     'name',
                     'typeName'
                 )
-                return matchingIdsResult
+                const groupedClassifications = groupClassifications(matchingIdsResult, isPropagated)
+                return groupedClassifications
             })
             const last = useTimeAgo(
                 item.value.attributes.__modificationTimestamp

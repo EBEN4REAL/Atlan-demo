@@ -2,7 +2,7 @@
     <div>
         <div class="flex items-center px-3 py-2 border-b">
             <div class="w-5 h-5 pb-1 mr-1" style="margin-bottom: 2px">
-                <AtlanLoader v-if="isLoading" class="h-5" />
+                <AtlanLoader v-if="isValidating" class="h-5" />
                 <atlan-icon v-else icon="Search" class="w-auto h-5" />
             </div>
             <a-input
@@ -29,17 +29,18 @@
         <!-- body starts here -->
         <div class="relative flex flex-col pt-2 overflow-y-auto max-h-80">
             <div
-                v-if="!list?.length && queryText.length"
+                v-if="!list?.length && !isValidating"
                 class="flex flex-col items-center justify-center pt-12 pb-20"
             >
                 <atlan-icon icon="NoResultsFound" class="w-auto h-40" />
-                <span class="flex items-center">
+                <span v-if="queryText.length" class="flex items-center">
                     No results found for
                     <span class="font-bold"> "{{ queryText }}"</span>
                 </span>
+                <span v-else class="flex items-center"> No assets found </span>
             </div>
             <div
-                v-else-if="!list.length && !queryText.length"
+                v-else-if="!list.length && !queryText.length && isValidating"
                 class="flex items-center justify-around px-4 mb-6 h-80"
             >
                 <AtlanLoader class="h-10" />
@@ -109,7 +110,6 @@
             // command k behaviour
             const { isCmndKVisible } = toRefs(props)
             const isVisible = computed(() => isCmndKVisible.value)
-            const isLoading = ref(false)
 
             // asset listing
             const queryText = ref('')
@@ -146,6 +146,7 @@
                 assetTypeAggregationList,
                 quickChange,
                 rotateAggregateTab,
+                isValidating,
             } = useDiscoverList({
                 isCache: true,
                 dependentKey,
@@ -175,7 +176,6 @@
             )
 
             const handleSearchChange = useDebounceFn(() => {
-                isLoading.value = true
                 offset.value = 0
                 quickChange()
                 // handleFocusOnInput()
@@ -199,7 +199,6 @@
             }
             handleFocusOnInput()
 
-            // TODO This is a manual isLoading hack, not sure why one from composable not working
             watch(
                 list,
                 async () => {
@@ -213,7 +212,6 @@
                                 block: 'end',
                             })
                     }
-                    isLoading.value = false
                 },
                 { deep: true }
             )
@@ -235,7 +233,6 @@
             })
 
             const handleAssetTypeChange = () => {
-                isLoading.value = true
                 offset.value = 0
                 quickChange()
                 discoveryStore.setCmdkActivePostFacet(postFacets.value)
@@ -277,7 +274,7 @@
                 inputBox,
                 assetCategoryList,
                 facets,
-                isLoading,
+                isValidating,
                 assetTypeAggregationList,
                 handleAssetTypeChange,
                 handleFocusOnInput,

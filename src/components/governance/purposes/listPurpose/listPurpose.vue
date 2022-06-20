@@ -11,8 +11,11 @@
     <template v-else-if="!personaList.length && !filter.displayName">
         <!-- !filter.displayName instead of !searchText -> leakage logic due to debounce, find better way to solve }} -->
         <EmptyView
+            empty-screen="IllustrationPurposeDemo"
             class="text-center"
-            headline="No purpose is associated with this classification"
+            desc="No purposes are linked to this classification"
+            image-class="w-24 h-20"
+            desc-class="w-40 mt-8 text-sm text-gray-500"
         />
     </template>
     <template v-else>
@@ -41,8 +44,8 @@
                 <PurposeCard
                     :p="p"
                     :classification-list="classificationList"
-                    :padding-x='paddingX'
-                    :padding-y='paddingY'
+                    :padding-x="paddingX"
+                    :padding-y="paddingY"
                     class="border-b"
                 />
             </template>
@@ -69,18 +72,18 @@
         paddingX: {
             type: Number,
             required: false,
-            default: 10
+            default: 10,
         },
         paddingY: {
             type: Number,
             required: false,
-            default: 8
+            default: 8,
         },
         customClasses: {
             type: String,
             required: false,
-            default: 'flex-grow px-2 overflow-y-auto'
-        }
+            default: 'flex-grow px-2 overflow-y-auto',
+        },
     })
 
     const { classificationID } = toRefs(props)

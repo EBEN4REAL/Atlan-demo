@@ -1,6 +1,6 @@
 <template>
     <div
-        class="relative border border-gray-200 overflow-y-auto rounded-lg shadow-lg max-w-xs"
+        class="relative max-w-xs overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg"
     >
         <template v-for="(mention, index) in items" :key="index">
             <UserMention

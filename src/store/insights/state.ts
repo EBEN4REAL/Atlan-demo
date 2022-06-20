@@ -9,6 +9,7 @@ export interface PreviewTabs {
     queryErrorObj: Object
     totalRowsCount: number
     executionTime: number
+    sourceExecutionTime: number
     eventSourceInstance: any
     isQueryAborted: boolean
     tabQueryState: boolean

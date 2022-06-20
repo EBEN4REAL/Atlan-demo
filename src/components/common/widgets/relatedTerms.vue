@@ -1,6 +1,6 @@
 <template>
     <div class="p-6 py-6 rounded-lg bg-white flex flex-col">
-        <span class="font-bold text-base">
+        <span class="font-bold text-base mb-2">
             <span class="bg-primary-light rounded-md p-2 mr-2"
                 ><atlan-icon icon="AssociatedTerm" class="h-5 w-4" /></span
             >Associated Terms</span

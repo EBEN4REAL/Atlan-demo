@@ -1159,7 +1159,7 @@
                                 Related terms which should be used instead of
                                 this one
                             </template>
-                            <atlan-icon icon="Info" class="h-3" />
+                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
                         </a-tooltip>
                     </span>
                 </p>
@@ -1186,7 +1186,7 @@
                                 Interchangeable terms. Example: "customer" and
                                 "client"
                             </template>
-                            <atlan-icon icon="Info" class="h-3" />
+                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
                         </a-tooltip>
                     </span>
                 </p>
@@ -1214,7 +1214,7 @@
                                 Opposite of this term. Example: For term
                                 "profit", the related term "loss" is an antonym
                             </template>
-                            <atlan-icon icon="Info" class="h-3" />
+                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
                         </a-tooltip>
                     </span>
                 </p>
@@ -1239,7 +1239,7 @@
                                 Associated terms. Example: For term "customer",
                                 the related term "account" may be added
                             </template>
-                            <atlan-icon icon="Info" class="h-3" />
+                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
                         </a-tooltip>
                     </span>
                 </p>

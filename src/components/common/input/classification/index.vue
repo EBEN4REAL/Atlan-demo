@@ -146,7 +146,7 @@
                         ></span> </a-button
                 ></Shortcut>
             </a-tooltip>
-            <template v-for="classification in list" :key="classification.guid">
+            <template v-for="(classification, index) in list" :key="index">
                 <Popover
                     :classification="classification"
                     :entity-guid="guid"
@@ -459,6 +459,11 @@
                         message.success(`Request raised`)
                         isEdit.value = false
                         requestLoading.value = false
+                        selectedValue.value = {
+                            classifications: modelValue.value
+                                .filter((i) => !isPropagated(i))
+                                .map((j) => j.typeName),
+                        }
                     }
                 })
                 requestLoading.value = isRequestLoading.value

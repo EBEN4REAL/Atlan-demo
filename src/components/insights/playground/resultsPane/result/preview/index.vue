@@ -137,9 +137,22 @@
             <span v-if="queryExecutionTime > 0" class="flex items-center mr-1">
                 <span class="mr-1" style="color: #6b7692">
                     in
-                    <span class="font-mono">{{
-                        getFormattedTimeFromMilliSeconds(queryExecutionTime)
-                    }}</span>
+                    <QueryDurationPopover
+                        :executionTime="queryExecutionTime"
+                        :sourceExecutionTime="sourceExecutionTime"
+                    >
+                        <template #popoverContent>
+                            <span
+                                class="font-mono font-medium text-blue-400 cursor-pointer hover:text-primary hover:underline"
+                            >
+                                {{
+                                    getFormattedTimeFromMilliSeconds(
+                                        queryExecutionTime
+                                    )
+                                }}
+                            </span>
+                        </template>
+                    </QueryDurationPopover>
                 </span>
             </span>
             <!-- -------------------------------------------- -->
@@ -171,11 +184,23 @@
                         >
                             <span class="mr-1">
                                 in
-                                <span class="font-mono">{{
-                                    getFormattedTimeFromMilliSeconds(
-                                        queryExecutionTime
-                                    )
-                                }}</span>
+
+                                <QueryDurationPopover
+                                    :executionTime="queryExecutionTime"
+                                    :sourceExecutionTime="sourceExecutionTime"
+                                >
+                                    <template #popoverContent>
+                                        <span
+                                            class="font-mono text-blue-400 cursor-pointer hover:text-primary hover:underline"
+                                        >
+                                            {{
+                                                getFormattedTimeFromMilliSeconds(
+                                                    queryExecutionTime
+                                                )
+                                            }}
+                                        </span>
+                                    </template>
+                                </QueryDurationPopover>
                             </span>
                         </span>
                         <!-- -------------------------------------------- -->
@@ -212,9 +237,10 @@
     import { MenuItem } from 'ant-design-vue'
     import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import QueryDurationPopover from './queryDurationPopover/index.vue'
 
     export default defineComponent({
-        components: { Tooltip, InsightsThreeDotMenu },
+        components: { Tooltip, InsightsThreeDotMenu, QueryDurationPopover },
         props: {
             width: {
                 type: Number,
@@ -370,6 +396,19 @@
                 } else {
                     return activeInlineTab.value?.playground?.resultsPane
                         ?.result?.executionTime
+                }
+            })
+            const sourceExecutionTime = computed(() => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    const _index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                    return insights_Store.previewTabs[_index]
+                        .sourceExecutionTime
+                } else {
+                    return activeInlineTab.value?.playground?.resultsPane
+                        ?.result?.sourceExecutionTime
                 }
             })
 
@@ -562,6 +601,7 @@
             }
 
             return {
+                sourceExecutionTime,
                 hideTabsToolTips,
                 onDropdownVisibleChange,
                 dropdownOptions,

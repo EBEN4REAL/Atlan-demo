@@ -70,10 +70,12 @@ export default function useRunQuery() {
             columns,
             executionTime,
             previewTabIndex,
+            sourceExecutionTime,
         }: {
             rows: any[]
             columns: any[]
             executionTime: number
+            sourceExecutionTime?: number
             previewTabIndex: number
         }) => void
         limitRows?: Ref<{ checked: boolean; rowsCount: number }>
@@ -212,6 +214,8 @@ export default function useRunQuery() {
                                 rows: toRaw(dataList.value),
                                 columns: toRaw(columnList.value),
                                 executionTime: message?.details.executionTime,
+                                sourceExecutionTime:
+                                    message?.details.executionTime,
                                 previewTabIndex: previewTabIndex.value,
                             })
                             if (eventSource.value?.close) {

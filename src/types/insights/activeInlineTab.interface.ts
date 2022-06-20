@@ -71,6 +71,7 @@ export interface activeInlineTabInterface {
                 totalRowsCount: number
                 abortQueryFn: Function | undefined
                 executionTime: number
+                sourceExecutionTime: number
                 queryErrorObj: any
                 errorDecorations: any
                 abortQueryFn: Function

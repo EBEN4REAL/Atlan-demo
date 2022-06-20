@@ -18,7 +18,6 @@
                 :list="connectorAggregateList"
                 :shortcut-enabled="false"
                 :useImagePath="true"
-                :class="$style.connectionNavigator"
                 @change="handleConnectorTypeChange"
             >
             </AggregationTabs>
@@ -202,10 +201,4 @@
     })
 </script>
 
-<style lang="less" module>
-    .connectionNavigator {
-        :global(.ant-tabs-nav-list) {
-            @apply block !important;
-        }
-    }
-</style>
+<style lang="less" module></style>

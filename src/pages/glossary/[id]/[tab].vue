@@ -47,18 +47,25 @@
                 type: Object,
                 required: true,
             },
+            // guids of assets which should be fetched again due to updates
+            refreshGuids: {
+                type: Array,
+                required: false,
+                default: () => [],
+            },
         },
         setup(props) {
             useHead({
                 title: 'Glossary',
             })
-            const { selectedAsset } = toRefs(props)
+            const { selectedAsset, refreshGuids } = toRefs(props)
             const localSelected = ref()
             const localReadmeAsset = ref()
 
             const route = useRoute()
             const id = computed(() => route?.params?.id || null)
             const handlePreview = inject('preview')
+            const updateList = inject('updateList')
             const limit = ref(1)
             const offset = ref(0)
             const glossaryStore = useGlossaryStore()
@@ -72,7 +79,10 @@
                 handlePreview(localSelected.value)
             }
             const fetchKey = computed(() => {
-                if (selectedAsset.value.guid === id.value) {
+                if (
+                    selectedAsset.value.guid === id.value &&
+                    !refreshGuids.value?.includes(selectedAsset.value?.guid)
+                ) {
                     return null
                 }
                 return id.value
@@ -135,7 +145,6 @@
                     asset.value?.attributes?.anchor?.uniqueAttributes
                         ?.qualifiedName
 
-                console.log(parentGlossaryQF)
                 if (
                     glossaryStore?.activeGlossaryQualifiedName !== '' &&
                     glossaryStore?.activeGlossaryQualifiedName !==
@@ -143,7 +152,6 @@
                     asset.value?.guid
                 ) {
                     if (asset.value?.typeName !== 'AtlasGlossary') {
-                        console.log('change QF')
                         handleSelectGlossary(parentGlossaryQF)
                     } else {
                         if (asset?.value?.attributes?.qualifiedName)
@@ -155,6 +163,7 @@
             }
             watch(list, () => {
                 if (list.value.length > 0) {
+                    console.log("called ", list.value[0]?.displayText)
                     localSelected.value = list.value[0]
                     if (
                         list.value[0] &&
@@ -167,7 +176,7 @@
                             localSelected.value = found
                             handlePreview(found)
                         }
-                    } else handlePreview(list.value[0])
+                    } else updateList(list.value[0])
                     setActiveGlossary(localSelected)
                 }
             })

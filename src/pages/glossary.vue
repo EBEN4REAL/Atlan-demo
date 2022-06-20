@@ -22,6 +22,7 @@
                     <router-view
                         v-if="isItem"
                         :selected-asset="selectedGlossary"
+                        :refresh-guids="refreshGuids"
                     />
                 </div>
                 <div
@@ -111,6 +112,7 @@
             const localSelected = ref()
             const glossaryStore = useGlossaryStore()
             const glossaryDiscovery = ref(null)
+            const refreshGuids = ref<String[]>([])
             const selectedGlossaryQf = ref(
                 glossaryStore.activeGlossaryQualifiedName
             )
@@ -119,13 +121,17 @@
                 localSelected.value = selectedGlossary.value
             }
             const handlePreview = (asset) => {
+                console.log(asset)
                 if (id?.value === asset?.guid) {
                     localSelected.value = asset
                     glossaryStore.setSelectedGTC(asset)
+                    console.log('asset refreshed')
                 }
             }
 
             watch(selectedGlossary, () => {
+                console.log('change selected')
+                console.log(selectedGlossary.value)
                 localSelected.value = selectedGlossary.value
             })
             const reInitTree = () => {
@@ -178,6 +184,14 @@
                     )
                 } else router.push('/glossary')
             }
+            // maintains the guids of assets to be refreshed
+            const handleAssetsToUpdate = (guids: String[]) => {
+                guids?.forEach((el: String) => {
+                    if (!refreshGuids.value?.includes(el))
+                        refreshGuids.value?.push(el)
+                })
+            }
+
             onMounted(() => {
                 if (!id.value) {
                     reRoute()
@@ -192,6 +206,7 @@
             provide('preview', handlePreview)
             provide('reInitTree', reInitTree)
             provide('handleSelectGlossary', handleSelectGlossary)
+            provide('handleAssetsToUpdate', handleAssetsToUpdate)
             return {
                 isItem,
                 selectedGlossary,
@@ -200,6 +215,7 @@
                 selectedGlossaryQf,
                 getGlossaryByQF,
                 handleAddGlossary,
+                refreshGuids,
                 glossaryList: glossaryStore.list,
             }
         },

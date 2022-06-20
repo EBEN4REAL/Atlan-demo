@@ -26,6 +26,7 @@
                         :class="$style.previewtab"
                         :style="'height: calc(100%)'"
                         tab-position="top"
+                        @change="changeTab"
                     >
                         <a-tab-pane
                             v-for="tab in tabsList"
@@ -43,6 +44,7 @@
                                             ? 'active-tab-indicator'
                                             : ''
                                     "
+                                    @click="() => changeTab(tab.id)"
                                 >
                                     <AtlanIcon
                                         v-if="tab?.icon"
@@ -53,7 +55,6 @@
                                                 ? '#225BD2'
                                                 : '#6A7692'
                                         "
-                                        @click="() => changeTab(tab)"
                                     />
                                     <div
                                         :class="
@@ -325,10 +326,9 @@
                 tabsList.find((tab) => tab.id === activeTabId.value)
             )
 
-            const changeTab = (tab: TabInterface) => {
-                console.log('new tab', tab)
-                activeTabId.value = tab.id
-                setActiveExplorerTab(tab.id)
+            const changeTab = (tabId: string) => {
+                // activeTabId.value = tab.id
+                setActiveExplorerTab(tabId)
             }
             const editorInstance: Ref<any> = ref()
             const monacoInstance: Ref<any> = ref()

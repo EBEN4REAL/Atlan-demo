@@ -200,3 +200,5 @@
         },
     })
 </script>
+
+<style lang="less" module></style>

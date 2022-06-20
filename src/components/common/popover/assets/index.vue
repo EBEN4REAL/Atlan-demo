@@ -6,6 +6,7 @@
         :mouse-enter-delay="mouseEnterDelay"
         :trigger="popoverTrigger"
         :overlayClassName="overlayClassName"
+        @visibleChange="visibleChange"
     >
         <template #content>
             <div class="rounded w-96">
@@ -465,7 +466,7 @@
                 default: '',
             },
         },
-        emits: ['previewAsset'],
+        emits: ['previewAsset', 'visibleChange'],
         setup(props, { slots, emit }) {
             const { item, overlayClassName, placement } = toRefs(props)
 
@@ -597,13 +598,18 @@
                 emit('previewAsset', item)
             }
 
+            const visibleChange = (visible) => {
+                emit('visibleChange', visible)
+            }
+
             onMounted(() => {
                 setCollectionName()
             })
 
             return {
-                placement,
+                visibleChange,
                 overlayClassName,
+                placement,
                 localAssetPopoverVisible,
                 certificateStatus,
                 enteredPill,

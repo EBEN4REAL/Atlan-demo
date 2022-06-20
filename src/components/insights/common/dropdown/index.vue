@@ -38,6 +38,7 @@
                         (e) => {
                             e.stopPropagation()
                             handleMenuItemClick({ index, ...option, item })
+                            $emit('visibleChange', false)
                             return
                         }
                     "

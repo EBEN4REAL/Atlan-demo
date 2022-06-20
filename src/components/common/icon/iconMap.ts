@@ -75,6 +75,7 @@ import Link from '~/assets/images/icons/link.svg'
 import Add from '~/assets/images/icons/add.svg'
 import CircleLoader from '~/assets/images/icons/circle-loader.svg'
 import Term from '~/assets/images/icons/term.svg'
+import AssociatedTerm from '~/assets/images/icons/associated-term-blue.svg'
 import TermDeprecated from '~/assets/images/icons/term-deprecated.svg'
 import TermIssue from '~/assets/images/icons/term-issue.svg'
 import TermVerified from '~/assets/images/icons/term-verified.svg'
@@ -974,4 +975,5 @@ export default {
     IllustrationPersonaDemo,
     IllustrationPurposeDemo,
     FlaskIcon,
+    AssociatedTerm,
 }

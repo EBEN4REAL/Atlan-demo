@@ -209,7 +209,6 @@
         "swrv",
         "swrv/dist/cache/adapters/localStorage",
         "tippy.js",
-        "turndown",
         "userflow.js",
         "vue",
         "vue-axios",

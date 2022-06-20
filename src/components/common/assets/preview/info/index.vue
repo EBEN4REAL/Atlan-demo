@@ -1152,7 +1152,7 @@
                     v-if="showPreferredTerms"
                     class="flex items-center px-5 mb-1 text-sm text-gray-500"
                 >
-                    Recommended terms
+                    Recommended Terms
                     <span class="mx-2">
                         <a-tooltip>
                             <template #title>

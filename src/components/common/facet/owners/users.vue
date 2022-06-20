@@ -319,15 +319,10 @@
             })
 
             const fullName = (item) => {
-                // const screenResolution = window.innerWidth;
-                let name = item.username;
+                const  name = item.username;
                 if (item.firstName) {
-                    name = `${item.firstName} ${item.lastName || ''}`
-                    // eslint-disable-next-line no-nested-ternary
-                    // return isTooltip ? name : (screenResolution < 1200)  ?  truncateString(name, 35, "...")  : (screenResolution < 1500) ? truncateString(name, 13, "...")  : truncateString(name, 30, "...")
                     return name
                 }
-                // return isTooltip ? name : truncateString(name, 23, "...")
                 return name
             }
             

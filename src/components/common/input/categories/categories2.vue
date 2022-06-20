@@ -299,7 +299,6 @@
                     await initCategories()
                 }
                 if (!visible && hasBeenEdited.value) {
-                    console.log('closing with ', localValue.value)
                     modelValue.value = checkedKeys.value.map((cat) => ({
                         guid: cat.value,
                         typeName: 'AtlasGlossaryCategory',
@@ -314,7 +313,6 @@
                 hasBeenEdited.value = false
             }
             const expandNode = (expanded: string[], event: any) => {
-                console.log(expanded, event)
                 const node = event?.node
                 const isExpanded = expandedKeys.value?.includes(node?.guid)
                 if (!isExpanded) {
@@ -381,7 +379,6 @@
                 )
             })
             const updateLocalValue = (newCheckedKeys) => {
-                console.log(checkedKeysSnapshot.value, newCheckedKeys)
                 if (
                     checkedKeysSnapshot.value.length !== newCheckedKeys.length
                 ) {
@@ -399,13 +396,11 @@
                         hasBeenEdited.value = true
                     }
                 }
-                console.log(hasBeenEdited.value)
             }
             watch(checkedKeys, (newCheckedKeys) => {
                 updateLocalValue(newCheckedKeys)
             })
             watch(selectedAssetCategories, () => {
-                console.log('selected asset updated')
                 localValue.value = categories(selectedAsset.value)
                 checkedKeys.value = localValue.value.map((category) => ({
                     label: category.attributes.name,

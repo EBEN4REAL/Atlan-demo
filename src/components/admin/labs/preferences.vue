@@ -86,8 +86,57 @@
                                 feature.name
                             }}</span>
                         </div>
+                        <div v-if="feature?.type === 'checkbox'">
+                            <a-dropdown>
+                                <a
+                                    class="ant-dropdown-link text-primary"
+                                    @click.prevent
+                                >
+                                    {{ getAppliedText(feature)
+                                    }}<atlan-icon
+                                        icon="CaretDown"
+                                        class="h-4 w-4"
+                                    />
+                                </a>
+                                <template #overlay>
+                                    <a-menu class="flex flex-col">
+                                        <a-menu-item
+                                            v-for="el in feature?.values"
+                                            :key="el?.key"
+                                        >
+                                            <a-checkbox
+                                                v-model:checked="
+                                                    featureEnabledMap[el?.key]
+                                                "
+                                                @click="triggerSwitch(el)"
+                                            >
+                                                <div
+                                                    class="flex justify-between items-center w-full"
+                                                >
+                                                    <span>{{ el?.name }}</span>
 
+                                                    <span class="mx-2">
+                                                        <a-tooltip>
+                                                            <template #title>
+                                                                {{
+                                                                    el?.description
+                                                                }}
+                                                            </template>
+                                                            <atlan-icon
+                                                                icon="Info"
+                                                                class="h-3"
+                                                            />
+                                                        </a-tooltip>
+                                                    </span>
+                                                </div>
+                                            </a-checkbox>
+                                        </a-menu-item>
+                                    </a-menu>
+                                </template>
+                            </a-dropdown>
+                        </div>
                         <a-switch
+                            v-else
                             size="small"
                             :checked="featureEnabledMap[feature.key]"
                             :disabled="updateStatus === 'loading'"
@@ -128,6 +177,7 @@
 
         setup(props, { emit }) {
             const processingPreference = ref('')
+            const dropDownVisible = ref<boolean>(false)
 
             const triggerSwitch = (feature) => {
                 processingPreference.value = feature.key
@@ -143,9 +193,22 @@
                 }
             )
 
+            const getAppliedText = (feature) => {
+                const enabledValues = feature?.values
+                    ?.filter((el) => props.featureEnabledMap[el?.key])
+                    .map((i) => i?.name)
+                if (enabledValues?.length < 1) {
+                    return 'No attributes applied'
+                }
+                if (enabledValues?.length > 1)
+                    return `${enabledValues[0]} + ${enabledValues.length - 1}`
+                return enabledValues?.toString()
+            }
             return {
                 processingPreference,
                 triggerSwitch,
+                dropDownVisible,
+                getAppliedText,
             }
         },
     })

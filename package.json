@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "2.82.0",
+  "version": "2.85.0",
   "scripts": {
     "dev": "vite --port 3333 --open",
     "build-dev": "vite build --mode development",
@@ -219,6 +219,7 @@
         "vue-horizontal",
         "vue-i18n",
         "vue-linkify",
+        "vue-plugin-load-script",
         "vue-router",
         "vue-sse",
         "vue3-dnd",

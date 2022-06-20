@@ -54,7 +54,10 @@
         />
 
         <!-- GroupProcessesDrawer -->
-        <GroupProcessesDrawer :grouped-process-ids="groupedProcessIds" />
+        <GroupProcessesDrawer
+            :grouped-process-ids="groupedProcessIds"
+            @close-drawer="onCloseDrawer(true)"
+        />
     </div>
 </template>
 
@@ -113,6 +116,7 @@
             const selectedTypeInRelationDrawer = ref('__all')
             const groupedProcessIds = ref([])
             const showDrawer = ref(false)
+            const showProcessDrawer = ref(false)
 
             /** EVENT DEFINITION */
             const sendPanelZoomOut = useDebounceFn((percentage) => {
@@ -159,23 +163,28 @@
 
                 if (isGroupEdge && processIds.length) {
                     showDrawer.value = false
+                    showProcessDrawer.value = true
                     groupedProcessIds.value = processIds
                 }
 
-                if (!isGroupEdge && item?.guid) showDrawer.value = true
+                if (!isGroupEdge && item?.guid) {
+                    showDrawer.value = true
+                    showProcessDrawer.value = false
+                }
 
                 if (selectOnGraph) guidToSelectOnGraph.value = item?.guid
             }
 
             // onCloseDrawer
-            const onCloseDrawer = () => {
+            const onCloseDrawer = (processDrawer = false) => {
                 onSelectAsset('')
                 graph.value.resize(
                     graphWidth.value - 60,
                     graphHeight.value / 1.35
                 )
                 showDrawer.value = false
-                onSelectAsset(null)
+                showProcessDrawer.value = false
+                if (processDrawer) groupedProcessIds.value = []
             }
 
             // handleMinimapAction
@@ -230,6 +239,7 @@
                     nodes,
                     edges,
                     showDrawer,
+                    showProcessDrawer,
                     groupedProcessIds,
                     onSelectAsset,
                     onCloseDrawer,

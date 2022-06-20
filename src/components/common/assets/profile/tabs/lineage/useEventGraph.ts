@@ -46,6 +46,7 @@ export default function useEventGraph({
     nodes,
     edges,
     showDrawer,
+    showProcessDrawer,
     groupedProcessIds,
     onSelectAsset,
     onCloseDrawer,
@@ -1653,9 +1654,9 @@ export default function useEventGraph({
 
     // resetState
     const resetState = (all?, closeDrawer = true) => {
-        groupedProcessIds.value = []
-
         if (closeDrawer) {
+            groupedProcessIds.value = []
+            showProcessDrawer.value = false
             onCloseDrawer()
             if (selectedNodeId.value) resetSelectedNode()
             else if (selectedNodeEdgeId.value) resetSelectedNodeEdge()
@@ -1873,7 +1874,11 @@ export default function useEventGraph({
 
     /** WATCHERS */
     watch(showDrawer, (newVal) => {
-        if (!newVal && !groupedProcessIds.value.length) resetState()
+        if (!newVal && !showProcessDrawer.value) resetState()
+    })
+
+    watch(showProcessDrawer, (newVal) => {
+        if (!newVal && !showDrawer.value) resetState()
     })
 
     watch(

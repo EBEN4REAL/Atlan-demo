@@ -547,7 +547,7 @@ export default function useGraph(graph) {
                 attrs: {
                     label: {
                         fill: relation?.type === 'related' ? '#374151' : 'none',
-                        fontSize: 14,
+                        fontSize: 16,
                         textAnchor: 'middle',
                         textVerticalAnchor: 'middle',
                         pointerEvents: 'none',
@@ -556,11 +556,11 @@ export default function useGraph(graph) {
                         ref: 'label',
                         fill: relation?.type === 'related' ? '#fff' : 'none',
                         strokeWidth: 1,
-                        rx: 10,
+                        rx: 15,
                         refWidth: '140%',
-                        refHeight: '140%',
+                        refHeight: '160%',
                         refX: '-20%',
-                        refY: '-20%',
+                        refY: '-32%',
                     },
                 },
                 position: {

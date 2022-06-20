@@ -12,10 +12,12 @@
             shape="round"
             size="small"
             :disabled="currentIndex === 0"
-            class="px-1 rounded navigator transform rotate-180 mx-2 bg-white"
+            class="px-1 rounded navigator mx-2 bg-white"
             :class="{ 'opacity-30': currentIndex === 0 }"
             @click="handleNavigation('up')"
-            ><atlan-icon icon="CaretDown" class="text-new-gray-800 h-4"
+            ><atlan-icon
+                icon="CaretDown"
+                class="text-new-gray-800 h-4 transform rotate-180"
         /></a-button>
 
         <a-button

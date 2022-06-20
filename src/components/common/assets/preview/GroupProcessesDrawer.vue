@@ -8,15 +8,23 @@
         :width="420"
         :mask="false"
     >
+        <div
+            v-if="visible"
+            class="collapse-btn"
+            @click="() => $emit('closeDrawer')"
+        >
+            <AtlanIcon icon="CaretRight" class="w-auto h-4" />
+        </div>
+
         <transition name="fade">
             <div class="h-full w-full">
                 <div
-                    v-if="isLoading || isValidating"
-                    class="flex items-center justify-center w-full h-full"
+                    v-if="!isLoading && error"
+                    class="flex items-center justify-center flex-grow"
                 >
-                    <AtlanLoader class="h-12 mx-auto my-auto" />
+                    <ErrorView></ErrorView>
                 </div>
-                <div v-if="!isLoading && !isValidating && !error">
+                <div v-if="!error">
                     <div class="px-5 py-2 pt-4 flex items-center border-b">
                         <div
                             class="flex items-center justify-center p-2 border rounded"
@@ -37,7 +45,7 @@
                         <SearchAdvanced
                             v-model:value="queryText"
                             :autofocus="true"
-                            :placeholder="`Search processes`"
+                            :placeholder="`Search process`"
                             @change="handleSearchChange"
                         >
                             <template #postFilter>
@@ -51,7 +59,14 @@
                         </SearchAdvanced>
                     </div>
 
+                    <div
+                        v-if="isLoading || isValidating"
+                        class="flex items-center justify-center w-full h-full"
+                    >
+                        <AtlanLoader class="h-6 mx-auto mt-5" />
+                    </div>
                     <AssetList
+                        v-else
                         :list="list"
                         :is-load-more="isLoadMore"
                         :is-loading="isValidating"
@@ -73,10 +88,14 @@
                     </AssetList>
                 </div>
                 <div
-                    v-if="!isLoading && error"
-                    class="flex items-center justify-center flex-grow"
+                    v-if="!isLoading && list?.length === 0"
+                    class="flex-grow flex items-center justify-center mt-24"
                 >
-                    <ErrorView></ErrorView>
+                    <EmptyView
+                        empty-screen="NoAssetsFound"
+                        image-class="h-44"
+                        desc="We didn't find anything that matches your search criteria"
+                    ></EmptyView>
                 </div>
             </div>
         </transition>
@@ -147,6 +166,7 @@
                 },
             },
         },
+        emits: ['closeDrawer'],
         setup(props, { emit }) {
             // data
             const { groupedProcessIds } = toRefs(props)
@@ -270,7 +290,7 @@
             watch(groupedProcessIds, () => {
                 if (groupedProcessIds.value?.length) {
                     if (showAssetSidebarDrawer.value) handleCloseDrawer()
-
+                    // if (visible.value) return
                     visible.value = true
                     dependentKey.value = `RELATED_ASSET_LIST_PROCESS_NODES`
                     updateFacet()
@@ -313,5 +333,23 @@
         :global(.ant-drawer-content-wrapper) {
             width: 420px;
         }
+    }
+</style>
+
+<style scoped>
+    .fade-enter-active,
+    .fade-leave-active {
+        transition: opacity 0.1s ease;
+    }
+
+    .fade-enter-from,
+    .fade-leave-to {
+        opacity: 0.2;
+    }
+
+    .collapse-btn {
+        @apply p-1 border-t border-b border-l fixed cursor-pointer bg-white rounded-l-md border-gray-300 shadow-sm;
+        right: 420px;
+        top: 90px;
     }
 </style>

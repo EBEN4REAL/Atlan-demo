@@ -28,6 +28,7 @@ import {
     glue,
     salesforce,
     s3,
+    presto,
 } from './icons'
 
 const lineageStore = useLineageStore()
@@ -103,6 +104,7 @@ export const getNodeSourceImage = {
     glue,
     salesforce,
     s3,
+    presto,
 }
 
 /* A list of the types of ports that we are interested in. */

@@ -1,6 +1,6 @@
 import { computed } from 'vue'
+import dayjs from 'dayjs'
 import useTypedefData from '~/composables/typedefs/useTypedefData'
-import dayjs, { Dayjs } from 'dayjs'
 
 const { customMetadataList } = useTypedefData()
 

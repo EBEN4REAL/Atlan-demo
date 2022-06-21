@@ -1,5 +1,9 @@
 <template>
-    <a-dropdown :trigger="['contextmenu']" v-model:visible="isVisible">
+    <a-dropdown
+        v-if="!enableSidebarDrawer"
+        :trigger="['contextmenu']"
+        v-model:visible="isVisible"
+    >
         <slot name="content"></slot>
         <template #overlay>
             <a-menu>
@@ -74,6 +78,9 @@
             </a-menu>
         </template>
     </a-dropdown>
+    <div v-else>
+        <slot name="content"></slot>
+    </div>
 </template>
 
 <script lang="ts">
@@ -103,6 +110,11 @@
                 type: Object as PropType<assetInterface>,
                 required: true,
                 default: () => {},
+            },
+            enableSidebarDrawer: {
+                type: Boolean,
+                required: false,
+                default: false,
             },
         },
 

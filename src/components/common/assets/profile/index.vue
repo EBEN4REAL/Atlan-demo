@@ -3,7 +3,7 @@
         <AssetHeader :item="asset" />
         <a-tabs
             v-model:activeKey="activeKey"
-            :class="$style.profiletab"
+            :class="[$style.profiletab, activeKey]"
             class="flex-1"
             :destroy-inactive-tab-pane="true"
         >
@@ -150,7 +150,10 @@
             watch(
                 activeKey,
                 () => {
-                    if (activeKey.value === 'columns') {
+                    if (
+                        activeKey.value === 'columns' ||
+                        activeKey.value === 'lineage'
+                    ) {
                         handlePreviewVisibility(false)
                     } else {
                         handlePreviewVisibility(true)
@@ -195,6 +198,14 @@ meta:
         }
         :global(.ant-tabs-content) {
             @apply min-h-full !important;
+        }
+    }
+</style>
+
+<style lang="less">
+    .lineage {
+        .ant-tabs-content-holder {
+            background-color: #f6f7f9 !important;
         }
     }
 </style>

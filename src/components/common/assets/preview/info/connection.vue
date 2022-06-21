@@ -14,7 +14,11 @@
         v-if="
             attributes(selectedAsset)?.category?.toLowerCase() != 'bi' &&
             attributes(selectedAsset)?.category?.toLowerCase() != 'saas' &&
-            attributes(selectedAsset)?.category?.toLowerCase() != 'objectstore'
+            attributes(selectedAsset)?.category?.toLowerCase() !=
+                'objectstore' &&
+            attributes(selectedAsset)?.connectorName?.toLowerCase() != 'glue' &&
+            attributes(selectedAsset)?.connectorName?.toLowerCase() !=
+                'netsuite'
         "
         class="flex flex-col"
     >

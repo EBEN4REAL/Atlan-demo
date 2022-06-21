@@ -40,7 +40,7 @@
                     :classes="
                         isScrubbed(selectedAsset)
                             ? 'mb-0 font-semibold text-gray-500 opacity-80 '
-                            : 'font-bold mb-0 text-gray-500 '
+                            : 'font-bold mb-0 text-gray-700 '
                     "
                 />
                 <Tooltip
@@ -207,6 +207,7 @@
                             v-if="
                                 showCTA('query') &&
                                 connectorName(selectedAsset) !== 'glue' &&
+                                connectorName(selectedAsset) !== 'netsuite' &&
                                 (assetType(selectedAsset) === 'Table' ||
                                     assetType(selectedAsset) === 'View' ||
                                     assetType(selectedAsset) ===

@@ -44,17 +44,20 @@
 
         <!-- AssetDrawer -->
         <AssetDrawer
+            :guid="selectedAsset?.guid"
             :watch-guid="true"
-            :guid="selectedAsset?.guid || ''"
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
             :show-collapse-button="true"
+            :show-drawer="showDrawer"
             @close-drawer="onCloseDrawer"
-            @update="handleDrawerUpdate"
         />
 
         <!-- GroupProcessesDrawer -->
-        <GroupProcessesDrawer :grouped-process-ids="groupedProcessIds" />
+        <GroupProcessesDrawer
+            :grouped-process-ids="groupedProcessIds"
+            @close-drawer="onCloseDrawer(true)"
+        />
     </div>
 </template>
 
@@ -73,7 +76,7 @@
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
     import LineageFooter from './lineageFooter.vue'
-    import GroupProcessesDrawer from './GroupProcessesDrawer.vue'
+    import GroupProcessesDrawer from '@/common/assets/preview/GroupProcessesDrawer.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     /** COMPOSABLES */
@@ -112,6 +115,8 @@
             const guidToSelectOnGraph = ref('')
             const selectedTypeInRelationDrawer = ref('__all')
             const groupedProcessIds = ref([])
+            const showDrawer = ref(false)
+            const showProcessDrawer = ref(false)
 
             /** EVENT DEFINITION */
             const sendPanelZoomOut = useDebounceFn((percentage) => {
@@ -146,29 +151,40 @@
 
             // onSelectAsset
             const onSelectAsset = (item, selectOnGraph = false) => {
-                const { isGroupEdge, processIds } = item || {}
+                const { isGroupEdge, isCyclicEdge, processIds } = item || {}
+                control('selectedAsset', item)
 
-                if (typeof control === 'function')
-                    // TODO: && !isGroupEdge
-                    control('selectedAsset', item)
+                if (item?.guid) {
+                    graph.value.resize(
+                        graphWidth.value - 480,
+                        graphHeight.value / 1.35
+                    )
+                }
 
-                if (!item) return
-
-                if (isGroupEdge && processIds.length)
+                if ((isGroupEdge || isCyclicEdge) && processIds.length) {
+                    showDrawer.value = false
+                    showProcessDrawer.value = true
                     groupedProcessIds.value = processIds
+                }
+
+                if (!isGroupEdge && !isCyclicEdge && item?.guid) {
+                    showDrawer.value = true
+                    showProcessDrawer.value = false
+                }
 
                 if (selectOnGraph) guidToSelectOnGraph.value = item?.guid
             }
 
             // onCloseDrawer
-            const onCloseDrawer = () => {
-                onSelectAsset(null)
-            }
-
-            // handleDrawerUpdate
-            const handleDrawerUpdate = (asset) => {
-                if (typeof control === 'function')
-                    control('selectedAsset', asset)
+            const onCloseDrawer = (processDrawer = false) => {
+                onSelectAsset('')
+                graph.value.resize(
+                    graphWidth.value - 60,
+                    graphHeight.value / 1.35
+                )
+                showDrawer.value = false
+                showProcessDrawer.value = false
+                if (processDrawer) groupedProcessIds.value = []
             }
 
             // handleMinimapAction
@@ -222,6 +238,9 @@
                     sameTargetCount,
                     nodes,
                     edges,
+                    showDrawer,
+                    showProcessDrawer,
+                    groupedProcessIds,
                     onSelectAsset,
                     onCloseDrawer,
                     addSubGraph,
@@ -261,10 +280,10 @@
                 lineageContainer,
                 graphContainer,
                 minimapContainer,
-                onCloseDrawer,
-                handleDrawerUpdate,
-                handleZoom,
                 groupedProcessIds,
+                showDrawer,
+                onCloseDrawer,
+                handleZoom,
                 handleMinimapAction,
             }
         },

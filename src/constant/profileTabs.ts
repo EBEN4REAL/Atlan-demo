@@ -36,7 +36,6 @@ export const profileTabs = [
             'SalesforceObject',
             'SalesforceField',
             'S3Bucket',
-            'S3Object',
             'DataStudioAsset',
         ],
         icon: 'Lineage',

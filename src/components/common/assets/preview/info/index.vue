@@ -735,7 +735,7 @@
 
                     <a-button
                         block
-                        class="flex items-center px-2 shadow-none"
+                        class="flex items-center justify-between px-2 shadow-none"
                         :class="
                             !collectionData?.hasCollectionReadPermission &&
                             !collectionData?.hasCollectionWritePermission &&
@@ -751,11 +751,6 @@
                         @click="handleCollectionClick"
                     >
                         <div class="flex items-center">
-                            <!-- <AtlanIcon
-                            icon="CollectionIconSmall"
-                            class="mr-1 mb-0.5"
-                        /> -->
-
                             <span class="w-5 h-5 mr-1 -mt-1 text-lg">{{
                                 collectionData?.collectionInfo?.attributes?.icon
                                     ? collectionData?.collectionInfo?.attributes
@@ -763,10 +758,7 @@
                                     : '🗃'
                             }}</span>
 
-                            <span
-                                class="text-left truncate"
-                                style="width: 270px"
-                            >
+                            <span class="w-64 text-left truncate">
                                 {{
                                     collectionData?.collectionInfo?.displayText
                                 }}

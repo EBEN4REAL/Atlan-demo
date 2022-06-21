@@ -40,7 +40,7 @@
                     :classes="
                         isScrubbed(selectedAsset)
                             ? 'mb-0 font-semibold text-gray-500 opacity-80 '
-                            : 'font-bold mb-0 text-gray-500 '
+                            : 'font-bold mb-0 text-gray-700 '
                     "
                 />
                 <Tooltip

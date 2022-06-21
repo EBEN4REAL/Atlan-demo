@@ -611,7 +611,7 @@ export default function updateAssetAttributes(
         body.value.entities = [entity.value]
         currentMessage.value = 'Antonyms have been updated'
         // TODO: change event name to be more specific ?
-        sendMetadataTrackEvent('antonyms_updated', {
+        sendMetadataTrackEvent('antonym_terms_updated', {
             count: localAntonyms.value?.length,
         })
         mutate()
@@ -641,7 +641,7 @@ export default function updateAssetAttributes(
         body.value.entities = [entity.value]
         currentMessage.value = 'Synonyms have been updated'
         // TODO: change event name to be more specific ?
-        sendMetadataTrackEvent('synonyms_updated', {
+        sendMetadataTrackEvent('synonym_terms_updated', {
             count: localSynonyms.value?.length,
         })
         mutate()
@@ -670,9 +670,9 @@ export default function updateAssetAttributes(
             },
         }
         body.value.entities = [entity.value]
-        currentMessage.value = 'Preferred Terms have been updated'
+        currentMessage.value = 'Recommended Terms have been updated'
         // TODO: change event name to be more specific ?
-        sendMetadataTrackEvent('preferred_terms_updated', {
+        sendMetadataTrackEvent('recommended_terms_updated', {
             count: localPreferredTerms.value?.length,
         })
         mutate()

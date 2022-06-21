@@ -207,20 +207,20 @@ const keyMap = {
                     count: props.count,
                 }),
             },
-            preferred_terms_updated: {
-                action: 'discovery_metadata_preferred_terms_updated',
+            recommended_terms_updated: {
+                action: 'discovery_metadata_recommended_terms_updated',
                 properties: (props) => ({
                     count: props.count,
                 }),
             },
-            antonyms_updated: {
-                action: 'discovery_metadata_antonyms_updated',
+            antonym_terms_updated: {
+                action: 'discovery_metadata_antonym_terms_updated',
                 properties: (props) => ({
                     count: props.count,
                 }),
             },
-            synonyms_updated: {
-                action: 'discovery_metadata_synonyms_updated',
+            synonym_terms_updated: {
+                action: 'discovery_metadata_synonym_terms_updated',
                 properties: (props) => ({
                     count: props.count,
                 }),

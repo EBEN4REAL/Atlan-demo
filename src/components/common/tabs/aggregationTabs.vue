@@ -35,7 +35,9 @@
                                 ></AtlanIcon>
 
                                 <AtlanIcon
-                                    v-if="item.label == 'All' && !item.hideIcon"
+                                    v-else-if="
+                                        item.label == 'All' && !item.hideIcon
+                                    "
                                     icon="Globe"
                                     class="self-center mr-1 mb-0.5"
                                 ></AtlanIcon>

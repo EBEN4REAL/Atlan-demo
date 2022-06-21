@@ -1,21 +1,23 @@
 <template>
-    <Suspense>
-        <template #default>
-            <component
-                :is="svgIcon"
-                :style="{ height: '1rem' }"
-                class="flex-none inline w-auto"
-                :class="className"
-            />
-        </template>
-        <template #fallback>
-            <div
-                class="rounded-md skeleton"
-                style="min-height: 16px; min-width: 16px"
-                :class="className"
-            ></div>
-        </template>
-    </Suspense>
+    <div class="inline">
+        <Suspense>
+            <template #default>
+                <component
+                    :is="svgIcon"
+                    :style="{ height: '1rem' }"
+                    class="flex-none inline w-auto"
+                    :class="className"
+                />
+            </template>
+            <template #fallback>
+                <div
+                    class="rounded-md skeleton"
+                    style="min-height: 16px; min-width: 16px"
+                    :class="className"
+                ></div>
+            </template>
+        </Suspense>
+    </div>
 </template>
 
 <script lang="ts">

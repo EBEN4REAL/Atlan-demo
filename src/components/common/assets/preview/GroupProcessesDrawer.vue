@@ -45,6 +45,7 @@
                         <SearchAdvanced
                             v-model:value="queryText"
                             :autofocus="true"
+                            :allow-clear="true"
                             :placeholder="`Search process`"
                             @change="handleSearchChange"
                         >
@@ -88,7 +89,7 @@
                     </AssetList>
                 </div>
                 <div
-                    v-if="!isLoading && list?.length === 0"
+                    v-if="!isLoading && !isValidating && list?.length === 0"
                     class="flex-grow flex items-center justify-center mt-24"
                 >
                     <EmptyView

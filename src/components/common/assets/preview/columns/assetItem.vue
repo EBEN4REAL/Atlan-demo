@@ -26,7 +26,6 @@
                             classes="
                                    font-bold cursor-pointer text-md text-primary hover:underline  "
                             @click="showColumnDrawer = true"
-                            clamp-percentage="83%"
                             :mouseEnterDelay="0.5"
                         />
                         <CertificateBadge

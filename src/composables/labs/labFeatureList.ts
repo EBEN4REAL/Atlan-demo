@@ -164,7 +164,7 @@ export const featureList = {
                     key: PREFERRED_TERMS,
                     description: 'Recommended terms in Glossary',
                     // if the config isn't present in tenant/user preferences, default value will be picked up from here
-                    defaultValue: true,
+                    defaultValue: false,
                     // only these users will be allowed
                     allowedUsers: [],
                     allowedGroups: [],
@@ -182,7 +182,7 @@ export const featureList = {
                     key: ANTONYMS,
                     description: 'Antonyms in Glossary',
                     // if the config isn't present in tenant/user preferences, default value will be picked up from here
-                    defaultValue: true,
+                    defaultValue: false,
                     // only these users will be allowed
                     allowedUsers: [],
                     allowedGroups: [],
@@ -200,7 +200,7 @@ export const featureList = {
                     key: SYNONYMS,
                     description: 'Synonyms in Glossary',
                     // if the config isn't present in tenant/user preferences, default value will be picked up from here
-                    defaultValue: true,
+                    defaultValue: false,
                     // only these users will be allowed
                     allowedUsers: [],
                     allowedGroups: [],

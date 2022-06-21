@@ -343,29 +343,22 @@ export default function useEventGraph({
     const selectNodeEdge = (edge) => {
         const { isCyclicEdge, isGroupEdge, processIds } = edge.getData()
 
+        const processId = edge.id.split('/')[0]
+        onSelectAsset({
+            guid: processId,
+            isGroupEdge,
+            isCyclicEdge,
+            processIds,
+        })
+
+        if (edge.id) selectedNodeEdgeId.value = edge.id
+
         if (isCyclicEdge) {
             sendProcessClickedEvent(!!isGroupEdge, !!isCyclicEdge, edge.id)
             return
         }
 
-        const processId = edge.id.split('/')[0]
-        onSelectAsset({ guid: processId, isGroupEdge, processIds })
-
-        if (edge.id) selectedNodeEdgeId.value = edge.id
-
         const [source, target] = edge.id.split('/')[1].split('@')
-
-        const cyclicRelations = lineageStore.getCyclicRelations()
-        const isCyclicRelation = cyclicRelations.find((x) => {
-            const [s, t] = x.split('@')
-            if (source === s && target === t) return true
-            if (source === t && target === s) return true
-            return false
-        })
-
-        sendProcessClickedEvent(!!isGroupEdge, !!isCyclicRelation, edge.id)
-
-        if (isCyclicRelation) return
 
         const { predecessors } = useGetNodes(graph, source)
         const { successors } = useGetNodes(graph, target)

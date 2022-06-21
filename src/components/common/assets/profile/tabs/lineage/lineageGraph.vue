@@ -151,7 +151,7 @@
 
             // onSelectAsset
             const onSelectAsset = (item, selectOnGraph = false) => {
-                const { isGroupEdge, processIds } = item || {}
+                const { isGroupEdge, isCyclicEdge, processIds } = item || {}
                 control('selectedAsset', item)
 
                 if (item?.guid) {
@@ -161,13 +161,13 @@
                     )
                 }
 
-                if (isGroupEdge && processIds.length) {
+                if ((isGroupEdge || isCyclicEdge) && processIds.length) {
                     showDrawer.value = false
                     showProcessDrawer.value = true
                     groupedProcessIds.value = processIds
                 }
 
-                if (!isGroupEdge && item?.guid) {
+                if (!isGroupEdge && !isCyclicEdge && item?.guid) {
                     showDrawer.value = true
                     showProcessDrawer.value = false
                 }

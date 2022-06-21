@@ -280,7 +280,18 @@ export const controlCyclicEdges = (graph, relations, mode = 'node') => {
             return sourceId === from && targetId === to
         })
         if (!edge) return
-        edge.updateData({ isCyclicEdge: true })
+
+        const processIds = relations
+            .filter((_rel) => {
+                const { fromEntityId, toEntityId } = _rel
+                const passes =
+                    (fromEntityId === sourceId && toEntityId === targetId) ||
+                    (toEntityId === sourceId && fromEntityId === targetId)
+                return passes
+            })
+            .map((_rel) => _rel.processId)
+
+        edge.updateData({ isCyclicEdge: true, processIds })
         edge.attr('line/stroke', '#F4B444')
         edge.attr('line/strokeWidth', 0.9)
         edge.attr('line/targetMarker/stroke', '#F4B444')
@@ -318,6 +329,9 @@ export const controlGroupedEdges = (graph, relations, mode = 'node') => {
         const count = processIds.length
 
         edge.updateData({ isGroupEdge: true, groupCount: count, processIds })
+
+        const { isCyclicEdge } = edge.getData()
+        if (isCyclicEdge) return
         edge.setLabels({
             attrs: {
                 label: {

@@ -26,6 +26,7 @@
                             classes="
                                    font-bold cursor-pointer text-md text-primary hover:underline  "
                             @click="showColumnDrawer = true"
+                            clamp-percentage="83%"
                             :mouseEnterDelay="0.5"
                         />
                         <CertificateBadge
@@ -173,7 +174,7 @@
     import Suggestion from '@/common/assets/preview/info/suggestion.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import useLineageStore from '~/store/lineage'
-    import {groupClassifications} from "~/utils/groupClassifications"
+    import { groupClassifications } from '~/utils/groupClassifications'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -283,7 +284,10 @@
                     'name',
                     'typeName'
                 )
-                const groupedClassifications = groupClassifications(matchingIdsResult, isPropagated)
+                const groupedClassifications = groupClassifications(
+                    matchingIdsResult,
+                    isPropagated
+                )
                 return groupedClassifications
             })
 

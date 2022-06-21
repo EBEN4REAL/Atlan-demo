@@ -76,7 +76,7 @@
             <a-popover 
                 placement="rightTop" >
                 <template #content>
-                    <div class="py-3 pl-3 bg-white rounded-md w-52">
+                    <div class="px-3 py-3 bg-white rounded-md">
                         <div class="flex items-center hove:text-primary" v-for="(pv,i) in propagatedVia.slice(1)" :key="i">
                             <div class="mr-1">
                                 <AtlanIcon

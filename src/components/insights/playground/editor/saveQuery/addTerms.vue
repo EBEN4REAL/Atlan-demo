@@ -151,6 +151,7 @@
                             checkedNode.guid
                     )
                 }
+                emit('saveTerms', checkedTerms)
             }
 
             return {

@@ -8,6 +8,7 @@
         </div>
         <div style="max-height: 281px">
             <AssetList
+                empty-view-text="No assets are linked to this classification"
                 class="flex-grow bg-white"
                 :enable-sidebar-drawer="true"
                 :filters="filterConfig"

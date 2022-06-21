@@ -436,7 +436,7 @@ export const assetTypeList: {
     },
     {
         id: 'PowerBIDataset',
-        label: 'PowerBI Dataset',
+        label: 'Dataset',
         fullLabel: 'PowerBI Dataset',
         isDiscoverable: true,
         image: 'PowerBI',

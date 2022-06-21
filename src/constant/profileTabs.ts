@@ -77,6 +77,7 @@ export const profileTabs = [
         icon: 'LinkedAssets',
         tooltip: 'Upload history',
         scrubbed: false,
+        includeRoles:['admin']
     },
     {
         id: 'related',

@@ -83,9 +83,12 @@
                                                     type="dashed"
                                                     v-if="page === 'assets'"
                                                     @click="
-                                                        handleSwitchTabLineage(
-                                                            item
-                                                        )
+                                                        (e) => {
+                                                            e.stopPropagation()
+                                                            handleSwitchTabLineage(
+                                                                item
+                                                            )
+                                                        }
                                                     "
                                                     ><AtlanIcon
                                                         icon="Search"
@@ -536,6 +539,7 @@
                                     <a-tooltip
                                         placement="bottomLeft"
                                         :mouseEnterDelay="0.3"
+                                        overlay-class-name="min-w-max"
                                     >
                                         <div
                                             v-if="databaseName(item)"
@@ -552,9 +556,7 @@
                                             </div>
                                         </div>
                                         <template #title>
-                                            <div
-                                                class="flex items-center justify-between"
-                                            >
+                                            <div class="flex items-center">
                                                 <div class="flex flex-col">
                                                     <div class="text-xs">
                                                         Database
@@ -564,7 +566,7 @@
                                                 </div>
                                                 <div
                                                     v-if="page === 'assets'"
-                                                    class="pl-3 font-bold"
+                                                    class="ml-3 font-bold"
                                                 >
                                                     <a-button
                                                         shape="circle"
@@ -582,7 +584,11 @@
                                             </div>
                                         </template>
                                     </a-tooltip>
-                                    <a-tooltip placement="bottomLeft">
+                                    <a-tooltip
+                                        placement="bottomLeft"
+                                        overlay-class-name="min-w-max"
+                                        :mouseEnterDelay="0.3"
+                                    >
                                         <div
                                             v-if="schemaName(item)"
                                             class="flex items-center text-gray-500"
@@ -598,9 +604,7 @@
                                             </div>
                                         </div>
                                         <template #title>
-                                            <div
-                                                class="flex items-center justify-between"
-                                            >
+                                            <div class="flex items-center">
                                                 <div class="flex flex-col">
                                                     <div class="text-xs">
                                                         Schema
@@ -610,7 +614,7 @@
                                                 </div>
                                                 <div
                                                     v-if="page === 'assets'"
-                                                    class="pl-3 font-bold"
+                                                    class="ml-3 font-bold"
                                                 >
                                                     <a-button
                                                         shape="circle"
@@ -1723,6 +1727,7 @@
                 powerBITableMeasureCount,
                 powerBIColumnDataType,
                 powerBIColumnDataTypeImage,
+                selectedAsset,
             } = useAssetInfo()
 
             const icon = computed(() => {
@@ -1751,9 +1756,15 @@
                 }
             }
 
-            const handleSwitchTabLineage = (item) => {
-                handlePreview(item)
-                emit('switch', { asset: item, tab: 'Lineage' })
+            const handleSwitchTabLineage = (asset) => {
+                if (selectedAsset.value?.guid !== asset.guid) {
+                    handlePreview(asset)
+                    setTimeout(() => {
+                        emit('switch', { asset, tab: 'Lineage' })
+                    }, 300)
+                } else {
+                    emit('switch', { asset, tab: 'Lineage' })
+                }
             }
 
             const handleCloseDrawer = () => {

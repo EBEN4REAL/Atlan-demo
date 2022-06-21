@@ -82,7 +82,6 @@
                                     @mouseenter="setTabHover(tab)"
                                     @mouseleave="setTabHover(null)"
                                     @contextmenu.prevent="showContextMenu"
-
                                 >
                                     <TabItem
                                         :title="tab.label"
@@ -211,11 +210,14 @@
     import Tooltip from '@/common/ellipsis/index.vue'
     import insightsStore from '~/store/insights/index'
     import TabItem from '~/components/insights/playground/tabs/TabItem.vue'
+    import { Splitpanes, Pane } from '~/components/common/splitpanes/index'
 
     // import { useHotKeys } from '~/components/insights/common/composables/useHotKeys'
 
     export default defineComponent({
         components: {
+            Splitpanes,
+            Pane,
             Editor,
             ResultsPane,
             NoActiveInlineTab,
@@ -330,7 +332,7 @@
             }
 
             const onTabClick = (activeKey) => {
-                debugger;
+                debugger
                 setActiveTabKey(activeKey, activeInlineTabKey)
                 pushGuidToURL(activeInlineTab.value?.queryId)
 
@@ -348,13 +350,13 @@
 
             const onEdit = (targetKey: string | MouseEvent, action: string) => {
                 console.log('edit triggered: ')
-                
-                debugger;
+
+                debugger
 
                 if (action === 'add') {
                     handleAdd(false)
                 } else {
-                    debugger;
+                    debugger
                     /* For closing the tab */
                     console.log(targetKey)
                     let crossedTabState: boolean = false
@@ -365,7 +367,7 @@
                     })
                     /* If it is unsaved then show popover confirm */
                     if (!crossedTabState) {
-                        debugger;
+                        debugger
                         /* If content is empty */
                         const tab = tabs.value.find(
                             (tabItem) => tabItem.key === targetKey
@@ -382,9 +384,9 @@
                                 pushGuidToURL
                             )
                         }
-                        debugger;
+                        debugger
                     } else {
-                        debugger;
+                        debugger
                         inlineTabRemove(
                             targetKey as string,
                             tabs,
@@ -392,7 +394,7 @@
                             pushGuidToURL
                         )
 
-                        debugger;
+                        debugger
                     }
                 }
             }
@@ -545,7 +547,7 @@
             const sortTabsOnDrop = (currentKey: String, dropKey: String) => {
                 useAddEvent('insights', 'tab', 'dragged', {
                     tab_count: tabs.value.length,
-                });
+                })
 
                 const currIndex = tabs.value.findIndex(
                     (tab) => tab.key === currentKey
@@ -558,7 +560,6 @@
 
                 tabs.value.splice(dropIndex, 0, content)
             }
-
 
             return {
                 queryExecutionTime,

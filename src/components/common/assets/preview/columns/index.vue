@@ -106,7 +106,11 @@
         watch,
         PropType,
     } from 'vue'
-    import { debouncedWatch, useDebounceFn, watchOnce } from '@vueuse/core'
+    import {
+        debouncedWatch,
+        useDebounceFn,
+        useInfiniteScroll,
+    } from '@vueuse/core'
 
     import ErrorView from '@common/error/discover.vue'
     import EmptyView from '@common/empty/index.vue'
@@ -350,37 +354,16 @@
                 }
             )
             const columnlistRef = ref(null)
-            const shouldLoadMore = ref(true)
 
-            // Tried watchOnce and it was not working in the case of change sort function
-            // TODO: try making watchOnce work instead of using a watcher
-            watch(columnlistRef, () => {
-                if (columnlistRef.value) {
-                    const node = document.querySelector(
-                        '.column-list-container'
-                    )
-
-                    if (node) {
-                        node.addEventListener('scroll', () => {
-                            const perc =
-                                (node.scrollTop /
-                                    (node.scrollHeight - node.clientHeight)) *
-                                100
-
-                            if (perc >= 100) {
-                                if (shouldLoadMore.value) {
-                                    shouldLoadMore.value = false
-                                    handleLoadMore()
-
-                                    setTimeout(() => {
-                                        shouldLoadMore.value = true
-                                    }, 1000)
-                                }
-                            }
-                        })
+            useInfiniteScroll(
+                columnlistRef,
+                () => {
+                    if (columnlistRef.value) {
+                        handleLoadMore()
                     }
-                }
-            })
+                },
+                { distance: 10 }
+            )
 
             return {
                 isLoading,

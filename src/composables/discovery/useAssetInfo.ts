@@ -18,6 +18,7 @@ import { profileTabs } from '~/constant/profileTabs'
 import { summaryVariants } from '~/constant/summaryVariants'
 import { formatDateTime } from '~/utils/date'
 import useAssetStore from '~/store/asset'
+import whoami from '~/composables/user/whoami'
 import { Category, Term } from '~/types/glossary/glossary.interface'
 import { useAuthStore } from '~/store/auth'
 import { assetActions } from '~/constant/assetActions'
@@ -43,8 +44,15 @@ export default function useAssetInfo() {
     const parentCategory = (asset: assetInterface) =>
         asset?.attributes?.parentCategory
 
+    const { role } = whoami()
     const categories = (asset: assetInterface) => asset?.attributes?.categories
     const seeAlso = (asset: assetInterface) => asset?.attributes?.seeAlso
+    const antonyms = (asset: assetInterface) => asset?.attributes?.antonyms
+    const synonyms = (asset: assetInterface) => asset?.attributes?.synonyms
+    const preferredTerms = (asset: assetInterface) =>
+        asset?.attributes?.preferredTerms
+    const preferredToTerms = (asset: assetInterface) =>
+        asset?.attributes?.preferredToTerms
 
     const parentWorkspace = (asset: assetInterface) =>
         attributes(asset)?.workspace
@@ -301,6 +309,15 @@ export default function useAssetInfo() {
                 if (
                     i.excludes.some(
                         (t) => t.toLowerCase() === typeName?.toLowerCase()
+                    )
+                ) {
+                    flag = false
+                }
+            }
+            if (i?.includeRoles) {
+                if (
+                    !i?.includeRoles?.some(
+                        (t) => t?.toLowerCase() === role.value?.toLowerCase()
                     )
                 ) {
                     flag = false
@@ -1491,6 +1508,10 @@ export default function useAssetInfo() {
         isSort,
         categories,
         seeAlso,
+        preferredTerms,
+        preferredToTerms,
+        antonyms,
+        synonyms,
         parentCategory,
         sourceOwners,
         isGTC,

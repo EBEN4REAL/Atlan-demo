@@ -1,13 +1,13 @@
 <template>
     <div
         style="border-width: 1.5px !important"
-        :class="
-            selected
-                ? ' border-new-blue-400 bg-new-blue-100'
-                : 'hover:border-new-blue-100'
-        "
+        :class="{
+            ' border-new-blue-400 bg-new-blue-100': selected,
+            'hover:border-new-blue-100': !selected,
+            'cursor-not-allowed opacity-70': disabled,
+        }"
         class="p-3 text-sm border border-white rounded-lg cursor-pointer select-none"
-        @click="emit('click')"
+        @click="!disabled && emit('click')"
     >
         <div class="flex items-center gap-x-2 gap-y-2">
             <AtlanIcon :icon="iconName" />
@@ -28,6 +28,7 @@
 <script setup lang="ts">
     const props = defineProps({
         selected: { type: Boolean, required: true },
+        disabled: { type: Boolean, default: false },
         heading: { type: String, required: true },
         iconName: { type: String, required: true },
         subHeading: { type: String, required: false, default: '' },

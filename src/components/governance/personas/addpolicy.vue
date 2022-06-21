@@ -464,6 +464,7 @@
                             <div v-if="type === 'data'" class="">
                                 <div class="px-4 pb-4 space-y-2">
                                     <ToggleOption
+                                        :disabled="!canEdit"
                                         :selected="policy.allow"
                                         heading="Allow query on selected assets"
                                         icon-name="QueryOutputSuccess"
@@ -471,6 +472,7 @@
                                         @click="policy.allow = true"
                                     />
                                     <ToggleOption
+                                        :disabled="!canEdit"
                                         :selected="!policy.allow"
                                         heading="Deny query on selected assets"
                                         icon-name="QueryOutputFail"
@@ -500,6 +502,7 @@
                                     </div>
 
                                     <DataMaskingSelector
+                                        :disabled="!canEdit"
                                         v-model:maskType="policy.type"
                                         class="w-80"
                                     />
@@ -510,6 +513,7 @@
                                     class="flex items-center justify-end w-full p-4"
                                 >
                                     <a-switch
+                                        :disabled="isEdit && !canEdit"
                                         :class="
                                             policy.allow
                                                 ? `bg-gray-300`

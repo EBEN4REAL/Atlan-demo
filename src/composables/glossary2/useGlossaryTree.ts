@@ -802,8 +802,8 @@ const useGlossaryTree = ({
     ) => {
         const addedCategories = newCategories?.filter(
             (category) =>
-                !existingCategories.find(
-                    (existing) => existing.guid === category.guid
+                !existingCategories?.find(
+                    (existing) => existing?.guid === category?.guid
                 )
         )
         const removedCategories = existingCategories?.filter(

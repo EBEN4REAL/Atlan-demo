@@ -48,14 +48,6 @@
                             <div class="flex flex-col w-64 p-4 gap-y-4">
                                 <div class="flex items-center justify-between">
                                     <span class="text-gray-500"
-                                        >Show Legend</span
-                                    >
-                                    <a-switch
-                                        v-model:checked="preferences.showLegend"
-                                    />
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-gray-500"
                                         >Show Arrows</span
                                     >
                                     <a-switch

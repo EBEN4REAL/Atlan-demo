@@ -346,7 +346,10 @@ export default function useAssetInfo() {
             ...getTabs(customTabList, assetType(asset)),
         ]
 
-        if (connectorName(asset).toLowerCase() === 'glue') {
+        if (
+            connectorName(asset).toLowerCase() === 'glue' ||
+            connectorName(asset).toLowerCase() === 'netsuite'
+        ) {
             allTabs = allTabs.filter((tab) => tab.name !== 'Queries')
         }
 

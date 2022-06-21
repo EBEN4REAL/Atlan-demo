@@ -207,6 +207,7 @@
                             v-if="
                                 showCTA('query') &&
                                 connectorName(selectedAsset) !== 'glue' &&
+                                connectorName(selectedAsset) !== 'netsuite' &&
                                 (assetType(selectedAsset) === 'Table' ||
                                     assetType(selectedAsset) === 'View' ||
                                     assetType(selectedAsset) ===

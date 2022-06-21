@@ -128,7 +128,9 @@
                     "
                     class="flex flex-col text-sm"
                     :class="
-                        isProfile || connectorName(selectedAsset) === 'glue'
+                        isProfile ||
+                        connectorName(selectedAsset) === 'glue' ||
+                        connectorName(selectedAsset) === 'netsuite'
                             ? ''
                             : 'cursor-pointer'
                     "
@@ -137,7 +139,9 @@
                     <span class="mb-1 text-sm text-gray-500">Rows</span>
                     <span
                         :class="
-                            isProfile || connectorName(selectedAsset) === 'glue'
+                            isProfile ||
+                            connectorName(selectedAsset) === 'glue' ||
+                            connectorName(selectedAsset) === 'netsuite'
                                 ? 'text-gray-700'
                                 : 'text-primary font-semibold'
                         "

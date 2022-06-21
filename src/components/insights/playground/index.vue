@@ -713,6 +713,7 @@
     }
     .inline_tab {
         min-width: 50px;
+        width: 110px;
         max-width: 150px;
         height: 28px !important;
         // min-width: 3rem

@@ -123,7 +123,7 @@
                 role="Box"
             >
                 <Tooltip
-                    clamp-percentage="88%"
+                    clamp-percentage="100%"
                     :tooltip-text="title"
                     :rows="1"
                     class="p-1 pt-1.5"
@@ -205,6 +205,7 @@
         }
     }
     .inner-box {
+        width: 110px;
         min-width: 50px;
         display: flex;
     }

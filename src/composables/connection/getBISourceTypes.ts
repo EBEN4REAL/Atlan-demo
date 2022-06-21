@@ -10,7 +10,8 @@ export function getBISourceTypes() {
                 item.attributes?.connectorName?.toLowerCase() ===
                     'salesforce' ||
                 item.attributes?.connectorName?.toLowerCase() === 's3' ||
-                item.attributes?.connectorName?.toLowerCase() === 'glue'
+                item.attributes?.connectorName?.toLowerCase() === 'glue' ||
+                item.attributes?.connectorName?.toLowerCase() === 'netsuite'
             )
                 BItypes.add(item.attributes?.connectorName)
         }

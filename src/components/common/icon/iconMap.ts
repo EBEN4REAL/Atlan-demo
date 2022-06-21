@@ -379,6 +379,7 @@ import Looker from '~/assets/images/source/svg/Looker.svg'
 import Salesforce from '~/assets/images/source/svg/Salesforce.svg'
 import MySQL from '~/assets/images/source/svg/MySQL.svg'
 import Glue from '~/assets/images/source/svg/glue.svg'
+import Netsuite from '~/assets/images/source/svg/netsuite.svg'
 import S3 from '~/assets/images/source/svg/s3.svg'
 import GDS from '~/assets/images/source/svg/gds.svg'
 
@@ -980,6 +981,7 @@ export default {
     Mysql: MySQL,
     NoAllow,
     Glue,
+    Netsuite,
     Bigquery: BigQuery,
     Workflow,
     Package,

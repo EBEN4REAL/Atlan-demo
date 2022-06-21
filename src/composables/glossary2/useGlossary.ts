@@ -3,7 +3,7 @@ import { ref, watch } from 'vue'
 import useIndexSearch from '~/composables/discovery/useIndexSearch'
 import useGlossaryStore from '~/store/glossary'
 
-import { AssetRelationAttributes, AssetAttributes } from '~/constant/projection'
+import { AssetRelationAttributes, AssetAttributes , InternalAttributes } from '~/constant/projection'
 export const MAX_GLOSSARY = 100
 export const GLOSSARY_ASSET_TYPE = 'AtlasGlossary'
 export const GLOSSARY_ATTRIBUTES = [
@@ -121,7 +121,7 @@ export default function useGlossary(immediate = true) {
                 },
                 sort: [{ 'name.keyword': { order: 'asc' } }],
             },
-            attributes: [...GLOSSARY_ATTRIBUTES, ...AssetAttributes],
+            attributes: [...GLOSSARY_ATTRIBUTES, ...AssetAttributes, ...InternalAttributes],
             relationAttributes: [
                 ...GLOSSARY_RELATION_ATTRIBUTES,
                 ...AssetRelationAttributes,

@@ -162,19 +162,22 @@
                         </a-tooltip>
                     </template>
                 </a-menu-item>
-                <!-- Bulk upload hidden for GA  : only available for secret url i.e. ?sandbox=true-->
                 <a-menu-item
                     v-if="asset?.typeName === 'AtlasGlossary'"
                     key="bulk upload"
                     class="px-4 py-2"
                     @click="closeMenu"
                 >
-                    <BulkUploadModal :guid="asset?.guid" :glossary-name="asset?.displayText">
+                    <BulkUploadModal
+                        v-if="role?.toLowerCase() === 'admin'"
+                        :guid="asset?.guid"
+                        :glossary-name="asset?.displayText"
+                    >
                         <template #trigger>
                             <div class="flex items-center">
                                 <AtlanIcon
                                     icon="Upload"
-                                    class="m-0 mr-2   text-primary"
+                                    class="m-0 mr-2 text-primary"
                                 />
                                 <p class="p-0 m-0 text-gray-700 capitalize">
                                     Bulk upload terms
@@ -182,6 +185,26 @@
                             </div>
                         </template>
                     </BulkUploadModal>
+                    <template v-else>
+                        <a-tooltip
+                            placement="right"
+                            title="You don't have permission to perform this action"
+                        >
+                            <div>
+                                <div
+                                    class="flex items-center text-gray-500 cursor-not-allowed"
+                                >
+                                    <AtlanIcon
+                                        icon="Upload"
+                                        class="m-0 mr-2 text-primary"
+                                    />
+                                    <p class="p-0 m-0 capitalize">
+                                        Bulk upload terms
+                                    </p>
+                                </div>
+                            </div>
+                        </a-tooltip>
+                    </template>
                 </a-menu-item>
 
                 <a-menu-item
@@ -264,9 +287,15 @@
     import { assetInterface } from '~/types/assets/asset.interface'
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
-        components: { AnnouncementModal, RemoveGTCModal, BulkUploadModal , RenameModal },
+        components: {
+            AnnouncementModal,
+            RemoveGTCModal,
+            BulkUploadModal,
+            RenameModal,
+        },
         props: {
             asset: {
                 type: Object as PropType<assetInterface>,
@@ -291,6 +320,7 @@
             const { isGTC, announcementTitle } = useAssetInfo()
             const route = useRoute()
             const sandbox = computed(() => route?.query?.sandbox || '')
+            const { role } = whoami()
 
             const closeMenu = () => {
                 isVisible.value = false
@@ -304,6 +334,7 @@
                 sandbox,
                 map,
                 checkAccess,
+                role,
             }
         },
     })

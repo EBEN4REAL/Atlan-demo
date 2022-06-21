@@ -22,7 +22,6 @@ import {
     autosuggestionResponse,
 } from '~/types/insights/autosuggestionEntity.interface'
 import axios from 'axios'
-import TurndownService from 'turndown'
 export interface suggestionKeywordInterface {
     label: string
     detail: string
@@ -75,67 +74,6 @@ function getAssetProfileURL(entity: any) {
         entity.metadata.guid
     }/overview`
     return URL
-}
-
-function generateMarkdown(
-    turndownService: any,
-    entity: any,
-    assetType: string
-) {
-    let qualifiedName = entity?.attributes?.qualifiedName?.split('/')
-    let db = qualifiedName[3]
-    let schema = qualifiedName[4]
-    let table = qualifiedName[5]
-    let name = entity?.attributes?.name
-    let description =
-        entity.attributes.userDescription || entity.attributes.description
-
-    let certificateStatus = entity?.attributes?.certificateStatus
-        ? entity?.attributes?.certificateStatus
-        : 'no_certificate'
-    let descriptionHTML = `<div></p><h6>Description:</h6></br>${description}</p></div>`
-    let typeHTML = `<div><h5>${name}</h5></div><div>Status: <h5>${certificateStatus}</h5></div>`
-    let ownerString = entity.attributes.ownerUsers.join(', ')
-    let ownersHTML = `<div></p> Owned by: <h5>${ownerString}<h5></p></div>`
-    // console.log('asset here: ', entity)
-
-    let rowCount, columnCount, rowCountHTML, isPrimaryHTML
-
-    if (assetType === 'TABLE') {
-        rowCount = entity?.attributes?.rowCount
-        columnCount = entity?.attributes?.columnCount
-
-        rowCountHTML = `<div>
-            <h5>${db} / ${schema}</h5><h5>${rowCount} Rows / ${columnCount} Columns</h5>
-        </div>`
-    } else {
-        rowCountHTML = `<div>
-            <h5>${db} / ${schema} / ${table}</h5>
-        </div>`
-
-        isPrimaryHTML = `<div>
-            <div>isPrimary: <h5>${
-                entity?.attributes?.isPrimary
-                    ? entity?.attributes?.isPrimary
-                    : 'false'
-            }</h5></div>
-        </div>`
-    }
-
-    return turndownService.turndown(
-        `
-        <div>
-        ${typeHTML}
-        ${description ? descriptionHTML : ''}
-        ${ownerString ? ownersHTML : ''}
-        ${rowCountHTML}
-        ${assetType === 'COLUMN' ? isPrimaryHTML : ''}
-        </div>
-        
-        `
-    )
-
-    // return `![bears](http://placebear.com/200/200) The end ...`
 }
 
 export function getContext(
@@ -225,7 +163,6 @@ export function entitiesToEditorKeyword(
     )
 
     const sqlKeywords = getSqlKeywords()
-    const turndownService = new TurndownService()
     return new Promise((resolve) => {
         response.then((res) => {
             let entities = res.entities ?? []
@@ -303,11 +240,6 @@ export function entitiesToEditorKeyword(
                                 kind ||
                                 monaco.languages.CompletionItemKind.Field,
                             documentation: {
-                                value: generateMarkdown(
-                                    turndownService,
-                                    entities[i],
-                                    `${type}`
-                                ),
                                 entity: entities[i],
                             },
                             insertText: insertText,
@@ -339,11 +271,6 @@ export function entitiesToEditorKeyword(
                                 kind ||
                                 monaco.languages.CompletionItemKind.Field,
                             documentation: {
-                                value: generateMarkdown(
-                                    turndownService,
-                                    entities[i],
-                                    `${type}`
-                                ),
                                 entity: entities[i],
                             },
                             sortText: sortString,
@@ -925,7 +852,7 @@ export async function useAutoSuggestions(
                 }
         }
     }
-    // debugger
+    debugger
     if (subquery) {
         ///////////////////////////////////////////////////////////
         let subQueryleftSideStringFromCurPos = editorText
@@ -1010,7 +937,7 @@ export async function useAutoSuggestions(
         t = !token.match(/[-[\]{};/\n()*+?'"\\/^$|#\s\t]/g) && token !== ''
         return t
     })
-    // debugger
+    debugger
     // tokens.push(' ')
     let exceptionCase = false // when used as "table"."columnName"
     let currentWord = tokens[tokens.length - 1]
@@ -1295,7 +1222,7 @@ export async function useAutoSuggestions(
                     )
                     return new Promise((resolve, reject) => {
                         suggestionsPromise.then((value) => {
-                            // debugger
+                            debugger
                             const AliasesKeys: string[] = []
                             Object.keys(aliasesMap.value).forEach(
                                 (key: any) => {

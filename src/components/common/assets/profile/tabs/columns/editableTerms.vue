@@ -16,7 +16,8 @@
                 'AtlasGlossaryTerm'
             )
         "
-        @change="handleMeanings"
+        @change="handleMeaningsUpdate"
+        @popoverClose="$emit('update')"
         @popoverActive="$emit('popoverActive')"
     >
     </TermsWidget>
@@ -41,7 +42,7 @@
         },
         emits: ['update', 'popoverActive'],
 
-        setup(props, { emit }) {
+        setup(props) {
             const { asset } = toRefs(props)
 
             const { columnUpdatePermission, meanings } = useAssetInfo()
@@ -52,14 +53,9 @@
                 localMeanings.value = meanings(asset.value)
             })
 
-            const handleMeanings = () => {
-                emit('update')
-                handleMeaningsUpdate()
-            }
-
             return {
                 localMeanings,
-                handleMeanings,
+                handleMeaningsUpdate,
                 columnUpdatePermission,
             }
         },

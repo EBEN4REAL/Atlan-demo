@@ -158,7 +158,10 @@
 
         <!-- Pagination -->
         <div
-            v-if="(columnsList && columnsList.length) || isLoading"
+            v-if="
+                ((columnsList && columnsList.length) || isLoading) &&
+                Math.ceil(pagination.total) > 1
+            "
             class="flex flex-row items-center justify-end w-full mt-4"
         >
             <AtlanBtn

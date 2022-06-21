@@ -18,7 +18,7 @@
             <div class="w-full px-3">
                 <div>
                     <template
-                        v-for="item in userList"
+                        v-for="(item) in userList"
                         :key="item[selectUserKey]"
                     >
                         <a-checkbox
@@ -59,7 +59,7 @@
                                                     ? 'user-name-facet-owner'
                                                     : 'user-name-facet-owner-verified',
                                                 !item?.enabled &&
-                                                !fullName(item).includes('me')
+                                                item?.username !== username
                                                     ? 'line-through'
                                                     : '',
                                             ]"
@@ -247,6 +247,8 @@
                 return data
             })
 
+            const {username} = whoami()
+
             const {
                 userList: users,
                 handleSearch,
@@ -267,8 +269,7 @@
                     handleSearch(queryText.value)
                 }
             )
-            const { username } = whoami()
-
+            
             // to filter out loggedIn user if needed from list based on showLoggedInUser
             const userList = computed(() => {
                 if (showLoggedInUser.value) {
@@ -317,12 +318,18 @@
                 return data
             })
 
-            const fullName = (item) => {
+            const fullName = (item, isTooltip=false) => {
+                const screenResolution = window.innerWidth;
+                let name = item.username;
                 if (item.firstName) {
-                    return `${item.firstName} ${item.lastName || ''}`
+                    name = `${item.firstName} ${item.lastName || ''}`
+                    // eslint-disable-next-line no-nested-ternary
+                    return isTooltip ? name  : (screenResolution < 1500) ? truncateString(name, 13, "...")  : truncateString(name, 30, "...")
                 }
-                return `${item.username}`
+                return isTooltip ? name : truncateString(name, 23, "...")
             }
+            
+            
             const handleChange = (checked, id) => {
                 if (checked.target.checked) {
                     map.value[id] = true
@@ -375,11 +382,10 @@
             })
 
             const toolTipTitle = (item) => {
-                if (item?.enabled || fullName(item).includes('me')) {
-                    return `${fullName(item)}`
-                } else {
-                    return `${fullName(item)} (Disabled)`
-                }
+                if (item?.enabled || item?.username === username.value) {
+                    return `${fullName(item, true)}`
+                } 
+                return `${fullName(item, true)} (Disabled)`
             }
 
             return {

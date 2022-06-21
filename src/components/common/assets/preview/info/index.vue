@@ -941,7 +941,7 @@
                             "
                             label="Add all admins"
                             color="link"
-                            class="h-6 ml-auto"
+                            class="h-6 ml-auto -mr-4"
                             @click="setAllAdmins"
                         />
                     </div>
@@ -955,17 +955,24 @@
                         :edit-permission="editPermission"
                         @change="handleChangeAdmins"
                     >
-                        <div
-                            v-if="localAdmins.adminRoles?.length"
-                            class="flex items-center justify-between flex-none px-2 py-1 border border-gray-200 rounded-full cursor-pointer text-new-gray-800 hover:bg-primary hover:text-white"
-                        >
-                            <span> All admins </span>
-                            <AtlanIcon
-                                icon="Cross"
-                                class="h-3 ml-3 rotate-45"
-                                @click="setAllAdmins(false)"
-                            />
-                        </div>
+                        <a-tooltip color="#2A2F45">
+                            <template #title>
+                                All users with admin role are connection admins
+                            </template>
+                            <div
+                                v-if="localAdmins.adminRoles?.length"
+                                class="flex items-center justify-between flex-none px-2 py-1 border border-gray-200 rounded-full cursor-pointer text-new-gray-800 hover:bg-primary hover:text-white"
+                            >
+                                <AtlanIcon icon="Admin" class="h-4 mr-1" />
+
+                                <span> All Admins </span>
+                                <AtlanIcon
+                                    icon="Cross"
+                                    class="h-3 ml-3 rotate-45"
+                                    @click="setAllAdmins(false)"
+                                />
+                            </div>
+                        </a-tooltip>
                     </Admins>
                 </div>
             </div>
@@ -1140,10 +1147,101 @@
                 v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
                 class="flex flex-col"
             >
+                <!-- Recommended terms widget -->
                 <p
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                    v-if="showPreferredTerms"
+                    class="flex items-center px-5 mb-1 text-sm text-gray-500"
                 >
+                    Recommended terms
+                    <span class="mx-2">
+                        <a-tooltip>
+                            <template #title>
+                                Related terms which should be used instead of
+                                this one
+                            </template>
+                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                        </a-tooltip>
+                    </span>
+                </p>
+                <RelatedTerms
+                    v-if="showPreferredTerms"
+                    v-model="localPreferredTerms"
+                    :selected-asset="selectedAsset"
+                    class="px-5"
+                    :edit-permission="editPermission"
+                    :allow-delete="editPermission"
+                    attribute-type="preferredTerms"
+                    @change="handlePreferredTermsUpdate"
+                >
+                </RelatedTerms>
+                <!-- Synonyms widget -->
+                <p
+                    v-if="showSynonyms"
+                    class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4"
+                >
+                    Synonyms
+                    <span class="mx-2">
+                        <a-tooltip>
+                            <template #title>
+                                Interchangeable terms. Example: "customer" and
+                                "client"
+                            </template>
+                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                        </a-tooltip>
+                    </span>
+                </p>
+                <RelatedTerms
+                    v-if="showSynonyms"
+                    v-model="localSynonyms"
+                    :selected-asset="selectedAsset"
+                    class="px-5"
+                    :edit-permission="editPermission"
+                    :allow-delete="editPermission"
+                    attribute-type="synonyms"
+                    @change="handleSynonymsUpdate"
+                >
+                </RelatedTerms>
+
+                <!-- Antonyms widget -->
+                <p
+                    v-if="showAntonyms"
+                    class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4"
+                >
+                    Antonyms
+                    <span class="mx-2">
+                        <a-tooltip>
+                            <template #title>
+                                Opposite of this term. Example: For term
+                                "profit", the related term "loss" is an antonym
+                            </template>
+                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                        </a-tooltip>
+                    </span>
+                </p>
+                <RelatedTerms
+                    v-if="showAntonyms"
+                    v-model="localAntonyms"
+                    :selected-asset="selectedAsset"
+                    class="px-5"
+                    :edit-permission="editPermission"
+                    :allow-delete="editPermission"
+                    attribute-type="antonyms"
+                    @change="handleAntonymsUpdate"
+                >
+                </RelatedTerms>
+
+                <p class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4">
                     Related Terms
+
+                    <span class="mx-2">
+                        <a-tooltip>
+                            <template #title>
+                                Associated terms. Example: For term "customer",
+                                the related term "account" may be added
+                            </template>
+                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                        </a-tooltip>
+                    </span>
                 </p>
                 <RelatedTerms
                     v-model="localSeeAlso"
@@ -1158,8 +1256,9 @@
 
             <div
                 v-if="
-                    selectedAsset.typeName === 'Column' ||
-                    readmeGuid(selectedAsset)
+                    (selectedAsset.typeName === 'Column' ||
+                        readmeGuid(selectedAsset)) &&
+                    !isProfile
                 "
                 class="flex flex-col px-5"
             >
@@ -1220,6 +1319,7 @@
         inject,
         ref,
         toRefs,
+        computed,
     } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'
@@ -1263,6 +1363,12 @@
     import { useSimilarList } from '~/composables/discovery/useSimilarList'
     import { getColumnCountWithLineage } from '~/components/common/assets/profile/tabs/lineage/util.js'
     import { useAuthStore } from '~/store/auth'
+    import {
+        featureEnabledMap,
+        ANTONYMS,
+        SYNONYMS,
+        PREFERRED_TERMS,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -1418,7 +1524,13 @@
                 localMeanings,
                 localCategories,
                 localSeeAlso,
+                localAntonyms,
+                localSynonyms,
+                localPreferredTerms,
                 handleSeeAlsoUpdate,
+                handleAntonymsUpdate,
+                handleSynonymsUpdate,
+                handlePreferredTermsUpdate,
                 handleCategoriesUpdate,
                 handleMeaningsUpdate,
                 handleChangeName,
@@ -1435,6 +1547,16 @@
                 localSQLQuery,
                 handleSQLQueryUpdate,
             } = updateAssetAttributes(selectedAsset, isDrawer.value)
+
+            const showPreferredTerms = computed(
+                () => featureEnabledMap.value[PREFERRED_TERMS]
+            )
+            const showAntonyms = computed(
+                () => featureEnabledMap.value[ANTONYMS]
+            )
+            const showSynonyms = computed(
+                () => featureEnabledMap.value[SYNONYMS]
+            )
 
             const limit = ref(0)
             const offset = ref(0)
@@ -1575,9 +1697,15 @@
                 handleMeaningsUpdate,
                 handleCategoriesUpdate,
                 handleSeeAlsoUpdate,
+                handleAntonymsUpdate,
+                handleSynonymsUpdate,
+                handlePreferredTermsUpdate,
                 isUserDescription,
                 localCategories,
                 localSeeAlso,
+                localAntonyms,
+                localSynonyms,
+                localPreferredTerms,
                 handleChangeAdmins,
                 localAdmins,
                 localViewers,
@@ -1631,6 +1759,9 @@
                 powerBIColumnDataType,
                 powerBIColumnDataTypeImage,
                 setAllAdmins,
+                showPreferredTerms,
+                showAntonyms,
+                showSynonyms,
             }
         },
     })

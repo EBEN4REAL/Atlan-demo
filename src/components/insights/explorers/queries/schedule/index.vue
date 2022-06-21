@@ -171,11 +171,13 @@
                 },
                 users: { text: 'No user selected', show: false },
             })
-
+            debugger
             const variablesData = ref(
                 JSON.parse(
-                    window.atob(item.value.attributes?.variablesSchemaBase64) ??
-                        '[]'
+                    window.atob(
+                        item.value.attributes?.variablesSchemaBase64 ??
+                            window.btoa('[]')
+                    ) ?? '[]'
                 )
             )
             const activeTabIndex = ref(0)

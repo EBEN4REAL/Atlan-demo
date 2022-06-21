@@ -218,6 +218,10 @@ export const GlossaryAttributes = [
     'parentCategory',
     'assignedEntities',
     'seeAlso',
+    'antonyms',
+    'synonyms',
+    'preferredTerms',
+    'preferredToTerms',
 ]
 
 export const GlossaryRelationAttributes = ['name']
@@ -323,6 +327,19 @@ export const MinimalAttributes = [
     'powerBITableMeasureCount',
     'powerBIColumnDataType',
 ]
+
+export const metadataLinkedAssetsAttributes = [
+    'name',
+    'displayName',
+    'certificateStatus',
+    'certificateUpdatedBy',
+    'connectorName',
+    'connectionName',
+    'dataType',
+    'certificateUpdatedAt'
+]
+
+
 
 export const BasicSearchAttributes = [
     '__timestamp',

@@ -28,7 +28,7 @@
                     <a-button
                         v-if="!localReadmeContent && !isEditing"
                         :disabled="!isEditingAllowed"
-                        class="flex items-center text-primary border-0 shadow-none"
+                        class="flex items-center border-0 shadow-none text-primary"
                         type="minimal"
                         @click="handleEditMode"
                         @transitionend.stop="() => {}"
@@ -52,7 +52,7 @@
                     >
 
                     <a-button
-                        class="flex w-28 justify-center items-center"
+                        class="flex items-center justify-center w-28"
                         type="primary"
                         :loading="isSaving"
                         @click="handleUpdate"
@@ -73,7 +73,7 @@
                     <a-button
                         v-if="localReadmeContent && !isEditing"
                         :disabled="!isEditingAllowed"
-                        class="flex items-center text-primary border-0 shadow-none"
+                        class="flex items-center border-0 shadow-none text-primary"
                         type="minimal"
                         @click="handleEditMode"
                         @transitionend.stop="() => {}"
@@ -86,7 +86,7 @@
                 >
             </div>
         </div>
-        <div class="border-0 h-full p-6">
+        <div class="h-full p-6 border-0">
             <AtlanEditor
                 ref="editor"
                 v-model="localReadmeContent"
@@ -108,11 +108,11 @@
     import { defineComponent, ref, toRefs } from 'vue'
 
     import { useVModel } from '@vueuse/core'
-    import Editor from '~/modules/editor/index.vue'
+    import AtlanEditor from '~/components/common/editor/index.vue'
 
     export default defineComponent({
         components: {
-            Editor,
+            AtlanEditor,
         },
         props: {
             isEditingAllowed: {

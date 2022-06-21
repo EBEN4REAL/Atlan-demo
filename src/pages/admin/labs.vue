@@ -1,49 +1,43 @@
 <template>
     <main class="mx-4 space-y-8 my-9">
-        <h1 class="text-3xl">Labs</h1>
-        <div class="grid w-full p-5 border rounded-md gap-y-5">
-            <template v-for="feature in featureList">
-                <div
-                    v-if="
-                        feature.dependantFeatureKey
-                            ? featureEnabledMap[feature.dependantFeatureKey]
-                            : true
-                    "
-                    :key="feature.key"
-                    class="flex flex-col pb-5 border-b last:border-b-0 last:pb-0 lab-card"
-                >
-                    <div class="flex justify-between gap-y-8">
-                        <div class="flex flex-col">
-                            <div class="flex">
-                                <span
-                                    class="text-base font-bold text-primary"
-                                    >{{ feature.name }}</span
-                                >
-                                <div
-                                    v-if="feature.isBeta"
-                                    class="flex items-center px-2 ml-2 rounded-full bg-success-muted border-success"
-                                >
-                                    Beta
-                                </div>
-                                <div class=""></div>
-                            </div>
-                            <span>{{ feature.description }}</span>
-                        </div>
-                        <a-switch
-                            :checked="featureEnabledMap[feature.key]"
-                            :disabled="updateStatus === 'loading'"
-                            :loading="updateStatus === 'loading'"
-                            @click="handleSwitch(feature)"
-                        />
-                    </div>
-                </div>
-            </template>
+        <div class="flex flex-col">
+            <h1 class="text-3xl">Labs</h1>
+            <p class="text-base font-normal text-gray-600">
+                Manage your workspace preferences
+            </p>
+        </div>
+
+        <div
+            class="flex flex-row w-full border rounded-lg"
+            :style="{ height: '520px' }"
+        >
+            <preferences
+                :feature-list="featureList"
+                :feature-enabled-map="featureEnabledMap"
+                :update-status="updateStatus"
+                @handle-switch="(feature) => handleSwitch(feature)"
+                @set-feature-preview="
+                    (feature) => {
+                        setPreview(feature)
+                    }
+                "
+            />
+
+            <preference-preview :feature="hoveredFeature" />
         </div>
     </main>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs, watch, h } from 'vue'
+    import {
+        computed,
+        defineComponent,
+        ref,
+        toRefs,
+        watch,
+        h,
+        reactive,
+    } from 'vue'
     import { message } from 'ant-design-vue'
     import {
         featureList,
@@ -55,11 +49,16 @@
     import { Tenant } from '~/services/service/tenant'
     import { useTenantStore } from '~/store/tenant'
     import SuccessToast from '@/common/assets/misc/customToasts/labFeatureEnabled.vue'
+    import Preferences from '@/admin/labs/preferences.vue'
+    import PreferencePreview from '@/admin/labs/preferencePreview.vue'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'AdminLabs',
-        components: {},
+        components: {
+            Preferences,
+            PreferencePreview,
+        },
         setup() {
             const updateStatus = ref('')
             const tenantStore = useTenantStore()
@@ -84,7 +83,9 @@
                 const attributes = tenantRaw.value.attributes || {}
                 const preferences =
                     JSON.parse(attributes[orgPrefrencesKey] || '{}') || {}
+                console.log(featureEnabledMap.value[feature.key])
                 const finalStatus = !featureEnabledMap.value[feature.key]
+                console.log(finalStatus)
                 preferences[feature.key] = finalStatus
                 console.log('final preferences', finalStatus, preferences)
                 const updatedTenant = {
@@ -157,11 +158,33 @@
                     // }, 2500)
                 }
             }
+
+            const hoveredFeature = reactive({
+                key: '',
+                description: '',
+                illustration: '',
+            })
+
+            const setPreview = (feature) => {
+                if (feature) {
+                    hoveredFeature.key = feature.key
+                    hoveredFeature.description = feature.description
+                    hoveredFeature.illustration = feature.previewIllustration
+                } else {
+                    hoveredFeature.key = ''
+                    hoveredFeature.description = ''
+                    hoveredFeature.illustration = ''
+                }
+            }
+            console.log(featureEnabledMap.value)
+            console.log(featureList)
             return {
                 featureList,
                 handleSwitch,
                 updateStatus,
                 featureEnabledMap,
+                setPreview,
+                hoveredFeature,
             }
         },
     })

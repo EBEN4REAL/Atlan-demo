@@ -10,10 +10,12 @@ export interface Actions extends State {
         columns,
         executionTime,
         previewTabIndex,
+        sourceExecutionTime,
     }: {
         rows: any[]
         columns: any[]
         executionTime: number
+        sourceExecutionTime: number
         previewTabIndex: number
     }) => void
 }
@@ -51,10 +53,18 @@ const actions: Actions = {
             clearTimeout(x)
         }, 3000)
     },
-    getData({ rows, columns, executionTime, previewTabIndex }) {
+    getData({
+        rows,
+        columns,
+        executionTime,
+        previewTabIndex,
+        sourceExecutionTime,
+    }) {
         this.previewTabs[previewTabIndex].rows = rows
         this.previewTabs[previewTabIndex].columns = columns
         this.previewTabs[previewTabIndex].executionTime = executionTime
+        this.previewTabs[previewTabIndex].sourceExecutionTime =
+            sourceExecutionTime
     },
 }
 export default actions

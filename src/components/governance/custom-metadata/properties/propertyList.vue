@@ -66,11 +66,15 @@
                                 <a-tooltip>
                                     <template #title>
                                         <span>{{
+                                            property.description ||
                                             property.options.description
                                         }}</span>
                                     </template>
                                     <div
-                                        v-if="property.options.description"
+                                        v-if="
+                                            property.description ||
+                                            property.options.description
+                                        "
                                         class="mr-2"
                                     >
                                         <AtlanIcon

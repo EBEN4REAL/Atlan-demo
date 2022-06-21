@@ -45,6 +45,12 @@ export default function useAssetInfo() {
 
     const categories = (asset: assetInterface) => asset?.attributes?.categories
     const seeAlso = (asset: assetInterface) => asset?.attributes?.seeAlso
+    const antonyms = (asset: assetInterface) => asset?.attributes?.antonyms
+    const synonyms = (asset: assetInterface) => asset?.attributes?.synonyms
+    const preferredTerms = (asset: assetInterface) =>
+        asset?.attributes?.preferredTerms
+    const preferredToTerms = (asset: assetInterface) =>
+        asset?.attributes?.preferredToTerms
 
     const parentWorkspace = (asset: assetInterface) =>
         attributes(asset)?.workspace
@@ -224,7 +230,7 @@ export default function useAssetInfo() {
 
     const viewName = (asset: assetInterface) =>
         attributes(asset)?.viewName ?? ''
-    // const assetState = (asset: assetInterface) => asset?.status?.toLowerCase()
+    const assetState = (asset: assetInterface) => asset?.status?.toLowerCase()
     // const assetTypeLabel = (asset: assetInterface) => {
     //     const found = assetTypeList.find((d) => d.id === assetType(asset))
     //     return found?.label
@@ -1407,6 +1413,7 @@ export default function useAssetInfo() {
     return {
         dataTypeCategory,
         attributes,
+        assetState,
         title,
         getConnectorImage,
         getConnectorName,
@@ -1490,6 +1497,10 @@ export default function useAssetInfo() {
         isSort,
         categories,
         seeAlso,
+        preferredTerms,
+        preferredToTerms,
+        antonyms,
+        synonyms,
         parentCategory,
         sourceOwners,
         isGTC,

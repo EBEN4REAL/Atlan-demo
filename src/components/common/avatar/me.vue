@@ -33,14 +33,14 @@
                         </div></a
                     >
                 </a-menu-item>
-                <a-menu-item>
+                <!--   <a-menu-item>
                     <a @click="toggleHelpWidget">
                         <div class="flex items-center">
                             <AtlanIcon icon="Support" class="mr-2" />
                             <span>Support</span>
                         </div>
                     </a>
-                </a-menu-item>
+                </a-menu-item> -->
                 <!-- <a-menu-item>
                     <a href="javascript:;">Admin Centre</a>
                 </a-menu-item>

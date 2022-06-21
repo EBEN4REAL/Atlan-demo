@@ -244,17 +244,9 @@
 
 <script lang="ts">
     // Vue
-    import {
-        defineComponent,
-        watch,
-        ref,
-        Ref,
-        computed,
-        provide,
-        nextTick,
-    } from 'vue'
+    import { defineComponent, watch, ref, Ref, computed, provide } from 'vue'
 
-    import { useDebounceFn, watchOnce } from '@vueuse/core'
+    import { useDebounceFn, watchOnce, useInfiniteScroll } from '@vueuse/core'
 
     // Components
     import ErrorView from '@common/error/discover.vue'
@@ -650,35 +642,25 @@
                 }
             )
 
+            const columnlistRef = ref<Element | null>(null)
+
             watchOnce(tableRef, () => {
                 if (tableRef.value) {
-                    const node = document.querySelector(
+                    columnlistRef.value = document.querySelector(
                         '.columns-widget .ant-table-body'
                     )
-                    if (node) {
-                        node.addEventListener('scroll', () => {
-                            const perc =
-                                (node.scrollTop /
-                                    (node.scrollHeight - node.offsetHeight)) *
-                                100
-
-                            if (perc >= 100) {
-                                console.log(
-                                    'Scrolling has reached bottom, loading more data...'
-                                )
-                                if (shouldLoadMore.value) {
-                                    shouldLoadMore.value = false
-                                    handleLoadMore()
-
-                                    setTimeout(() => {
-                                        shouldLoadMore.value = true
-                                    }, 1000)
-                                }
-                            }
-                        })
-                    }
                 }
             })
+
+            useInfiniteScroll(
+                columnlistRef,
+                () => {
+                    if (columnlistRef.value) {
+                        handleLoadMore()
+                    }
+                },
+                { distance: 10 }
+            )
 
             return {
                 rowClassName,

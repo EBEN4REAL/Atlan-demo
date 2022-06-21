@@ -1,4 +1,14 @@
 <template>
+    <LinkedAssetsModal
+        v-model:visible="linkedAssetsVisible"
+        :linked-assets="linkedAssets"
+        :metadata="selectedBm"
+        :asset-count="count"
+        :is-load-more="isLoadMore"
+        :is-loading="isLoading"
+        @loadMore="handleLoadMore"
+        @metadataRemove="handleMetadataRemove"
+    />
     <div class="relative">
         <div
             class="flex flex-col items-start justify-between px-8 pb-4 bg-white border-b pt-7 gap-y-2"
@@ -21,19 +31,22 @@
                 </div>
                 <div class="flex items-center">
                     <MetadataHeaderButton
+                        ref="metaActions"
                         :metadata="localBm"
                         :allow-delete="allowDelete"
-                        :asset-count="assetCount"
+                        @viewAssets="linkedAssetsVisible = true"
                     />
                 </div>
             </div>
-            <div class="flex items-start justify-between">
-                <CreateUpdateInfo
-                    :created-at="localBm.createTime"
-                    :updated-at="localBm.updateTime"
-                    :created-by="localBm.createdBy"
-                    :updated-by="localBm.updatedBy"
-                />
+            <div class="flex gap-x-2">
+                <div class="flex items-start justify-between">
+                    <CreateUpdateInfo
+                        :created-at="localBm.createTime"
+                        :updated-at="localBm.updateTime"
+                        :created-by="localBm.createdBy"
+                        :updated-by="localBm.updatedBy"
+                    />
+                </div>
             </div>
         </div>
 
@@ -175,7 +188,6 @@
     import CreateUpdateInfo from '@/common/info/createUpdateInfo.vue'
     import MetadataHeaderButton from './metadataHeaderButton.vue'
     import AddPropertyDrawer from './propertyDrawer/propertyDrawer.vue'
-    import noPropertyImage from '~/assets/images/admin/no-property.png'
     import PropertyList from '@/governance/custom-metadata/properties/propertyList.vue'
     import ArchivedPropertyList from '@/governance/custom-metadata/properties/archivedPropertyList.vue'
     import AvatarUpdate from './avatarUpdate.vue'
@@ -189,12 +201,14 @@
     import map from '~/constant/accessControl/map'
     import useAuth from '~/composables/auth/useAuth'
     import Truncate from '@/common/ellipsis/index.vue'
+    import LinkedAssetsModal from '@/governance/custom-metadata/linkedAssets/linkedAssetsModal.vue'
 
     export default defineComponent({
         components: {
             Truncate,
             CreateUpdateInfo,
             MetadataHeaderButton,
+            LinkedAssetsModal,
             InternalCMBanner,
             AddPropertyDrawer,
             PropertyList,
@@ -211,6 +225,8 @@
         setup(props, context) {
             const store = useTypedefStore()
             const { checkAccess } = useAuth()
+            const linkedAssetsVisible = ref(false)
+            const metaActions = ref()
             // * Data
             const localBm = computed({
                 get: () => props.selectedBm,
@@ -314,16 +330,36 @@
             }
 
             const {
-                count: assetCount,
-                mutate,
+                assets: linkedAssets,
+                mutate: refreshLinkedAssets,
                 isReady,
+                count,
+                isLoading,
+                isLoadMore,
+                handleLoadMore,
+                removeAsset,
             } = getAssetCount(localBm.value)
 
-            if (localBm.value.attributeDefs?.length) mutate()
+            const handleMetadataRemove = async (assetID) => {
+                // ? refresh idx search giving stale data
+                // await refreshLinkedAssets()
+
+                // ? hence removing locally
+                removeAsset(assetID)
+
+                if (!linkedAssets.value.length && isLoadMore) handleLoadMore()
+                if (!count.value) {
+                    linkedAssetsVisible.value = false
+                    // ? since all assets are now cleared, open delete confirm modal
+                    metaActions.value?.openDeleteConfirm()
+                }
+            }
+
+            if (localBm.value.attributeDefs?.length) refreshLinkedAssets()
 
             const allowDelete = computed(() => {
                 if (!localBm.value.attributeDefs?.length) return true
-                return !assetCount.value
+                return !count.value
             })
 
             const selected = computed(() =>
@@ -390,11 +426,18 @@
                 addPropertyDrawer.value?.open(property, true)
             }
             return {
+                count,
+                isLoading,
+                isLoadMore,
+                handleLoadMore,
+                metaActions,
+                handleMetadataRemove,
                 openDirection,
+                linkedAssetsVisible,
                 selected,
                 openEdit,
                 allowDelete,
-                assetCount,
+                linkedAssets,
                 attrsearchText,
                 error,
                 archiveAttribute,
@@ -412,11 +455,6 @@
                 checkAccess,
                 finalAttributeList,
                 archivedAttributeList,
-            }
-        },
-        data() {
-            return {
-                noPropertyImage,
             }
         },
     })

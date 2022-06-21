@@ -100,6 +100,21 @@
                             <p class="p-0 m-0">Rename</p>
                         </div>
                     </template>
+                    <template v-else-if="role?.toLowerCase() === 'guest'">
+                        <a-tooltip
+                            placement="right"
+                            title="You don't have permission to perform this action"
+                        >
+                            <div
+                                :class="'cursor-not-allowed text-gray-500'"
+                                class="flex items-center"
+                            >
+                                <AtlanIcon icon="Pencil" class="m-0 mr-2" />
+                                <p class="p-0 m-0">Rename</p>
+                            </div>
+                        </a-tooltip>
+                    </template>
+
                     <template v-else>
                         <RenameModal
                             :entityType="asset?.typeName"

@@ -190,7 +190,7 @@
                 </div>
             </div>
 
-            <div class="flex flex-col items-center w-full">
+            <div class="w-full overflow-y-auto" :style="{height: 'calc(100vh - 80px)'}">
                 <EmptyCollection
                     @event="
                         () => {

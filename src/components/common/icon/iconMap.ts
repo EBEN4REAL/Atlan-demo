@@ -8,11 +8,11 @@ import LegendProcess from '~/assets/images/lineage/legendProcess.svg'
 import LegendProcessDefault from '~/assets/images/lineage/legendProcessDefault.svg'
 import LegendProcessHighlighted from '~/assets/images/lineage/legendProcessHighlighted.svg'
 import LegendProcessAnomaly from '~/assets/images/lineage/legendProcessAnomaly.svg'
-import LegendTableauDSField from '~/assets/images/lineage/legendTableauDSField.svg'
-import LegendTableauCField from '~/assets/images/lineage/legendTableauCField.svg'
-import LegendLookerField from '~/assets/images/lineage/legendLookerField.svg'
+import LegendCalculatedField from '~/assets/images/lineage/LegendCalculatedField.svg'
+import LegendField from '~/assets/images/lineage/legendField.svg'
 import LegendMeasures from '~/assets/images/lineage/legendMeasures.svg'
-import LegendDimensions from '~/assets/images/lineage/legendDimensions.svg'
+import LegendDimension from '~/assets/images/lineage/legendDimension.svg'
+import LegendDimensionGroups from '~/assets/images/lineage/LegendDimensionGroups.svg'
 import Time from '~/assets/images/icons/time.svg'
 import BookmarkFilled from '~/assets/images/icons/bookmark-filled.svg'
 import Bookmark from '~/assets/images/icons/bookmark.svg'
@@ -530,11 +530,11 @@ export default {
     LegendProcessDefault,
     LegendProcessHighlighted,
     LegendProcessAnomaly,
-    LegendTableauDSField,
-    LegendTableauCField,
-    LegendLookerField,
+    LegendCalculatedField,
+    LegendField,
     LegendMeasures,
-    LegendDimensions,
+    LegendDimension,
+    LegendDimensionGroups,
     Schedule24,
     Mail,
     EmptyJira,

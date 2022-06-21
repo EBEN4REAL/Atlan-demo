@@ -49,9 +49,8 @@ import {
     lookup,
     enum1,
     percent,
-    tableauCalculatedField,
-    tableauDatasourceField,
-    lookerField,
+    calculatedField,
+    field,
 } from './icons'
 
 interface EdgeStyle {
@@ -93,9 +92,9 @@ const portDataTypeIcons = {
 }
 
 const biPortDataTypeIcons = {
-    TableauCalculatedField: tableauCalculatedField,
-    TableauDatasourceField: tableauDatasourceField,
-    LookerField: lookerField,
+    TableauCalculatedField: calculatedField,
+    TableauDatasourceField: field,
+    LookerField: field,
 }
 
 const columnKeyTypeIcons = {

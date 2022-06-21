@@ -180,7 +180,7 @@
                                     <div
                                         v-if="tab.items.length"
                                         class="flex flex-col px-6 py-4 text-gray-500 bg-white gap-y-3"
-                                        style="min-height: 196px"
+                                        style="min-height: 224px"
                                     >
                                         <div
                                             v-for="(item, index) in tab.items"
@@ -385,11 +385,11 @@
             if (activeConnectionSourceList.value.includes('tableau')) {
                 legendTabs[2].items.push(
                     {
-                        icon: 'LegendTableauDSField',
+                        icon: 'LegendField',
                         label: 'Tableau datasource field',
                     },
                     {
-                        icon: 'LegendTableauCField',
+                        icon: 'LegendCalculatedField',
                         label: 'Tableau calculated field',
                     }
                 )
@@ -398,11 +398,12 @@
             if (activeConnectionSourceList.value.includes('looker')) {
                 legendTabs[2].items.push(
                     {
-                        icon: 'LegendLookerField',
+                        icon: 'LegendField',
                         label: 'Looker field',
                     },
                     { icon: 'LegendMeasures', label: 'Measures' },
-                    { icon: 'LegendDimensions', label: 'Dimensions' }
+                    { icon: 'LegendDimension', label: 'Dimension' },
+                    { icon: 'LegendDimensionGroups', label: 'Dimension Groups' }
                 )
             }
 

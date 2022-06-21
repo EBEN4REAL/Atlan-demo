@@ -1,5 +1,4 @@
 /** VUE */
-import { ref } from 'vue'
 import { watchOnce } from '@vueuse/core'
 
 /** COMPOSABLES */

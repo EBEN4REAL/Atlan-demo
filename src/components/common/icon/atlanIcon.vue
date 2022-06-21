@@ -1,5 +1,5 @@
 <template>
-    <div class="inline">
+    <div class="inline" v-auto-animate>
         <Suspense>
             <template #default>
                 <component

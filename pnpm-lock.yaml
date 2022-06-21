@@ -11,6 +11,7 @@ specifiers:
   '@antv/x6': ^1.30.1
   '@babel/core': ^7.17.2
   '@babel/eslint-parser': ^7.17.0
+  '@formkit/auto-animate': ^1.0.0-beta.1
   '@intlify/eslint-plugin-vue-i18n': ^1.4.0
   '@intlify/vite-plugin-vue-i18n': 3.2.2
   '@rollup/plugin-strip': ^2.1.0
@@ -140,6 +141,7 @@ specifiers:
 dependencies:
   '@antv/layout': 0.1.31
   '@antv/x6': 1.30.1
+  '@formkit/auto-animate': 1.0.0-beta.1_vue@3.2.30
   '@tailwindcss/typography': 0.4.1_tailwindcss@2.2.19
   '@tiptap/core': 2.0.0-beta.174
   '@tiptap/extension-code': 2.0.0-beta.26_@tiptap+core@2.0.0-beta.174
@@ -1614,6 +1616,20 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@formkit/auto-animate/1.0.0-beta.1_vue@3.2.30:
+    resolution: {integrity: sha512-I3OWOBaPZKSJL4bsooXI8kC3q7bcgibD2oML0P/Lir6MnbvUe/0/7EH8br024juvM/Ulm9C9xGx9CJUQYrOWSA==}
+    peerDependencies:
+      react: ^16.8.0
+      vue: ^3.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      vue:
+        optional: true
+    dependencies:
+      vue: 3.2.30
+    dev: false
 
   /@humanwhocodes/config-array/0.9.3:
     resolution: {integrity: sha512-3xSMlXHh03hCcCmFc0rbKp3Ivt2PFEJnQUJDDMTJQ2wkECZWdq4GePs2ctc5H8zV+cHPaq8k2vU8mrQjA6iHdQ==}

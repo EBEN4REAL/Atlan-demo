@@ -1,23 +1,21 @@
 <template>
-    <div class="inline" v-auto-animate>
-        <Suspense>
-            <template #default>
-                <component
-                    :is="svgIcon"
-                    :style="{ height: '1rem' }"
-                    class="flex-none inline w-auto"
-                    :class="className"
-                />
-            </template>
-            <template #fallback>
-                <div
-                    class="rounded-md skeleton"
-                    style="min-height: 16px; min-width: 16px"
-                    :class="className"
-                ></div>
-            </template>
-        </Suspense>
-    </div>
+    <Suspense>
+        <template #default>
+            <component
+                :is="svgIcon"
+                :style="{ height: '1rem' }"
+                v-bind="$attrs"
+                class="flex-none inline w-auto"
+            />
+        </template>
+        <template #fallback>
+            <div
+                class="rounded-md"
+                style="min-height: 16px; min-width: 16px"
+                v-bind="$attrs"
+            ></div>
+        </template>
+    </Suspense>
 </template>
 
 <script lang="ts">
@@ -26,21 +24,17 @@
 
     export default defineComponent({
         name: 'AtlanIcon',
+        inheritAttrs: false,
         props: {
             icon: {
                 type: String as PropType<keyof typeof iconMap>,
                 required: true,
             },
-            class: {
-                type: String,
-                required: false,
-                default: '',
-            },
         },
         setup(props) {
-            const { icon, class: className } = toRefs(props)
+            const { icon } = toRefs(props)
             const svgIcon = computed(() => iconMap[icon.value] || 'div')
-            return { svgIcon, icon, className }
+            return { svgIcon }
         },
     })
 </script>
@@ -53,16 +47,8 @@
 </style>
 <style lang="less" scoped>
     .skeleton {
-        background: linear-gradient(
-            90deg,
-            rgba(190, 190, 190, 0.2) 25%,
-            rgba(129, 129, 129, 0.24) 37%,
-            rgba(190, 190, 190, 0.2) 63%
-        );
+        background: #bebebe33;
         background-size: 400% 100%;
-        -webkit-animation: ant-skeleton-loading 1.4s ease infinite;
-        animation: ant-skeleton-loading 1.4s ease infinite;
-
         list-style: none;
     }
 </style>

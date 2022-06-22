@@ -24,13 +24,13 @@ export default function useTransformGraph(graph, emit) {
     }
 
     // controlDimensions
-    const controlDimensions = () => {
-        const { isSidebar, isFullScreen } = lineageStore
+    const controlDimensions = (fs) => {
+        const { isSidebar } = lineageStore
         const sb = isSidebar()
-        const fs = isFullScreen()
         const dWidth = window.outerWidth - 60
         const fsWidth = window.outerWidth
         const sbWidth = fs ? window.outerWidth - 420 : window.outerWidth - 480
+
         // eslint-disable-next-line no-nested-ternary
         const width = sb ? sbWidth : fs ? fsWidth : dWidth
         const height = fs
@@ -41,23 +41,9 @@ export default function useTransformGraph(graph, emit) {
         graph.value.resize(width, height)
     }
 
-    // Fullscreen
-    const fullscreen = () => {
-        if (document.fullscreenElement) {
-            document.exitFullscreen()
-            lineageStore.setFullscreen(false)
-        } else {
-            const elem = document.documentElement
-            elem.requestFullscreen()
-            lineageStore.setFullscreen(true)
-        }
-        controlDimensions()
-    }
-
     return {
         zoom,
         fit,
-        fullscreen,
         controlDimensions,
     }
 }

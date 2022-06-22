@@ -2,6 +2,7 @@
     <div
         ref="lineageContainer"
         class="relative w-full overflow-hidden hide-scrollbar lineage"
+        :style="isFullscreen ? 'height: 100vh' : 'height: 82vh'"
     >
         <!-- Render Loader -->
         <div
@@ -25,8 +26,6 @@
         <LineageFooter
             :graph="graph"
             :curr-zoom="currZoom"
-            :graph-height="graphHeight"
-            :graph-width="graphWidth"
             :base-entity-guid="lineage.baseEntityGuid"
             @on-zoom-change="handleZoom($event)"
             @on-show-minimap="showMinimap = $event"
@@ -68,9 +67,8 @@
         onUnmounted,
         provide,
         inject,
-        toRefs,
     } from 'vue'
-    import { useDebounceFn } from '@vueuse/core'
+    import { useDebounceFn, useFullscreen } from '@vueuse/core'
 
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
@@ -104,8 +102,6 @@
             const control = inject('control')
 
             /** DATA */
-            const graphHeight = ref(0)
-            const graphWidth = ref(0)
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
             const graph = ref({})
@@ -120,6 +116,7 @@
             const showDrawer = ref(false)
             const showProcessDrawer = ref(false)
 
+            const { isFullscreen } = useFullscreen()
             const lineageStore = useLineageStore()
             const { controlDimensions } = useTransformGraph(graph, () => {})
 
@@ -159,7 +156,7 @@
                 const { isGroupEdge, isCyclicEdge, processIds } = item || {}
                 control('selectedAsset', item)
 
-                if (item?.guid) controlDimensions()
+                if (item?.guid) controlDimensions(isFullscreen.value)
 
                 if ((isGroupEdge || isCyclicEdge) && processIds.length) {
                     showDrawer.value = false
@@ -183,7 +180,7 @@
                 showDrawer.value = false
                 showProcessDrawer.value = false
                 lineageStore.setSidebar(false)
-                controlDimensions()
+                controlDimensions(isFullscreen.value)
                 if (processDrawer) groupedProcessIds.value = []
             }
 
@@ -201,8 +198,6 @@
                     graphLayout,
                     graphContainer,
                     minimapContainer,
-                    graphWidth,
-                    graphHeight,
                 })
 
                 // usePrefGraph
@@ -271,8 +266,6 @@
             return {
                 lineage,
                 graph,
-                graphHeight,
-                graphWidth,
                 selectedAsset,
                 currZoom,
                 showMinimap,
@@ -282,6 +275,7 @@
                 minimapContainer,
                 groupedProcessIds,
                 showDrawer,
+                isFullscreen,
                 onCloseDrawer,
                 handleZoom,
                 handleMinimapAction,

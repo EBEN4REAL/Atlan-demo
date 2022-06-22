@@ -15,7 +15,6 @@ export const state = {
     mergedLineageData: {},
     nodesPortsList: {},
     portLineage: {},
-    fullScreen: false,
     sidebar: false,
     dimension: { width: 0, height: 0 },
 }

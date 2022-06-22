@@ -18,8 +18,6 @@ export default function useCreateGraph({
     graphLayout,
     graphContainer,
     minimapContainer,
-    graphWidth,
-    graphHeight,
 }) {
     const lineageStore = useLineageStore()
 

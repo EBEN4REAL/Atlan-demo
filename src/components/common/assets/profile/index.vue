@@ -1,12 +1,12 @@
 <template>
     <div class="flex flex-col w-full h-full">
-        <AssetHeader v-if="!lineageIsFullScreen" :item="asset" />
+        <AssetHeader v-if="!isFullscreen" :item="asset" />
         <a-tabs
             v-model:activeKey="activeKey"
             :class="[
                 $style.profiletab,
                 activeKey,
-                lineageIsFullScreen ? 'lineageIsFullScreen' : '',
+                isFullscreen ? 'isFullscreen' : '',
             ]"
             class="flex-1"
             :destroy-inactive-tab-pane="true"
@@ -64,6 +64,7 @@
         watch,
         inject,
     } from 'vue'
+    import { useFullscreen } from '@vueuse/core'
     import { useRoute, useRouter } from 'vue-router'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -73,7 +74,6 @@
 
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
-    import useLineageStore from '~/store/lineage'
 
     export default defineComponent({
         name: 'AssetProfile',
@@ -122,6 +122,7 @@
         },
         emits: ['preview'],
         setup(props) {
+            const { isFullscreen } = useFullscreen()
             const { asset, page } = toRefs(props)
             const { getAllowedActions } = useAssetEvaluate()
             const actions = computed(() => getAllowedActions(asset.value))
@@ -152,11 +153,6 @@
                 }
             )
 
-            const lineageStore = useLineageStore()
-            const lineageIsFullScreen = computed(() =>
-                lineageStore.isFullScreen()
-            )
-
             watch(
                 activeKey,
                 () => {
@@ -177,7 +173,7 @@
                 activeKey,
                 isScrubbed,
                 columnCount,
-                lineageIsFullScreen,
+                isFullscreen,
             }
         },
     })
@@ -219,7 +215,7 @@ meta:
             background-color: #f6f7f9 !important;
         }
     }
-    .lineageIsFullScreen {
+    .isFullscreen {
         .ant-tabs-nav {
             display: none !important;
         }

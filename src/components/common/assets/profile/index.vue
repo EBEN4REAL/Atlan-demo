@@ -1,9 +1,13 @@
 <template>
     <div class="flex flex-col w-full h-full">
-        <AssetHeader :item="asset" />
+        <AssetHeader v-if="!lineageIsFullScreen" :item="asset" />
         <a-tabs
             v-model:activeKey="activeKey"
-            :class="[$style.profiletab, activeKey]"
+            :class="[
+                $style.profiletab,
+                activeKey,
+                lineageIsFullScreen ? 'lineageIsFullScreen' : '',
+            ]"
             class="flex-1"
             :destroy-inactive-tab-pane="true"
         >
@@ -69,6 +73,7 @@
 
     import { assetInterface } from '~/types/assets/asset.interface'
     import useAssetEvaluate from '~/composables/discovery/useAssetEvaluation'
+    import useLineageStore from '~/store/lineage'
 
     export default defineComponent({
         name: 'AssetProfile',
@@ -147,6 +152,11 @@
                 }
             )
 
+            const lineageStore = useLineageStore()
+            const lineageIsFullScreen = computed(() =>
+                lineageStore.isFullScreen()
+            )
+
             watch(
                 activeKey,
                 () => {
@@ -167,6 +177,7 @@
                 activeKey,
                 isScrubbed,
                 columnCount,
+                lineageIsFullScreen,
             }
         },
     })
@@ -206,6 +217,11 @@ meta:
     .lineage {
         .ant-tabs-content-holder {
             background-color: #f6f7f9 !important;
+        }
+    }
+    .lineageIsFullScreen {
+        .ant-tabs-nav {
+            display: none !important;
         }
     }
 </style>

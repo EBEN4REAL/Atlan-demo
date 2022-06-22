@@ -235,12 +235,16 @@
                     <a-tooltip placement="top">
                         <template #title>
                             <span>{{
-                                isFullscreen ? 'Leave fullscreen' : 'Fullscreen'
+                                lineageIsFullScreen
+                                    ? 'Leave fullscreen'
+                                    : 'Fullscreen'
                             }}</span>
                         </template>
                         <AtlanIcon
                             :icon="
-                                isFullscreen ? 'ExitFullScreen' : 'FullScreen'
+                                lineageIsFullScreen
+                                    ? 'ExitFullScreen'
+                                    : 'FullScreen'
                             "
                             class="outline-none"
                         ></AtlanIcon>
@@ -303,10 +307,6 @@
                 type: Number,
                 required: true,
             },
-            lineageContainer: {
-                type: Object,
-                required: true,
-            },
             baseEntityGuid: {
                 type: String,
                 required: true,
@@ -325,22 +325,19 @@
             const preferences = lineageStore.getPreferences()
 
             /** DATA */
-            const {
-                graph,
-                baseEntityGuid,
-                lineageContainer,
-                graphHeight,
-                graphWidth,
-            } = toRefs(props)
+            const { graph, baseEntityGuid, graphHeight, graphWidth } =
+                toRefs(props)
             const showMinimap = ref(false)
             const showLegend = ref(false)
-            const isFullscreen = ref(false)
             const showControls = ref(true)
             const showPref = ref(false)
             const footerRoot = ref<HTMLElement>()
             const activeLegendTabKey = ref('assets')
             const activeConnectionSourceList = computed(() =>
                 connectionStore.activeConnectionSourceList.map((i) => i.id)
+            )
+            const lineageIsFullScreen = computed(() =>
+                lineageStore.isFullScreen()
             )
             const legendTabs = [
                 {
@@ -402,7 +399,7 @@
             /** EVENTS DEFINITIONS */
             const sendFullScreenToggleEvent = useDebounceFn(() => {
                 useAddEvent('lineage', 'control_panel_full_screen', 'toggled', {
-                    is_enabled: isFullscreen.value,
+                    is_enabled: lineageIsFullScreen.value,
                 })
             }, 600)
 
@@ -424,7 +421,8 @@
 
             /** METHODS */
             // useTransformGraph
-            const { zoom, fit, fullscreen } = useTransformGraph(graph, emit)
+            const { zoom, fit, fullscreen, controlDimensions } =
+                useTransformGraph(graph, emit)
 
             // onSvgExport
             const onSvgExport = () => {
@@ -448,37 +446,23 @@
                     }
                 )
             }
-
             // onFullscreen
             const onFullscreen = () => {
-                const isFullscreenNative = !!document.fullscreenElement
-                isFullscreen.value = isFullscreenNative
+                fullscreen()
 
                 // Handle Event - lineage_control_panel_full_screen_toggled
                 sendFullScreenToggleEvent()
-
-                if (isFullscreenNative)
-                    graph.value.resize(graphWidth.value, graphHeight.value)
-                else {
-                    graph.value.resize(
-                        graphWidth.value,
-                        graphHeight.value / 1.35
-                    )
-                }
-
-                fullscreen(lineageContainer)
             }
 
             // onFullscreenChanged
             const onFullscreenChanged = () => {
-                const isFullscreenNative = !!document.fullscreenElement
+                if (!document.fullscreenElement) {
+                    lineageStore.setFullscreen(false)
+                    controlDimensions()
 
-                if (isFullscreenNative) {
                     // Handle Event - lineage_control_panel_full_screen_toggled
                     sendFullScreenToggleEvent()
-
-                    graph.value.resize(graphWidth.value, graphHeight.value)
-                } else isFullscreen.value = isFullscreenNative
+                }
             }
             document.addEventListener('fullscreenchange', onFullscreenChanged)
 
@@ -512,7 +496,7 @@
             return {
                 showMinimap,
                 showLegend,
-                isFullscreen,
+                lineageIsFullScreen,
                 showPref,
                 showControls,
                 footerRoot,

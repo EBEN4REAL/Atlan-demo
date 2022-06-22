@@ -1,43 +1,69 @@
 <template>
-    <div class="p-4 rounded-lg custom-shadow">
-        <div
-            class="flex items-center justify-between pb-4 border-b border-new-gray-200"
-        >
-            <div>
-                <span class="text-base font-bold text-new-gray-800"
-                    >Pre-flight checks</span
+    <a-collapse
+        v-model:activeKey="activeKey"
+        class="px-1 rounded-lg custom-shadow"
+        ghost
+        accordion
+    >
+        <a-collapse-panel key="open" :show-arrow="false">
+            <template #header>
+                <div
+                    class="flex items-center justify-between w-full border-new-gray-200"
+                    :class="{ 'border-b pb-4': activeKey }"
                 >
-                <p class="text-sm font-medium text-new-gray-600">
-                    {{ currentStepMessage }}
-                </p>
+                    <div>
+                        <span class="text-base font-bold text-new-gray-800"
+                            >Permission checks</span
+                        >
+                        <div
+                            class="flex items-center text-new-gray-600 gap-x-1"
+                        >
+                            <AtlanIcon
+                                class="h-4 mb-0.5"
+                                :icon="
+                                    getIconByStatus(getStatusByStep(idx + 1))
+                                "
+                            />
+                            <span class="text-sm font-medium"
+                                >{{ currentStepMessage }}
+                            </span>
+                            •
+                            <span
+                                class="text-sm cursor-pointer hover:text-new-blue-500 hover:underline"
+                            >
+                                Show {{ activeKey ? 'less' : 'more' }}
+                            </span>
+                        </div>
+                    </div>
+                    <AtlanButton2
+                        :label="isCheckRunning ? 'Abort' : 'Check'"
+                        :class="
+                            isCheckRunning
+                                ? 'text-new-red-500'
+                                : 'text-new-green-500'
+                        "
+                        bold
+                        color="link"
+                        class="ml-auto"
+                        @click.stop="handleCheckButton"
+                    />
+                </div>
+            </template>
+            <div class="px-4 py-1 space-y-2">
+                <div
+                    v-for="(step, idx) in steps"
+                    :key="step.name"
+                    class="flex items-center gap-x-2"
+                >
+                    <AtlanIcon
+                        class="h-5 mb-0.5"
+                        :icon="getIconByStatus(getStatusByStep(idx + 1))"
+                    />
+                    <span> {{ step.title }} {{ getSuffixText(idx + 1) }} </span>
+                </div>
             </div>
-            <AtlanButton2
-                :label="isCheckRunning ? 'Abort' : 'Check'"
-                :class="
-                    isCheckRunning
-                        ? 'text-new-red-500 border-new-red-500'
-                        : 'text-new-green-500 border-new-green-500'
-                "
-                bold
-                color="secondary"
-                class="ml-auto"
-                @click="handleCheckButton"
-            />
-        </div>
-        <div class="pt-4 space-y-2">
-            <div
-                v-for="(step, idx) in steps"
-                :key="step.name"
-                class="flex items-center gap-x-2"
-            >
-                <AtlanIcon
-                    class="h-5 mb-0.5"
-                    :icon="getIconByStatus(getStatusByStep(idx + 1))"
-                />
-                <span> {{ step.title }} {{ getSuffixText(idx + 1) }} </span>
-            </div>
-        </div>
-    </div>
+        </a-collapse-panel>
+    </a-collapse>
 </template>
 
 <script lang="ts">
@@ -70,6 +96,7 @@
             const steps = computed(() => property.value.ui.config)
 
             const isCheckRunning = ref(false)
+            const activeKey = ref()
 
             const currentStep = ref(0)
             const currentStepStatus = ref('')
@@ -195,7 +222,7 @@
 
                         if (response.failureMessage) {
                             currentStepStatus.value = 'error'
-                            currentStepMessage.value = response.failureMessage
+                            currentStepMessage.value = `${step.title}: ${response.failureMessage}`
                             break
                         } else {
                             currentStepStatus.value = 'success'
@@ -207,8 +234,8 @@
                     } catch (error) {
                         currentStepStatus.value = 'error'
                         currentStepMessage.value =
-                            error?.response?.data?.error ||
-                            'Pre-flight check failed'
+                            `${step.title}: ` +
+                            (error?.response?.data?.error || 'Check failed')
                         isCheckRunning.value = false
                         break
                     }
@@ -237,6 +264,7 @@
                 handleCheckButton,
                 credentialBody,
                 getSuffixText,
+                activeKey,
             }
         },
     })

@@ -17,7 +17,7 @@
         </div>
 
         <transition name="fade">
-            <div class="h-full w-full">
+            <div class="w-full h-full">
                 <div
                     v-if="!isLoading && error"
                     class="flex items-center justify-center flex-grow"
@@ -25,14 +25,14 @@
                     <ErrorView></ErrorView>
                 </div>
                 <div v-if="!error">
-                    <div class="px-5 py-2 pt-4 flex items-center border-b">
+                    <div class="flex items-center px-5 py-2 pt-4 border-b">
                         <div
                             class="flex items-center justify-center p-2 border rounded"
                         >
                             <atlan-icon icon="Code" class="h-4" />
                         </div>
                         <div class="flex flex-col ml-2">
-                            <span class="text-gray-700 font-bold text-base"
+                            <span class="text-base font-bold text-gray-700"
                                 >All Process</span
                             >
                             <span class="text-gray-500"
@@ -41,7 +41,7 @@
                         </div>
                     </div>
 
-                    <div class="mx-5 pb-0 border-b mt-2">
+                    <div class="pb-0 mx-5 mt-2 border-b">
                         <SearchAdvanced
                             v-model:value="queryText"
                             :autofocus="true"
@@ -81,7 +81,7 @@
                                 :preference="preference"
                                 :enable-sidebar-drawer="false"
                                 :asset-name-truncate-percentage="'80%'"
-                                class="px-2 hover:bg-primary-menu text-primary cursor-pointer"
+                                class="px-2 cursor-pointer hover:bg-primary-menu text-primary"
                                 is-compact
                                 @click="handleItemClick(item, itemIndex)"
                             ></AssetItem>
@@ -90,7 +90,7 @@
                 </div>
                 <div
                     v-if="!isLoading && !isValidating && list?.length === 0"
-                    class="flex-grow flex items-center justify-center mt-24"
+                    class="flex items-center justify-center flex-grow mt-24"
                 >
                     <EmptyView
                         empty-screen="NoAssetsFound"
@@ -264,7 +264,7 @@
             }
 
             const handleNavigation = (direction: 'up' | 'down') => {
-                if (direction === 'up') currentIndex.value -= currentIndex.value
+                if (direction === 'up') currentIndex.value -= 1
                 else currentIndex.value += 1
 
                 if (assetItemRef.value?.handleUpdateDrawer) {

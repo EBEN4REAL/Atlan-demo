@@ -24,9 +24,10 @@
         <div
             v-if="isReady"
             class="absolute h-full"
-            :class="
-                selectedAsset?.guid ? 'max-collapsed-width' : 'max-full-width'
-            "
+            :class="[
+                selectedAsset?.guid ? 'max-collapsed-width' : 'max-full-width',
+                lineageIsFullScreen ? 'lineageIsFullScreen' : '',
+            ]"
         >
             <div
                 v-if="!Object.keys(lineage.guidEntityMap).length"
@@ -74,6 +75,9 @@
     /** CONSTANTS */
     import { LineageAttributes } from '~/constant/projection'
 
+    /** STORE */
+    import useLineageStore from '~/store/lineage'
+
     export default defineComponent({
         name: 'LineageIndex',
         components: { LineageGraph, EmptyState },
@@ -106,6 +110,11 @@
                 },
                 attributes: LineageAttributes,
             }))
+
+            const lineageStore = useLineageStore()
+            const lineageIsFullScreen = computed(() =>
+                lineageStore.isFullScreen()
+            )
 
             /** METHODS */
             // useLineageService
@@ -155,6 +164,7 @@
                 error,
                 emit,
                 selectedAsset,
+                lineageIsFullScreen,
             }
         },
     })
@@ -162,10 +172,18 @@
 
 <style lang="less" scoped>
     .max-collapsed-width {
-        max-width: calc(100vw - 480px);
+        max-width: calc(100vw - 480px) !important;
+
+        &.lineageIsFullScreen {
+            max-width: calc(100vw - 420px) !important;
+        }
     }
 
     .max-full-width {
-        max-width: calc(100vw - 60px);
+        max-width: calc(100vw - 60px) !important;
+
+        &.lineageIsFullScreen {
+            max-width: 100vw !important;
+        }
     }
 </style>

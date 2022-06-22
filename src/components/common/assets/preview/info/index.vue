@@ -108,6 +108,7 @@
                         </div>
                     </template>
                 </SQL>
+                
                 <!-- <RowInfoHoverCard
                 v-if="
                     selectedAsset.typeName == 'Table' ||
@@ -121,6 +122,7 @@
                 :source-created-at="sourceCreatedAt(selectedAsset)"
                 :source-created-at-raw="sourceCreatedAt(selectedAsset, true)"
             > -->
+
 
                 <div
                     v-if="

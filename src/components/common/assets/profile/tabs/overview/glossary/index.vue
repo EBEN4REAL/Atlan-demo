@@ -4,8 +4,7 @@
         <div
             v-if="
                 selectedAsset?.typeName === 'AtlasGlossaryTerm' &&
-                (preferredTerms(selectedAsset)?.length ||
-                    preferredToTerms(selectedAsset)?.length) &&
+                preferredTerms(selectedAsset)?.length &&
                 showPreferredTerms
             "
             class="rounded-lg p-4 bg-white flex flex-wrap items-center"
@@ -97,7 +96,8 @@
             v-if="
                 selectedAsset?.typeName === 'AtlasGlossaryTerm' &&
                 (seeAlso(selectedAsset)?.length ||
-                    antonyms(selectedAsset)?.length || synonyms(selectedAsset)?.length)
+                    antonyms(selectedAsset)?.length ||
+                    synonyms(selectedAsset)?.length)
             "
             :asset="selectedAsset"
         />
@@ -136,8 +136,13 @@
             const showPreferredTerms = computed(
                 () => featureEnabledMap.value[PREFERRED_TERMS]
             )
-            const { preferredTerms, seeAlso, antonyms, preferredToTerms , synonyms} =
-                useAssetInfo()
+            const {
+                preferredTerms,
+                seeAlso,
+                antonyms,
+                preferredToTerms,
+                synonyms,
+            } = useAssetInfo()
             return {
                 showPreferredTerms,
                 preferredTerms,

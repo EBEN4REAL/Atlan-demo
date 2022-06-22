@@ -40,7 +40,8 @@
                         <div
                             v-if="
                                 index !== localValue.length - 1 &&
-                                attribute?.subTypeName !== 'announcement'
+                                attribute?.subTypeName !== 'announcement' &&
+                                attribute?.subTypeName !== 'user'
                             "
                             class="flex text-gray-500"
                         >
@@ -53,7 +54,8 @@
                 <a-divider
                     v-if="
                         attribute.typeName !== 'boolean' &&
-                        attribute?.subTypeName !== 'announcement'
+                        attribute?.subTypeName !== 'announcement' &&
+                        attribute?.subTypeName !== 'user'
                     "
                     class="my-2"
                 >

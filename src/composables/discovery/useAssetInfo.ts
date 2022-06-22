@@ -18,6 +18,7 @@ import { profileTabs } from '~/constant/profileTabs'
 import { summaryVariants } from '~/constant/summaryVariants'
 import { formatDateTime } from '~/utils/date'
 import useAssetStore from '~/store/asset'
+import whoami from '~/composables/user/whoami'
 import { Category, Term } from '~/types/glossary/glossary.interface'
 import { useAuthStore } from '~/store/auth'
 import { assetActions } from '~/constant/assetActions'
@@ -43,6 +44,7 @@ export default function useAssetInfo() {
     const parentCategory = (asset: assetInterface) =>
         asset?.attributes?.parentCategory
 
+    const { role } = whoami()
     const categories = (asset: assetInterface) => asset?.attributes?.categories
     const seeAlso = (asset: assetInterface) => asset?.attributes?.seeAlso
     const antonyms = (asset: assetInterface) => asset?.attributes?.antonyms
@@ -312,6 +314,15 @@ export default function useAssetInfo() {
                     flag = false
                 }
             }
+            if (i?.includeRoles) {
+                if (
+                    !i?.includeRoles?.some(
+                        (t) => t?.toLowerCase() === role.value?.toLowerCase()
+                    )
+                ) {
+                    flag = false
+                }
+            }
 
             return flag
         })
@@ -352,7 +363,10 @@ export default function useAssetInfo() {
             ...getTabs(customTabList, assetType(asset)),
         ]
 
-        if (connectorName(asset).toLowerCase() === 'glue') {
+        if (
+            connectorName(asset).toLowerCase() === 'glue' ||
+            connectorName(asset).toLowerCase() === 'netsuite'
+        ) {
             allTabs = allTabs.filter((tab) => tab.name !== 'Queries')
         }
 

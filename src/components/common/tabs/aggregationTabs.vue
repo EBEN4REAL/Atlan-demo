@@ -27,31 +27,37 @@
                             :class="{ active: item.id === selectedTab }"
                             class="flex items-center gap-x-1"
                         >
-                            <div class="w-4">
+                            <div v-if="icon" class="w-4">
                                 <AtlanIcon
-                                    v-if="icon"
                                     :icon="icon"
                                     class="self-center mr-1"
                                 ></AtlanIcon>
-
+                            </div>
+                            <div
+                                v-if="item.label == 'All' && !item.hideIcon"
+                                class="w-4"
+                            >
                                 <AtlanIcon
-                                    v-else-if="
-                                        item.label == 'All' && !item.hideIcon
-                                    "
                                     icon="Globe"
                                     class="self-center mr-1 mb-0.5"
                                 ></AtlanIcon>
+                            </div>
+                            <div
+                                v-else-if="
+                                    item.image && !item.hideIcon && useImagePath
+                                "
+                                class="w-4"
+                            >
                                 <img
-                                    v-else-if="
-                                        item.image &&
-                                        !item.hideIcon &&
-                                        useImagePath
-                                    "
                                     :src="item.image"
                                     class="mr-1 mb-0.5 h-4 w-4"
                                 />
+                            </div>
+                            <div
+                                v-else-if="item.image && !item.hideIcon"
+                                class="w-4"
+                            >
                                 <AtlanIcon
-                                    v-else-if="item.image && !item.hideIcon"
                                     :icon="item.image"
                                     class="self-center mr-1 mb-0.5"
                                 ></AtlanIcon>

@@ -94,7 +94,21 @@
                 const found = personaStore.list.find(
                     (item) => item.id === persona.value
                 )
-                return found?.metadataPolicies.map((i) => i.connectionId)
+
+                const assetList = []
+
+                if (found?.metadataPolicies?.length) {
+                    found?.metadataPolicies.forEach((element) => {
+                        assetList.push(element?.connectionId)
+                    })
+                }
+
+                if (found?.dataPolicies?.length) {
+                    found?.dataPolicies.forEach((element) => {
+                        assetList.push(element?.connectionId)
+                    })
+                }
+                return assetList
             })
             const list = computed(() => {
                 let coreList = []

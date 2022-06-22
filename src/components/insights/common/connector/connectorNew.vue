@@ -400,6 +400,7 @@
         ref,
         Ref,
         toRefs,
+        inject,
         watch,
     } from 'vue'
     import { capitalizeFirstLetter } from '~/utils/string'
@@ -408,6 +409,9 @@
     import useAssetInfo from '~/composables/asset/useAssetInfo'
     import AssetDropdownNewDatabase from '~/components/common/dropdown/assetDropdownNewDatabase.vue'
     import AssetDropdownNewSchema from '~/components/common/dropdown/assetDropdownNewSchema.vue'
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useUtils } from '~/components/insights/common/composables/useUtils'
+    import { watchAtMost } from '@vueuse/core'
 
     import Tooltip from '@/common/ellipsis/index.vue'
 
@@ -425,11 +429,6 @@
                 }>,
                 required: true,
             },
-            filterSourceIds: {
-                type: Object as PropType<string[]>,
-                required: false,
-                default: () => [],
-            },
             disabled: {
                 type: Boolean,
                 required: false,
@@ -446,9 +445,13 @@
         },
         emits: ['change', 'update:data', 'blur', 'changeConnector'],
         setup(props, { emit }) {
+            const { getFirstQueryConnection } = useUtils()
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
             const treeSelectRef = ref()
             const { getConnectorName } = useAssetInfo()
-            const { data, filterSourceIds } = toRefs(props)
+            const { data } = toRefs(props)
             const searchValue = ref('')
             const clearStateDB = ref(false)
             const clearStateSchema = ref(false)
@@ -486,13 +489,67 @@
             }
 
             const store = useConnectionStore()
+
+            function getBISourceTypes(store: any) {
+                const BItypes = new Set()
+                store.getList.forEach((item) => {
+                    if (item?.attributes) {
+                        if (
+                            item.attributes?.category?.toLowerCase() === 'bi' ||
+                            item.attributes?.connectorName?.toLowerCase() ===
+                                'salesforce' ||
+                            item.attributes?.connectorName?.toLowerCase() ===
+                                's3' ||
+                            item.attributes?.connectorName?.toLowerCase() ===
+                                'glue'
+                        )
+                            BItypes.add(item.attributes?.connectorName)
+                    }
+                })
+                return Array.from(BItypes)
+            }
+
             // console.log(store.get(), 'sourceMap')
             /* Checking if filterSourceIds passed -> whitelist the sourcelist
                 else fetch all the sourcelist from store */
-            const filteredList = computed(() =>
-                filterSourceIds.value.length > 0
-                    ? filterSourceList(filterSourceIds.value)
+            const filteredList = ref(
+                getBISourceTypes(store).length > 0
+                    ? filterSourceList(getBISourceTypes(store))
                     : store.getSourceList
+            )
+            // IMP: If user lands directly on insights on conenctions fetch done, we need to refresh the filteredList once it is loaded
+            watchAtMost(
+                () => store.list,
+                () => {
+                    filteredList.value =
+                        getBISourceTypes(store).length > 0
+                            ? filterSourceList(getBISourceTypes(store))
+                            : store.getSourceList
+
+                    if (
+                        !activeInlineTab.value.explorer.schema?.connectors
+                            ?.attributeName
+                    ) {
+                        const firstConnection = getFirstQueryConnection()
+                        if (
+                            firstConnection &&
+                            firstConnection?.attributes?.name
+                        ) {
+                            activeInlineTab.value.explorer.schema.connectors.attributeName =
+                                'connectionQualifiedName'
+                            activeInlineTab.value.explorer.schema.connectors.attributeValue =
+                                firstConnection?.attributes?.qualifiedName
+
+                            activeInlineTab.value.playground.editor.context.attributeName =
+                                'connectionQualifiedName'
+                            activeInlineTab.value.playground.editor.context.attributeValue =
+                                firstConnection?.attributes?.qualifiedName
+                        }
+                    }
+                },
+                {
+                    count: 2,
+                }
             )
             const getImage = (id: string) => store.getImage(id)
             const list = computed(() => List)
@@ -863,7 +920,6 @@
 
             return {
                 treeSelectRef,
-                filterSourceIds,
                 expandedKeys,
                 selectNode,
                 handleChange,

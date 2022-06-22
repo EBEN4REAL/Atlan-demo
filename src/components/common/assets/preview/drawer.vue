@@ -1,57 +1,66 @@
 <template>
-    <teleport to="#overAssetSidebar">
-        <a-drawer
-            v-if="visible"
-            :key="data?.guid"
-            v-model:visible="visible"
-            placement="right"
-            :get-container="false"
-            :class="$style.drawerStyles"
-            :closable="false"
-            :mask-closable="showMask"
-            :style="{ position: 'absolute' }"
-            :width="420"
-            :mask="showMask"
-            @close="$emit('closeDrawer')"
+    <a-drawer
+        :key="data?.guid"
+        v-model:visible="visible"
+        placement="right"
+        :class="$style.drawerStyles"
+        :closable="false"
+        :mask-closable="showMask"
+        :width="420"
+        :mask="showMask"
+        @close="$emit('closeDrawer')"
+    >
+        <div
+            v-if="showCloseBtn && visible"
+            class="close-btn"
+            @click="() => $emit('closeDrawer')"
         >
-            <div
-                v-if="showCloseBtn && visible"
-                class="close-btn"
-                @click="() => $emit('closeDrawer')"
-            >
-                <AtlanIcon icon="Add" class="text-white" />
-            </div>
+            <AtlanIcon icon="Add" class="text-white" />
+        </div>
 
-            <div
-                v-if="showCollapseButton && visible"
-                class="collapse-btn"
-                @click="() => $emit('closeDrawer')"
-            >
-                <AtlanIcon icon="CaretRight" class="w-auto h-4" />
-            </div>
+        <div
+            v-if="showCollapseButton && visible"
+            class="collapse-btn"
+            @click="() => $emit('closeDrawer')"
+        >
+            <AtlanIcon icon="CaretRight" class="w-auto h-4" />
+        </div>
 
-            <transition name="fade">
-                <div
-                    v-if="deferredLoading"
-                    class="flex items-center justify-center w-full h-full"
-                >
-                    <AtlanLoader class="h-12 mx-auto my-auto" />
-                </div>
-                <AssetPreview
-                    v-else
-                    :selected-asset="drawerData"
-                    :is-drawer="true"
-                    :drawer-active-key="drawerActiveKey"
-                    @closeDrawer="$emit('closeDrawer')"
-                ></AssetPreview>
-            </transition>
-        </a-drawer>
-    </teleport>
+        <DrawerNavigator
+            v-if="showDrawerNavigator"
+            @close="$emit('closeDrawer')"
+        />
+
+        <transition name="fade">
+            <div
+                v-if="deferredLoading"
+                class="flex items-center justify-center w-full h-full"
+            >
+                <AtlanLoader class="h-12 mx-auto my-auto" />
+            </div>
+            <AssetPreview
+                v-else
+                :selected-asset="drawerData"
+                :is-drawer="true"
+                :drawer-active-key="drawerActiveKey"
+                @closeDrawer="$emit('closeDrawer')"
+            ></AssetPreview>
+        </transition>
+    </a-drawer>
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, watch, toRefs, provide, computed } from 'vue'
+    import {
+        defineComponent,
+        ref,
+        watch,
+        toRefs,
+        provide,
+        computed,
+        inject,
+    } from 'vue'
     import AssetPreview from '@/common/assets/preview/index.vue'
+    import DrawerNavigator from '@/common/assets/preview/drawerNavigator.vue'
     import { useDiscoverList } from '~/composables/discovery/useDiscoverList'
     import {
         AssetAttributes,
@@ -65,6 +74,7 @@
         name: 'AssetDrawer',
         components: {
             AssetPreview,
+            DrawerNavigator,
         },
         props: {
             data: {
@@ -124,6 +134,7 @@
             const visible = ref(false)
             const drawerData = ref(data.value)
             const deferredLoading = ref(false)
+            const showDrawerNavigator = inject('showDrawerNavigator', false)
 
             const updateDrawerList = (asset) => {
                 drawerData.value = asset
@@ -162,6 +173,10 @@
             })
 
             watch(guid, () => {
+                // TODO: Added this for lineage - do let me know if it breaks other places it's being used
+                visible.value = showDrawer.value
+                if (!visible.value) return
+
                 if (!watchGuid.value) return
 
                 if (guid.value) {
@@ -171,6 +186,10 @@
             })
 
             watch(showDrawer, () => {
+                // TODO: Added this for lineage - do let me know if it breaks other places it's being used
+                visible.value = showDrawer.value
+                if (!visible.value) return
+
                 if (watchGuid.value) return
 
                 if (
@@ -179,7 +198,7 @@
                 )
                     fetch()
 
-                visible.value = showDrawer.value
+                // visible.value = showDrawer.value
             })
 
             watch(list, () => {
@@ -204,7 +223,13 @@
                 } else deferredLoading.value = isLoading.value
             })
 
-            return { visible, drawerData, deferredLoading, isLoading }
+            return {
+                visible,
+                drawerData,
+                deferredLoading,
+                isLoading,
+                showDrawerNavigator,
+            }
         },
     })
 </script>

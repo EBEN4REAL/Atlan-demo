@@ -190,7 +190,7 @@
                 </div>
             </div>
 
-            <div class="w-full overflow-y-auto" :style="{height: 'calc(100vh - 80px)'}">
+            <div v-else class="w-full overflow-y-auto" :style="{height: 'calc(100vh - 80px)'}">
                 <EmptyCollection
                     @event="
                         () => {

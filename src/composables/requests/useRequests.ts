@@ -102,8 +102,9 @@ export function handleAccessForRequestAction(request: RequestAttributes) {
 
     approverRoles.forEach((el) => {
         if (rolesArray?.includes(el)) hasAccess = true
-        if (decentralizedRolesArray?.includes(el)) hasAccess = true
+        decentralizedRolesArray?.forEach((i) => {
+            if (el?.includes(i)) hasAccess = true
+        })
     })
-
     return { hasAccess }
 }

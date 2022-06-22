@@ -1,5 +1,7 @@
 <template>
-    <a-popover placement="left">
+    <a-popover placement="left" 
+        :trigger="['click']"
+        :overlay-class-name="$style.sqlFormatter">
         <template #content>
             <div class="p-4">
                 <SQLFormatter
@@ -53,7 +55,7 @@
     })
 </script>
 
-<style lang="less">
+<style lang="less" module>
     code.sql {
         font-family: monospace;
     }
@@ -77,5 +79,8 @@
     }
     .sql-hl-bracket {
         color: #56b6c2;
+    }
+    .sqlFormatter {
+        z-index: 32 !important;
     }
 </style>

@@ -102,6 +102,7 @@
                         <a-button
                             size="small"
                             block
+                            class="mt-3"
                             @click="switchTab(selectedAsset, 'Lineage')"
                             >View Lineage</a-button
                         >
@@ -1173,7 +1174,7 @@
                 <!-- Synonyms widget -->
                 <p
                     v-if="showSynonyms"
-                    class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4"
+                    class="flex items-center px-5 mt-4 mb-1 text-sm text-gray-500"
                 >
                     Synonyms
                     <span class="mx-2">
@@ -1201,7 +1202,7 @@
                 <!-- Antonyms widget -->
                 <p
                     v-if="showAntonyms"
-                    class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4"
+                    class="flex items-center px-5 mt-4 mb-1 text-sm text-gray-500"
                 >
                     Antonyms
                     <span class="mx-2">
@@ -1226,7 +1227,7 @@
                 >
                 </RelatedTerms>
 
-                <p class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4">
+                <p class="flex items-center px-5 mt-4 mb-1 text-sm text-gray-500">
                     Related Terms
 
                     <span class="mx-2">

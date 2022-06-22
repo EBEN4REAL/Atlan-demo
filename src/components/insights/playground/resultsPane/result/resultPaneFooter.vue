@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex justify-between flex-shrink-0 w-full h-10 py-1 text-xs text-sm border-b bg-new-gray-100"
+        class="flex justify-between h-10 py-1 text-xs text-sm border-b bg-new-gray-100"
         style="z-index: 2"
         ref="footerRef"
         v-if="
@@ -643,7 +643,7 @@
             const fullScreenTabActive = ref(index)
             const footerRef = ref()
             const observer = ref()
-            const previewTabsWidth = ref(446)
+            const previewTabsWidth = ref(447)
             const {
                 recordTooltipPresence,
                 MOUSE_ENTER_DELAY,
@@ -1012,8 +1012,16 @@
                 },
                 { immediate: true }
             )
+            watch(compactMode, () => {
+                if (compactMode.value) {
+                    previewTabsWidth.value = 300
+                } else {
+                    previewTabsWidth.value = 476
+                }
+            })
 
             return {
+                footerRef,
                 sharableChannels,
                 toggleShareSlackModal,
                 slackSharePopoverVisible,
@@ -1026,7 +1034,6 @@
                 slackShareToggle,
                 handleCloseFullScreen,
                 previewTabsWidth,
-                footerRef,
                 getResultsIcon,
                 assetType,
                 certificateStatus,

@@ -1,7 +1,7 @@
 <template>
     <a-layout class="min-h-full">
         <a-layout-sider
-            v-if="!lineageIsFullScreen"
+            v-if="!isFullscreen"
             theme="light"
             class="border-r border-gray-300"
             :collapsedWidth="60"
@@ -15,10 +15,7 @@
         </a-layout-sider>
 
         <a-layout class="h-full">
-            <a-layout-header
-                v-if="!lineageIsFullScreen"
-                class="z-30 h-10 p-0 m-0"
-            >
+            <a-layout-header v-if="!isFullscreen" class="z-30 h-10 p-0 m-0">
                 <div class="h-full px-4 bg-white border-b border-gray-300">
                     <NavMenu
                         :page="activeKey"
@@ -95,13 +92,12 @@
 <script lang="ts">
     import { defineComponent, provide, ref, watch, computed } from 'vue'
     import { useRouter } from 'vue-router'
-    import { useMagicKeys, whenever } from '@vueuse/core'
+    import { useMagicKeys, whenever, useFullscreen } from '@vueuse/core'
     import PreviewDrawer from '@/common/drawer/previewDrawer.vue'
 
     import NavMenu from '@/common/layout/navMenu.vue'
     import SidePanel from '@/common/layout/sidePanel.vue'
     import CmndK from '~/components/common/commandk/cmndK.vue'
-    import useLineageStore from '~/store/lineage'
 
     export default defineComponent({
         name: 'DefaultLayout',
@@ -127,11 +123,7 @@
                     }
                 },
             })
-
-            const lineageStore = useLineageStore()
-            const lineageIsFullScreen = computed(() =>
-                lineageStore.isFullScreen()
-            )
+            const { isFullscreen } = useFullscreen()
 
             const { control, meta, meta_K } = keys
             const keyK = keys.K
@@ -182,7 +174,7 @@
                 isCmndKVisible,
                 closeNavbar,
                 collapsed,
-                lineageIsFullScreen,
+                isFullscreen,
             }
         },
     })

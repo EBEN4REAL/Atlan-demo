@@ -5,9 +5,6 @@ export const getters = {
     isSidebar(state) {
         return () => state.sidebar
     },
-    isFullScreen(state) {
-        return () => state.fullScreen
-    },
     getSelectedNodeId(state) {
         return () => state.selectedNodeId
     },

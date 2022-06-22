@@ -1,7 +1,7 @@
 <template>
     <div
         class="flex items-center justify-between px-2 py-1 mb-1 border-0 rounded border-primary hover:bg-primary-menu hover:border-1"
-        :class="selectedClass"
+        :class="!isApplied && !popoverVisibility ? '' : selectedClass"
     >
         <div
             class="w-full cursor-default"
@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-    import { computed } from 'vue'
+    import { computed, watch, inject} from 'vue'
     import { defineComponent, toRefs } from 'vue'
     import Truncate from '@/common/ellipsis/index.vue'
 
@@ -46,15 +46,20 @@
                     return []
                 },
             },
+            popoverVisibility: {
+                required: false,
+                default: Boolean,
+            },
         },
         setup(props, { emit }) {
-            const { attribute, activeProperty, condition } = toRefs(props)
+            const { attribute, activeProperty, condition, popoverVisibility } = toRefs(props)
 
             const isApplied = computed(() => {
                 return !!condition.value?.find(
                     (i) => i.operand === attribute.value.name && i.value
                 )
             })
+
 
             const selectedClass = computed(() => {
                 if (activeProperty.value === attribute.value.name)
@@ -78,6 +83,7 @@
                 isApplied,
                 selectedClass,
                 appliedClasses,
+                popoverVisibility
             }
         },
     })

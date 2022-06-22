@@ -31,21 +31,24 @@
                 :attribute="attribute"
                 v-model="localValue[attribute.name]"
                 @change="handleChange"
+                @visibility-change="visibilityChange"
                 placement="rightBottom"
             >
                 <Item
                     :attribute="attribute"
                     :condition="localValue[attribute.name]"
                     :activeProperty="activeProperty"
+                    :popover-visibility="visibility"
                     @click="handleClick(attribute.name)"
                 />
             </Popover>
+            
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRef, toRefs, watch } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch, provide } from 'vue'
 
     import { useVModels } from '@vueuse/core'
 
@@ -84,6 +87,7 @@
             const { modelValue } = useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const { item } = toRefs(props)
+            const visibility = ref<Boolean>(false)
 
             watch(modelValue, (newModelValue) => {
                 localValue.value = newModelValue
@@ -98,7 +102,6 @@
             )
 
             const handleClick = (id) => {
-                console.log('changed', id)
                 if (activeProperty.value === id) {
                     activeProperty.value = 'id'
                 } else {
@@ -107,7 +110,6 @@
             }
 
             const handleChange = (property, currentChange, allValues) => {
-                console.log('handleChange', property, currentChange, allValues)
                 Object.keys(localValue.value).forEach((key) => {
                     localValue.value[key] = localValue.value[key].filter(
                         (i) => {
@@ -131,16 +133,22 @@
                 modelValue.value = localValue.value
                 emit('change', property, currentChange)
             }
+            
+            const visibilityChange = visible => {
+                visibility.value = visible
+            }
+
+            provide("handleVisibility", visibilityChange)
 
             return {
                 filteredAttributeList,
                 localValue,
-
                 handleChange,
-
                 queryText,
                 handleClick,
                 activeProperty,
+                visibilityChange,
+                visibility
             }
         },
     })

@@ -99,13 +99,13 @@
                         <span class="font-semibold text-primary">SQL</span>
                     </div>
                     <template #action>
-                        <a-button
-                            size="small"
-                            block
-                            class="mt-3"
-                            @click="switchTab(selectedAsset, 'Lineage')"
-                            >View Lineage</a-button
-                        >
+                        <div class="flex items-center pt-4 place-content-center">
+                            <a-button
+                                block
+                                @click="switchTab(selectedAsset, 'Lineage')"
+                                >View Lineage</a-button
+                            >
+                        </div>
                     </template>
                 </SQL>
                 <!-- <RowInfoHoverCard

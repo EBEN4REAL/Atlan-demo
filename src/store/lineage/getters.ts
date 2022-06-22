@@ -1,4 +1,13 @@
 export const getters = {
+    getDimension(state) {
+        return () => state.dimension
+    },
+    isSidebar(state) {
+        return () => state.sidebar
+    },
+    isFullScreen(state) {
+        return () => state.fullScreen
+    },
     getSelectedNodeId(state) {
         return () => state.selectedNodeId
     },

@@ -2,6 +2,9 @@ import { Graph, Point, Path } from '@antv/x6'
 import { DagreLayout } from '@antv/layout'
 import { NV, BNV } from './view'
 
+/** STORE */
+import useLineageStore from '~/store/lineage'
+
 interface PointBasic {
     x: number
     y: number
@@ -18,6 +21,8 @@ export default function useCreateGraph({
     graphWidth,
     graphHeight,
 }) {
+    const lineageStore = useLineageStore()
+
     /* Build Graph Canvas */
     Graph.registerConnector(
         'beiz',
@@ -131,6 +136,7 @@ export default function useCreateGraph({
             })),
         true
     )
+    const { width, height } = lineageStore.getDimension()
 
     graph.value = new Graph({
         autoResize: true,
@@ -143,8 +149,8 @@ export default function useCreateGraph({
             args: { color: '#bbc1ce', thickness: 1.5 },
         },
         background: { color: '#f6f7f9' },
-        height: graphHeight.value / 1.35,
-        width: graphWidth.value,
+        height,
+        width,
         scroller: {
             enabled: true,
             pageVisible: false,

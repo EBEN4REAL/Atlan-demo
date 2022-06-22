@@ -2,7 +2,6 @@
     <div
         ref="lineageContainer"
         class="relative w-full overflow-hidden hide-scrollbar lineage"
-        style="height: 82vh"
     >
         <!-- Render Loader -->
         <div
@@ -25,7 +24,6 @@
         <!-- Lineage Footer -->
         <LineageFooter
             :graph="graph"
-            :lineage-container="lineageContainer"
             :curr-zoom="currZoom"
             :graph-height="graphHeight"
             :graph-width="graphWidth"
@@ -70,6 +68,7 @@
         onUnmounted,
         provide,
         inject,
+        toRefs,
     } from 'vue'
     import { useDebounceFn } from '@vueuse/core'
 
@@ -85,6 +84,10 @@
     import useEventGraph from './useEventGraph'
     import usePrefGraph from './usePrefGraph'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import useTransformGraph from './useTransformGraph'
+
+    /** STORE */
+    import useLineageStore from '~/store/lineage'
 
     export default defineComponent({
         name: 'LineageGraph',
@@ -94,7 +97,7 @@
             GroupProcessesDrawer,
             AssetDrawer,
         },
-        setup() {
+        setup(props) {
             /** INJECTIONS */
             const lineage = inject('lineage')
             const selectedAsset = inject('selectedAsset')
@@ -105,7 +108,6 @@
             const graphWidth = ref(0)
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
-            const lineageContainer = ref({})
             const graph = ref({})
             const graphLayout = ref({})
             const showMinimap = ref(false)
@@ -117,6 +119,9 @@
             const groupedProcessIds = ref([])
             const showDrawer = ref(false)
             const showProcessDrawer = ref(false)
+
+            const lineageStore = useLineageStore()
+            const { controlDimensions } = useTransformGraph(graph, () => {})
 
             /** EVENT DEFINITION */
             const sendPanelZoomOut = useDebounceFn((percentage) => {
@@ -154,21 +159,18 @@
                 const { isGroupEdge, isCyclicEdge, processIds } = item || {}
                 control('selectedAsset', item)
 
-                if (item?.guid) {
-                    graph.value.resize(
-                        graphWidth.value - 480,
-                        graphHeight.value / 1.35
-                    )
-                }
+                if (item?.guid) controlDimensions()
 
                 if ((isGroupEdge || isCyclicEdge) && processIds.length) {
                     showDrawer.value = false
                     showProcessDrawer.value = true
+                    lineageStore.setSidebar(true)
                     groupedProcessIds.value = processIds
                 }
 
                 if (!isGroupEdge && !isCyclicEdge && item?.guid) {
                     showDrawer.value = true
+                    lineageStore.setSidebar(true)
                     showProcessDrawer.value = false
                 }
 
@@ -178,12 +180,10 @@
             // onCloseDrawer
             const onCloseDrawer = (processDrawer = false) => {
                 onSelectAsset('')
-                graph.value.resize(
-                    graphWidth.value - 60,
-                    graphHeight.value / 1.35
-                )
                 showDrawer.value = false
                 showProcessDrawer.value = false
+                lineageStore.setSidebar(false)
+                controlDimensions()
                 if (processDrawer) groupedProcessIds.value = []
             }
 
@@ -255,8 +255,9 @@
 
             /** LIFECYCLE */
             onMounted(async () => {
-                graphHeight.value = window.outerHeight
-                graphWidth.value = window.outerWidth
+                const width = window.outerWidth
+                const height = window.outerHeight / 1.35
+                lineageStore.setDimension(width, height)
 
                 if (Object.keys(graph.value).length) graph.value.dispose()
                 initialize()
@@ -277,7 +278,6 @@
                 showMinimap,
                 drawerActiveKey,
                 isComputeDone,
-                lineageContainer,
                 graphContainer,
                 minimapContainer,
                 groupedProcessIds,

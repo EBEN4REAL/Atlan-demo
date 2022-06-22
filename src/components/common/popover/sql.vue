@@ -1,6 +1,5 @@
 <template>
     <a-popover placement="left" 
-        :trigger="['click']"
         :overlay-class-name="$style.sqlFormatter">
         <template #content>
             <div class="p-4">

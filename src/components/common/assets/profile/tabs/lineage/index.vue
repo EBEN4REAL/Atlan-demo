@@ -3,7 +3,7 @@
         <div
             v-if="initialLoad || isLoading || error"
             class="absolute flex items-center justify-center w-full bg-white"
-            style="height: 80vh"
+            :style="isFullscreen ? 'height: 100vh' : 'height: 82vh'"
         >
             <div
                 v-if="isLoading || initialLoad"
@@ -26,7 +26,7 @@
             class="absolute h-full"
             :class="[
                 selectedAsset?.guid ? 'max-collapsed-width' : 'max-full-width',
-                lineageIsFullScreen ? 'lineageIsFullScreen' : '',
+                isFullscreen ? 'isFullscreen' : '',
             ]"
         >
             <div
@@ -57,7 +57,7 @@
         onMounted,
     } from 'vue'
     import { useRoute } from 'vue-router'
-    import { whenever } from '@vueuse/core'
+    import { whenever, useFullscreen } from '@vueuse/core'
 
     /** PACKAGES */
     import { message } from 'ant-design-vue'
@@ -75,9 +75,6 @@
     /** CONSTANTS */
     import { LineageAttributes } from '~/constant/projection'
 
-    /** STORE */
-    import useLineageStore from '~/store/lineage'
-
     export default defineComponent({
         name: 'LineageIndex',
         components: { LineageGraph, EmptyState },
@@ -87,6 +84,7 @@
             const route = useRoute()
             const assetStore = useAssetStore()
             const { useFetchLineage } = useLineageService()
+            const { isFullscreen } = useFullscreen()
 
             /** DATA */
             const lineage: any = ref({})
@@ -110,11 +108,6 @@
                 },
                 attributes: LineageAttributes,
             }))
-
-            const lineageStore = useLineageStore()
-            const lineageIsFullScreen = computed(() =>
-                lineageStore.isFullScreen()
-            )
 
             /** METHODS */
             // useLineageService
@@ -164,7 +157,7 @@
                 error,
                 emit,
                 selectedAsset,
-                lineageIsFullScreen,
+                isFullscreen,
             }
         },
     })
@@ -174,7 +167,7 @@
     .max-collapsed-width {
         max-width: calc(100vw - 480px) !important;
 
-        &.lineageIsFullScreen {
+        &.isFullscreen {
             max-width: calc(100vw - 420px) !important;
         }
     }
@@ -182,7 +175,7 @@
     .max-full-width {
         max-width: calc(100vw - 60px) !important;
 
-        &.lineageIsFullScreen {
+        &.isFullscreen {
             max-width: 100vw !important;
         }
     }

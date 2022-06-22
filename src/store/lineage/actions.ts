@@ -5,9 +5,6 @@ export const actions = {
     setSidebar(state) {
         this.sidebar = state
     },
-    setFullscreen(state) {
-        this.fullScreen = state
-    },
     setSelectedNodeId(nodeId) {
         this.selectedNodeId = nodeId
     },

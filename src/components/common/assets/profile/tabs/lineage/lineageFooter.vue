@@ -235,16 +235,12 @@
                     <a-tooltip placement="top">
                         <template #title>
                             <span>{{
-                                lineageIsFullScreen
-                                    ? 'Leave fullscreen'
-                                    : 'Fullscreen'
+                                isFullscreen ? 'Leave fullscreen' : 'Fullscreen'
                             }}</span>
                         </template>
                         <AtlanIcon
                             :icon="
-                                lineageIsFullScreen
-                                    ? 'ExitFullScreen'
-                                    : 'FullScreen'
+                                isFullscreen ? 'ExitFullScreen' : 'FullScreen'
                             "
                             class="outline-none"
                         ></AtlanIcon>
@@ -277,8 +273,8 @@
 
 <script lang="ts">
     /** VUE */
-    import { defineComponent, ref, toRefs, computed } from 'vue'
-    import { useDebounceFn } from '@vueuse/core'
+    import { defineComponent, ref, toRefs, computed, watch } from 'vue'
+    import { useDebounceFn, useFullscreen } from '@vueuse/core'
     import { DataUri } from '@antv/x6'
 
     /** COMPOSABLES */
@@ -299,14 +295,6 @@
                 type: Object,
                 required: true,
             },
-            graphHeight: {
-                type: Number,
-                required: true,
-            },
-            graphWidth: {
-                type: Number,
-                required: true,
-            },
             baseEntityGuid: {
                 type: String,
                 required: true,
@@ -325,8 +313,7 @@
             const preferences = lineageStore.getPreferences()
 
             /** DATA */
-            const { graph, baseEntityGuid, graphHeight, graphWidth } =
-                toRefs(props)
+            const { graph, baseEntityGuid } = toRefs(props)
             const showMinimap = ref(false)
             const showLegend = ref(false)
             const showControls = ref(true)
@@ -336,9 +323,8 @@
             const activeConnectionSourceList = computed(() =>
                 connectionStore.activeConnectionSourceList.map((i) => i.id)
             )
-            const lineageIsFullScreen = computed(() =>
-                lineageStore.isFullScreen()
-            )
+            const { isFullscreen, toggle, exit } = useFullscreen()
+
             const legendTabs = [
                 {
                     key: 'assets',
@@ -399,7 +385,7 @@
             /** EVENTS DEFINITIONS */
             const sendFullScreenToggleEvent = useDebounceFn(() => {
                 useAddEvent('lineage', 'control_panel_full_screen', 'toggled', {
-                    is_enabled: lineageIsFullScreen.value,
+                    is_enabled: isFullscreen.value,
                 })
             }, 600)
 
@@ -421,8 +407,10 @@
 
             /** METHODS */
             // useTransformGraph
-            const { zoom, fit, fullscreen, controlDimensions } =
-                useTransformGraph(graph, emit)
+            const { zoom, fit, controlDimensions } = useTransformGraph(
+                graph,
+                emit
+            )
 
             // onSvgExport
             const onSvgExport = () => {
@@ -446,25 +434,20 @@
                     }
                 )
             }
+
             // onFullscreen
-            const onFullscreen = () => {
-                fullscreen()
+            const onFullscreen = (exitMode = false) => {
+                if (exitMode) exit()
+                else toggle()
 
                 // Handle Event - lineage_control_panel_full_screen_toggled
                 sendFullScreenToggleEvent()
             }
 
-            // onFullscreenChanged
-            const onFullscreenChanged = () => {
-                if (!document.fullscreenElement) {
-                    lineageStore.setFullscreen(false)
-                    controlDimensions()
-
-                    // Handle Event - lineage_control_panel_full_screen_toggled
-                    sendFullScreenToggleEvent()
-                }
-            }
-            document.addEventListener('fullscreenchange', onFullscreenChanged)
+            watch(isFullscreen, (newVal) => {
+                if (!newVal) onFullscreen(true)
+                controlDimensions(newVal)
+            })
 
             // onShowMinimap
             const onShowMinimap = () => {
@@ -496,7 +479,7 @@
             return {
                 showMinimap,
                 showLegend,
-                lineageIsFullScreen,
+                isFullscreen,
                 showPref,
                 showControls,
                 footerRoot,

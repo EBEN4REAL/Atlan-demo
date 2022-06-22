@@ -26,7 +26,6 @@
                             !updatePopoverActive &&
                             hasAccessForAction
                         "
-                        v-auth="[map.APPROVE_REQUEST]"
                         class="flex -mr-1.5 hover-action linear-gradient"
                     >
                         <RequestDropdown

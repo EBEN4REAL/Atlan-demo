@@ -55,7 +55,7 @@
         localResource,
         handleUpdateResource,
         handleResourceDelete,
-    } = updateAssetAttributes(selectedAsset)
+    } = updateAssetAttributes(selectedAsset, isDrawer.value)
 
     // eslint-disable-next-line arrow-body-style
     const slackResources = computed(() => {

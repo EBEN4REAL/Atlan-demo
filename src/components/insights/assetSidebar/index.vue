@@ -187,6 +187,25 @@
                     }
                     // assetInfo.value = asset
                     modifyActiveInlineTab(activeInlineTabCopy, tabs, true, true)
+                    // update the other tab sidebar in which sidebar is opened
+                    const shallowActiveTabIndex = tabs.value.findIndex(
+                        (tab) =>
+                            tab.assetSidebar.assetInfo?.guid === asset?.guid
+                    )
+                    if (shallowActiveTabIndex !== activeTabIndex) {
+                        activeInlineTabCopy = JSON.parse(
+                            JSON.stringify(
+                                toRaw(tabs.value[shallowActiveTabIndex])
+                            )
+                        )
+                        activeInlineTabCopy.assetSidebar.assetInfo = asset
+                        modifyActiveInlineTab(
+                            activeInlineTabCopy,
+                            tabs,
+                            true,
+                            true
+                        )
+                    }
                 } else {
                     activeInlineTabCopy.assetSidebar.assetInfo = asset
                     // assetInfo.value = asset

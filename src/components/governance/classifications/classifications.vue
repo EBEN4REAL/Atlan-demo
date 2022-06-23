@@ -2,7 +2,10 @@
     <ExplorerLayout v-if="classificationList.length" title="Classification">
         <template #action> </template>
         <template #sidebar>
-            <div v-auth="map.LIST_CLASSIFICATION" class="">
+            <div
+                v-auth="map.LIST_CLASSIFICATION"
+                class="flex flex-col flex-grow overflow-hidden"
+            >
                 <div class="flex items-center px-4 mb-3">
                     <SearchAndFilter
                         v-model:value="searchQuery"

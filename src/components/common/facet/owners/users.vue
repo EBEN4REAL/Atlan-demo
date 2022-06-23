@@ -18,7 +18,7 @@
             <div class="w-full px-3">
                 <div>
                     <template
-                        v-for="item in userList"
+                        v-for="(item) in userList"
                         :key="item[selectUserKey]"
                     >
                         <a-checkbox
@@ -59,7 +59,7 @@
                                                     ? 'user-name-facet-owner'
                                                     : 'user-name-facet-owner-verified',
                                                 !item?.enabled &&
-                                                !fullName(item).includes('me')
+                                                item?.username !== username
                                                     ? 'line-through'
                                                     : '',
                                             ]"
@@ -247,6 +247,8 @@
                 return data
             })
 
+            const {username} = whoami()
+
             const {
                 userList: users,
                 handleSearch,
@@ -267,8 +269,7 @@
                     handleSearch(queryText.value)
                 }
             )
-            const { username } = whoami()
-
+            
             // to filter out loggedIn user if needed from list based on showLoggedInUser
             const userList = computed(() => {
                 if (showLoggedInUser.value) {
@@ -318,11 +319,15 @@
             })
 
             const fullName = (item) => {
+                let name = item.username;
                 if (item.firstName) {
-                    return `${item.firstName} ${item.lastName || ''}`
+                    name = `${item.firstName} ${item.lastName || ''}`
+                    return name
                 }
-                return `${item.username}`
+                return name
             }
+            
+            
             const handleChange = (checked, id) => {
                 if (checked.target.checked) {
                     map.value[id] = true
@@ -375,11 +380,10 @@
             })
 
             const toolTipTitle = (item) => {
-                if (item?.enabled || fullName(item).includes('me')) {
+                if (item?.enabled || item?.username === username.value) {
                     return `${fullName(item)}`
-                } else {
-                    return `${fullName(item)} (Disabled)`
-                }
+                } 
+                return `${fullName(item)} (Disabled)`
             }
 
             return {

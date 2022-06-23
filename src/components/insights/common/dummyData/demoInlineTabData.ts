@@ -94,6 +94,7 @@ export const inlineTabsDemoData: activeInlineTabInterface[] = [
                     queryErrorObj: {},
                     totalRowsCount: -1,
                     executionTime: -1,
+                    sourceExecutionTime: -1,
                     errorDecorations: [],
                     eventSourceInstance: undefined,
                     buttonDisable: false,

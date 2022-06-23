@@ -92,7 +92,7 @@
                     :is="noStatus"
                     class="inline-flex self-center w-auto h-4 mb-1"
                 />
-                <span class="mb-0 text-xs text-gray-500"> No Owners </span>
+                <span class="mb-0 text-xs text-gray-500"> No Owners</span>
             </a-checkbox>
         </div>
     </div>
@@ -115,6 +115,7 @@
     import Users from '@/common/facet/owners/users.vue'
     import Groups from '@/common/facet/owners/groups.vue'
     import noStatus from '~/assets/images/status/nostatus.svg'
+    
 
     // import { Collapse } from '~/types'
 
@@ -208,6 +209,7 @@
             const usersRef = ref()
             const groupRef = ref()
 
+          
             if (enableTabs.value.length < 2) {
                 watch(
                     enableTabs,
@@ -240,6 +242,9 @@
             })
 
             watch(localValue.value, (prev, cur) => {
+                if (!localValue.value.empty) {
+                    delete localValue.value.empty
+                }
                 if (!localValue.value.ownerUsers) {
                     delete localValue.value.ownerUsers
                 } else if (localValue.value.ownerUsers?.length === 0) {
@@ -275,6 +280,13 @@
                 modelValue.value = localValue.value
                 emit('change')
             }
+
+            watch(
+                () => localValue.value.empty,
+                () => {
+                    emit('change')
+                }
+            )
 
             return {
                 groupRef,

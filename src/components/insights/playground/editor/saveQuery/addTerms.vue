@@ -65,7 +65,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, PropType, ref, toRefs } from 'vue'
+    import { defineComponent, PropType, ref, toRefs, watch } from 'vue'
     import { onClickOutside } from '@vueuse/core'
     import { assetInterface } from '~/types/assets/asset.interface'
     import AtlanBtn from '~/components/UI/button.vue'
@@ -137,6 +137,9 @@
 
                 emit('saveTerms', checkedTerms)
             }
+            watch(checkedTerms, () => {
+                emit('saveTerms', checkedTerms)
+            })
 
             const onSearchItemCheck = (checkedNode, checked) => {
                 if (checked) {
@@ -148,6 +151,7 @@
                             checkedNode.guid
                     )
                 }
+                emit('saveTerms', checkedTerms)
             }
 
             return {

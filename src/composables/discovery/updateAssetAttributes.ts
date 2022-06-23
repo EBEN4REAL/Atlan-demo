@@ -39,6 +39,10 @@ export default function updateAssetAttributes(
         meanings,
         categories,
         seeAlso,
+        preferredTerms,
+        preferredToTerms,
+        antonyms,
+        synonyms,
         assignedEntities,
         allowQuery,
         allowQueryPreview,
@@ -120,6 +124,7 @@ export default function updateAssetAttributes(
     const localAdmins = ref({
         adminUsers: adminUsers(selectedAsset.value),
         adminGroups: adminGroups(selectedAsset.value),
+        adminRoles: selectedAsset.value?.attributes?.adminRoles,
     })
 
     const localViewers = ref({
@@ -138,6 +143,10 @@ export default function updateAssetAttributes(
     const localAssignedEntities = ref(assignedEntities(selectedAsset.value))
     const localCategories = ref(categories(selectedAsset.value))
     const localSeeAlso = ref(seeAlso(selectedAsset.value))
+    const localPreferredTerms = ref(preferredTerms(selectedAsset.value))
+    const localPreferredToTerms = ref(preferredToTerms(selectedAsset.value))
+    const localAntonyms = ref(antonyms(selectedAsset.value))
+    const localSynonyms = ref(synonyms(selectedAsset.value))
     const localParentCategory = ref(
         selectedAsset.value?.attributes?.parentCategory
     )
@@ -267,7 +276,9 @@ export default function updateAssetAttributes(
             adminUsers(selectedAsset.value)?.sort().toString() ===
                 localAdmins.value?.adminUsers?.sort().toString() &&
             adminGroups(selectedAsset.value)?.sort().toString() ===
-                localAdmins.value?.adminGroups?.sort().toString()
+                localAdmins.value?.adminGroups?.sort().toString() &&
+            localAdmins.value?.adminRoles?.sort().toString() ===
+                selectedAsset.value?.attributes?.adminRoles?.sort().toString()
         ) {
             isChanged = false
         } else {
@@ -288,6 +299,16 @@ export default function updateAssetAttributes(
             ) {
                 entity.value.attributes.adminGroups =
                     localAdmins.value?.adminGroups
+                isChanged = true
+            }
+
+            // adminRoles
+            if (
+                entity.value.attributes.adminRoles?.sort().toString() !==
+                localAdmins.value?.adminRoles?.sort().toString()
+            ) {
+                entity.value.attributes.adminRoles =
+                    localAdmins.value?.adminRoles
                 isChanged = true
             }
         }
@@ -545,7 +566,8 @@ export default function updateAssetAttributes(
         })
         mutate()
     }
-    const handleSeeAlsoUpdate = () => {
+    const handleAssetsToUpdate = inject('handleAssetsToUpdate')
+   const handleSeeAlsoUpdate = () => {
         entity.value = {
             ...entity.value,
             relationshipAttributes: {
@@ -562,7 +584,110 @@ export default function updateAssetAttributes(
             count: localSeeAlso.value?.length,
         })
         mutate()
+        const localSeeAlsoGuids = localSeeAlso.value.map((el) => el?.guid)
+        const assetSeeAlsoGuids =
+            selectedAsset?.value?.attributes?.seeAlso?.map((el) => el?.guid)
+        console.log(assetSeeAlsoGuids, localSeeAlsoGuids)
+        const difference = localSeeAlsoGuids.concat(
+            assetSeeAlsoGuids.filter(
+                (x: string) => !localSeeAlsoGuids.includes(x)
+            )
+        )
+        handleAssetsToUpdate(difference)
     }
+
+    const handleAntonymsUpdate = () => {
+        console.log(localAntonyms.value)
+        entity.value = {
+            ...entity.value,
+            relationshipAttributes: {
+                antonyms: localAntonyms.value.map((term) => ({
+                    typeName: 'AtlasGlossaryTerm',
+                    guid: term.guid,
+                })),
+                anchor: selectedAsset?.value?.attributes?.anchor,
+            },
+        }
+        body.value.entities = [entity.value]
+        currentMessage.value = 'Antonyms have been updated'
+        // TODO: change event name to be more specific ?
+        sendMetadataTrackEvent('antonym_terms_updated', {
+            count: localAntonyms.value?.length,
+        })
+        mutate()
+        const localAntonymsGuids = localAntonyms.value?.map((el) => el?.guid)
+        const assetAntonymsGuids =
+            selectedAsset?.value?.attributes?.antonyms?.map((el) => el?.guid)
+        const difference = localAntonymsGuids.concat(
+            assetAntonymsGuids.filter(
+                (x: string) => !localAntonymsGuids.includes(x)
+            )
+        )
+        handleAssetsToUpdate(difference)
+ 
+    }
+    const handleSynonymsUpdate = () => {
+        console.log(localSynonyms.value)
+        entity.value = {
+            ...entity.value,
+            relationshipAttributes: {
+                synonyms: localSynonyms.value.map((term) => ({
+                    typeName: 'AtlasGlossaryTerm',
+                    guid: term.guid,
+                })),
+                anchor: selectedAsset?.value?.attributes?.anchor,
+            },
+        }
+        body.value.entities = [entity.value]
+        currentMessage.value = 'Synonyms have been updated'
+        // TODO: change event name to be more specific ?
+        sendMetadataTrackEvent('synonym_terms_updated', {
+            count: localSynonyms.value?.length,
+        })
+        mutate()
+        const localSynonymsGuids = localSynonyms.value?.map((el) => el?.guid)
+        const assetSynonymsGuids =
+            selectedAsset?.value?.attributes?.antonyms?.map((el) => el?.guid)
+        const difference = localSynonymsGuids.concat(
+            assetSynonymsGuids.filter(
+                (x: string) => !localSynonymsGuids.includes(x)
+            )
+        )
+        handleAssetsToUpdate(difference)
+ 
+    }
+ 
+    const handlePreferredTermsUpdate = () => {
+        console.log(localPreferredTerms.value)
+        entity.value = {
+            ...entity.value,
+            relationshipAttributes: {
+                preferredTerms: localPreferredTerms.value.map((term) => ({
+                    typeName: 'AtlasGlossaryTerm',
+                    guid: term.guid,
+                })),
+                anchor: selectedAsset?.value?.attributes?.anchor,
+            },
+        }
+        body.value.entities = [entity.value]
+        currentMessage.value = 'Recommended Terms have been updated'
+        // TODO: change event name to be more specific ?
+        sendMetadataTrackEvent('recommended_terms_updated', {
+            count: localPreferredTerms.value?.length,
+        })
+        mutate()
+        const localPreferredTermsGuids = localPreferredTerms.value?.map((el) => el?.guid)
+        const assetPreferredTermsGuids =
+            selectedAsset?.value?.attributes?.preferredTerms?.map((el) => el?.guid)
+        const difference = localPreferredTermsGuids.concat(
+            assetPreferredTermsGuids.filter(
+                (x: string) => !localPreferredTermsGuids.includes(x)
+            )
+        )
+        handleAssetsToUpdate(difference)
+ 
+    }
+
     const handleParentCategoryUpdate = () => {
         entity.value = {
             ...entity.value,
@@ -736,6 +861,13 @@ export default function updateAssetAttributes(
             localAdmins.value.adminGroups = adminGroups(selectedAsset?.value)
         }
         if (
+            selectedAsset?.value.attributes.adminRoles !==
+            localAdmins.value.adminRoles
+        ) {
+            localAdmins.value.adminRoles =
+                selectedAsset?.value.attributes.adminRoles
+        }
+        if (
             viewerUsers(selectedAsset?.value) !== localViewers.value.viewerUsers
         ) {
             localViewers.value.viewerUsers = viewerUsers(selectedAsset?.value)
@@ -751,6 +883,18 @@ export default function updateAssetAttributes(
         }
         if (seeAlso(selectedAsset?.value) !== localSeeAlso.value) {
             localSeeAlso.value = seeAlso(selectedAsset.value)
+        }
+        if (antonyms(selectedAsset?.value) !== localAntonyms.value) {
+            localAntonyms.value = antonyms(selectedAsset.value)
+        }
+        if (synonyms(selectedAsset?.value) !== localSynonyms.value) {
+            localSynonyms.value = synonyms(selectedAsset.value)
+        }
+ 
+        if (
+            preferredTerms(selectedAsset?.value) !== localPreferredTerms.value
+        ) {
+            localPreferredTerms.value = preferredTerms(selectedAsset.value)
         }
 
         if (error.value?.response?.data?.errorCode) {
@@ -823,7 +967,9 @@ export default function updateAssetAttributes(
                 guidHeaderMap: {
                     [selectedAsset.value.guid]: {
                         ...entity.value,
-                        classifications: localClassifications.value,
+                        classifications: localClassifications.value.filter(
+                            (i) => selectedAsset.value?.guid === i?.entityGuid
+                        ),
                     },
                 },
             }
@@ -864,6 +1010,9 @@ export default function updateAssetAttributes(
         localMeanings,
         localCategories,
         localSeeAlso,
+        localAntonyms,
+        localSynonyms,
+        localPreferredTerms,
         localViewers,
         handleChangeName,
         handleChangeDescription,
@@ -889,6 +1038,9 @@ export default function updateAssetAttributes(
         handleMeaningsUpdate,
         handleCategoriesUpdate,
         handleSeeAlsoUpdate,
+        handleAntonymsUpdate,
+        handleSynonymsUpdate,
+        handlePreferredTermsUpdate,
         shouldDrawerUpdate,
         asset,
         localAssignedEntities,

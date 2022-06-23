@@ -49,9 +49,8 @@ import {
     lookup,
     enum1,
     percent,
-    tableauCalculatedField,
-    tableauDatasourceField,
-    lookerField,
+    calculatedField,
+    field,
 } from './icons'
 
 interface EdgeStyle {
@@ -93,9 +92,9 @@ const portDataTypeIcons = {
 }
 
 const biPortDataTypeIcons = {
-    TableauCalculatedField: tableauCalculatedField,
-    TableauDatasourceField: tableauDatasourceField,
-    LookerField: lookerField,
+    TableauCalculatedField: calculatedField,
+    TableauDatasourceField: field,
+    LookerField: field,
 }
 
 const columnKeyTypeIcons = {
@@ -190,7 +189,9 @@ export default function useGraph(graph) {
                                     port.displayText.charAt(0).toUpperCase() +
                                     port.displayText.slice(1).toLowerCase()
 
-                                const dataType = port.attributes?.dataType
+                                const dataType =
+                                    port.attributes?.dataType ||
+                                    port.attributes?.powerBIColumnDataType
                                 const portTypeName = port.typeName
 
                                 const dataTypeComputed =
@@ -198,7 +199,7 @@ export default function useGraph(graph) {
                                         d.type.includes(dataType?.toUpperCase())
                                     )?.imageText
 
-                                const biDataTypeIcon =
+                                const biPortDataTypeIcon =
                                     biPortDataTypeIcons[portTypeName]
 
                                 const isSelectedPort =
@@ -216,7 +217,7 @@ export default function useGraph(graph) {
                                         ${
                                             portDataTypeIcons[
                                                 dataTypeComputed
-                                            ] || biDataTypeIcon
+                                            ] || biPortDataTypeIcon
                                         }
                                         <span title="${text}" class="truncate flex-grow-0 flex-shrink">${text}</span> 
                                     </div>
@@ -545,7 +546,7 @@ export default function useGraph(graph) {
                 attrs: {
                     label: {
                         fill: relation?.type === 'related' ? '#374151' : 'none',
-                        fontSize: 14,
+                        fontSize: 16,
                         textAnchor: 'middle',
                         textVerticalAnchor: 'middle',
                         pointerEvents: 'none',
@@ -554,11 +555,11 @@ export default function useGraph(graph) {
                         ref: 'label',
                         fill: relation?.type === 'related' ? '#fff' : 'none',
                         strokeWidth: 1,
-                        rx: 10,
+                        rx: 15,
                         refWidth: '140%',
-                        refHeight: '140%',
+                        refHeight: '160%',
                         refX: '-20%',
-                        refY: '-20%',
+                        refY: '-32%',
                     },
                 },
                 position: {

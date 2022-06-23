@@ -1,5 +1,4 @@
 /** VUE */
-import { ref } from 'vue'
 import { watchOnce } from '@vueuse/core'
 
 /** COMPOSABLES */
@@ -27,6 +26,8 @@ import {
     mssql,
     glue,
     salesforce,
+    s3,
+    presto,
 } from './icons'
 
 const lineageStore = useLineageStore()
@@ -45,6 +46,7 @@ export const getNodeTypeText = {
     View: 'View',
     MaterialisedView: 'MaterialisedView',
     // PowerBI
+    PowerBITable: 'Table',
     PowerBIDashboard: 'Dashboard',
     PowerBIDataflow: 'Dataflow',
     PowerBIDataset: 'Dataset',
@@ -81,6 +83,8 @@ export const getNodeTypeText = {
     SalesforceReport: 'Report',
     SalesforceObject: 'Object',
     SalesforceField: 'Field',
+    // S3
+    S3Object: 'Object',
 }
 
 /* This is a mapping of the source of the asset to the image. */
@@ -98,6 +102,8 @@ export const getNodeSourceImage = {
     mssql,
     glue,
     salesforce,
+    s3,
+    presto,
 }
 
 /* A list of the types of ports that we are interested in. */
@@ -105,6 +111,7 @@ export const portsTypeNames = [
     'Column',
     'TableauDatasourceField',
     'TableauCalculatedField',
+    'PowerBIColumn',
 ]
 if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE])
     portsTypeNames.push('LookerField')
@@ -115,6 +122,7 @@ export const nodeWithPorts = [
     'View',
     'MaterialisedView',
     'TableauDatasource',
+    'PowerBITable',
 ]
 if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
     nodeWithPorts.push('LookerExplore')
@@ -127,6 +135,7 @@ export const nodePortsLabelMap = {
     View: 'column',
     MaterialisedView: 'column',
     TableauDatasource: 'field',
+    PowerBITable: 'column',
 }
 if (featureEnabledMap.value[LINEAGE_LOOKER_FIELD_LEVEL_LINEAGE]) {
     nodePortsLabelMap.LookerExplore = 'field'
@@ -271,7 +280,18 @@ export const controlCyclicEdges = (graph, relations, mode = 'node') => {
             return sourceId === from && targetId === to
         })
         if (!edge) return
-        edge.updateData({ isCyclicEdge: true })
+
+        const processIds = relations
+            .filter((_rel) => {
+                const { fromEntityId, toEntityId } = _rel
+                const passes =
+                    (fromEntityId === sourceId && toEntityId === targetId) ||
+                    (toEntityId === sourceId && fromEntityId === targetId)
+                return passes
+            })
+            .map((_rel) => _rel.processId)
+
+        edge.updateData({ isCyclicEdge: true, processIds })
         edge.attr('line/stroke', '#F4B444')
         edge.attr('line/strokeWidth', 0.9)
         edge.attr('line/targetMarker/stroke', '#F4B444')
@@ -309,11 +329,13 @@ export const controlGroupedEdges = (graph, relations, mode = 'node') => {
         const count = processIds.length
 
         edge.updateData({ isGroupEdge: true, groupCount: count, processIds })
+
+        const { isCyclicEdge } = edge.getData()
+        if (isCyclicEdge) return
         edge.setLabels({
             attrs: {
                 label: {
-                    // text: `grouped-processes (${count})`,
-                    text: `grouped-processes`,
+                    text: `process (${count})`,
                 },
             },
         })

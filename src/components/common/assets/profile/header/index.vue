@@ -109,6 +109,14 @@
                                 "
                                 >(Published)</span
                             >
+                            <span
+                                v-if="
+                                    ['DataStudioAsset'].includes(
+                                        item.typeName
+                                    ) && dataStudioAssetType(item)
+                                "
+                                >({{ dataStudioAssetType(item) }})</span
+                            >
                         </div>
                         <div
                             v-else
@@ -299,7 +307,8 @@
                         !isSaasAsset(item) &&
                         !isObjectAsset(item) &&
                         assetType(item) !== 'Connection' &&
-                        connectorName(item) !== 'glue'
+                        connectorName(item) !== 'glue' &&
+                        connectorName(item) !== 'netsuite'
                     "
                     title=""
                 >
@@ -514,6 +523,7 @@
                 sourceURL,
                 isCustom,
                 isPublished,
+                dataStudioAssetType,
                 assetPermission,
                 databaseQualifiedName,
                 schemaQualifiedName,
@@ -685,6 +695,7 @@
                 handleNameUpdate,
                 entityTitle,
                 isPublished,
+                dataStudioAssetType,
                 databaseQualifiedName,
                 schemaQualifiedName,
                 handleOpenDrawer,

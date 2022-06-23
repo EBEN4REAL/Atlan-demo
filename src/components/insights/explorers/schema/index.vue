@@ -4,7 +4,6 @@
             <Connector
                 v-model:data="connectorsData"
                 :bgGrayForSelector="true"
-                :filter-source-ids="BItypes"
                 :is-leaf-node-selectable="false"
                 :item="{
                     id: 'connector',
@@ -152,7 +151,6 @@
                 'activeInlineTabKey'
             ) as Ref<string>
 
-            const BItypes = getBISourceTypes()
             const tabs = inject('inlineTabs') as Ref<activeInlineTabInterface[]>
             const { openAssetSidebar, closeAssetSidebar } = useAssetSidebar(
                 tabs,
@@ -600,7 +598,6 @@
                 onLoadData,
                 expandNode,
                 selectNode,
-                BItypes,
                 onFilterChange,
                 totalFilteredCount,
             }

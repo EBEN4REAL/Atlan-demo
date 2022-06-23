@@ -19,6 +19,7 @@ const actions = {
             }),
             facets: ref({
                 ui: true,
+                verified: true,
             }),
             aggregations: ref(['package']),
         })
@@ -51,6 +52,35 @@ const actions = {
                     pkg
                 return acc
             }, {})
+    },
+
+    async fetchVerifiedWorkflows(force = false) {
+        // Don't refetch if data is already present
+        if (Object.keys(this.verifiedWorkflows || {}).length && !force) return
+
+        const { isLoading, error, data } = useWorkflowDiscoverList({
+            source: ref({
+                includes: [
+                    'metadata.name',
+                    'metadata.annotations.package.argoproj.io/name',
+                    'metadata.annotations.orchestration.atlan.com/schedule',
+                    'metadata.annotations.orchestration.atlan.com/timezone',
+                    'metadata.annotations.orchestration.atlan.com/atlanName',
+                ],
+            }),
+            facets: ref({
+                ui: true,
+                verified: true,
+            }),
+            limit: ref(300),
+        })
+
+        await until(isLoading).toBe(false)
+
+        this.verifiedWorkflows = data.value?.hits.hits.reduce((acc, wf) => {
+            acc[wf?._id] = wf._source
+            return acc
+        }, {})
     },
 }
 export default actions

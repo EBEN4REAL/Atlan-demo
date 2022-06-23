@@ -2,7 +2,7 @@
     <div
         ref="lineageContainer"
         class="relative w-full overflow-hidden hide-scrollbar lineage"
-        style="height: 82vh"
+        :style="isFullscreen ? 'height: 100vh' : 'height: 82vh'"
     >
         <!-- Render Loader -->
         <div
@@ -25,10 +25,7 @@
         <!-- Lineage Footer -->
         <LineageFooter
             :graph="graph"
-            :lineage-container="lineageContainer"
             :curr-zoom="currZoom"
-            :graph-height="graphHeight"
-            :graph-width="graphWidth"
             :base-entity-guid="lineage.baseEntityGuid"
             @on-zoom-change="handleZoom($event)"
             @on-show-minimap="showMinimap = $event"
@@ -44,17 +41,20 @@
 
         <!-- AssetDrawer -->
         <AssetDrawer
+            :guid="selectedAsset?.guid"
             :watch-guid="true"
-            :guid="selectedAsset?.guid || ''"
             :show-mask="false"
             :drawer-active-key="drawerActiveKey"
             :show-collapse-button="true"
+            :show-drawer="showDrawer"
             @close-drawer="onCloseDrawer"
-            @update="handleDrawerUpdate"
         />
 
         <!-- GroupProcessesDrawer -->
-        <GroupProcessesDrawer :grouped-process-ids="groupedProcessIds" />
+        <GroupProcessesDrawer
+            :grouped-process-ids="groupedProcessIds"
+            @close-drawer="onCloseDrawer(true)"
+        />
     </div>
 </template>
 
@@ -68,12 +68,12 @@
         provide,
         inject,
     } from 'vue'
-    import { useDebounceFn } from '@vueuse/core'
+    import { useDebounceFn, useFullscreen } from '@vueuse/core'
 
     /** COMPONENTS */
     import LineageHeader from './lineageHeader.vue'
     import LineageFooter from './lineageFooter.vue'
-    import GroupProcessesDrawer from './GroupProcessesDrawer.vue'
+    import GroupProcessesDrawer from '@/common/assets/preview/GroupProcessesDrawer.vue'
     import AssetDrawer from '@/common/assets/preview/drawer.vue'
 
     /** COMPOSABLES */
@@ -82,6 +82,10 @@
     import useEventGraph from './useEventGraph'
     import usePrefGraph from './usePrefGraph'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
+    import useTransformGraph from './useTransformGraph'
+
+    /** STORE */
+    import useLineageStore from '~/store/lineage'
 
     export default defineComponent({
         name: 'LineageGraph',
@@ -91,18 +95,15 @@
             GroupProcessesDrawer,
             AssetDrawer,
         },
-        setup() {
+        setup(props) {
             /** INJECTIONS */
             const lineage = inject('lineage')
             const selectedAsset = inject('selectedAsset')
             const control = inject('control')
 
             /** DATA */
-            const graphHeight = ref(0)
-            const graphWidth = ref(0)
             const graphContainer = ref(null)
             const minimapContainer = ref(null)
-            const lineageContainer = ref({})
             const graph = ref({})
             const graphLayout = ref({})
             const showMinimap = ref(false)
@@ -112,6 +113,12 @@
             const guidToSelectOnGraph = ref('')
             const selectedTypeInRelationDrawer = ref('__all')
             const groupedProcessIds = ref([])
+            const showDrawer = ref(false)
+            const showProcessDrawer = ref(false)
+
+            const { isFullscreen } = useFullscreen()
+            const lineageStore = useLineageStore()
+            const { controlDimensions } = useTransformGraph(graph, () => {})
 
             /** EVENT DEFINITION */
             const sendPanelZoomOut = useDebounceFn((percentage) => {
@@ -146,29 +153,35 @@
 
             // onSelectAsset
             const onSelectAsset = (item, selectOnGraph = false) => {
-                const { isGroupEdge, processIds } = item || {}
+                const { isGroupEdge, isCyclicEdge, processIds } = item || {}
+                control('selectedAsset', item)
 
-                if (typeof control === 'function')
-                    // TODO: && !isGroupEdge
-                    control('selectedAsset', item)
+                if (item?.guid) controlDimensions(isFullscreen.value)
 
-                if (!item) return
-
-                if (isGroupEdge && processIds.length)
+                if ((isGroupEdge || isCyclicEdge) && processIds.length) {
+                    showDrawer.value = false
+                    showProcessDrawer.value = true
+                    lineageStore.setSidebar(true)
                     groupedProcessIds.value = processIds
+                }
+
+                if (!isGroupEdge && !isCyclicEdge && item?.guid) {
+                    showDrawer.value = true
+                    lineageStore.setSidebar(true)
+                    showProcessDrawer.value = false
+                }
 
                 if (selectOnGraph) guidToSelectOnGraph.value = item?.guid
             }
 
             // onCloseDrawer
-            const onCloseDrawer = () => {
-                onSelectAsset(null)
-            }
-
-            // handleDrawerUpdate
-            const handleDrawerUpdate = (asset) => {
-                if (typeof control === 'function')
-                    control('selectedAsset', asset)
+            const onCloseDrawer = (processDrawer = false) => {
+                onSelectAsset('')
+                showDrawer.value = false
+                showProcessDrawer.value = false
+                lineageStore.setSidebar(false)
+                controlDimensions(isFullscreen.value)
+                if (processDrawer) groupedProcessIds.value = []
             }
 
             // handleMinimapAction
@@ -185,8 +198,6 @@
                     graphLayout,
                     graphContainer,
                     minimapContainer,
-                    graphWidth,
-                    graphHeight,
                 })
 
                 // usePrefGraph
@@ -222,6 +233,9 @@
                     sameTargetCount,
                     nodes,
                     edges,
+                    showDrawer,
+                    showProcessDrawer,
+                    groupedProcessIds,
                     onSelectAsset,
                     onCloseDrawer,
                     addSubGraph,
@@ -236,8 +250,9 @@
 
             /** LIFECYCLE */
             onMounted(async () => {
-                graphHeight.value = window.outerHeight
-                graphWidth.value = window.outerWidth
+                const width = window.outerWidth
+                const height = window.outerHeight / 1.35
+                lineageStore.setDimension(width, height)
 
                 if (Object.keys(graph.value).length) graph.value.dispose()
                 initialize()
@@ -251,20 +266,18 @@
             return {
                 lineage,
                 graph,
-                graphHeight,
-                graphWidth,
                 selectedAsset,
                 currZoom,
                 showMinimap,
                 drawerActiveKey,
                 isComputeDone,
-                lineageContainer,
                 graphContainer,
                 minimapContainer,
-                onCloseDrawer,
-                handleDrawerUpdate,
-                handleZoom,
                 groupedProcessIds,
+                showDrawer,
+                isFullscreen,
+                onCloseDrawer,
+                handleZoom,
                 handleMinimapAction,
             }
         },

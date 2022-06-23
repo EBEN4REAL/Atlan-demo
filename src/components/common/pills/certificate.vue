@@ -22,7 +22,7 @@
         <div class="flex items-center mt-1 text-gray-500" v-if="username">
             <div class="flex items-center text-sm gap-x-1">
                 <AtlanIcon
-                    v-if="username === 'API key'"
+                    v-if="username === 'API key' || username === 'API token'"
                     icon="Key"
                     class="h-3"
                 />

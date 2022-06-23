@@ -99,14 +99,16 @@
                         <span class="font-semibold text-primary">SQL</span>
                     </div>
                     <template #action>
-                        <a-button
-                            size="small"
-                            block
-                            @click="switchTab(selectedAsset, 'Lineage')"
-                            >View Lineage</a-button
-                        >
+                        <div class="flex items-center pt-4 place-content-center">
+                            <a-button
+                                block
+                                @click="switchTab(selectedAsset, 'Lineage')"
+                                >View Lineage</a-button
+                            >
+                        </div>
                     </template>
                 </SQL>
+                
                 <!-- <RowInfoHoverCard
                 v-if="
                     selectedAsset.typeName == 'Table' ||
@@ -121,6 +123,7 @@
                 :source-created-at-raw="sourceCreatedAt(selectedAsset, true)"
             > -->
 
+
                 <div
                     v-if="
                         rowCount(selectedAsset, true) !== '0' &&
@@ -128,7 +131,9 @@
                     "
                     class="flex flex-col text-sm"
                     :class="
-                        isProfile || connectorName(selectedAsset) === 'glue'
+                        isProfile ||
+                        connectorName(selectedAsset) === 'glue' ||
+                        connectorName(selectedAsset) === 'netsuite'
                             ? ''
                             : 'cursor-pointer'
                     "
@@ -137,7 +142,9 @@
                     <span class="mb-1 text-sm text-gray-500">Rows</span>
                     <span
                         :class="
-                            isProfile || connectorName(selectedAsset) === 'glue'
+                            isProfile ||
+                            connectorName(selectedAsset) === 'glue' ||
+                            connectorName(selectedAsset) === 'netsuite'
                                 ? 'text-gray-700'
                                 : 'text-primary font-semibold'
                         "
@@ -310,6 +317,24 @@
                     </div>
                 </div>
             </div>
+            <div
+                v-if="selectedAsset.typeName?.toLowerCase() === 'powerbicolumn'"
+                class="flex flex-col px-5 text-sm"
+            >
+                <span class="mb-1 text-gray-500">Data Type</span>
+
+                <div class="flex items-center text-gray-700 gap-x-1">
+                    <div class="flex items-center">
+                        <component
+                            :is="powerBIColumnDataTypeImage(selectedAsset)"
+                            class="h-4 mr-0.5 mb-0.5"
+                        />
+                        <span class="mr-1 uppercase">{{
+                            powerBIColumnDataType(selectedAsset)
+                        }}</span>
+                    </div>
+                </div>
+            </div>
 
             <div
                 v-if="
@@ -422,6 +447,7 @@
                             'LookerQuery',
                             'SalesforceOrganization',
                             'S3Bucket',
+                            'DataStudioAsset',
                         ].includes(selectedAsset?.typeName)) ||
                     ['Schema', 'ColumnProcess', 'BIProcess'].includes(
                         selectedAsset?.typeName
@@ -606,6 +632,61 @@
             </div>
 
             <div
+                v-if="['DataStudioAsset'].includes(selectedAsset.typeName)"
+                class="flex flex-col px-5 gap-y-4"
+            >
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Asset Type</span>
+
+                    <span class="text-gray-700">{{
+                        dataStudioAssetType(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Asset Title</span>
+
+                    <span class="text-gray-700">{{
+                        dataStudioAssetTitle(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500">Asset Owner</span>
+
+                    <span class="text-gray-700">{{
+                        dataStudioAssetOwner(selectedAsset)
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500"
+                        >Trashed Data Studio Asset</span
+                    >
+
+                    <span class="text-gray-700">{{
+                        isTrashedDataStudioAsset(selectedAsset) ? 'Yes' : 'No'
+                    }}</span>
+                </div>
+            </div>
+
+            <div
+                v-if="
+                    ['PowerBIMeasure'].includes(selectedAsset?.typeName) &&
+                    powerBIMeasureExpression(selectedAsset) &&
+                    powerBIMeasureExpression(selectedAsset) !== ''
+                "
+                class="flex px-5"
+            >
+                <div class="flex flex-col w-full text-sm">
+                    <span class="mb-1 text-sm text-gray-500"
+                        >Measure Expression</span
+                    >
+                    <DetailsContainer
+                        :text="powerBIMeasureExpression(selectedAsset)"
+                        class="rounded-lg"
+                    />
+                </div>
+            </div>
+
+            <div
                 v-if="
                     isSelectedAssetHaveRowsAndColumns(selectedAsset) &&
                     externalLocation(selectedAsset)
@@ -661,7 +742,7 @@
 
                     <a-button
                         block
-                        class="flex items-center px-2 shadow-none"
+                        class="flex items-center justify-between px-2 shadow-none"
                         :class="
                             !collectionData?.hasCollectionReadPermission &&
                             !collectionData?.hasCollectionWritePermission &&
@@ -677,11 +758,6 @@
                         @click="handleCollectionClick"
                     >
                         <div class="flex items-center">
-                            <!-- <AtlanIcon
-                            icon="CollectionIconSmall"
-                            class="mr-1 mb-0.5"
-                        /> -->
-
                             <span class="w-5 h-5 mr-1 -mt-1 text-lg">{{
                                 collectionData?.collectionInfo?.attributes?.icon
                                     ? collectionData?.collectionInfo?.attributes
@@ -689,10 +765,7 @@
                                     : '🗃'
                             }}</span>
 
-                            <span
-                                class="text-left truncate"
-                                style="width: 270px"
-                            >
+                            <span class="w-64 text-left truncate">
                                 {{
                                     collectionData?.collectionInfo?.displayText
                                 }}
@@ -846,19 +919,61 @@
                 "
                 class="flex flex-col"
             >
-                <div
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
-                >
-                    <span>Admins</span>
-                </div>
+                <a-tooltip color="#2A2F45">
+                    <template #title>
+                        <p class="font-bold">Connection Admin Permissions:</p>
+                        <p>1. View and edit all assets in the connection</p>
+                        <p>2. Edit connection preferences</p>
+                        <p>
+                            3. Edit persona based policies for the connection.
+                        </p>
+                    </template>
+                    <div
+                        class="flex items-center h-6 px-5 mb-1 text-sm text-gray-500 cursor-help"
+                    >
+                        <span>Connection Admins</span>
+                        <AtlanIcon icon="Info" class="mb-0.5 ml-1 mr-auto" />
+                        <AtlanButton2
+                            v-if="
+                                !localAdmins.adminRoles?.length &&
+                                editPermission
+                            "
+                            label="Add all admins"
+                            color="link"
+                            class="h-6 ml-auto -mr-4"
+                            @click="setAllAdmins"
+                        />
+                    </div>
+                </a-tooltip>
 
-                <Admins
-                    v-model="localAdmins"
-                    class="px-5"
-                    :selected-asset="selectedAsset"
-                    :edit-permission="editPermission"
-                    @change="handleChangeAdmins"
-                />
+                <div class="flex">
+                    <Admins
+                        v-model="localAdmins"
+                        class="px-5"
+                        :selected-asset="selectedAsset"
+                        :edit-permission="editPermission"
+                        @change="handleChangeAdmins"
+                    >
+                        <a-tooltip color="#2A2F45">
+                            <template #title>
+                                All users with admin role are connection admins
+                            </template>
+                            <div
+                                v-if="localAdmins.adminRoles?.length"
+                                class="flex items-center justify-between flex-none px-2 py-1 border border-gray-200 rounded-full cursor-pointer text-new-gray-800 hover:bg-primary hover:text-white"
+                            >
+                                <AtlanIcon icon="Admin" class="h-4 mr-1" />
+
+                                <span> All Admins </span>
+                                <AtlanIcon
+                                    icon="Cross"
+                                    class="h-3 ml-3 rotate-45"
+                                    @click="setAllAdmins(false)"
+                                />
+                            </div>
+                        </a-tooltip>
+                    </Admins>
+                </div>
             </div>
 
             <div
@@ -1031,10 +1146,101 @@
                 v-if="selectedAsset.typeName === 'AtlasGlossaryTerm'"
                 class="flex flex-col"
             >
+                <!-- Recommended terms widget -->
                 <p
-                    class="flex items-center justify-between px-5 mb-1 text-sm text-gray-500"
+                    v-if="showPreferredTerms"
+                    class="flex items-center px-5 mb-1 text-sm text-gray-500"
                 >
+                    Recommended Terms
+                    <span class="mx-2">
+                        <a-tooltip>
+                            <template #title>
+                                Related terms which should be used instead of
+                                this one
+                            </template>
+                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                        </a-tooltip>
+                    </span>
+                </p>
+                <RelatedTerms
+                    v-if="showPreferredTerms"
+                    v-model="localPreferredTerms"
+                    :selected-asset="selectedAsset"
+                    class="px-5"
+                    :edit-permission="editPermission"
+                    :allow-delete="editPermission"
+                    attribute-type="preferredTerms"
+                    @change="handlePreferredTermsUpdate"
+                >
+                </RelatedTerms>
+                <!-- Synonyms widget -->
+                <p
+                    v-if="showSynonyms"
+                    class="flex items-center px-5 mt-4 mb-1 text-sm text-gray-500"
+                >
+                    Synonyms
+                    <span class="mx-2">
+                        <a-tooltip>
+                            <template #title>
+                                Interchangeable terms. Example: "customer" and
+                                "client"
+                            </template>
+                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                        </a-tooltip>
+                    </span>
+                </p>
+                <RelatedTerms
+                    v-if="showSynonyms"
+                    v-model="localSynonyms"
+                    :selected-asset="selectedAsset"
+                    class="px-5"
+                    :edit-permission="editPermission"
+                    :allow-delete="editPermission"
+                    attribute-type="synonyms"
+                    @change="handleSynonymsUpdate"
+                >
+                </RelatedTerms>
+
+                <!-- Antonyms widget -->
+                <p
+                    v-if="showAntonyms"
+                    class="flex items-center px-5 mt-4 mb-1 text-sm text-gray-500"
+                >
+                    Antonyms
+                    <span class="mx-2">
+                        <a-tooltip>
+                            <template #title>
+                                Opposite of this term. Example: For term
+                                "profit", the related term "loss" is an antonym
+                            </template>
+                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                        </a-tooltip>
+                    </span>
+                </p>
+                <RelatedTerms
+                    v-if="showAntonyms"
+                    v-model="localAntonyms"
+                    :selected-asset="selectedAsset"
+                    class="px-5"
+                    :edit-permission="editPermission"
+                    :allow-delete="editPermission"
+                    attribute-type="antonyms"
+                    @change="handleAntonymsUpdate"
+                >
+                </RelatedTerms>
+
+                <p class="flex items-center px-5 mt-4 mb-1 text-sm text-gray-500">
                     Related Terms
+
+                    <span class="mx-2">
+                        <a-tooltip>
+                            <template #title>
+                                Associated terms. Example: For term "customer",
+                                the related term "account" may be added
+                            </template>
+                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                        </a-tooltip>
+                    </span>
                 </p>
                 <RelatedTerms
                     v-model="localSeeAlso"
@@ -1049,8 +1255,9 @@
 
             <div
                 v-if="
-                    selectedAsset.typeName === 'Column' ||
-                    readmeGuid(selectedAsset)
+                    (selectedAsset.typeName === 'Column' ||
+                        readmeGuid(selectedAsset)) &&
+                    !isProfile
                 "
                 class="flex flex-col px-5"
             >
@@ -1111,6 +1318,7 @@
         inject,
         ref,
         toRefs,
+        computed,
     } from 'vue'
     import SavedQuery from '@common/hovercards/savedQuery.vue'
     import DetailsContainer from '@common/assets/misc/detailsOverflowContainer.vue'
@@ -1153,6 +1361,13 @@
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import { useSimilarList } from '~/composables/discovery/useSimilarList'
     import { getColumnCountWithLineage } from '~/components/common/assets/profile/tabs/lineage/util.js'
+    import { useAuthStore } from '~/store/auth'
+    import {
+        featureEnabledMap,
+        ANTONYMS,
+        SYNONYMS,
+        PREFERRED_TERMS,
+    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'AssetDetails',
@@ -1232,6 +1447,8 @@
 
             const sampleDataVisible = ref<boolean>(false)
             const columnWithLineageCount = ref(null)
+            const authStore = useAuthStore()
+            const getRoleId = authStore.getRoleId
 
             const {
                 getConnectorImage,
@@ -1284,6 +1501,13 @@
                 s3ObjectCount,
                 s3ObjectContentType,
                 readmeGuid,
+                dataStudioAssetType,
+                dataStudioAssetTitle,
+                dataStudioAssetOwner,
+                isTrashedDataStudioAsset,
+                powerBIMeasureExpression,
+                powerBIColumnDataType,
+                powerBIColumnDataTypeImage,
             } = useAssetInfo()
 
             const {
@@ -1299,7 +1523,13 @@
                 localMeanings,
                 localCategories,
                 localSeeAlso,
+                localAntonyms,
+                localSynonyms,
+                localPreferredTerms,
                 handleSeeAlsoUpdate,
+                handleAntonymsUpdate,
+                handleSynonymsUpdate,
+                handlePreferredTermsUpdate,
                 handleCategoriesUpdate,
                 handleMeaningsUpdate,
                 handleChangeName,
@@ -1316,6 +1546,16 @@
                 localSQLQuery,
                 handleSQLQueryUpdate,
             } = updateAssetAttributes(selectedAsset, isDrawer.value)
+
+            const showPreferredTerms = computed(
+                () => featureEnabledMap.value[PREFERRED_TERMS]
+            )
+            const showAntonyms = computed(
+                () => featureEnabledMap.value[ANTONYMS]
+            )
+            const showSynonyms = computed(
+                () => featureEnabledMap.value[SYNONYMS]
+            )
 
             const limit = ref(0)
             const offset = ref(0)
@@ -1400,6 +1640,11 @@
                 showUserPreview({ allowed: ['about', 'assets', 'groups'] })
             }
 
+            const setAllAdmins = (set = true) => {
+                localAdmins.value.adminRoles = set ? [getRoleId('$admin')] : []
+                handleChangeAdmins()
+            }
+
             return {
                 localDescription,
                 selectedAsset,
@@ -1451,9 +1696,15 @@
                 handleMeaningsUpdate,
                 handleCategoriesUpdate,
                 handleSeeAlsoUpdate,
+                handleAntonymsUpdate,
+                handleSynonymsUpdate,
+                handlePreferredTermsUpdate,
                 isUserDescription,
                 localCategories,
                 localSeeAlso,
+                localAntonyms,
+                localSynonyms,
+                localPreferredTerms,
                 handleChangeAdmins,
                 localAdmins,
                 localViewers,
@@ -1499,6 +1750,17 @@
                 aggregationMap,
                 handleApplySuggestion,
                 readmeGuid,
+                dataStudioAssetType,
+                dataStudioAssetTitle,
+                dataStudioAssetOwner,
+                isTrashedDataStudioAsset,
+                powerBIMeasureExpression,
+                powerBIColumnDataType,
+                powerBIColumnDataTypeImage,
+                setAllAdmins,
+                showPreferredTerms,
+                showAntonyms,
+                showSynonyms,
             }
         },
     })

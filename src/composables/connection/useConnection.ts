@@ -19,6 +19,7 @@ export const CONNECTION_ATTRIBUTES = [
     'defaultDatabaseQualifiedName',
     'adminUsers',
     'adminGroups',
+    'adminRoles',
     ...InternalAttributes,
 ]
 
@@ -42,7 +43,6 @@ export function useConnection() {
                                     must_not: {
                                         terms: {
                                             '__typeName.keyword': [
-                                                'Process',
                                                 'ColumnProcess',
                                             ],
                                         },

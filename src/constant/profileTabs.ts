@@ -36,7 +36,7 @@ export const profileTabs = [
             'SalesforceObject',
             'SalesforceField',
             'S3Bucket',
-            'S3Object',
+            'DataStudioAsset',
         ],
         icon: 'Lineage',
         tooltip: 'Lineage',
@@ -77,6 +77,7 @@ export const profileTabs = [
         icon: 'LinkedAssets',
         tooltip: 'Upload history',
         scrubbed: false,
+        includeRoles:['admin']
     },
     {
         id: 'related',
@@ -97,6 +98,7 @@ export const profileTabs = [
             'Procedure',
             'S3Bucket',
             'S3Object',
+            'DataStudioAsset',
         ],
         tooltip: 'Related Assets',
         scrubbed: false,

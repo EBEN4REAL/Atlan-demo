@@ -126,6 +126,7 @@
                                 :display-name="classification?.displayName"
                                 :is-propagated="isPropagated(classification)"
                                 :allow-delete="false"
+                                :count="classification?.count"
                                 :color="
                                     classification.options?.color?.toLowerCase()
                                 "
@@ -172,6 +173,7 @@
     import Suggestion from '@/common/assets/preview/info/suggestion.vue'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import useLineageStore from '~/store/lineage'
+    import { groupClassifications } from '~/utils/groupClassifications'
 
     export default defineComponent({
         name: 'ColumnListItem',
@@ -281,7 +283,11 @@
                     'name',
                     'typeName'
                 )
-                return matchingIdsResult
+                const groupedClassifications = groupClassifications(
+                    matchingIdsResult,
+                    isPropagated
+                )
+                return groupedClassifications
             })
 
             const handleApplySuggestion = (obj) => {

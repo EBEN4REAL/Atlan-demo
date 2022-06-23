@@ -40,7 +40,7 @@
                     :classes="
                         isScrubbed(selectedAsset)
                             ? 'mb-0 font-semibold text-gray-500 opacity-80 '
-                            : 'font-bold mb-0 text-gray-500 '
+                            : 'font-bold mb-0 text-gray-700 '
                     "
                 />
                 <Tooltip
@@ -207,6 +207,7 @@
                             v-if="
                                 showCTA('query') &&
                                 connectorName(selectedAsset) !== 'glue' &&
+                                connectorName(selectedAsset) !== 'netsuite' &&
                                 (assetType(selectedAsset) === 'Table' ||
                                     assetType(selectedAsset) === 'View' ||
                                     assetType(selectedAsset) ===
@@ -566,9 +567,12 @@
             const slackResourceCount = () =>
                 links(selectedAsset.value)?.filter(
                     (l) => getDomain(l.attributes.link) === 'slack.com'
-                )?.length
+                )?.length || 0
             const getCount = (tab) => {
                 if (tab?.toLowerCase() === 'resources') {
+                    if (!links(selectedAsset.value)?.length) {
+                        return 0
+                    }
                     return (
                         links(selectedAsset.value)?.length -
                         slackResourceCount()
@@ -637,9 +641,12 @@
             }
 
             debouncedWatch(
-                selectedAsset,
+                () => selectedAsset.value?.attributes?.qualifiedName,
                 () => {
-                    if (drawerActiveKey.value === 'Overview') {
+                    if (
+                        drawerActiveKey.value === 'Overview' &&
+                        resourceId.value === ''
+                    ) {
                         switchTab(selectedAsset.value, activeLabel.value)
                     }
                 },
@@ -748,6 +755,7 @@
 
             /** whenever resource ID is fetched, refresh the asset to load the generated resource, then switch tab */
             watch(resourceId, () => {
+                if (!resourceId.value) return
                 const id = ref(selectedAsset.value.guid)
                 const { asset, isReady: isUpdateReady } = useCurrentUpdate({
                     id,

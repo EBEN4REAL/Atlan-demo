@@ -30,7 +30,7 @@
                                 )
                             "
                         >
-                            using <AtlanIcon icon="Key" class="h-3" /> API key
+                            using <AtlanIcon icon="Key" class="h-3" /> API token
                         </template>
                         <template v-else>
                             by
@@ -71,7 +71,7 @@
 
                     <a-divider
                         orientation="left"
-                        orientationMargin="0px"
+                        orientation-margin="0px"
                         class="m-0 mt-2"
                     >
                         <span class="text-sm text-new-gray-600">
@@ -80,11 +80,11 @@
                     </a-divider>
 
                     <div
-                        class="flex flex-col mt-2 gap-y-3"
                         v-if="
                             selectedConnection?.attributes?.category?.toLowerCase() !=
                             'bi'
                         "
+                        class="flex flex-col mt-2 gap-y-3"
                     >
                         <div
                             class="flex items-center text-sm font-medium gap-x-9"
@@ -138,7 +138,7 @@
                     <AtlanButton2
                         label="Edit Connection"
                         color="secondary"
-                        prefixIcon="SidebarSwitch"
+                        prefix-icon="SidebarSwitch"
                         @click="isDrawerVisible = true"
                     />
                 </div>
@@ -163,8 +163,8 @@
     </div>
 
     <div v-else>
-        <FormItem :configMap="configMap" :baseKey="property.id"></FormItem>
-        <div class="flex" v-if="list.length > 0 && !isEdit">
+        <FormItem :config-map="configMap" :base-key="property.id"></FormItem>
+        <div v-if="list.length > 0 && !isEdit" class="flex">
             <div class="flex flex-col p-3 bg-gray-100 rounded">
                 <p class="mb-2 font-bold">
                     <AtlanIcon icon="Connection"></AtlanIcon>
@@ -310,6 +310,7 @@
                     'ownerGroups',
                     'adminUsers',
                     'adminGroups',
+                    'adminRoles',
                     'allowQuery',
                     'allowQueryPreview',
                     'certificateStatus',
@@ -398,27 +399,50 @@
                             ],
                         },
                     },
-                    adminUsers: {
-                        type: 'string',
-
+                    admins: {
+                        type: 'multiple',
                         ui: {
-                            help: 'These users will have ability to modify the connection and read/update/query all the related assets for this connection',
-                            widget: 'userMultiple',
-                            label: 'Admin Users',
+                            widget: 'CombinedUserSelector',
+                            title: 'Connection Admins',
+                            mappings: {
+                                users: 'adminUsers',
+                                groups: 'adminGroups',
+                                allAdmins: 'adminRoles',
+                            },
                             start: 1,
-                            grid: 6,
+                            grid: 12,
                         },
                     },
-                    adminGroups: {
-                        type: 'string',
-                        ui: {
-                            help: 'These group of users will have ability to modify the connection and read/update/query all the related assets for this connection',
-                            widget: 'groupMultiple',
-                            label: 'Admin Groups',
+                    // adminRoles: {
+                    //     type: 'boolean',
+                    //     default: true,
+                    //     ui: {
+                    //         help: 'Assign all Atlan Admins as the admin for the current connection',
+                    //         label: 'Connection Admins',
+                    //         start: 1,
+                    //         grid: 6,
+                    //     },
+                    // },
+                    // adminUsers: {
+                    //     type: 'string',
+                    //     ui: {
+                    //         help: 'These users will have ability to modify the connection and read/update/query all the related assets for this connection',
+                    //         widget: 'userMultiple',
+                    //         label: 'Admin Users',
+                    //         start: 1,
+                    //         grid: 6,
+                    //     },
+                    // },
+                    // adminGroups: {
+                    //     type: 'string',
+                    //     ui: {
+                    //         help: 'These group of users will have ability to modify the connection and read/update/query all the related assets for this connection',
+                    //         widget: 'groupMultiple',
+                    //         label: 'Admin Groups',
 
-                            grid: 6,
-                        },
-                    },
+                    //         grid: 6,
+                    //     },
+                    // },
                     allowQuery: {
                         type: 'boolean',
                         default: true,

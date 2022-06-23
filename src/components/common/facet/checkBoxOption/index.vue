@@ -10,7 +10,7 @@
                     :value="el.id"
                     class="flex-row-reverse items-center w-full px-1 pb-1 rounded atlan-reverse hover:bg-primary-menu"
                 >
-                    <div class="flex items-center w-48 pt-2">
+                    <div class="flex items-center w-full pt-2">
                         <div
                             v-if="el.colorDot"
                             :style="`background-color: ${el.colorDot}`"

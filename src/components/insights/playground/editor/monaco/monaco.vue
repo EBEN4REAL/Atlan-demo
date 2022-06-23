@@ -285,48 +285,76 @@
                     ?.getWordAtPosition(editorPosition)
 
                 // for stripping quotes if cursor is in b/w quotes
-
                 let matches1 = 0
                 let matches2 = 0
                 let matches3 = 0
+                debugger
 
                 editor
                     ?.getModel()
-                    .findMatches('`[a-zA-Z]*`', true, true, false, null, true)
+                    .findMatches('`.*`', true, true, false, null, true)
                     ?.forEach((_el) => {
                         if (
-                            _el?.matches?.filter((_ely) => _ely?.length <= 5)
-                                .length
+                            _el?.matches?.filter(
+                                (_ely) =>
+                                    _ely.length > 0 &&
+                                    _ely?.split('.').length < 2
+                            ).length
                         ) {
                             matches1 += 1
                         }
                     })
                 editor
                     ?.getModel()
-                    .findMatches(`'[a-zA-Z]*'`, true, true, false, null, true)
+                    .findMatches(`'.*'`, true, true, false, null, true)
                     ?.forEach((_el) => {
                         if (
-                            _el?.matches?.filter((_ely) => _ely?.length <= 5)
-                                .length
+                            _el?.matches?.filter((_ely) => {
+                                return (
+                                    _ely.length > 0 &&
+                                    _ely?.split('.').length < 2
+                                )
+                            }).length
                         ) {
                             matches2 += 1
                         }
                     })
                 editor
                     ?.getModel()
-                    .findMatches('"[a-zA-Z]*"', true, true, false, null, true)
+                    .findMatches('".*"', true, true, false, null, true)
                     ?.forEach((_el) => {
                         if (
                             _el?.matches?.filter((_ely) => {
-                                return _ely?.length <= 5
+                                return (
+                                    _ely.length > 0 &&
+                                    _ely?.split('.').length < 2
+                                )
                             }).length
                         ) {
                             matches3 += 1
                         }
                     })
+                debugger
 
                 let stripQuotes = false
-                if (matches1 > 0 || matches2 > 0 || matches3 > 0) {
+                // necessary for checking if current word have any quote
+                let _start =
+                    wordPosition?.startColumn - 1 ?? editorPosition.column - 1
+                let _end = wordPosition?.endColumn ?? editorPosition.column
+                let _line = editorPosition.lineNumber
+                let typeofQuote = editor?.getModel()?.getValueInRange({
+                    startColumn: _start,
+                    endColumn: _end,
+                    endLineNumber: _line,
+                    startLineNumber: _line,
+                })
+                if (
+                    (matches1 > 0 || matches2 > 0 || matches3 > 0) &&
+                    (/".*?/.exec(typeofQuote)?.length > 0 ||
+                        /'.*?/g.exec(typeofQuote)?.length > 0 ||
+                        /`.*?/g.exec(typeofQuote)?.length > 0) &&
+                    !typeofQuote?.includes('.')
+                ) {
                     stripQuotes = true
                 }
 
@@ -499,7 +527,7 @@
                     value: activeInlineTab.value.playground.editor.text,
                     theme: editorConfig.value.theme,
                     fontSize: 14,
-                    cursorStyle: editorConfig.value.cursorStyle,
+                    cursorStyle: editorConfig?.value?.cursorStyle,
                     cursorWidth: 2,
                     letterSpacing: 0.1,
                     // cursorSmoothCaretAnimation: true,
@@ -535,7 +563,6 @@
                         .isQueryRunning
             )
             // let suggestionsList = ref(null)
-            monaco?.sc
 
             onMounted(() => {
                 loadThemes(monaco)
@@ -821,7 +848,7 @@
                     // console.log('POSTION', pos)
 
                     setEditorPos(pos.position, editorPos)
-                    // hideAutoCompletion()
+                    hideAutoCompletion()
                     // setTimeout(setDropdown, 300)
                     // setDropdown()
                 })
@@ -967,10 +994,14 @@
                             'atlansql'
                         )
 
-                        updateEditorModel(editorStates, tabs.value[index]?.key, {
-                            model: newModel,
-                            viewState: {},
-                        })
+                        updateEditorModel(
+                            editorStates,
+                            tabs.value[index]?.key,
+                            {
+                                model: newModel,
+                                viewState: {},
+                            }
+                        )
 
                         editor?.setModel(null)
                         editor?.setModel(newModel)
@@ -989,8 +1020,15 @@
 
                     editor?.getModel()?.onDidChangeContent(async (event) => {
                         const text = editor?.getValue()
-                        onEditorContentChange(event, text, editor)
                         const changes = event?.changes[0]
+                        if (
+                            changes.text === '""' ||
+                            changes.text === `''` ||
+                            changes.text === '``'
+                        ) {
+                            return
+                        }
+                        onEditorContentChange(event, text, editor)
                         /* ------------- custom variable color change */
                         findAndChangeCustomVariablesColor(false)
                         /* ------------------------------------------ */

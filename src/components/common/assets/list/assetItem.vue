@@ -1,12 +1,12 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
-    <ContextMenu :asset="item">
+    <ContextMenu :asset="item" :enable-sidebar-drawer="enableSidebarDrawer">
         <template #content>
             <div
                 class="transition duration-100 hover:border-primary"
                 :class="{
                     'border-primary  shadow border bg-primary-menu': isSelected,
-                    'cursor-pointer': enableSidebarDrawer,
+                    'cursor-pointer ': enableSidebarDrawer,
                     'opacity-80': isLoading,
                     'my-1.5 rounded-lg': page === 'assets',
                 }"
@@ -55,94 +55,15 @@
                                 <div
                                     class="flex items-center flex-grow overflow-hidden"
                                 >
-                                    <a-tooltip
-                                        v-if="connectorName(item)"
-                                        placement="left"
-                                    >
-                                        <template #title>
-                                            <span
-                                                >{{ connectorName(item) }}
-                                            </span>
-                                            <span v-if="connectionName(item)">{{
-                                                `/${connectionName(item)}`
-                                            }}</span>
-                                        </template>
-                                        <img
-                                            :src="getConnectorImage(item)"
-                                            class="h-4 mr-1 mb-0.5"
-                                        />
-                                    </a-tooltip>
-                                    <div
-                                        v-if="
-                                            ['column'].includes(
-                                                item.typeName?.toLowerCase()
-                                            )
-                                        "
-                                        class="flex items-center mr-1"
-                                    >
-                                        <component
-                                            :is="dataTypeCategoryImage(item)"
-                                            class="h-4 mb-1 text-gray-500"
-                                        />
-                                    </div>
-
-                                    <Tooltip
-                                        v-if="
-                                            [
-                                                'process',
-                                                'columnprocess',
-                                                'biprocess',
-                                            ].includes(
-                                                item.typeName?.toLowerCase()
-                                            )
-                                        "
-                                        :clamp-percentage="
+                                    <AssetTitle
+                                        :asset="item"
+                                        :asset-name-truncate-percentage="
                                             assetNameTruncatePercentage
                                         "
-                                        :tooltip-text="`${title(item)}`"
-                                        :classes="
-                                            isScrubbed(item)
-                                                ? 'mb-0 font-semibold text-gray-500 opacity-80 tracking-wide'
-                                                : 'font-bold mb-0 text-gray-500 tracking-wide'
-                                        "
-                                    />
-
-                                    <Tooltip
-                                        v-else
-                                        :clamp-percentage="
-                                            assetNameTruncatePercentage
-                                        "
-                                        :tooltip-text="`${title(item)}`"
-                                        :route-to="getProfilePath(item)"
-                                        :classes="
-                                            isScrubbed(item)
-                                                ? 'text-md mb-0  font-semibold cursor-pointer text-primary hover:underline opacity-80 tracking-wide'
-                                                : 'text-md font-bold mb-0 cursor-pointer text-primary hover:underline tracking-wide '
-                                        "
-                                        :should-open-in-new-tab="
+                                        :open-asset-profile-in-new-tab="
                                             openAssetProfileInNewTab
                                         "
-                                        @click="(e) => e.stopPropagation()"
                                     />
-
-                                    <CertificateBadge
-                                        v-if="certificateStatus(item)"
-                                        :status="certificateStatus(item)"
-                                        :username="certificateUpdatedBy(item)"
-                                        :timestamp="certificateUpdatedAt(item)"
-                                        class="mb-1 ml-1"
-                                    ></CertificateBadge>
-
-                                    <a-tooltip placement="right"
-                                        ><template #title
-                                            >Limited Access</template
-                                        >
-                                        <AtlanIcon
-                                            v-if="isScrubbed(item)"
-                                            icon="Lock"
-                                            class="h-4 mb-1 ml-2 text-gray-500"
-                                        ></AtlanIcon
-                                    ></a-tooltip>
                                 </div>
                                 <div class="flex gap-x-1">
                                     <a-tooltip :title="announcementType(item)">
@@ -162,9 +83,12 @@
                                                     type="dashed"
                                                     v-if="page === 'assets'"
                                                     @click="
-                                                        handleSwitchTabLineage(
-                                                            item
-                                                        )
+                                                        (e) => {
+                                                            e.stopPropagation()
+                                                            handleSwitchTabLineage(
+                                                                item
+                                                            )
+                                                        }
                                                     "
                                                     ><AtlanIcon
                                                         icon="Search"
@@ -218,6 +142,7 @@
                                                 'column',
                                                 'schema',
                                                 'query',
+                                                'datastudioasset',
                                             ].includes(
                                                 item.typeName?.toLowerCase()
                                             )
@@ -302,6 +227,16 @@
                                                 ) && isPublished(item)
                                             "
                                             >(Published)</span
+                                        >
+                                        <span
+                                            v-if="
+                                                ['DataStudioAsset'].includes(
+                                                    item.typeName
+                                                ) && dataStudioAssetType(item)
+                                            "
+                                            >({{
+                                                dataStudioAssetType(item)
+                                            }})</span
                                         >
                                     </div>
                                 </div>
@@ -474,6 +409,29 @@
 
                                 <div
                                     v-if="
+                                        item.typeName?.toLowerCase() ===
+                                        'powerbicolumn'
+                                    "
+                                    class="flex items-center mr-2"
+                                >
+                                    <div class="flex items-center">
+                                        <component
+                                            :is="
+                                                powerBIColumnDataTypeImage(item)
+                                            "
+                                            class="h-4 text-gray-500 mr-0.5 mb-0.5"
+                                        />
+                                        <span
+                                            class="text-sm tracking-wider text-gray-500 uppercase"
+                                            >{{
+                                                powerBIColumnDataType(item)
+                                            }}</span
+                                        >
+                                    </div>
+                                </div>
+
+                                <div
+                                    v-if="
                                         ['column'].includes(
                                             item.typeName?.toLowerCase()
                                         )
@@ -581,6 +539,7 @@
                                     <a-tooltip
                                         placement="bottomLeft"
                                         :mouseEnterDelay="0.3"
+                                        overlay-class-name="min-w-max"
                                     >
                                         <div
                                             v-if="databaseName(item)"
@@ -597,9 +556,7 @@
                                             </div>
                                         </div>
                                         <template #title>
-                                            <div
-                                                class="flex items-center justify-between"
-                                            >
+                                            <div class="flex items-center">
                                                 <div class="flex flex-col">
                                                     <div class="text-xs">
                                                         Database
@@ -609,7 +566,7 @@
                                                 </div>
                                                 <div
                                                     v-if="page === 'assets'"
-                                                    class="pl-3 font-bold"
+                                                    class="ml-3 font-bold"
                                                 >
                                                     <a-button
                                                         shape="circle"
@@ -627,7 +584,11 @@
                                             </div>
                                         </template>
                                     </a-tooltip>
-                                    <a-tooltip placement="bottomLeft">
+                                    <a-tooltip
+                                        placement="bottomLeft"
+                                        overlay-class-name="min-w-max"
+                                        :mouseEnterDelay="0.3"
+                                    >
                                         <div
                                             v-if="schemaName(item)"
                                             class="flex items-center text-gray-500"
@@ -643,9 +604,7 @@
                                             </div>
                                         </div>
                                         <template #title>
-                                            <div
-                                                class="flex items-center justify-between"
-                                            >
+                                            <div class="flex items-center">
                                                 <div class="flex flex-col">
                                                     <div class="text-xs">
                                                         Schema
@@ -655,7 +614,7 @@
                                                 </div>
                                                 <div
                                                     v-if="page === 'assets'"
-                                                    class="pl-3 font-bold"
+                                                    class="ml-3 font-bold"
                                                 >
                                                     <a-button
                                                         shape="circle"
@@ -783,11 +742,12 @@
                                 </div>
                                 <div
                                     v-if="
-                                        ['PowerBIDatasource'].includes(
-                                            item?.typeName
-                                        )
+                                        [
+                                            'PowerBIDatasource',
+                                            'PowerBITable',
+                                        ].includes(item?.typeName)
                                     "
-                                    class="flex flex-wrap text-sm text-gray-500 gap-x-2"
+                                    class="flex flex-wrap mr-2 text-sm text-gray-500 gap-x-2"
                                 >
                                     <a-tooltip placement="bottomLeft">
                                         <div
@@ -810,6 +770,42 @@
                                                 >Dataset -
                                                 {{
                                                     parentDataset(item)
+                                                        ?.attributes?.name
+                                                }}</span
+                                            >
+                                        </template>
+                                    </a-tooltip>
+                                </div>
+                                <div
+                                    v-if="
+                                        [
+                                            'PowerBIMeasure',
+                                            'PowerBIColumn',
+                                        ].includes(item?.typeName)
+                                    "
+                                    class="flex flex-wrap mr-2 text-sm text-gray-500 gap-x-2"
+                                >
+                                    <a-tooltip placement="bottomLeft">
+                                        <div
+                                            v-if="
+                                                parentTable(item)?.attributes
+                                                    ?.name
+                                            "
+                                            class="flex items-center text-gray-500"
+                                        >
+                                            <span class="tracking-tight">
+                                                in
+                                                {{
+                                                    parentTable(item)
+                                                        ?.attributes?.name
+                                                }}
+                                            </span>
+                                        </div>
+                                        <template #title>
+                                            <span
+                                                >Table -
+                                                {{
+                                                    parentTable(item)
                                                         ?.attributes?.name
                                                 }}</span
                                             >
@@ -1219,6 +1215,45 @@
                                         objects</span
                                     >
                                 </div>
+                                <div
+                                    v-if="
+                                        ['powerbitable'].includes(
+                                            item.typeName?.toLowerCase()
+                                        )
+                                    "
+                                    class="flex text-sm text-gray-500 gap-x-2"
+                                >
+                                    <span
+                                        v-if="
+                                            powerBITableColumnCount(item) !==
+                                            '0'
+                                        "
+                                        class="text-gray-500"
+                                    >
+                                        <span
+                                            class="tracking-tight text-gray-500"
+                                            >{{
+                                                powerBITableColumnCount(item)
+                                            }}</span
+                                        >
+                                        columns</span
+                                    >
+                                    <span
+                                        v-if="
+                                            powerBITableMeasureCount(item) !==
+                                            '0'
+                                        "
+                                        class="text-gray-500"
+                                    >
+                                        <span
+                                            class="tracking-tight text-gray-500"
+                                            >{{
+                                                powerBITableMeasureCount(item)
+                                            }}</span
+                                        >
+                                        measures</span
+                                    >
+                                </div>
 
                                 <div
                                     v-if="
@@ -1289,6 +1324,7 @@
                                                 :is-propagated="
                                                     isPropagated(classification)
                                                 "
+                                                :count="classification?.count"
                                                 :allow-delete="false"
                                                 :color="
                                                     classification.options?.color?.toLowerCase()
@@ -1461,12 +1497,14 @@
                     "
                 />
 
-                <AssetDrawer
-                    :guid="selectedAssetDrawerGuid"
-                    :show-drawer="showAssetSidebarDrawer"
-                    @closeDrawer="handleCloseDrawer"
-                    @update="handleListUpdate"
-                />
+                <div v-if="enableSidebarDrawer">
+                    <AssetDrawer
+                        :guid="selectedAssetDrawerGuid"
+                        :show-drawer="showAssetSidebarDrawer"
+                        @closeDrawer="handleCloseDrawer"
+                        @update="handleListUpdate"
+                    />
+                </div>
             </div>
         </template>
     </ContextMenu>
@@ -1476,7 +1514,6 @@
     import { defineComponent, ref, toRefs, computed, PropType } from 'vue'
     import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import CertificateBadge from '@/common/badge/certificate/index.vue'
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import { mergeArray } from '~/utils/array'
     import ClassificationPill from '@/common/pills/classification.vue'
@@ -1492,12 +1529,14 @@
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
+    import { groupClassifications } from '~/utils/groupClassifications'
+    import AssetTitle from '@/common/assets/list/assetTitle.vue'
 
     export default defineComponent({
         name: 'AssetListItem',
         components: {
+            AssetTitle,
             TermPill,
-            CertificateBadge,
             ClassificationPill,
             PopoverClassification,
             AssetDrawer,
@@ -1621,7 +1660,6 @@
             const selectedAssetDrawerGuid = ref('')
 
             const {
-                title,
                 getConnectorImage,
                 assetType,
                 rowCount,
@@ -1640,8 +1678,6 @@
                 isPartition,
                 isPrimary,
                 certificateStatus,
-                certificateUpdatedAt,
-                certificateUpdatedBy,
                 certificateStatusMessage,
                 description,
                 assetTypeLabel,
@@ -1650,7 +1686,6 @@
                 categories,
                 parentCategory,
                 classifications,
-                getProfilePath,
                 isUserDescription,
                 isScrubbed,
                 meaningRelationships,
@@ -1687,6 +1722,12 @@
                 parentBucket,
                 s3BucketName,
                 hasLineage,
+                dataStudioAssetType,
+                powerBITableColumnCount,
+                powerBITableMeasureCount,
+                powerBIColumnDataType,
+                powerBIColumnDataTypeImage,
+                selectedAsset,
             } = useAssetInfo()
 
             const icon = computed(() => {
@@ -1709,19 +1750,29 @@
                 if (enableSidebarDrawer.value === true) {
                     showAssetSidebarDrawer.value = true
                     selectedAssetDrawerGuid.value = item?.guid
+                    console.log(item?.guid)
                 } else {
                     emit('preview', item, itemIndex.value)
                 }
             }
 
-            const handleSwitchTabLineage = (item) => {
-                handlePreview(item)
-                emit('switch', { asset: item, tab: 'Lineage' })
+            const handleSwitchTabLineage = (asset) => {
+                if (selectedAsset.value?.guid !== asset.guid) {
+                    handlePreview(asset)
+                    setTimeout(() => {
+                        emit('switch', { asset, tab: 'Lineage' })
+                    }, 300)
+                } else {
+                    emit('switch', { asset, tab: 'Lineage' })
+                }
             }
 
             const handleCloseDrawer = () => {
                 selectedAssetDrawerGuid.value = ''
                 showAssetSidebarDrawer.value = false
+            }
+            const handleUpdateDrawer = (guid) => {
+                selectedAssetDrawerGuid.value = guid
             }
 
             const handleListUpdate = (asset) => {
@@ -1748,7 +1799,11 @@
                     'name',
                     'typeName'
                 )
-                return matchingIdsResult
+                const groupedClassifications = groupClassifications(
+                    matchingIdsResult,
+                    isPropagated
+                )
+                return groupedClassifications
             })
 
             const terms = computed(() => meanings(item.value))
@@ -1825,7 +1880,6 @@
                 isReady,
                 termError,
                 isSelected,
-                title,
                 getConnectorImage,
                 termIcon,
                 assetType,
@@ -1843,8 +1897,6 @@
                 isPartition,
                 isPrimary,
                 certificateStatus,
-                certificateUpdatedAt,
-                certificateUpdatedBy,
                 certificateStatusMessage,
                 tableName,
                 viewName,
@@ -1860,7 +1912,6 @@
                 isPropagated,
                 clsfList,
                 classifications,
-                getProfilePath,
                 showAssetSidebarDrawer,
                 selectedAssetDrawerGuid,
                 handleCloseDrawer,
@@ -1909,8 +1960,14 @@
                 parentView,
                 parentBucket,
                 s3BucketName,
+                handleUpdateDrawer,
                 hasLineage,
                 handleSwitchTabLineage,
+                dataStudioAssetType,
+                powerBITableColumnCount,
+                powerBITableMeasureCount,
+                powerBIColumnDataType,
+                powerBIColumnDataTypeImage,
             }
         },
     })

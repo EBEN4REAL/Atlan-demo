@@ -1,8 +1,18 @@
+import Legend from '~/assets/images/lineage/legend.svg'
 import LegendExpand from '~/assets/images/lineage/legendExpand.svg'
 import LegendCollapse from '~/assets/images/lineage/legendCollapse.svg'
 import LegendAnomaly from '~/assets/images/lineage/legendAnomaly.svg'
 import LegendSelected from '~/assets/images/lineage/legendSelected.svg'
 import LegendHighlighted from '~/assets/images/lineage/legendHighlighted.svg'
+import LegendProcess from '~/assets/images/lineage/legendProcess.svg'
+import LegendProcessDefault from '~/assets/images/lineage/legendProcessDefault.svg'
+import LegendProcessHighlighted from '~/assets/images/lineage/legendProcessHighlighted.svg'
+import LegendProcessAnomaly from '~/assets/images/lineage/legendProcessAnomaly.svg'
+import LegendCalculatedField from '~/assets/images/lineage/legendCalculatedField.svg'
+import LegendField from '~/assets/images/lineage/legendField.svg'
+import LegendMeasures from '~/assets/images/lineage/legendMeasures.svg'
+import LegendDimension from '~/assets/images/lineage/legendDimension.svg'
+import LegendDimensionGroups from '~/assets/images/lineage/legendDimensionGroups.svg'
 import Time from '~/assets/images/icons/time.svg'
 import BookmarkFilled from '~/assets/images/icons/bookmark-filled.svg'
 import Bookmark from '~/assets/images/icons/bookmark.svg'
@@ -75,6 +85,7 @@ import Link from '~/assets/images/icons/link.svg'
 import Add from '~/assets/images/icons/add.svg'
 import CircleLoader from '~/assets/images/icons/circle-loader.svg'
 import Term from '~/assets/images/icons/term.svg'
+import AssociatedTerm from '~/assets/images/icons/associated-term-blue.svg'
 import TermDeprecated from '~/assets/images/icons/term-deprecated.svg'
 import TermIssue from '~/assets/images/icons/term-issue.svg'
 import TermVerified from '~/assets/images/icons/term-verified.svg'
@@ -373,7 +384,9 @@ import Looker from '~/assets/images/source/svg/Looker.svg'
 import Salesforce from '~/assets/images/source/svg/Salesforce.svg'
 import MySQL from '~/assets/images/source/svg/MySQL.svg'
 import Glue from '~/assets/images/source/svg/glue.svg'
+import Netsuite from '~/assets/images/source/svg/netsuite.svg'
 import S3 from '~/assets/images/source/svg/s3.svg'
+import GDS from '~/assets/images/source/svg/gds.svg'
 
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
@@ -499,6 +512,7 @@ import CommonError3 from '~/assets/images/icons/common-error-3.svg'
 import CommonError4 from '~/assets/images/icons/common-error-4.svg'
 import CSVLogo from '~/assets/images/icons/csv-logo.svg'
 import PaperClip from '~/assets/images/icons/paper-clip.svg'
+import FlaskIcon from '~/assets/images/icons/flask.svg'
 
 export default {
     Function,
@@ -513,11 +527,21 @@ export default {
     QueryMetadata,
     QueryOutputSuccess,
     FullScreenSquare,
+    Legend,
     LegendExpand,
     LegendCollapse,
     LegendAnomaly,
     LegendSelected,
     LegendHighlighted,
+    LegendProcess,
+    LegendProcessDefault,
+    LegendProcessHighlighted,
+    LegendProcessAnomaly,
+    LegendCalculatedField,
+    LegendField,
+    LegendMeasures,
+    LegendDimension,
+    LegendDimensionGroups,
     Schedule24,
     Mail,
     EmptyJira,
@@ -858,6 +882,7 @@ export default {
     Looker,
     Salesforce,
     S3,
+    GDS,
     SSO,
     SMTP,
     APIKey,
@@ -965,6 +990,7 @@ export default {
     Mysql: MySQL,
     NoAllow,
     Glue,
+    Netsuite,
     Bigquery: BigQuery,
     Workflow,
     Package,
@@ -978,5 +1004,7 @@ export default {
     CSVLogo,
     PaperClip,
     IllustrationPersonaDemo,
-    IllustrationPurposeDemo
+    IllustrationPurposeDemo,
+    FlaskIcon,
+    AssociatedTerm,
 }

@@ -310,7 +310,6 @@
                     ?.forEach((_el) => {
                         if (
                             _el?.matches?.filter((_ely) => {
-                                debugger
                                 return (
                                     _ely.length > 0 &&
                                     _ely?.split('.').length < 2
@@ -326,7 +325,6 @@
                     ?.forEach((_el) => {
                         if (
                             _el?.matches?.filter((_ely) => {
-                                debugger
                                 return (
                                     _ely.length > 0 &&
                                     _ely?.split('.').length < 2
@@ -336,23 +334,26 @@
                             matches3 += 1
                         }
                     })
+                debugger
 
                 let stripQuotes = false
                 // necessary for checking if current word have any quote
-                const typeofQuote = editor?.getModel()?.getValueInRange({
-                    startColumn:
-                        (wordPosition?.startColumn ?? editorPosition.column) -
-                        1,
-                    endColumn:
-                        wordPosition?.startColumn ?? editorPosition.column,
-                    endLineNumber: editorPosition.lineNumber,
-                    start: editorPosition.lineNumber,
+                let _start =
+                    wordPosition?.startColumn - 1 ?? editorPosition.column - 1
+                let _end = wordPosition?.endColumn ?? editorPosition.column
+                let _line = editorPosition.lineNumber
+                let typeofQuote = editor?.getModel()?.getValueInRange({
+                    startColumn: _start,
+                    endColumn: _end,
+                    endLineNumber: _line,
+                    startLineNumber: _line,
                 })
-
                 if (
-                    matches1 > 0 ||
-                    matches2 > 0 ||
-                    (matches3 > 0 && [`"`, `'`, '`'].includes(typeofQuote))
+                    (matches1 > 0 || matches2 > 0 || matches3 > 0) &&
+                    (/".*?/.exec(typeofQuote)?.length > 0 ||
+                        /'.*?/g.exec(typeofQuote)?.length > 0 ||
+                        /`.*?/g.exec(typeofQuote)?.length > 0) &&
+                    !typeofQuote?.includes('.')
                 ) {
                     stripQuotes = true
                 }
@@ -562,7 +563,6 @@
                         .isQueryRunning
             )
             // let suggestionsList = ref(null)
-            monaco?.sc
 
             onMounted(() => {
                 loadThemes(monaco)
@@ -848,7 +848,7 @@
                     // console.log('POSTION', pos)
 
                     setEditorPos(pos.position, editorPos)
-                    // hideAutoCompletion()
+                    hideAutoCompletion()
                     // setTimeout(setDropdown, 300)
                     // setDropdown()
                 })

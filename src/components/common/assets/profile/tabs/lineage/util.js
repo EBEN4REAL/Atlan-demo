@@ -197,7 +197,7 @@ export const getDatabase = (entity) => {
 export const getColumnCountWithLineage = (asset, columnWithLineageCount) => {
     const { typeName, attributes: attr } = asset
     const { qualifiedName } = attr
-    const { count } = fetchPorts(typeName, qualifiedName, 0, 999999999)
+    const { count } = fetchPorts(typeName, qualifiedName, 0, 0)
     watchOnce(count, (newVal) => {
         columnWithLineageCount.value = newVal
     })

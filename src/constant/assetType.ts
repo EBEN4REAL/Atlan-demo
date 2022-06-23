@@ -458,6 +458,7 @@ export const assetTypeList: {
             'reports',
             'tiles',
             'dataflows',
+            'tables',
         ],
         groupOrder: 4,
     },

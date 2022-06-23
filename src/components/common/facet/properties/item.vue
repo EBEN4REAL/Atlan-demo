@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-    import { computed, watch, inject} from 'vue'
+    import { computed} from 'vue'
     import { defineComponent, toRefs } from 'vue'
     import Truncate from '@/common/ellipsis/index.vue'
 

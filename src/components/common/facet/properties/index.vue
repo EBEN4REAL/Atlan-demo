@@ -48,12 +48,11 @@
 </template>
 
 <script lang="ts">
-    import { computed, defineComponent, ref, toRefs, watch, provide } from 'vue'
+    import { computed, defineComponent, ref, toRefs, watch } from 'vue'
 
     import { useVModels } from '@vueuse/core'
 
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
-    import useCustomMetadataFacet from '~/composables/custommetadata/useCustomMetadataFacet'
 
     import Popover from './popover.vue'
     import Item from './item.vue'
@@ -137,8 +136,6 @@
             const visibilityChange = visible => {
                 visibility.value = visible
             }
-
-            provide("handleVisibility", visibilityChange)
 
             return {
                 filteredAttributeList,

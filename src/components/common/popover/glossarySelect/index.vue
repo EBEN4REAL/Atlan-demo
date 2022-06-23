@@ -61,7 +61,7 @@
             </template>
             <div
                 class="flex items-center cursor-pointer hover:text-primary"
-                style="max-width: 80%"
+                style="max-width: 95%"
             >
                 <div class="w-4" :class="size === 'default' ? 'mr-2' : 'mr-1'">
                     <AtlanIcon

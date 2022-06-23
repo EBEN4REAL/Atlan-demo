@@ -802,10 +802,9 @@ export async function useAutoSuggestions(
     /////////////ALIASES/////////////////
 
     aliasesMap.value = createAliasesMap(editorText)
-
     // trimming [dot]s if any
     const _tempTokens = editorTextTillCursorPos
-        .split(' ')
+        .split(/[\n ]+/)
         .filter((e) => e !== '')
     let currAliasWord = _tempTokens[_tempTokens.length - 1]
     let _currWord = currAliasWord,

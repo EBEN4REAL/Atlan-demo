@@ -120,7 +120,8 @@
         <div
             class="flex items-center pl-3 text-new-gray-800 mt-0.5"
             v-if="
-                (footerWidth > 920 && Boolean(Number(columnsCount))) ||
+                (footerWidth > querySummaryWidthThresHold &&
+                    Boolean(Number(columnsCount))) ||
                 (!previewModeActive && Boolean(Number(columnsCount)))
             "
         >
@@ -160,7 +161,7 @@
         <div
             class="flex items-center pl-3 text-new-gray-800 mt-0.5"
             v-else-if="
-                footerWidth < 920 &&
+                footerWidth < querySummaryWidthThresHold &&
                 previewModeActive &&
                 Boolean(Number(columnsCount))
             "
@@ -256,6 +257,7 @@
             },
         },
         setup(props, { emit }) {
+            const querySummaryWidthThresHold = 800
             const hideTabsToolTips = ref(false)
             const { width, compactMode, footerWidth } = toRefs(props)
             const insights_Store = insightsStore()
@@ -605,6 +607,7 @@
             }
 
             return {
+                querySummaryWidthThresHold,
                 footerWidth,
                 sourceExecutionTime,
                 hideTabsToolTips,

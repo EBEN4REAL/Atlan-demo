@@ -120,7 +120,7 @@
         <div
             class="flex items-center pl-3 text-new-gray-800 mt-0.5"
             v-if="
-                (!compactMode && Boolean(Number(columnsCount))) ||
+                (footerWidth > 920 && Boolean(Number(columnsCount))) ||
                 (!previewModeActive && Boolean(Number(columnsCount)))
             "
         >
@@ -160,7 +160,7 @@
         <div
             class="flex items-center pl-3 text-new-gray-800 mt-0.5"
             v-else-if="
-                compactMode &&
+                footerWidth < 920 &&
                 previewModeActive &&
                 Boolean(Number(columnsCount))
             "
@@ -246,6 +246,10 @@
                 type: Number,
                 required: true,
             },
+            footerWidth: {
+                type: Number,
+                required: true,
+            },
             compactMode: {
                 type: Boolean,
                 required: true,
@@ -253,7 +257,7 @@
         },
         setup(props, { emit }) {
             const hideTabsToolTips = ref(false)
-            const { width, compactMode } = toRefs(props)
+            const { width, compactMode, footerWidth } = toRefs(props)
             const insights_Store = insightsStore()
             const lastElement = inject('lastPreviewTabElement') as Ref<any>
             const { assetType, certificateStatus } = useAssetInfo()
@@ -601,6 +605,7 @@
             }
 
             return {
+                footerWidth,
                 sourceExecutionTime,
                 hideTabsToolTips,
                 onDropdownVisibleChange,

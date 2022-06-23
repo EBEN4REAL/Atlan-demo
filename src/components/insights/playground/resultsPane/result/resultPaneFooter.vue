@@ -2,13 +2,17 @@
     <div
         class="flex justify-between h-10 py-1 text-xs text-sm border-b bg-new-gray-100"
         style="z-index: 2"
-        ref="footerRef"
+        id="footerRef"
         v-if="
             (columnsCount > 0 && isQueryRunning === 'success') ||
             insights_Store.previewTabs.length
         "
     >
-        <PreviewTabs :width="previewTabsWidth" :compactMode="compactMode" />
+        <PreviewTabs
+            :width="previewTabsWidth"
+            :footerWidth="footerWidth"
+            :compactMode="compactMode"
+        />
         <div class="flex items-center">
             <a-tooltip
                 v-if="
@@ -923,22 +927,25 @@
                     return 'QueryOutputNeutral'
                 }
             })
+            const footerWidth = ref(1029)
 
             // BREAKPOINTS
 
             const footerResizeHandler = (e) => {
-                const footerWidth = footerRef?.value?.offsetWidth
-                console.log(footerWidth, 'footerWidth')
-                if (footerWidth >= 1080) {
+                footerWidth.value =
+                    footerRef?.value?.getBoundingClientRect()?.width
+
+                if (footerWidth.value >= 1080) {
                     previewTabsWidth.value = 476
-                } else if (footerWidth > 675) {
+                } else if (footerWidth.value > 675) {
                     previewTabsWidth.value = 446
-                } else if (footerWidth > 560) {
+                } else if (footerWidth.value > 560) {
                     previewTabsWidth.value = 300
                 } else {
                     previewTabsWidth.value = -300
                 }
             }
+
             const handleCloseFullScreen = () => {
                 fullScreenMode.value = false
             }
@@ -954,9 +961,12 @@
             }
             const slackShareToggle = () => {}
             const debouncedFn = useDebounceFn(footerResizeHandler, 100)
-
+            footerRef.value = document.getElementById('footerRef')
             onMounted(() => {
+                footerRef.value = document.getElementById('footerRef')
                 if (footerRef.value) {
+                    footerWidth.value =
+                        footerRef?.value?.getBoundingClientRect()?.width
                     observer.value = new ResizeObserver(debouncedFn).observe(
                         footerRef.value
                     )
@@ -1021,6 +1031,7 @@
             })
 
             return {
+                footerWidth,
                 footerRef,
                 sharableChannels,
                 toggleShareSlackModal,

@@ -1022,13 +1022,6 @@
                 },
                 { immediate: true }
             )
-            watch(compactMode, () => {
-                if (compactMode.value) {
-                    previewTabsWidth.value = 300
-                } else {
-                    previewTabsWidth.value = 476
-                }
-            })
 
             return {
                 footerWidth,

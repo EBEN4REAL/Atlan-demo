@@ -880,7 +880,7 @@ export async function useAutoSuggestions(
                 }
         }
     }
-    debugger
+    // debugger
     if (subquery) {
         ///////////////////////////////////////////////////////////
         let subQueryleftSideStringFromCurPos = editorText
@@ -920,7 +920,7 @@ export async function useAutoSuggestions(
         }
         return _str
     }
-    debugger
+    // debugger
 
     let leftSideStringFromCurPos = removeSubQueries(
         editorTextTillCursorPos.replace(/\"/g, '')
@@ -965,7 +965,7 @@ export async function useAutoSuggestions(
         t = !token.match(/[-[\]{};/\n()*+?'"\\/^$|#\s\t]/g) && token !== ''
         return t
     })
-    debugger
+    // debugger
     // tokens.push(' ')
     let exceptionCase = false // when used as "table"."columnName"
     let currentWord = tokens[tokens.length - 1]
@@ -1250,7 +1250,7 @@ export async function useAutoSuggestions(
                     )
                     return new Promise((resolve, reject) => {
                         suggestionsPromise.then((value) => {
-                            debugger
+                            // debugger
                             const AliasesKeys: string[] = []
                             Object.keys(aliasesMap.value).forEach(
                                 (key: any) => {

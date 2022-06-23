@@ -99,14 +99,16 @@
                         <span class="font-semibold text-primary">SQL</span>
                     </div>
                     <template #action>
-                        <a-button
-                            size="small"
-                            block
-                            @click="switchTab(selectedAsset, 'Lineage')"
-                            >View Lineage</a-button
-                        >
+                        <div class="flex items-center pt-4 place-content-center">
+                            <a-button
+                                block
+                                @click="switchTab(selectedAsset, 'Lineage')"
+                                >View Lineage</a-button
+                            >
+                        </div>
                     </template>
                 </SQL>
+                
                 <!-- <RowInfoHoverCard
                 v-if="
                     selectedAsset.typeName == 'Table' ||
@@ -120,6 +122,7 @@
                 :source-created-at="sourceCreatedAt(selectedAsset)"
                 :source-created-at-raw="sourceCreatedAt(selectedAsset, true)"
             > -->
+
 
                 <div
                     v-if="
@@ -1173,7 +1176,7 @@
                 <!-- Synonyms widget -->
                 <p
                     v-if="showSynonyms"
-                    class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4"
+                    class="flex items-center px-5 mt-4 mb-1 text-sm text-gray-500"
                 >
                     Synonyms
                     <span class="mx-2">
@@ -1201,7 +1204,7 @@
                 <!-- Antonyms widget -->
                 <p
                     v-if="showAntonyms"
-                    class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4"
+                    class="flex items-center px-5 mt-4 mb-1 text-sm text-gray-500"
                 >
                     Antonyms
                     <span class="mx-2">
@@ -1226,7 +1229,7 @@
                 >
                 </RelatedTerms>
 
-                <p class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4">
+                <p class="flex items-center px-5 mt-4 mb-1 text-sm text-gray-500">
                     Related Terms
 
                     <span class="mx-2">

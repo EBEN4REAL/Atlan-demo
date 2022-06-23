@@ -191,8 +191,21 @@
                             typeof localValue.value[key] === 'object' &&
                             localValue.value[key] !== null
                         ) {
-                            if (Object.keys(localValue.value[key]).length > 0) {
-                                count += 1
+                            if(Object.keys(localValue.value[key]).length > 0) {
+                                if(Object.values(localValue.value[key]).length > 0) {
+                                    Object.values(localValue.value[key]).forEach((item: any) => {
+                                        item.forEach(el => {
+                                            if(Object.prototype.toString.call(el) === "[object Object]") {
+                                                if(el.value) {
+                                                    count += 1
+                                                }
+                                                if('qualifiedName' in el && 'guid' in el) {
+                                                    count += 1
+                                                }
+                                            }
+                                        })
+                                    }) 
+                                }
                             }
                         } else if (typeof localValue.value[key] === 'string')
                             count += 1

@@ -82,6 +82,8 @@ export const identifyUser = async () => {
                     ? authStore.purposes.length
                     : 0,
                 created_at: authStore.createdAt ? authStore.createdAt : '',
+                res_width: screen.availWidth,
+                res_height: screen.availHeight
             }
             ;(window as any).analytics.identify(authStore?.id, detailsObj, {
                 integrations: {

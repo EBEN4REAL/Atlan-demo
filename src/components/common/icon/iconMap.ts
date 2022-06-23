@@ -190,6 +190,8 @@ import NoSchema from '~/assets/images/icons/no-schema.svg'
 import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
 import queryAbortIllus from '~/assets/images/icons/queryAbort.svg'
 import queryErrorIllus from '~/assets/images/icons/queryError.svg'
+import queryNoAccessIllus from '~/assets/images/icons/queryNoAccess.svg'
+import queryNoInternetIllus from '~/assets/images/icons/queryNoInternet.svg'
 import queryInvalid from '~/assets/images/icons/queryInvalidError.svg'
 
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
@@ -597,6 +599,8 @@ export default {
     queryAbortIllus,
     queryErrorIllus,
     queryInvalid,
+    queryNoAccessIllus,
+    queryNoInternetIllus,
     NoSavedQueriesAll,
     NoSchema,
     NoDataInsights,

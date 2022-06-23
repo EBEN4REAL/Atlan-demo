@@ -172,8 +172,6 @@ export function useEditor(
         editorInstance: any,
         monacoInstance: any
     ) {
-        // console.log('cursor')
-        debugger
 
         // console.log('cursor')
         if (type === 'auto') {
@@ -247,7 +245,7 @@ export function useEditor(
                     position?.match?.forEach((m) => {
                         if (
                             m.range.endLineNumber ===
-                                match.range.endLineNumber &&
+                            match.range.endLineNumber &&
                             m.range.endColumn === match.range.endColumn
                         ) {
                             data.push({

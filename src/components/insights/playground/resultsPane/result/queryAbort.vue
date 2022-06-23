@@ -1,22 +1,26 @@
 <template>
     <!-- Error on running a query -->
     <div
-        class="flex flex-col items-center justify-center w-full h-full bg-new-gray-100"
+        class="flex flex-row items-center justify-between w-full h-full bg-new-gray-100"
         v-if="isQueryRunning === '' && isQueryAborted"
     >
+        <div class="error-img text-right pr-5">
+            <AtlanIcon icon="queryAbortIllus" class="w-36 h-36" />
+        </div>
+
         <div
-            style="width: 350px"
-            class="flex flex-col items-center justify-center mb-6"
+            class="flex flex-col error-message text-left"
         >
             <p
-                class="mb-0 text-base text-2xl font-bold text-center text-new-gray-700"
+                class="mb-0 text-lg font-bold text-new-gray-700"
             >
                 Whoops! Query was aborted.
             </p>
+            <div class="text-gray-500 text-base error-desc">
+                Looks like you pulled the plug. That’s alright, you can always run it again :)
+            </div>
         </div>
-        <AtlanIcon icon="queryAbortIllus" class="w-28 h-28" />
     </div>
-    <!-- ---------------------- -->
 </template>
 
 <script lang="ts">
@@ -55,7 +59,17 @@
         },
     })
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+    .error-img {
+        flex: 2;
+    }
+    .error-message {
+        flex: 3;
+    }
+    .error-desc {
+        max-width: 460px;
+    }
+</style>
 
 <route lang="yaml">
 meta:

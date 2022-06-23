@@ -94,20 +94,19 @@
                 <p class="mt-4 mb-0 text-base text-gray-700">No Rows/Columns</p>
             </div>
 
-            <!-- --------------- -->
-
-            <!-- First screen -->
+            <!-- After Query Aborted Screen -->
             <QueryAbort
                 :isQueryAborted="isQueryAborted"
                 :isQueryRunning="isQueryRunning"
                 v-else-if="isQueryRunning === '' && isQueryAborted"
             />
 
+            <!-- Default Screen -->
+
             <div
                 v-else-if="isQueryRunning === ''"
                 class="flex flex-col items-center justify-center w-full h-full bg-new-gray-100"
             >
-                <!-- <img :src="ResultsImg" class="text-white" :draggable="false" /> -->
                 <AtlanIcon
                     class="w-36 h-28 min-icon-height"
                     icon="NoDataInsights"
@@ -117,6 +116,7 @@
                 </p>
             </div>
 
+            <!-- Important Error Handling Screen -->
             <QueryError
                 :queryErrorObj="queryErrorObj"
                 :isQueryRunning="isQueryRunning"
@@ -125,6 +125,7 @@
                 "
             />
 
+            <!-- SQL Syntax Related Error Handling Screen -->
             <LineError
                 v-else-if="
                     isQueryRunning === 'error' && haveLineNumber(queryErrorObj)

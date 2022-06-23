@@ -99,7 +99,9 @@
                         <span class="font-semibold text-primary">SQL</span>
                     </div>
                     <template #action>
-                        <div class="flex items-center pt-4 place-content-center">
+                        <div
+                            class="flex items-center pt-4 place-content-center"
+                        >
                             <a-button
                                 block
                                 @click="switchTab(selectedAsset, 'Lineage')"
@@ -108,7 +110,7 @@
                         </div>
                     </template>
                 </SQL>
-                
+
                 <!-- <RowInfoHoverCard
                 v-if="
                     selectedAsset.typeName == 'Table' ||
@@ -122,7 +124,6 @@
                 :source-created-at="sourceCreatedAt(selectedAsset)"
                 :source-created-at-raw="sourceCreatedAt(selectedAsset, true)"
             > -->
-
 
                 <div
                     v-if="
@@ -1158,7 +1159,10 @@
                                 Related terms which should be used instead of
                                 this one
                             </template>
-                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                            <atlan-icon
+                                icon="Info"
+                                class="h-3 cursor-pointer"
+                            />
                         </a-tooltip>
                     </span>
                 </p>
@@ -1185,7 +1189,10 @@
                                 Interchangeable terms. Example: "customer" and
                                 "client"
                             </template>
-                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                            <atlan-icon
+                                icon="Info"
+                                class="h-3 cursor-pointer"
+                            />
                         </a-tooltip>
                     </span>
                 </p>
@@ -1213,7 +1220,10 @@
                                 Opposite of this term. Example: For term
                                 "profit", the related term "loss" is an antonym
                             </template>
-                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                            <atlan-icon
+                                icon="Info"
+                                class="h-3 cursor-pointer"
+                            />
                         </a-tooltip>
                     </span>
                 </p>
@@ -1229,7 +1239,9 @@
                 >
                 </RelatedTerms>
 
-                <p class="flex items-center px-5 mt-4 mb-1 text-sm text-gray-500">
+                <p
+                    class="flex items-center px-5 mt-4 mb-1 text-sm text-gray-500"
+                >
                     Related Terms
 
                     <span class="mx-2">
@@ -1238,7 +1250,10 @@
                                 Associated terms. Example: For term "customer",
                                 the related term "account" may be added
                             </template>
-                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                            <atlan-icon
+                                icon="Info"
+                                class="h-3 cursor-pointer"
+                            />
                         </a-tooltip>
                     </span>
                 </p>
@@ -1577,11 +1592,6 @@
                 quickChange()
             }
 
-            getColumnCountWithLineage(
-                selectedAsset.value,
-                columnWithLineageCount
-            )
-
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
                 if (
                     selectedAsset.typeName === 'View' ||
@@ -1594,6 +1604,12 @@
 
                 return false
             }
+
+            if (isSelectedAssetHaveRowsAndColumns(selectedAsset.value))
+                getColumnCountWithLineage(
+                    selectedAsset.value,
+                    columnWithLineageCount
+                )
 
             const showSampleDataModal = () => {
                 if (!isProfile.value) {

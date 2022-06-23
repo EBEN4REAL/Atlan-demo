@@ -222,7 +222,6 @@
                     const filtered = [...list.value].filter(
                         (el) => map.value[el.id]
                     )
-                    console.log(filtered, '<<<set Group')
                     selectedRecordsGroup.value = [...filtered]
                 }
                 emit('change')

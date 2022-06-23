@@ -331,11 +331,6 @@
                         groupsLength > 0
                     ) {
                         if (selectGroupKey === 'id') {
-                            console.log(
-                                selectedRecordsGroup.value,
-                                '<<<<<<<<<<<<<<<<<<',
-                                selectedRecordsUsers.value
-                            )
                             const dataSelected =
                                 selectedRecordsGroup.value[id]?.map(
                                     (el) => el.name

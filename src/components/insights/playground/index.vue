@@ -158,8 +158,8 @@
 
         <ResultPaneFooter
             v-if="
-                activeInlineTabKey &&
-                activeInlineTab.playground.resultsPane.outputPaneSize > 0
+                (columnsCount > 0 && isQueryRunning === 'success') ||
+                insights_Store.previewTabs.length
             "
         />
 
@@ -561,7 +561,40 @@
                 tabs.value.splice(dropIndex, 0, content)
             }
 
+            const columnsCount = computed(() => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    const _index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                    if (_index < 0) return 0
+                    return insights_Store.previewTabs[_index].columns.length
+                } else {
+                    return (
+                        activeInlineTab.value.playground.resultsPane.result
+                            .totalRowsCount >= 0 &&
+                        activeInlineTab.value.playground.editor.columnList
+                            .length > 0
+                    )
+                }
+            })
+            const isQueryRunning = computed(() => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    const _index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                    return insights_Store.previewTabs[_index].isQueryRunning
+                } else {
+                    return activeInlineTab.value?.playground?.resultsPane
+                        ?.result?.isQueryRunning
+                }
+            })
+
             return {
+                insights_Store,
+                columnsCount,
+                isQueryRunning,
                 queryExecutionTime,
                 onHorizontalResize,
                 horizontalPaneResize,

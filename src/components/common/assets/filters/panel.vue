@@ -83,6 +83,8 @@
             :is="item.component"
             :key="componentKey"
             v-model="facetMap[item.id]"
+            v-model:selectedRecords="selectedRecordsUsers[item.id]"
+            v-model:selectedRecordsGroup="selectedRecordsGroup[item.id]"
             :show-none="item.showNone"
             :item="item"
             v-bind="item.propsToComponent"
@@ -175,6 +177,8 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
+            const selectedRecordsUsers = ref({})
+            const selectedRecordsGroup = ref({})
             const { modelValue } = useVModels(props, emit)
             const { item, activeKey, componentParentKey } = toRefs(props)
             const { getConnectorImageMap } = useAssetInfo()
@@ -309,9 +313,11 @@
                 if (id === 'owners' || id === 'creators') {
                     let usersLength = 0
                     let groupsLength = 0
-
                     let val = ''
-
+                    const selectUserKey =
+                        item?.value?.propsToComponent?.selectUserKey
+                    const selectGroupKey =
+                        item?.value?.propsToComponent?.selectGroupKey
                     if (facetMap.value[id]?.ownerUsers) {
                         usersLength = facetMap.value[id]?.ownerUsers.length
                     }
@@ -324,13 +330,34 @@
                         groupsLength < 3 &&
                         groupsLength > 0
                     ) {
-                        val = facetMap.value[id]?.ownerGroups?.join(', ')
+                        if (selectGroupKey === 'id') {
+                            console.log(
+                                selectedRecordsGroup.value,
+                                '<<<<<<<<<<<<<<<<<<',
+                                selectedRecordsUsers.value
+                            )
+                            const dataSelected =
+                                selectedRecordsGroup.value[id]?.map(
+                                    (el) => el.name
+                                ) || []
+                            val = dataSelected.join(', ')
+                        } else {
+                            val = facetMap.value[id]?.ownerGroups?.join(', ')
+                        }
                     } else if (
                         usersLength < 3 &&
                         groupsLength === 0 &&
                         usersLength > 0
                     ) {
-                        val = facetMap.value[id]?.ownerUsers?.join(', ')
+                        if (selectUserKey === 'id') {
+                            const dataSelected =
+                                selectedRecordsUsers.value[id]?.map(
+                                    (el) => el.username
+                                ) || []
+                            val = dataSelected.join(', ')
+                        } else {
+                            val = facetMap.value[id]?.ownerUsers?.join(', ')
+                        }
                     } else if (usersLength + groupsLength >= 2) {
                         val = `${getOwnerFilterAppliedString(
                             usersLength,
@@ -385,7 +412,7 @@
 
             const imageUrl = (item) => {
                 const imageId = item.options?.imageId
-                let url = imageId
+                const url = imageId
                     ? `${window.location.origin}/api/service/images/${imageId}?ContentDisposition=inline&name=${imageId}`
                     : item.options.logoUrl
                 return url
@@ -405,6 +432,8 @@
                 imageUrl,
                 activeKey,
                 componentParentKey,
+                selectedRecordsUsers,
+                selectedRecordsGroup,
             }
         },
     })

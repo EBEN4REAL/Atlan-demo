@@ -32,12 +32,12 @@
                             disabledKeyMap[item[selectGroupKey]] &&
                             disabledKeyMap[item[selectGroupKey]] === true
                         "
+                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
+                        :class="listItemClass"
                         @change="
                             (checked) =>
                                 handleChange(checked, item[selectGroupKey])
                         "
-                        class="inline-flex flex-row-reverse items-center w-full px-1 py-1 rounded atlanReverse hover:bg-primary-light"
-                        :class="listItemClass"
                     >
                         <div class="flex items-center">
                             <a-avatar
@@ -74,9 +74,9 @@
                         ></AtlanIcon>
                     </div>
                     <div
+                        v-else
                         class="flex items-center ml-auto text-xs cursor-pointer text-primary hover:underline"
                         @click="loadMore"
-                        v-else
                     >
                         load more...
                     </div>
@@ -108,6 +108,7 @@
 
     export default defineComponent({
         name: 'OwnersFilter',
+        components: { AtlanIcon },
         props: {
             queryText: {
                 type: String,
@@ -145,6 +146,11 @@
                 type: String,
                 required: false,
             },
+            selectedRecordsGroup: {
+                type: Object,
+                default: null,
+                required: false,
+            },
             listItemClass: {
                 type: String,
                 required: false,
@@ -155,9 +161,10 @@
                 default: '',
             },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'update:selectedRecordsGroup'],
         setup(props, { emit }) {
-            const { modelValue, disabledKeys } = useVModels(props, emit)
+            const { modelValue, disabledKeys, selectedRecordsGroup } =
+                useVModels(props, emit)
             const { selectGroupKey, userId } = toRefs(props)
             const localValue = ref(modelValue.value)
             // const map = ref({})
@@ -170,7 +177,7 @@
             // }
             // updateMap(localValue)
             const map = computed(() => {
-                let data = {}
+                const data = {}
                 modelValue?.value?.forEach((key) => {
                     data[key] = true
                 })
@@ -192,7 +199,7 @@
                 }
             )
             const disabledKeyMap = computed(() => {
-                let data = {}
+                const data = {}
                 disabledKeys?.value?.forEach((key) => {
                     data[key] = true
                 })
@@ -211,6 +218,13 @@
                     delete map.value[id]
                 }
                 modelValue.value = [...Object.keys(map.value)]
+                if (selectedRecordsGroup) {
+                    const filtered = [...list.value].filter(
+                        (el) => map.value[el.id]
+                    )
+                    console.log(filtered, '<<<set Group')
+                    selectedRecordsGroup.value = [...filtered]
+                }
                 emit('change')
             }
 
@@ -222,7 +236,7 @@
                     if (list.value.length === 1) {
                         // console.log('enter pressed')
 
-                        let id = list.value[0][selectGroupKey.value]
+                        const id = list.value[0][selectGroupKey.value]
                         if (!disabledKeyMap.value[id]) {
                             if (map.value[id]) {
                                 delete map.value[id]
@@ -248,6 +262,5 @@
                 isEnriching,
             }
         },
-        components: { AtlanIcon },
     })
 </script>

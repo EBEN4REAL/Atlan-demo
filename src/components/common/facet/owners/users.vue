@@ -18,7 +18,7 @@
             <div class="w-full px-3">
                 <div>
                     <template
-                        v-for="(item) in userList"
+                        v-for="item in userList"
                         :key="item[selectUserKey]"
                     >
                         <a-checkbox
@@ -247,7 +247,7 @@
                 return data
             })
 
-            const {username} = whoami()
+            const { username } = whoami()
 
             const {
                 userList: users,
@@ -269,7 +269,7 @@
                     handleSearch(queryText.value)
                 }
             )
-            
+
             // to filter out loggedIn user if needed from list based on showLoggedInUser
             const userList = computed(() => {
                 if (showLoggedInUser.value) {
@@ -319,15 +319,14 @@
             })
 
             const fullName = (item) => {
-                let name = item.username;
+                let name = item.username
                 if (item.firstName) {
                     name = `${item.firstName} ${item.lastName || ''}`
                     return name
                 }
                 return name
             }
-            
-            
+
             const handleChange = (checked, id) => {
                 if (checked.target.checked) {
                     map.value[id] = true
@@ -382,7 +381,7 @@
             const toolTipTitle = (item) => {
                 if (item?.enabled || item?.username === username.value) {
                     return `${fullName(item)}`
-                } 
+                }
                 return `${fullName(item)} (Disabled)`
             }
 

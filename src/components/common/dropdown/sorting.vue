@@ -1,5 +1,5 @@
 <template>
-    <a-dropdown>
+    <a-dropdown :trigger="['click']">
         <a class="ant-dropdown-link" @click.prevent>
             <a-badge :color="modelValue !== 'default' ? '#5278d7' : null">
                 <AtlanIcon icon="Filter" class="w-4 h-4 px-1" />

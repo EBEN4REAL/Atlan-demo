@@ -45,6 +45,9 @@ export default function useEventGraph({
     sameTargetCount,
     nodes,
     edges,
+    showDrawer,
+    showProcessDrawer,
+    groupedProcessIds,
     onSelectAsset,
     onCloseDrawer,
     addSubGraph,
@@ -340,29 +343,22 @@ export default function useEventGraph({
     const selectNodeEdge = (edge) => {
         const { isCyclicEdge, isGroupEdge, processIds } = edge.getData()
 
+        const processId = edge.id.split('/')[0]
+        onSelectAsset({
+            guid: processId,
+            isGroupEdge,
+            isCyclicEdge,
+            processIds,
+        })
+
+        if (edge.id) selectedNodeEdgeId.value = edge.id
+
         if (isCyclicEdge) {
             sendProcessClickedEvent(!!isGroupEdge, !!isCyclicEdge, edge.id)
             return
         }
 
-        const processId = edge.id.split('/')[0]
-        onSelectAsset({ guid: processId, isGroupEdge, processIds })
-
-        if (edge.id) selectedNodeEdgeId.value = edge.id
-
         const [source, target] = edge.id.split('/')[1].split('@')
-
-        const cyclicRelations = lineageStore.getCyclicRelations()
-        const isCyclicRelation = cyclicRelations.find((x) => {
-            const [s, t] = x.split('@')
-            if (source === s && target === t) return true
-            if (source === t && target === s) return true
-            return false
-        })
-
-        sendProcessClickedEvent(!!isGroupEdge, !!isCyclicRelation, edge.id)
-
-        if (isCyclicRelation) return
 
         const { predecessors } = useGetNodes(graph, source)
         const { successors } = useGetNodes(graph, target)
@@ -934,8 +930,8 @@ export default function useEventGraph({
         } else addLineagePorts(nodesForPortLineage, portLineage)
 
         if (isPortEdgesPresent()) {
-            const parentNode = getPortNode(portId)
-            fit(parentNode.id)
+            // const parentNode = getPortNode(portId)
+            // fit(parentNode.id)
         }
 
         controlPortsLoader(node, false, 'item')
@@ -1515,7 +1511,7 @@ export default function useEventGraph({
             const newAction = { selectNode: _selectedNodeId }
             actions.value = { ...actions.value, ...newAction }
 
-            resetState(true)
+            resetState(true, false)
             controlHoPaCTALoader(node, portId)
             fetchNodeLineage(node.id)
         }
@@ -1535,7 +1531,7 @@ export default function useEventGraph({
             const newAction = { selectNodeEdge: _selectedNodeEdgeId }
             actions.value = { ...actions.value, ...newAction }
 
-            resetState(true)
+            resetState(true, false)
             controlHoPaCTALoader(node, portId)
             fetchNodeLineage(node.id)
         }
@@ -1569,7 +1565,7 @@ export default function useEventGraph({
             }
             actions.value = { ...actions.value, ...newAction }
 
-            resetState(true)
+            resetState(true, false)
             controlHoPaCTALoader(node, portId)
             fetchNodeLineage(node.id)
         }
@@ -1650,13 +1646,17 @@ export default function useEventGraph({
     }
 
     // resetState
-    const resetState = (all?) => {
-        onCloseDrawer()
-        if (selectedNodeId.value) resetSelectedNode()
-        else if (selectedNodeEdgeId.value) resetSelectedNodeEdge()
-        else if (selectedPortId.value || selectedPortEdgeId.value) {
-            if (selectedPortId.value) resetSelectedPort()
-            if (selectedPortEdgeId.value) resetSelectedPortEdge()
+    const resetState = (all?, closeDrawer = true) => {
+        if (closeDrawer) {
+            groupedProcessIds.value = []
+            showProcessDrawer.value = false
+            onCloseDrawer()
+            if (selectedNodeId.value) resetSelectedNode()
+            else if (selectedNodeEdgeId.value) resetSelectedNodeEdge()
+            else if (selectedPortId.value || selectedPortEdgeId.value) {
+                if (selectedPortId.value) resetSelectedPort()
+                if (selectedPortEdgeId.value) resetSelectedPortEdge()
+            }
         }
 
         if (all) {
@@ -1866,6 +1866,14 @@ export default function useEventGraph({
     })
 
     /** WATCHERS */
+    watch(showDrawer, (newVal) => {
+        if (!newVal && !showProcessDrawer.value) resetState()
+    })
+
+    watch(showProcessDrawer, (newVal) => {
+        if (!newVal && !showDrawer.value) resetState()
+    })
+
     watch(
         portToSelect,
         (newVal) => {
@@ -1919,8 +1927,7 @@ export default function useEventGraph({
 
             selectNode(newVal)
 
-            const cell = graph.value.getCellById(newVal)
-            graph.value.scrollToCell(cell, { animation: { duration: 600 } })
+            fit(newVal)
             guidToSelectOnGraph.value = ''
         }
     })

@@ -1,6 +1,7 @@
 <template>
     <a-layout class="min-h-full">
         <a-layout-sider
+            v-if="!isFullscreen"
             theme="light"
             class="border-r border-gray-300"
             :collapsedWidth="60"
@@ -14,7 +15,7 @@
         </a-layout-sider>
 
         <a-layout class="h-full">
-            <a-layout-header class="z-30 h-10 p-0 m-0">
+            <a-layout-header v-if="!isFullscreen" class="z-30 h-10 p-0 m-0">
                 <div class="h-full px-4 bg-white border-b border-gray-300">
                     <NavMenu
                         :page="activeKey"
@@ -89,9 +90,9 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, provide, ref, watch } from 'vue'
+    import { defineComponent, provide, ref, watch, computed } from 'vue'
     import { useRouter } from 'vue-router'
-    import { useMagicKeys, whenever } from '@vueuse/core'
+    import { useMagicKeys, whenever, useFullscreen } from '@vueuse/core'
     import PreviewDrawer from '@/common/drawer/previewDrawer.vue'
 
     import NavMenu from '@/common/layout/navMenu.vue'
@@ -122,6 +123,8 @@
                     }
                 },
             })
+            const { isFullscreen } = useFullscreen()
+
             const { control, meta, meta_K } = keys
             const keyK = keys.K
             const isCmndKVisible = ref<boolean>(false)
@@ -171,6 +174,7 @@
                 isCmndKVisible,
                 closeNavbar,
                 collapsed,
+                isFullscreen,
             }
         },
     })

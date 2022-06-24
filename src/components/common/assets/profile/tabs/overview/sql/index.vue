@@ -15,7 +15,8 @@
                     v-model:active="activePreviewTabKey"
                     class="flex-none flex-grow-0 mb-4 mr-auto"
                     :data="
-                        connectorName(selectedAsset) === 'glue'
+                        connectorName(selectedAsset) === 'glue' ||
+                        connectorName(selectedAsset) === 'netsuite'
                             ? [{ key: 'column', label: 'Column Preview' }]
                             : tabConfig
                     "

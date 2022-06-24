@@ -51,8 +51,8 @@
                                     ? '180px !important'
                                     : '150px !important',
                         }"
-                        style="box-shadow: 0px 5px 16px rgba(0, 0, 0, 0.1)"
                         v-if="parentAssetChildren?.length"
+                        style="box-shadow: 0px 5px 16px rgba(0, 0, 0, 0.1)"
                     >
                         <div class="flex">
                             <div class="mr-2">
@@ -146,7 +146,7 @@
                         ></span> </a-button
                 ></Shortcut>
             </a-tooltip>
-            <template v-for="classification in list" :key="classification.guid">
+            <template v-for="(classification, index) in list" :key="index">
                 <Popover
                     :classification="classification"
                     :entity-guid="guid"
@@ -376,12 +376,21 @@
                 })
 
                 if (!props.editPermission) {
+                    const newClassificationTypeNames =
+                        selectedValue.value?.classifications?.filter(
+                            (selection) =>
+                                !existingClassifications.value?.includes(
+                                    selection
+                                )
+                        )
+
                     newClassifications.value = localValue.value.filter(
-                        (i) => !isPropagated(i)
+                        (i) =>
+                            !isPropagated(i) &&
+                            newClassificationTypeNames?.includes(i?.typeName)
                     )
-                    localValue.value = modelValue.value.filter((i) =>
-                        isPropagated(i)
-                    )
+
+                    localValue.value = modelValue.value
                 }
             }
 
@@ -428,22 +437,6 @@
             })
             const classificationPopoverMouseEnterDelay = ref(1)
             const handleRequest = () => {
-                console.log(selectedValue.value)
-                console.log(localValue.value)
-                console.log(newClassifications.value)
-                console.log(existingClassifications.value)
-                newClassifications.value = newClassifications.value?.filter(
-                    (el) => {
-                        if (
-                            !existingClassifications.value?.find(
-                                (i) => i?.typeName === el?.typeName
-                            )
-                        ) {
-                            return el
-                        }
-                    }
-                )
-
                 const {
                     error: requestError,
                     isLoading: isRequestLoading,
@@ -466,6 +459,11 @@
                         message.success(`Request raised`)
                         isEdit.value = false
                         requestLoading.value = false
+                        selectedValue.value = {
+                            classifications: modelValue.value
+                                .filter((i) => !isPropagated(i))
+                                .map((j) => j.typeName),
+                        }
                     }
                 })
                 requestLoading.value = isRequestLoading.value

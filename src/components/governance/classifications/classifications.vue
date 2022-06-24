@@ -2,7 +2,10 @@
     <ExplorerLayout v-if="classificationList.length" title="Classification">
         <template #action> </template>
         <template #sidebar>
-            <div v-auth="map.LIST_CLASSIFICATION" class="">
+            <div
+                v-auth="map.LIST_CLASSIFICATION"
+                class="flex flex-col flex-grow overflow-hidden"
+            >
                 <div class="flex items-center px-4 mb-3">
                     <SearchAndFilter
                         v-model:value="searchQuery"
@@ -35,20 +38,19 @@
                 >
                     <template #default="{ item, isSelected }">
                         <div class="flex items-center justify-between gap-x-1">
-                            <div class="flex items-center">
+                            <div class="flex items-center gap-x-2">
                                 <ClassificationIcon
                                     :color="item.options?.color"
                                 />
-                                <span
-                                    class="ml-2 text-sm truncate"
+                                <Truncate
                                     :class="
                                         isSelected
                                             ? 'text-primary font-bold'
                                             : 'text-gray'
                                     "
-                                >
-                                    {{ item.displayName }}
-                                </span>
+                                    :tooltip-text="item.displayName"
+                                    :rows="1"
+                                />
                             </div>
                             <a-tooltip
                                 v-if="item.description"
@@ -56,12 +58,7 @@
                                 :title="item.description"
                                 placement="right"
                             >
-                                <span
-                                    ><AtlanIcon
-                                        icon="Info"
-                                        class="ml-1"
-                                    ></AtlanIcon
-                                ></span>
+                                <span><AtlanIcon icon="Info"></AtlanIcon></span>
                             </a-tooltip>
                         </div>
                     </template>
@@ -124,6 +121,7 @@
 
     import map from '~/constant/accessControl/map'
     import EmptyClassifications from '~/assets/images/icons/empty-classifications.svg'
+    import Truncate from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
         name: 'ClassificationProfileWrapper',
@@ -138,6 +136,7 @@
             SearchAndFilter,
             ExplorerList,
             NoAcces,
+            Truncate,
             SearchAdvanced,
             AddClassificationModal,
             ClassificationIcon,

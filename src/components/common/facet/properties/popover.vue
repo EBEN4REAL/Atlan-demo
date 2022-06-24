@@ -2,6 +2,7 @@
     <a-popover
         overlay-class-name="propertiesPopover"
         :destroyTooltipOnHide="true"
+        @visible-change="visibleChange"
     >
         <template #title> </template>
         <template #content>
@@ -40,7 +41,8 @@
                         <div
                             v-if="
                                 index !== localValue.length - 1 &&
-                                attribute?.subTypeName !== 'announcement'
+                                attribute?.subTypeName !== 'announcement' &&
+                                attribute?.subTypeName !== 'user'
                             "
                             class="flex text-gray-500"
                         >
@@ -53,7 +55,8 @@
                 <a-divider
                     v-if="
                         attribute.typeName !== 'boolean' &&
-                        attribute?.subTypeName !== 'announcement'
+                        attribute?.subTypeName !== 'announcement' &&
+                        attribute?.subTypeName !== 'user'
                     "
                     class="my-2"
                 >
@@ -73,7 +76,7 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import { defineComponent, PropType, toRefs, ref, computed } from 'vue'
+    import { defineComponent, toRefs, ref, computed } from 'vue'
     import Condition from './condition.vue'
     import Truncate from '@/common/ellipsis/index.vue'
 
@@ -96,7 +99,7 @@
                 },
             },
         },
-        emits: ['change', 'update:modelValue'],
+        emits: ['change', 'update:modelValue', 'visibilityChange'],
         setup(props, { emit }) {
             const { attribute } = toRefs(props)
             const { modelValue } = useVModels(props)
@@ -143,6 +146,10 @@
                 handleChangeCondition()
             }
 
+            const visibleChange = visible => {
+                emit("visibilityChange" , visible)
+            }
+            
             return {
                 attribute,
                 localValue,
@@ -152,6 +159,7 @@
                 handleRemove,
                 dirtyTimestamp,
                 isActive,
+                visibleChange
             }
         },
     })

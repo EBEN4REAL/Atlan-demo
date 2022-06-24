@@ -307,7 +307,8 @@
                         !isSaasAsset(item) &&
                         !isObjectAsset(item) &&
                         assetType(item) !== 'Connection' &&
-                        connectorName(item) !== 'glue'
+                        connectorName(item) !== 'glue' &&
+                        connectorName(item) !== 'netsuite'
                     "
                     title=""
                 >

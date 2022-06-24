@@ -48,11 +48,16 @@
             
             Propagated via 
             <span class="">
-                <span class="mr-2">
-                    <AtlanIcon  class="" :icon="getPropagatedViaIcon(propagatedVia)" />
+                <span>
+                    <AtlanIcon  class="mb-1" :icon="getPropagatedViaIcon(propagatedVia)" />
                 </span>
                 <span class="text-gray-700 cursor-pointer display-text" @click="() => propagatedVia?.length ?  handleOpenProfile(propagatedVia[0]) : handleOpenProfile(propagatedVia)" >
-                    {{ computeDisplayText(propagatedVia) }} 
+                    <a-tooltip>
+                        <template #title>
+                            {{ computeDisplayText(propagatedVia)  }}
+                        </template>
+                        {{truncateString(computeDisplayText(propagatedVia) , 25, "...")  }} 
+                    </a-tooltip>
                 </span>
             </span>
             {{ linkedAt }}
@@ -64,11 +69,16 @@
             <div class="flex items-center content-center gap-1 ">
                 Propagated via 
                <span class="">
-                 <span class="mr-1">
-                    <AtlanIcon  class="" :icon="getPropagatedViaIcon(propagatedVia[0])" />
+                    <span>
+                        <AtlanIcon  class="mb-1" :icon="getPropagatedViaIcon(propagatedVia[0])" />
                     </span>
                     <span class="text-gray-700 cursor-pointer display-text" @click="() => propagatedVia?.length ?  handleOpenProfile(propagatedVia[0]) : handleOpenProfile(propagatedVia)" >
-                        {{ computeDisplayText(propagatedVia) }} 
+                        <a-tooltip>
+                            <template #title>
+                                {{ computeDisplayText(propagatedVia)  }}
+                            </template>
+                            {{truncateString(computeDisplayText(propagatedVia), 25, "...")  }} 
+                        </a-tooltip>
                     </span>
                </span>
             </div>
@@ -80,7 +90,7 @@
                         <div class="flex items-center hove:text-primary" v-for="(pv,i) in propagatedVia.slice(1)" :key="i">
                             <div class="mr-1">
                                 <AtlanIcon
-                                    class=""
+                                    class="mb-1"
                                     :icon="getPropagatedViaIcon(pv)"
                                 />
                             </div>
@@ -117,6 +127,7 @@
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import { assetTypeList } from '~/constant/assetType'
+    import { truncateString } from '~/utils/truncateString'
 
     dayjs.extend(relativeTime)
 
@@ -197,6 +208,7 @@
                 window.open(getProfilePath(asset), '_blank')
             }
 
+
             return {
                 linkedUser,
                 linkedAt,
@@ -210,7 +222,9 @@
                 getPropagatedViaIcon,
                 remainingClassifications,
                 extendedText,
-                handleOpenProfile
+                handleOpenProfile,
+                truncateString
+                
             }
         },
     })

@@ -82,6 +82,8 @@ export const identifyUser = async () => {
                     ? authStore.purposes.length
                     : 0,
                 created_at: authStore.createdAt ? authStore.createdAt : '',
+                res_width: screen.availWidth,
+                res_height: screen.availHeight
             }
             ;(window as any).analytics.identify(authStore?.id, detailsObj, {
                 integrations: {
@@ -132,6 +134,7 @@ export const identifyGroup = async () => {
             connection_count: (connectionStore?.list || []).length,
             glossary_count: (glossaryStore?.list || []).length,
             labs: featureEnabledMap.value,
+            configured_connectors: connectionStore.getSourceList.map((i) => i.id)|| []
             // is_logo added or not
             // user count
             // assets count

@@ -555,12 +555,18 @@ export function useBody(
                                         'userDescription.keyword'
                                 ) {
                                     base.notFilter(
-                                        'exists',
-                                        'description.keyword'
+                                        'wildcard',
+                                        'description.keyword',
+                                        {
+                                            value: `?*`,
+                                        }
                                     )
                                     base.notFilter(
-                                        'exists',
-                                        'userDescription.keyword'
+                                        'wildcard',
+                                        'userDescription.keyword',
+                                        {
+                                            value: `?*`,
+                                        }
                                     )
                                 } else {
                                     base.notFilter('exists', element.operand)

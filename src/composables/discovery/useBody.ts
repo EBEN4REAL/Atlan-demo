@@ -555,12 +555,18 @@ export function useBody(
                                         'userDescription.keyword'
                                 ) {
                                     base.notFilter(
-                                        'exists',
-                                        'description.keyword'
+                                        'wildcard',
+                                        'description.keyword',
+                                        {
+                                            value: `?*`,
+                                        }
                                     )
                                     base.notFilter(
-                                        'exists',
-                                        'userDescription.keyword'
+                                        'wildcard',
+                                        'userDescription.keyword',
+                                        {
+                                            value: `?*`,
+                                        }
                                     )
                                 } else {
                                     base.notFilter('exists', element.operand)
@@ -574,12 +580,18 @@ export function useBody(
                                 ) {
                                     base.filter('bool', (q) => {
                                         q.orFilter(
-                                            'exists',
-                                            'description.keyword'
+                                            'wildcard',
+                                            'description.keyword',
+                                            {
+                                                value: `?*`,
+                                            }
                                         )
                                         q.orFilter(
-                                            'exists',
-                                            'userDescription.keyword'
+                                            'wildcard',
+                                            'userDescription.keyword',
+                                            {
+                                                value: `?*`,
+                                            }
                                         )
                                         return q
                                     })

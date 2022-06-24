@@ -1,7 +1,7 @@
 <template>
     <div
         class="flex items-center justify-between px-2 py-1 mb-1 border-0 rounded border-primary hover:bg-primary-menu hover:border-1"
-        :class="!isApplied && !popoverVisibility ? '' : selectedClass"
+        :class="selectedClass"
     >
         <div
             class="w-full cursor-default"
@@ -55,6 +55,11 @@
             const { attribute, activeProperty, condition, popoverVisibility } = toRefs(props)
 
             const isApplied = computed(() => {
+                for(const obj of condition.value) {
+                    if(Object.values(obj).includes('isNotNull') || Object.values(obj).includes('isNull')) {
+                        return true
+                    }
+                }
                 return !!condition.value?.find(
                     (i) => i.operand === attribute.value.name && i.value
                 )
@@ -62,7 +67,7 @@
 
 
             const selectedClass = computed(() => {
-                if (activeProperty.value === attribute.value.name)
+                if (activeProperty.value === attribute.value.name && popoverVisibility.value)
                     return 'outline-primary bg-primary-menu'
                 if (isApplied.value) return 'bg-primary-menu'
                 return ''

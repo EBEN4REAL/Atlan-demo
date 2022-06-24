@@ -123,8 +123,14 @@
                 return keys.join('_')
             })
 
+           
             const defaultOperator = ref(operators[operatorDataType.value])
             const localOperator = ref(condition.operator)
+            
+            
+            if(attribute.value.name === "__guid") {
+                defaultOperator.value = defaultOperator.value.slice(0,2)
+            }
 
             if (!localCondition.value.operator) {
                 if (defaultOperator.value?.length > 0) {

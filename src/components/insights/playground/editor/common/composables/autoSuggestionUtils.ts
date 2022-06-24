@@ -6,6 +6,8 @@ import {
 import { instances } from '~/components/insights/playground/editor/monaco/useMonaco'
 import { getLastMappedKeyword } from './useAutoSuggestions'
 import { contextStore } from './useMapping'
+import axios from 'axios'
+
 export type contextKeywordType = {
     name: string
     type: 'TABLE' | 'COLUMN'
@@ -16,6 +18,9 @@ export type contextKeywordType = {
         startLineNumber: number
     }
 }
+import { Insights } from '~/services/sql/query'
+import { ref } from 'vue'
+
 export function extractTablesFromContext(
     tokens: string[]
 ): Array<contextKeywordType> {
@@ -163,4 +168,39 @@ export function getSnippetKeywords() {
         },
     ]
     return words
+}
+
+export function getEntityMetadataUsingQualifiedName(qualifiedName: string) {
+    const body = ref()
+    const cancelTokenSource = ref(axios.CancelToken.source())
+
+    body.value = {
+        dsl: {
+            from: 0,
+            size: 1,
+            query: {
+                bool: {
+                    filter: {
+                        bool: {
+                            must: [
+                                {
+                                    term: {
+                                        __state: 'ACTIVE',
+                                    },
+                                },
+                                {
+                                    term: {
+                                        qualifiedName: qualifiedName,
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                },
+            },
+        },
+        suppressLogs: true,
+    }
+
+    return Insights.GetAutoSuggestions(body, cancelTokenSource)
 }

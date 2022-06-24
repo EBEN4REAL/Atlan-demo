@@ -132,6 +132,10 @@
                 defaultOperator.value = defaultOperator.value.slice(0,2)
             }
 
+            if(attribute.value.name === "name.keyword" || attribute.value.name === 'description.keyword') {
+                localCondition.value.operator = 'contains'
+            }
+
             if (!localCondition.value.operator) {
                 if (defaultOperator.value?.length > 0) {
                     localCondition.value.operator = defaultOperator.value[0].id

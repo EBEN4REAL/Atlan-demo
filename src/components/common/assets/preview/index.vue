@@ -219,6 +219,7 @@
                         >
                             <template #button>
                                 <a-button
+                                    v-if="allowQuery(parentConnection)"
                                     class="flex items-center justify-center p-2"
                                 >
                                     <AtlanIcon
@@ -417,6 +418,7 @@
         INSIGHT_WORKSPACE_LEVEL_TAB,
     } from '~/composables/labs/labFeatureList'
     import { getDomain } from '~/utils/url'
+    import useConnectionData from '~/composables/connection/useConnectionData'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -539,7 +541,15 @@
                 isCustom,
                 isPublished,
                 links,
+                allowQuery,
+                connectionQualifiedName,
             } = useAssetInfo()
+
+            const { getConnection } = useConnectionData()
+
+            const parentConnection = computed(() =>
+                getConnection(connectionQualifiedName(selectedAsset.value))
+            )
 
             const activeKey = ref(0)
             const activeLabel = ref<string>('Overview')
@@ -857,6 +867,8 @@
                 slackResourceCount,
                 switchTab,
                 handleTabClick,
+                allowQuery,
+                parentConnection,
             }
         },
     })

@@ -574,12 +574,18 @@ export function useBody(
                                 ) {
                                     base.filter('bool', (q) => {
                                         q.orFilter(
-                                            'exists',
-                                            'description.keyword'
+                                            'wildcard',
+                                            'description.keyword',
+                                            {
+                                                value: `?*`,
+                                            }
                                         )
                                         q.orFilter(
-                                            'exists',
-                                            'userDescription.keyword'
+                                            'wildcard',
+                                            'userDescription.keyword',
+                                            {
+                                                value: `?*`,
+                                            }
                                         )
                                         return q
                                     })

@@ -119,6 +119,8 @@ export const identifyUser = async () => {
                 tenant_created_at: tenantCreatedAtIso,
                 license_type: licenseType,
                 salesforce_account_id: salesforceAccountId,
+                res_width: window.screen.availWidth,
+                res_height: window.screen.availHeight,
             }
             ;(window as any).analytics.identify(authStore?.id, detailsObj, {
                 integrations: {
@@ -171,6 +173,8 @@ export const identifyGroup = async () => {
             labs: featureEnabledMap.value,
             license_type: licenseType,
             salesforce_account_id: salesforceAccountId,
+            configured_connectors:
+                connectionStore.getSourceList.map((i) => i.id) || [],
             // is_logo added or not
             // user count
             // assets count

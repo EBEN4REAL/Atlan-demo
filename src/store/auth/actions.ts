@@ -24,12 +24,14 @@ export const actions: Actions = {
         this.decodedToken = value?.decodedToken
     },
     setUserDetails() {
+        console.log('decodedToken', this.decodedToken)
         this.name = this.decodedToken.name
         this.firstName = this.decodedToken.given_name
         this.lastName = this.decodedToken.family_name
         this.email = this.decodedToken.email
         this.id = this.decodedToken.userId
         this.username = this.decodedToken.username
+        this.createdAt = this.decodedToken.createdAt
     },
     setPermissions(value) {
         this.permissions = value

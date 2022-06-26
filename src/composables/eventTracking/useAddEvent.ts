@@ -60,7 +60,8 @@ const addDelay = (ms: number) =>
 let licenseType = ''
 let salesforceAccountId = ''
 
-const fetchLicense = () => {
+const fetchLicense = async () => {
+    await addDelay(2000)
     console.log('fetchLicense called')
     try {
         const { data, isReady, error, isLoading } = Replicated.getLicense()
@@ -83,7 +84,7 @@ const fetchLicense = () => {
 fetchLicense()
 
 export const identifyUser = async () => {
-    await addDelay(1800)
+    await addDelay(3800)
     const authStore = useAuthStore()
     const tenantStore = useTenantStore()
     if ((window as any).analytics) {
@@ -130,7 +131,7 @@ export const identifyUser = async () => {
 }
 
 export const identifyGroup = async () => {
-    await addDelay(1800)
+    await addDelay(3800)
     console.log('identifyGroup called', featureEnabledMap.value)
     if (window?.analytics) {
         const tenantStore = useTenantStore()

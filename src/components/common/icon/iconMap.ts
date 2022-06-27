@@ -30,1182 +30,458 @@ import LegendDimension from '~/assets/images/lineage/legendDimension.svg'
 import LegendDimensionGroups from '~/assets/images/lineage/legendDimensionGroups.svg'
 import AssociatedTerm from '~/assets/images/icons/associated-term-blue.svg'
 
-const LegendExpand = defineAsyncComponent(
-    () => import('~/assets/images/lineage/legendExpand.svg')
-)
-const LegendCollapse = defineAsyncComponent(
-    () => import('~/assets/images/lineage/legendCollapse.svg')
-)
-const LegendAnomaly = defineAsyncComponent(
-    () => import('~/assets/images/lineage/legendAnomaly.svg')
-)
-const LegendSelected = defineAsyncComponent(
-    () => import('~/assets/images/lineage/legendSelected.svg')
-)
-const LegendHighlighted = defineAsyncComponent(
-    () => import('~/assets/images/lineage/legendHighlighted.svg')
-)
-const Time = defineAsyncComponent(
-    () => import('~/assets/images/icons/time.svg')
-)
-const BookmarkFilled = defineAsyncComponent(
-    () => import('~/assets/images/icons/bookmark-filled.svg')
-)
-const Bookmark = defineAsyncComponent(
-    () => import('~/assets/images/icons/bookmark.svg')
-)
-const BookmarkOutlined = defineAsyncComponent(
-    () => import('~/assets/images/icons/bookmark-outline.svg')
-)
-const CopyOutlined = defineAsyncComponent(
-    () => import('~/assets/images/icons/copy.svg')
-)
-const ChevronDown = defineAsyncComponent(
-    () => import('~/assets/images/icons/chevron-down.svg')
-)
-const ChevronLeft = defineAsyncComponent(
-    () => import('~/assets/images/icons/chevron-left.svg')
-)
-const ChevronUp = defineAsyncComponent(
-    () => import('~/assets/images/icons/chevron-up.svg')
-)
-const Retry = defineAsyncComponent(
-    () => import('~/assets/images/icons/retry.svg')
-)
-const NoAccess = defineAsyncComponent(
-    () => import('~/assets/images/icons/no-access.svg')
-)
-const ForeignKey = defineAsyncComponent(
-    () => import('~/assets/images/icons/foreign.svg')
-)
-const partitionKey = defineAsyncComponent(
-    () => import('~/assets/images/icons/partitionKey.svg')
-)
-const AssetIcon = defineAsyncComponent(
-    () => import('~/assets/images/home/asset.svg')
-)
-const InsightsIcon = defineAsyncComponent(
-    () => import('~/assets/images/home/Insights.svg')
-)
-const MorningIcon = defineAsyncComponent(
-    () => import('~/assets/images/home/Morning.svg')
-)
-const EveningIcon = defineAsyncComponent(
-    () => import('~/assets/images/home/Evening.svg')
-)
-const AfternoonIcon = defineAsyncComponent(
-    () => import('~/assets/images/home/Afternoon.svg')
-)
-const WorkflowsIcon = defineAsyncComponent(
-    () => import('~/assets/images/home/Workflows.svg')
-)
-const AdminCenterIcon = defineAsyncComponent(
-    () => import('~/assets/images/home/AdminCenter.svg')
-)
-const AtlanIcon = defineAsyncComponent(
-    () => import('~/assets/images/home/help/atlan.svg')
-)
-const AtlanBot = defineAsyncComponent(
-    () => import('~/assets/images/icons/atlan-bot.svg')
-)
-const CallIcon = defineAsyncComponent(
-    () => import('~/assets/images/home/help/call.svg')
-)
-const FeedbackIcon = defineAsyncComponent(
-    () => import('~/assets/images/home/help/feedback.svg')
-)
-const GlossaryIcon = defineAsyncComponent(
-    () => import('~/assets/images/home/Glossary.svg')
-)
-const Lock = defineAsyncComponent(
-    () => import('~/assets/images/icons/lock.svg')
-)
-const Lock2 = defineAsyncComponent(
-    () => import('~/assets/images/icons/lock2.svg')
-)
-const NoRelevantAsset = defineAsyncComponent(
-    () => import('~/assets/images/icons/no-relevant-assets.svg')
-)
-const NoAssetOrganization = defineAsyncComponent(
-    () => import('~/assets/images/icons/no-assets-organization.svg')
-)
-const NoAssetsFound = defineAsyncComponent(
-    () => import('~/assets/images/illustrations/no_assets_to_show.svg')
-)
-const Share = defineAsyncComponent(
-    () => import('~/assets/images/icons/share.svg')
-)
-const Filter = defineAsyncComponent(
-    () => import('~/assets/images/icons/filter.svg')
-)
-const FilterDot = defineAsyncComponent(
-    () => import('~/assets/images/icons/filter-dot.svg')
-)
-const ArrowRight = defineAsyncComponent(
-    () => import('~/assets/images/icons/arrow-right.svg')
-)
-const ArrowUpDown = defineAsyncComponent(
-    () => import('~/assets/images/icons/arrow_up_down.svg')
-)
-const Cancel = defineAsyncComponent(
-    () => import('~/assets/images/icons/cancel.svg')
-)
-const Notification = defineAsyncComponent(
-    () => import('~/assets/images/icons/notification.svg')
-)
-const NotificationDot = defineAsyncComponent(
-    () => import('~/assets/images/icons/notification-dot.svg')
-)
-const Search = defineAsyncComponent(
-    () => import('~/assets/images/icons/search.svg')
-)
-const EmptySampleData = defineAsyncComponent(
-    () => import('~/assets/images/illustrations/empty_sample_data.svg')
-)
-const ErrorSampleData = defineAsyncComponent(
-    () => import('~/assets/images/illustrations/error_sample_data.svg')
-)
-const Hash = defineAsyncComponent(
-    () => import('~/assets/images/icons/hash.svg')
-)
-const ArrowDown = defineAsyncComponent(
-    () => import('~/assets/images/icons/arrow-down.svg')
-)
-const Expand = defineAsyncComponent(
-    () => import('~/assets/images/icons/expand.svg')
-)
-const Variant = defineAsyncComponent(
-    () => import('~/assets/images/dataType/variant.svg')
-)
-const Database = defineAsyncComponent(
-    () => import('~/assets/images/icons/database.svg')
-)
-const DatabaseVerified = defineAsyncComponent(
-    () => import('~/assets/images/icons/database_verified.svg')
-)
-const DatabaseDeprecated = defineAsyncComponent(
-    () => import('~/assets/images/icons/database_deprecated.svg')
-)
-const DatabaseDraft = defineAsyncComponent(
-    () => import('~/assets/images/icons/database_draft.svg')
-)
-const DatabaseGray = defineAsyncComponent(
-    () => import('~/assets/images/icons/database-gray.svg')
-)
-const Schema = defineAsyncComponent(
-    () => import('~/assets/images/icons/schema.svg')
-)
-const SchemaVerified = defineAsyncComponent(
-    () => import('~/assets/images/icons/schema_verified.svg')
-)
-const SchemaDeprecated = defineAsyncComponent(
-    () => import('~/assets/images/icons/schema_deprecated.svg')
-)
-const SchemaDraft = defineAsyncComponent(
-    () => import('~/assets/images/icons/schema_draft.svg')
-)
-const SchemaGray = defineAsyncComponent(
-    () => import('~/assets/images/icons/schema-gray.svg')
-)
-const Table = defineAsyncComponent(
-    () => import('~/assets/images/icons/table.svg')
-)
-const TableGray = defineAsyncComponent(
-    () => import('~/assets/images/icons/table-gray.svg')
-)
-const TableBlack = defineAsyncComponent(
-    () => import('~/assets/images/icons/table-black.svg')
-)
-const View = defineAsyncComponent(
-    () => import('~/assets/images/icons/view.svg')
-)
-const ViewDeprecated = defineAsyncComponent(
-    () => import('~/assets/images/icons/view_deprecated.svg')
-)
-const ViewDraft = defineAsyncComponent(
-    () => import('~/assets/images/icons/view_draft.svg')
-)
-const ViewVerified = defineAsyncComponent(
-    () => import('~/assets/images/icons/view_verified.svg')
-)
-const ViewGray = defineAsyncComponent(
-    () => import('~/assets/images/icons/view-gray.svg')
-)
-const Connection = defineAsyncComponent(
-    () => import('~/assets/images/icons/connection.svg')
-)
-const Process = defineAsyncComponent(
-    () => import('~/assets/images/icons/process.svg')
-)
-const ChevronRight = defineAsyncComponent(
-    () => import('~/assets/images/icons/chevron-right.svg')
-)
-const Union = defineAsyncComponent(
-    () => import('~/assets/images/icons/union.svg')
-)
-const AddUser = defineAsyncComponent(
-    () => import('~/assets/images/icons/add-user.svg')
-)
-const RemoveUser = defineAsyncComponent(
-    () => import('~/assets/images/icons/remove-user.svg')
-)
-const Link = defineAsyncComponent(
-    () => import('~/assets/images/icons/link.svg')
-)
-const Add = defineAsyncComponent(() => import('~/assets/images/icons/add.svg'))
-const CircleLoader = defineAsyncComponent(
-    () => import('~/assets/images/icons/circle-loader.svg')
-)
-const Term = defineAsyncComponent(
-    () => import('~/assets/images/icons/term.svg')
-)
-const TermDeprecated = defineAsyncComponent(
-    () => import('~/assets/images/icons/term-deprecated.svg')
-)
-const TermIssue = defineAsyncComponent(
-    () => import('~/assets/images/icons/term-issue.svg')
-)
-const TermVerified = defineAsyncComponent(
-    () => import('~/assets/images/icons/term-verified.svg')
-)
-const TermDraft = defineAsyncComponent(
-    () => import('~/assets/images/icons/term-wip.svg')
-)
-const Category = defineAsyncComponent(
-    () => import('~/assets/images/icons/category.svg')
-)
-const CategoryShaded = defineAsyncComponent(
-    () => import('~/assets/images/icons/category-shaded.svg')
-)
-const CategoryDeprecated = defineAsyncComponent(
-    () => import('~/assets/images/icons/category-deprecated.svg')
-)
-const CategoryIssue = defineAsyncComponent(
-    () => import('~/assets/images/icons/category-issue.svg')
-)
-const CategoryVerified = defineAsyncComponent(
-    () => import('~/assets/images/icons/category-verified.svg')
-)
-const CategoryDraft = defineAsyncComponent(
-    () => import('~/assets/images/icons/category-wip.svg')
-)
-const Shield = defineAsyncComponent(
-    () => import('~/assets/images/icons/shield.svg')
-)
-const ShieldFilled = defineAsyncComponent(
-    () => import('~/assets/images/icons/shield-filled.svg')
-)
-const Edit = defineAsyncComponent(
-    () => import('~/assets/images/icons/edit.svg')
-)
-const EmptySavedFilter = defineAsyncComponent(
-    () => import('~/assets/images/icons/empty_saved_filters.svg')
-)
-const Decline = defineAsyncComponent(
-    () => import('~/assets/images/icons/decline.svg')
-)
-const Approve = defineAsyncComponent(
-    () => import('~/assets/images/icons/approve.svg')
-)
-const EmptyGlossary = defineAsyncComponent(
-    () => import('~/assets/images/icons/empty-glossary.svg')
-)
-const Glossary = defineAsyncComponent(
-    () => import('~/assets/images/icons/glossary.svg')
-)
-const GlossaryInactive = defineAsyncComponent(
-    () => import('~/assets/images/icons/glossary_inactive.svg')
-)
-const GlossaryDeprecated = defineAsyncComponent(
-    () => import('~/assets/images/icons/glossary-deprecated.svg')
-)
-const GlossaryVerified = defineAsyncComponent(
-    () => import('~/assets/images/icons/glossary-verified.svg')
-)
-const GlossaryDraft = defineAsyncComponent(
-    () => import('~/assets/images/icons/glossary-wip.svg')
-)
-const GlossaryGray = defineAsyncComponent(
-    () => import('~/assets/images/icons/glossary-gray.svg')
-)
-const KebabMenu = defineAsyncComponent(
-    () => import('~/assets/images/icons/kebab-menu-new.svg')
-)
-const KebabMenuHorizontal = defineAsyncComponent(
-    () => import('~/assets/images/icons/kebab-menu.svg')
-)
-const Overview = defineAsyncComponent(
-    () => import('~/assets/images/icons/overview.svg')
-)
-const OverviewActive = defineAsyncComponent(
-    () => import('~/assets/images/icons/overview_active.svg')
-)
-const Lineage = defineAsyncComponent(
-    () => import('~/assets/images/icons/lineage.svg')
-)
-const LineageNew = defineAsyncComponent(
-    () => import('~/assets/images/icons/lineage-new.svg')
-)
-const LineageSmall = defineAsyncComponent(
-    () => import('~/assets/images/icons/lineage-small.svg')
-)
-const Activity = defineAsyncComponent(
-    () => import('~/assets/images/icons/activity.svg')
-)
-const Columns = defineAsyncComponent(
-    () => import('~/assets/images/icons/columns.svg')
-)
-const Relation = defineAsyncComponent(
-    () => import('~/assets/images/icons/relation.svg')
-)
-const RelationActive = defineAsyncComponent(
-    () => import('~/assets/images/icons/relations-active.svg')
-)
-const S3Object = defineAsyncComponent(
-    () => import('~/assets/images/icons/s3object.svg')
-)
-const S3Bucket = defineAsyncComponent(
-    () => import('~/assets/images/icons/s3bucket.svg')
-)
-const User = defineAsyncComponent(
-    () => import('~/assets/images/icons/user.svg')
-)
-const Chats = defineAsyncComponent(
-    () => import('~/assets/images/icons/chats.svg')
-)
-const OpenTermProfile = defineAsyncComponent(
-    () => import('~/assets/images/icons/openTermProfile.svg')
-)
-const OpenCategoryProfile = defineAsyncComponent(
-    () => import('~/assets/images/icons/open-category-profile.svg')
-)
-const Metadata = defineAsyncComponent(
-    () => import('~/assets/images/icons/metadata.svg')
-)
-const Group = defineAsyncComponent(
-    () => import('~/assets/images/icons/group.svg')
-)
-const GroupStatic = defineAsyncComponent(
-    () => import('~/assets/images/icons/group-static.svg')
-)
-const External = defineAsyncComponent(
-    () => import('~/assets/images/icons/external.svg')
-)
-const NewFolder = defineAsyncComponent(
-    () => import('~/assets/images/icons/new-folder.svg')
-)
-const NewQuery = defineAsyncComponent(
-    () => import('~/assets/images/icons/new-query.svg')
-)
-const PublicFolder = defineAsyncComponent(
-    () => import('~/assets/images/icons/public-folder.svg')
-)
-const PrivateFolder = defineAsyncComponent(
-    () => import('~/assets/images/icons/private-folder.svg')
-)
-const TreeCollapseAll = defineAsyncComponent(
-    () => import('~/assets/images/icons/tree-collapse-all.svg')
-)
-const FilterFunnel = defineAsyncComponent(
-    () => import('~/assets/images/icons/filterFunnel.svg')
-)
-const FolderOpen = defineAsyncComponent(
-    () => import('~/assets/images/icons/folder-open.svg')
-)
-const FolderClosed = defineAsyncComponent(
-    () => import('~/assets/images/icons/folder-closed.svg')
-)
-const Schema2 = defineAsyncComponent(
-    () => import('~/assets/images/icons/schema2.svg')
-)
-const History = defineAsyncComponent(
-    () => import('~/assets/images/icons/history.svg')
-)
-const Queries = defineAsyncComponent(
-    () => import('~/assets/images/icons/queries.svg')
-)
-const Play = defineAsyncComponent(
-    () => import('~/assets/images/icons/play.svg')
-)
-const Pin = defineAsyncComponent(() => import('~/assets/images/icons/pin.svg'))
-const Save = defineAsyncComponent(
-    () => import('~/assets/images/icons/save.svg')
-)
-const Globe = defineAsyncComponent(
-    () => import('~/assets/images/icons/globe.svg')
-)
-const Info = defineAsyncComponent(
-    () => import('~/assets/images/icons/info.svg')
-)
-const AddAssetName = defineAsyncComponent(
-    () => import('~/assets/images/icons/add-table.svg')
-)
-const Trash = defineAsyncComponent(
-    () => import('~/assets/images/icons/trash.svg')
-)
-const Widgets = defineAsyncComponent(
-    () => import('~/assets/images/icons/widgets.svg')
-)
-const Megaphone = defineAsyncComponent(
-    () => import('~/assets/images/icons/megaphone.svg')
-)
-const Readme = defineAsyncComponent(
-    () => import('~/assets/images/icons/readme.svg')
-)
-const Resources = defineAsyncComponent(
-    () => import('~/assets/images/icons/resources.svg')
-)
-const FAQS = defineAsyncComponent(
-    () => import('~/assets/images/icons/faqs.svg')
-)
-const TableSummary = defineAsyncComponent(
-    () => import('~/assets/images/icons/tableSummary.svg')
-)
-const VariableTrigger = defineAsyncComponent(
-    () => import('~/assets/images/icons/variable-trigger.svg')
-)
-const Home = defineAsyncComponent(
-    () => import('~/assets/images/icons/home.svg')
-)
-const MultipleStatus = defineAsyncComponent(
-    () => import('~/assets/images/icons/multiple-status.svg')
-)
-const Pencil = defineAsyncComponent(
-    () => import('~/assets/images/icons/pencil.svg')
-)
-const Check = defineAsyncComponent(
-    () => import('~/assets/images/icons/check.svg')
-)
-const CheckCircled = defineAsyncComponent(
-    () => import('~/assets/images/icons/check-circled.svg')
-)
-const Dots = defineAsyncComponent(
-    () => import('~/assets/images/icons/dots.svg')
-)
-const Sort = defineAsyncComponent(
-    () => import('~/assets/images/icons/sort.svg')
-)
-const BuilderGroup = defineAsyncComponent(
-    () => import('~/assets/images/icons/builder-group.svg')
-)
-const Cross = defineAsyncComponent(
-    () => import('~/assets/images/icons/cross.svg')
-)
-const FullScreen = defineAsyncComponent(
-    () => import('~/assets/images/icons/fullscreen.svg')
-)
-const ExitFullScreen = defineAsyncComponent(
-    () => import('~/assets/images/icons/exit-fullscreen.svg')
-)
-const SidebarTrigger = defineAsyncComponent(
-    () => import('~/assets/images/icons/sidebar-trigger.svg')
-)
-const SidebarTriggerFilled = defineAsyncComponent(
-    () => import('~/assets/images/icons/sidebar-trigger-filled.svg')
-)
-const OutputpaneTrigger = defineAsyncComponent(
-    () => import('~/assets/images/icons/output-pane-trigger.svg')
-)
-const OutputpaneTriggerFilled = defineAsyncComponent(
-    () => import('~/assets/images/icons/output-pane-trigger-filled.svg')
-)
+import LegendExpand from '~/assets/images/lineage/legendExpand.svg'
+import LegendCollapse from '~/assets/images/lineage/legendCollapse.svg'
+import LegendAnomaly from '~/assets/images/lineage/legendAnomaly.svg'
+import LegendSelected from '~/assets/images/lineage/legendSelected.svg'
+import LegendHighlighted from '~/assets/images/lineage/legendHighlighted.svg'
+import Time from '~/assets/images/icons/time.svg'
+import BookmarkFilled from '~/assets/images/icons/bookmark-filled.svg'
+import Bookmark from '~/assets/images/icons/bookmark.svg'
+import BookmarkOutlined from '~/assets/images/icons/bookmark-outline.svg'
+import CopyOutlined from '~/assets/images/icons/copy.svg'
+import ChevronDown from '~/assets/images/icons/chevron-down.svg'
+import ChevronLeft from '~/assets/images/icons/chevron-left.svg'
+import ChevronUp from '~/assets/images/icons/chevron-up.svg'
+import Retry from '~/assets/images/icons/retry.svg'
+import NoAccess from '~/assets/images/icons/no-access.svg'
+import ForeignKey from '~/assets/images/icons/foreign.svg'
+import partitionKey from '~/assets/images/icons/partitionKey.svg'
+import AssetIcon from '~/assets/images/home/asset.svg'
+import InsightsIcon from '~/assets/images/home/Insights.svg'
+import MorningIcon from '~/assets/images/home/Morning.svg'
+import EveningIcon from '~/assets/images/home/Evening.svg'
+import AfternoonIcon from '~/assets/images/home/Afternoon.svg'
+import WorkflowsIcon from '~/assets/images/home/Workflows.svg'
+import AdminCenterIcon from '~/assets/images/home/AdminCenter.svg'
+import AtlanIcon from '~/assets/images/home/help/atlan.svg'
+import AtlanBot from '~/assets/images/icons/atlan-bot.svg'
+import CallIcon from '~/assets/images/home/help/call.svg'
+import FeedbackIcon from '~/assets/images/home/help/feedback.svg'
+import GlossaryIcon from '~/assets/images/home/Glossary.svg'
+import Lock from '~/assets/images/icons/lock.svg'
+import Lock2 from '~/assets/images/icons/lock2.svg'
+import NoRelevantAsset from '~/assets/images/icons/no-relevant-assets.svg'
+import NoAssetOrganization from '~/assets/images/icons/no-assets-organization.svg'
 
-const RunSuccess = defineAsyncComponent(
-    () => import('~/assets/images/icons/run-success.svg')
-)
-const RunProgress = defineAsyncComponent(
-    () => import('~/assets/images/icons/run-progress.svg')
-)
-const RunFailed = defineAsyncComponent(
-    () => import('~/assets/images/icons/run-failed.svg')
-)
-const WorkflowsActive = defineAsyncComponent(
-    () => import('~/assets/images/icons/workflows_active.svg')
-)
-const WorkflowsInactive = defineAsyncComponent(
-    () => import('~/assets/images/icons/workflows_inactive.svg')
-)
-const InsightsActive = defineAsyncComponent(
-    () => import('~/assets/images/icons/insights_active.svg')
-)
-const InsightsInactive = defineAsyncComponent(
-    () => import('~/assets/images/icons/insights_inactive.svg')
-)
-const AssetsActive = defineAsyncComponent(
-    () => import('~/assets/images/icons/assets_active.svg')
-)
-const AssetsInactive = defineAsyncComponent(
-    () => import('~/assets/images/icons/assets_inactive.svg')
-)
-const RunHistory = defineAsyncComponent(
-    () => import('~/assets/images/icons/run-history.svg')
-)
-const CaretLeft = defineAsyncComponent(
-    () => import('~/assets/images/icons/caret-left.svg')
-)
-const CaretRight = defineAsyncComponent(
-    () => import('~/assets/images/icons/caret-right.svg')
-)
-const CaretDown = defineAsyncComponent(
-    () => import('~/assets/images/icons/caret-down.svg')
-)
-const Settings = defineAsyncComponent(
-    () => import('~/assets/images/icons/setings.svg')
-)
-const SettingsOutlined = defineAsyncComponent(
-    () => import('~/assets/images/icons/settings_outlined.svg')
-)
-const IssuesAnnouncement = defineAsyncComponent(
-    () => import('~/assets/images/status/issues.svg')
-)
-const InformationAnnouncement = defineAsyncComponent(
-    () => import('~/assets/images/status/information.svg')
-)
-const WarningAnnouncement = defineAsyncComponent(
-    () => import('~/assets/images/status/warning.svg')
-)
-const EmptyResource = defineAsyncComponent(
-    () => import('~/assets/images/icons/empty-resources.svg')
-)
-const EmptyResource2 = defineAsyncComponent(
-    () => import('~/assets/images/icons/empty-resource-2.svg')
-)
-const EmptyClassifications = defineAsyncComponent(
-    () => import('~/assets/images/icons/empty-classifications.svg')
-)
-const Delete = defineAsyncComponent(
-    () => import('~/assets/images/icons/delete.svg')
-)
-const NoDataInsights = defineAsyncComponent(
-    () => import('~/assets/images/icons/results.svg')
-)
-const SomethingWrong = defineAsyncComponent(
-    () => import('~/assets/images/icons/something-wrong.svg')
-)
-const NoSavedQueriesPersonal = defineAsyncComponent(
-    () => import('~/assets/images/icons/saved-queries-personal.svg')
-)
-const AddQuery = defineAsyncComponent(
-    () => import('~/assets/images/icons/add-query.svg')
-)
-const NoSchema = defineAsyncComponent(
-    () => import('~/assets/images/icons/no-schema.svg')
-)
-const IssuesFilled = defineAsyncComponent(
-    () => import('~/assets/images/icons/issues-filled.svg')
-)
-const queryErorrIllus = defineAsyncComponent(
-    () => import('~/assets/images/icons/queryError.svg')
-)
-const NoSavedQueriesAll = defineAsyncComponent(
-    () => import('~/assets/images/icons/saved-queries-all.svg')
-)
-const EmptyQueriesTab = defineAsyncComponent(
-    () => import('~/assets/images/illustrations/empty_queries_tab.svg')
-)
-const Slack = defineAsyncComponent(
-    () => import('~/assets/images/admin/integrations/slack.svg')
-)
-const Jira = defineAsyncComponent(
-    () => import('~/assets/images/admin/integrations/jira.svg')
-)
-const EmptyResultJira = defineAsyncComponent(
-    () => import('~/assets/images/admin/integrations/emptyResultJira.svg')
-)
-const EmptyJira = defineAsyncComponent(
-    () => import('~/assets/images/admin/integrations/emptyJira.svg')
-)
-const Teams = defineAsyncComponent(
-    () => import('~/assets/images/admin/integrations/teams.svg')
-)
-const ExplorerTrigger = defineAsyncComponent(
-    () => import('~/assets/images/icons/explorer-panel-trigger-outline.svg')
-)
-const ExplorerTriggerFilled = defineAsyncComponent(
-    () => import('~/assets/images/icons/explorer-trigger-filled.svg')
-)
-const EmptySearchQuery = defineAsyncComponent(
-    () => import('~/assets/images/icons/empty_search_query.svg')
-)
-const EmptyResult = defineAsyncComponent(
-    () => import('~/assets/images/icons/empty_result.svg')
-)
-const Schedule = defineAsyncComponent(
-    () => import('~/assets/images/icons/schedule.svg')
-)
-const Unscheduled = defineAsyncComponent(
-    () => import('~/assets/images/icons/unscheduled.svg')
-)
-const Minimap = defineAsyncComponent(
-    () => import('~/assets/images/icons/minimap.svg')
-)
-const FullScreenBoth = defineAsyncComponent(
-    () => import('~/assets/images/icons/fullscreen-both.svg')
-)
-const Minus = defineAsyncComponent(
-    () => import('~/assets/images/icons/minus.svg')
-)
-const Recenter = defineAsyncComponent(
-    () => import('~/assets/images/icons/recenter.svg')
-)
-const Refocus = defineAsyncComponent(
-    () => import('~/assets/images/icons/refocus.svg')
-)
-const AssetsInactiveLight = defineAsyncComponent(
-    () => import('~/assets/images/icons/assets-inactive-light.svg')
-)
-const AssetsActiveLight = defineAsyncComponent(
-    () => import('~/assets/images/icons/assets-active-light.svg')
-)
-const Hourglass = defineAsyncComponent(
-    () => import('~/assets/images/icons/hourglass.svg')
-)
-const HourglassActive = defineAsyncComponent(
-    () => import('~/assets/images/icons/hourglass-active.svg')
-)
-const GroupActive = defineAsyncComponent(
-    () => import('~/assets/images/icons/group-light-active.svg')
-)
-const GroupLight = defineAsyncComponent(
-    () => import('~/assets/images/icons/group-light.svg')
-)
-const AccessLogs = defineAsyncComponent(
-    () => import('~/assets/images/icons/access-logs.svg')
-)
-const AccessLogsActive = defineAsyncComponent(
-    () => import('~/assets/images/icons/access-logs-active.svg')
-)
-const InfoActive = defineAsyncComponent(
-    () => import('~/assets/images/icons/info-active.svg')
-)
-const UserLight = defineAsyncComponent(
-    () => import('~/assets/images/icons/user-light.svg')
-)
-const UserLightActive = defineAsyncComponent(
-    () => import('~/assets/images/icons/user-light-active.svg')
-)
-const Support = defineAsyncComponent(
-    () => import('~/assets/images/icons/support.svg')
-)
-const Report = defineAsyncComponent(
-    () => import('~/assets/images/icons/report.svg')
-)
-const Platform = defineAsyncComponent(
-    () => import('~/assets/images/icons/platform.svg')
-)
-const Feedback = defineAsyncComponent(
-    () => import('~/assets/images/icons/feedback.svg')
-)
-const Admin = defineAsyncComponent(
-    () => import('~/assets/images/icons/admin.svg')
-)
-const ActivityLogs = defineAsyncComponent(
-    () => import('~/assets/images/icons/activity-logs.svg')
-)
-const TableDeprecated = defineAsyncComponent(
-    () => import('~/assets/images/icons/table_deprecated.svg')
-)
-const TableDraft = defineAsyncComponent(
-    () => import('~/assets/images/icons/table_draft.svg')
-)
-const TableVerified = defineAsyncComponent(
-    () => import('~/assets/images/icons/table_verified.svg')
-)
-const Policy = defineAsyncComponent(
-    () => import('~/assets/images/icons/policy.svg')
-)
-const PolicyAlt = defineAsyncComponent(
-    () => import('~/assets/images/icons/policy-alt.svg')
-)
-const Key = defineAsyncComponent(() => import('~/assets/images/icons/key.svg'))
-const EmptyDiscover = defineAsyncComponent(
-    () => import('~/assets/images/illustrations/empty_discover.svg')
-)
-const EmptyAssetProfile = defineAsyncComponent(
-    () => import('~/assets/images/icons/empty_asset_profile.svg')
-)
-const EmptyLineage = defineAsyncComponent(
-    () => import('~/assets/images/illustrations/empty_lineage.svg')
-)
-const EmptyLineageTab = defineAsyncComponent(
-    () => import('~/assets/images/illustrations/empty_lineage_tab.svg')
-)
-const Property = defineAsyncComponent(
-    () => import('~/assets/images/icons/property.svg')
-)
-const PropertyActive = defineAsyncComponent(
-    () => import('~/assets/images/icons/property_active.svg')
-)
-const Query = defineAsyncComponent(
-    () => import('~/assets/images/icons/query.svg')
-)
-const Trigger = defineAsyncComponent(
-    () => import('~/assets/images/icons/trigger.svg')
-)
-const QueryVerified = defineAsyncComponent(
-    () => import('~/assets/images/icons/query-verified.svg')
-)
-const QueryDeprecated = defineAsyncComponent(
-    () => import('~/assets/images/icons/query-deprecated.svg')
-)
-const QueryDraft = defineAsyncComponent(
-    () => import('~/assets/images/icons/query-draft.svg')
-)
-const CollapseControl = defineAsyncComponent(
-    () => import('~/assets/images/icons/collapse-control.svg')
-)
-const ColumnGray = defineAsyncComponent(
-    () => import('~/assets/images/icons/column-gray.svg')
-)
-const MaterialisedView = defineAsyncComponent(
-    () => import('~/assets/images/icons/materialised-view.svg')
-)
-const TablePartition = defineAsyncComponent(
-    () => import('~/assets/images/icons/table-partition.svg')
-)
+import Share from '~/assets/images/icons/share.svg'
+import Filter from '~/assets/images/icons/filter.svg'
+import FilterDot from '~/assets/images/icons/filter-dot.svg'
+import ArrowRight from '~/assets/images/icons/arrow-right.svg'
+import ArrowUpDown from '~/assets/images/icons/arrow_up_down.svg'
+import Cancel from '~/assets/images/icons/cancel.svg'
+import Notification from '~/assets/images/icons/notification.svg'
+import NotificationDot from '~/assets/images/icons/notification-dot.svg'
+import Search from '~/assets/images/icons/search.svg'
+
+import Hash from '~/assets/images/icons/hash.svg'
+import ArrowDown from '~/assets/images/icons/arrow-down.svg'
+import Expand from '~/assets/images/icons/expand.svg'
+import Variant from '~/assets/images/dataType/variant.svg'
+import Database from '~/assets/images/icons/database.svg'
+import DatabaseVerified from '~/assets/images/icons/database_verified.svg'
+import DatabaseDeprecated from '~/assets/images/icons/database_deprecated.svg'
+import DatabaseDraft from '~/assets/images/icons/database_draft.svg'
+import DatabaseGray from '~/assets/images/icons/database-gray.svg'
+import Schema from '~/assets/images/icons/schema.svg'
+import SchemaVerified from '~/assets/images/icons/schema_verified.svg'
+import SchemaDeprecated from '~/assets/images/icons/schema_deprecated.svg'
+import SchemaDraft from '~/assets/images/icons/schema_draft.svg'
+import SchemaGray from '~/assets/images/icons/schema-gray.svg'
+import Table from '~/assets/images/icons/table.svg'
+import TableGray from '~/assets/images/icons/table-gray.svg'
+import TableBlack from '~/assets/images/icons/table-black.svg'
+import View from '~/assets/images/icons/view.svg'
+import ViewDeprecated from '~/assets/images/icons/view_deprecated.svg'
+import ViewDraft from '~/assets/images/icons/view_draft.svg'
+import ViewVerified from '~/assets/images/icons/view_verified.svg'
+import ViewGray from '~/assets/images/icons/view-gray.svg'
+import Connection from '~/assets/images/icons/connection.svg'
+import Process from '~/assets/images/icons/process.svg'
+import ChevronRight from '~/assets/images/icons/chevron-right.svg'
+import Union from '~/assets/images/icons/union.svg'
+import AddUser from '~/assets/images/icons/add-user.svg'
+import RemoveUser from '~/assets/images/icons/remove-user.svg'
+import Link from '~/assets/images/icons/link.svg'
+import Add from '~/assets/images/icons/add.svg'
+import CircleLoader from '~/assets/images/icons/circle-loader.svg'
+import Term from '~/assets/images/icons/term.svg'
+import TermDeprecated from '~/assets/images/icons/term-deprecated.svg'
+import TermIssue from '~/assets/images/icons/term-issue.svg'
+import TermVerified from '~/assets/images/icons/term-verified.svg'
+import TermDraft from '~/assets/images/icons/term-wip.svg'
+import Category from '~/assets/images/icons/category.svg'
+import CategoryShaded from '~/assets/images/icons/category-shaded.svg'
+import CategoryDeprecated from '~/assets/images/icons/category-deprecated.svg'
+import CategoryIssue from '~/assets/images/icons/category-issue.svg'
+import CategoryVerified from '~/assets/images/icons/category-verified.svg'
+import CategoryDraft from '~/assets/images/icons/category-wip.svg'
+import Shield from '~/assets/images/icons/shield.svg'
+import ShieldFilled from '~/assets/images/icons/shield-filled.svg'
+import Edit from '~/assets/images/icons/edit.svg'
+import EmptySavedFilter from '~/assets/images/icons/empty_saved_filters.svg'
+import Decline from '~/assets/images/icons/decline.svg'
+import Approve from '~/assets/images/icons/approve.svg'
+import EmptyGlossary from '~/assets/images/icons/empty-glossary.svg'
+import Glossary from '~/assets/images/icons/glossary.svg'
+import GlossaryInactive from '~/assets/images/icons/glossary_inactive.svg'
+import GlossaryDeprecated from '~/assets/images/icons/glossary-deprecated.svg'
+import GlossaryVerified from '~/assets/images/icons/glossary-verified.svg'
+import GlossaryDraft from '~/assets/images/icons/glossary-wip.svg'
+import GlossaryGray from '~/assets/images/icons/glossary-gray.svg'
+import KebabMenu from '~/assets/images/icons/kebab-menu-new.svg'
+import KebabMenuHorizontal from '~/assets/images/icons/kebab-menu.svg'
+import Overview from '~/assets/images/icons/overview.svg'
+import OverviewActive from '~/assets/images/icons/overview_active.svg'
+import Lineage from '~/assets/images/icons/lineage.svg'
+import LineageNew from '~/assets/images/icons/lineage-new.svg'
+import LineageSmall from '~/assets/images/icons/lineage-small.svg'
+import Activity from '~/assets/images/icons/activity.svg'
+import Columns from '~/assets/images/icons/columns.svg'
+import Relation from '~/assets/images/icons/relation.svg'
+import RelationActive from '~/assets/images/icons/relations-active.svg'
+import S3Object from '~/assets/images/icons/s3object.svg'
+import S3Bucket from '~/assets/images/icons/s3bucket.svg'
+import User from '~/assets/images/icons/user.svg'
+import Chats from '~/assets/images/icons/chats.svg'
+import OpenTermProfile from '~/assets/images/icons/openTermProfile.svg'
+import OpenCategoryProfile from '~/assets/images/icons/open-category-profile.svg'
+import Metadata from '~/assets/images/icons/metadata.svg'
+import Group from '~/assets/images/icons/group.svg'
+import GroupStatic from '~/assets/images/icons/group-static.svg'
+import External from '~/assets/images/icons/external.svg'
+import NewFolder from '~/assets/images/icons/new-folder.svg'
+import NewQuery from '~/assets/images/icons/new-query.svg'
+import PublicFolder from '~/assets/images/icons/public-folder.svg'
+import PrivateFolder from '~/assets/images/icons/private-folder.svg'
+import TreeCollapseAll from '~/assets/images/icons/tree-collapse-all.svg'
+import FilterFunnel from '~/assets/images/icons/filterFunnel.svg'
+import FolderOpen from '~/assets/images/icons/folder-open.svg'
+import FolderClosed from '~/assets/images/icons/folder-closed.svg'
+import Schema2 from '~/assets/images/icons/schema2.svg'
+import History from '~/assets/images/icons/history.svg'
+import Queries from '~/assets/images/icons/queries.svg'
+import Play from '~/assets/images/icons/play.svg'
+import Pin from '~/assets/images/icons/pin.svg'
+import Save from '~/assets/images/icons/save.svg'
+import Globe from '~/assets/images/icons/globe.svg'
+import Info from '~/assets/images/icons/info.svg'
+import AddAssetName from '~/assets/images/icons/add-table.svg'
+import Trash from '~/assets/images/icons/trash.svg'
+import Widgets from '~/assets/images/icons/widgets.svg'
+import Megaphone from '~/assets/images/icons/megaphone.svg'
+import Readme from '~/assets/images/icons/readme.svg'
+import Resources from '~/assets/images/icons/resources.svg'
+import FAQS from '~/assets/images/icons/faqs.svg'
+import TableSummary from '~/assets/images/icons/tableSummary.svg'
+import VariableTrigger from '~/assets/images/icons/variable-trigger.svg'
+import Home from '~/assets/images/icons/home.svg'
+import MultipleStatus from '~/assets/images/icons/multiple-status.svg'
+import Pencil from '~/assets/images/icons/pencil.svg'
+import Check from '~/assets/images/icons/check.svg'
+import CheckCircled from '~/assets/images/icons/check-circled.svg'
+import Dots from '~/assets/images/icons/dots.svg'
+import Sort from '~/assets/images/icons/sort.svg'
+import BuilderGroup from '~/assets/images/icons/builder-group.svg'
+import Cross from '~/assets/images/icons/cross.svg'
+import FullScreen from '~/assets/images/icons/fullscreen.svg'
+import ExitFullScreen from '~/assets/images/icons/exit-fullscreen.svg'
+import SidebarTrigger from '~/assets/images/icons/sidebar-trigger.svg'
+import SidebarTriggerFilled from '~/assets/images/icons/sidebar-trigger-filled.svg'
+import OutputpaneTrigger from '~/assets/images/icons/output-pane-trigger.svg'
+import OutputpaneTriggerFilled from '~/assets/images/icons/output-pane-trigger-filled.svg'
+
+import RunSuccess from '~/assets/images/icons/run-success.svg'
+import RunProgress from '~/assets/images/icons/run-progress.svg'
+import RunFailed from '~/assets/images/icons/run-failed.svg'
+import WorkflowsActive from '~/assets/images/icons/workflows_active.svg'
+import WorkflowsInactive from '~/assets/images/icons/workflows_inactive.svg'
+import InsightsActive from '~/assets/images/icons/insights_active.svg'
+import InsightsInactive from '~/assets/images/icons/insights_inactive.svg'
+import AssetsActive from '~/assets/images/icons/assets_active.svg'
+import AssetsInactive from '~/assets/images/icons/assets_inactive.svg'
+import RunHistory from '~/assets/images/icons/run-history.svg'
+import CaretLeft from '~/assets/images/icons/caret-left.svg'
+import CaretRight from '~/assets/images/icons/caret-right.svg'
+import CaretDown from '~/assets/images/icons/caret-down.svg'
+import Settings from '~/assets/images/icons/setings.svg'
+import SettingsOutlined from '~/assets/images/icons/settings_outlined.svg'
+import IssuesAnnouncement from '~/assets/images/status/issues.svg'
+import InformationAnnouncement from '~/assets/images/status/information.svg'
+import WarningAnnouncement from '~/assets/images/status/warning.svg'
+import EmptyResource from '~/assets/images/icons/empty-resources.svg'
+import EmptyResource2 from '~/assets/images/icons/empty-resource-2.svg'
+import EmptyClassifications from '~/assets/images/icons/empty-classifications.svg'
+import Delete from '~/assets/images/icons/delete.svg'
+import NoDataInsights from '~/assets/images/icons/results.svg'
+import SomethingWrong from '~/assets/images/icons/something-wrong.svg'
+import NoSavedQueriesPersonal from '~/assets/images/icons/saved-queries-personal.svg'
+import NoSchema from '~/assets/images/icons/no-schema.svg'
+import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
+
+import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
+
+import Slack from '~/assets/images/admin/integrations/slack.svg'
+import Jira from '~/assets/images/admin/integrations/jira.svg'
+import Gift from '~/assets/images/admin/integrations/gift.svg'
+
+import ExplorerTrigger from '~/assets/images/icons/explorer-panel-trigger-outline.svg'
+import ExplorerTriggerFilled from '~/assets/images/icons/explorer-trigger-filled.svg'
+import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
+import EmptyResult from '~/assets/images/icons/empty_result.svg'
+import Schedule from '~/assets/images/icons/schedule.svg'
+import Unscheduled from '~/assets/images/icons/unscheduled.svg'
+import Minimap from '~/assets/images/icons/minimap.svg'
+import FullScreenBoth from '~/assets/images/icons/fullscreen-both.svg'
+import Minus from '~/assets/images/icons/minus.svg'
+import Recenter from '~/assets/images/icons/recenter.svg'
+import Refocus from '~/assets/images/icons/refocus.svg'
+import AssetsInactiveLight from '~/assets/images/icons/assets-inactive-light.svg'
+import AssetsActiveLight from '~/assets/images/icons/assets-active-light.svg'
+import Hourglass from '~/assets/images/icons/hourglass.svg'
+import HourglassActive from '~/assets/images/icons/hourglass-active.svg'
+import GroupActive from '~/assets/images/icons/group-light-active.svg'
+import GroupLight from '~/assets/images/icons/group-light.svg'
+import AccessLogs from '~/assets/images/icons/access-logs.svg'
+import AccessLogsActive from '~/assets/images/icons/access-logs-active.svg'
+import InfoActive from '~/assets/images/icons/info-active.svg'
+import UserLight from '~/assets/images/icons/user-light.svg'
+import UserLightActive from '~/assets/images/icons/user-light-active.svg'
+import Support from '~/assets/images/icons/support.svg'
+import Report from '~/assets/images/icons/report.svg'
+import Platform from '~/assets/images/icons/platform.svg'
+import Feedback from '~/assets/images/icons/feedback.svg'
+import Admin from '~/assets/images/icons/admin.svg'
+import ActivityLogs from '~/assets/images/icons/activity-logs.svg'
+import TableDeprecated from '~/assets/images/icons/table_deprecated.svg'
+import TableDraft from '~/assets/images/icons/table_draft.svg'
+import TableVerified from '~/assets/images/icons/table_verified.svg'
+import Policy from '~/assets/images/icons/policy.svg'
+import PolicyAlt from '~/assets/images/icons/policy-alt.svg'
+import Key from '~/assets/images/icons/key.svg'
+
+import EmptyAssetProfile from '~/assets/images/icons/empty_asset_profile.svg'
+
+import Property from '~/assets/images/icons/property.svg'
+import PropertyActive from '~/assets/images/icons/property_active.svg'
+import Query from '~/assets/images/icons/query.svg'
+import Trigger from '~/assets/images/icons/trigger.svg'
+import QueryVerified from '~/assets/images/icons/query-verified.svg'
+import QueryDeprecated from '~/assets/images/icons/query-deprecated.svg'
+import QueryDraft from '~/assets/images/icons/query-draft.svg'
+import CollapseControl from '~/assets/images/icons/collapse-control.svg'
+import ColumnGray from '~/assets/images/icons/column-gray.svg'
+import MaterialisedView from '~/assets/images/icons/materialised-view.svg'
+import TablePartition from '~/assets/images/icons/table-partition.svg'
 
 // autosuggetions
-const Function = defineAsyncComponent(
-    () => import('~/assets/images/insights/autocomplete/function.svg')
-)
-const Nut = defineAsyncComponent(
-    () => import('~/assets/images/insights/autocomplete/nut.svg')
-)
-const Snippet = defineAsyncComponent(
-    () => import('~/assets/images/insights/autocomplete/snippet.svg')
-)
+import Function from '~/assets/images/insights/autocomplete/function.svg'
+import Nut from '~/assets/images/insights/autocomplete/nut.svg'
+import Snippet from '~/assets/images/insights/autocomplete/snippet.svg'
 
-const Gdoc = defineAsyncComponent(
-    () => import('~/assets/images/admin/integrations/gDoc.svg')
-)
+import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
+import StarCircled from '~/assets/images/icons/star-circled.svg'
+import ResendInvite from '~/assets/images/icons/invite.svg'
+import Flash from '~/assets/images/icons/flash.svg'
+import FlashColor from '~/assets/images/icons/flash-color.svg'
+import DisableUser from '~/assets/images/icons/disabled-user.svg'
+import ImpactedAssets from '~/assets/images/icons/impacted-assets.svg'
 
-const NoResultsFound = defineAsyncComponent(
-    () => import('~/assets/images/icons/no-results-found.svg')
-)
-const StarCircled = defineAsyncComponent(
-    () => import('~/assets/images/icons/star-circled.svg')
-)
-const ResendInvite = defineAsyncComponent(
-    () => import('~/assets/images/icons/invite.svg')
-)
-const Flash = defineAsyncComponent(
-    () => import('~/assets/images/icons/flash.svg')
-)
-const FlashColor = defineAsyncComponent(
-    () => import('~/assets/images/icons/flash-color.svg')
-)
-const DisableUser = defineAsyncComponent(
-    () => import('~/assets/images/icons/disabled-user.svg')
-)
-const ImpactedAssets = defineAsyncComponent(
-    () => import('~/assets/images/icons/impacted-assets.svg')
-)
-const Gift = defineAsyncComponent(
-    () => import('~/assets/images/admin/integrations/gift.svg')
-)
+import Code from '~/assets/images/readme/code.svg'
+import Underline from '~/assets/images/readme/text-underline.svg'
+import Bold from '~/assets/images/readme/text-bold.svg'
+import Italic from '~/assets/images/readme/text-italic.svg'
+import Strike from '~/assets/images/readme/text-strike.svg'
+import Undo from '~/assets/images/readme/undo.svg'
+import Redo from '~/assets/images/readme/redo.svg'
+import ReadmeImage from '~/assets/images/readme/ImageSquare.svg'
+import BulletList from '~/assets/images/readme/ListBullets.svg'
+import NumberedList from '~/assets/images/readme/ListNumbers.svg'
+import Quotes from '~/assets/images/readme/Quotes.svg'
+import HOne from '~/assets/images/readme/TextHOne.svg'
+import HTwo from '~/assets/images/readme/TextHTwo.svg'
+import HThree from '~/assets/images/readme/TextHThree.svg'
+import TextCenter from '~/assets/images/readme/TextAlignCenter.svg'
+import TextLeft from '~/assets/images/readme/TextAlignLeft.svg'
+import TextRight from '~/assets/images/readme/TextAlignRight.svg'
+import JustifyText from '~/assets/images/readme/TextAlignJustify.svg'
+import TaskList from '~/assets/images/readme/TaskList.svg'
+import GoogleDoc from '~/assets/images/readme/googleDocs.svg'
+import GoogleSheet from '~/assets/images/readme/googleSheets.svg'
+import GoogleSlide from '~/assets/images/readme/googleSlides.svg'
+import GoogleDrive from '~/assets/images/readme/googleDrive.svg'
+import GoogleDataStudio from '~/assets/images/readme/googleDataStudio.svg'
+import Confluence from '~/assets/images/readme/confluence.svg'
+import Miro from '~/assets/images/readme/miro.svg'
+import Figma from '~/assets/images/readme/Figma.svg'
+import Lucid from '~/assets/images/readme/lucid.svg'
+import Mention from '~/assets/images/readme/mention.svg'
+import DBDiagram from '~/assets/images/readme/dbdiagram.svg'
+import MicrosoftWord from '~/assets/images/readme/microsoftWord.svg'
+import MicrosoftExcel from '~/assets/images/readme/microsoftExcel.svg'
+import MicrosoftPowerpoint from '~/assets/images/readme/microsoftPowerpoint.svg'
+import Equation from '~/assets/images/readme/equation.svg'
 
-const Code = defineAsyncComponent(
-    () => import('~/assets/images/readme/code.svg')
-)
-const Underline = defineAsyncComponent(
-    () => import('~/assets/images/readme/text-underline.svg')
-)
-const Bold = defineAsyncComponent(
-    () => import('~/assets/images/readme/text-bold.svg')
-)
-const Italic = defineAsyncComponent(
-    () => import('~/assets/images/readme/text-italic.svg')
-)
-const Strike = defineAsyncComponent(
-    () => import('~/assets/images/readme/text-strike.svg')
-)
-const Undo = defineAsyncComponent(
-    () => import('~/assets/images/readme/undo.svg')
-)
-const Redo = defineAsyncComponent(
-    () => import('~/assets/images/readme/redo.svg')
-)
-const ReadmeImage = defineAsyncComponent(
-    () => import('~/assets/images/readme/ImageSquare.svg')
-)
-const BulletList = defineAsyncComponent(
-    () => import('~/assets/images/readme/ListBullets.svg')
-)
-const NumberedList = defineAsyncComponent(
-    () => import('~/assets/images/readme/ListNumbers.svg')
-)
-const Quotes = defineAsyncComponent(
-    () => import('~/assets/images/readme/Quotes.svg')
-)
-const HOne = defineAsyncComponent(
-    () => import('~/assets/images/readme/TextHOne.svg')
-)
-const HTwo = defineAsyncComponent(
-    () => import('~/assets/images/readme/TextHTwo.svg')
-)
-const HThree = defineAsyncComponent(
-    () => import('~/assets/images/readme/TextHThree.svg')
-)
-const TextCenter = defineAsyncComponent(
-    () => import('~/assets/images/readme/TextAlignCenter.svg')
-)
-const TextLeft = defineAsyncComponent(
-    () => import('~/assets/images/readme/TextAlignLeft.svg')
-)
-const TextRight = defineAsyncComponent(
-    () => import('~/assets/images/readme/TextAlignRight.svg')
-)
-const JustifyText = defineAsyncComponent(
-    () => import('~/assets/images/readme/TextAlignJustify.svg')
-)
-const TaskList = defineAsyncComponent(
-    () => import('~/assets/images/readme/TaskList.svg')
-)
-const GoogleDoc = defineAsyncComponent(
-    () => import('~/assets/images/readme/googleDocs.svg')
-)
-const GoogleSheet = defineAsyncComponent(
-    () => import('~/assets/images/readme/googleSheets.svg')
-)
-const GoogleSlide = defineAsyncComponent(
-    () => import('~/assets/images/readme/googleSlides.svg')
-)
-const GoogleDrive = defineAsyncComponent(
-    () => import('~/assets/images/readme/googleDrive.svg')
-)
-const GoogleDataStudio = defineAsyncComponent(
-    () => import('~/assets/images/readme/googleDataStudio.svg')
-)
-const Confluence = defineAsyncComponent(
-    () => import('~/assets/images/readme/confluence.svg')
-)
-const Miro = defineAsyncComponent(
-    () => import('~/assets/images/readme/miro.svg')
-)
-const Figma = defineAsyncComponent(
-    () => import('~/assets/images/readme/Figma.svg')
-)
-const Lucid = defineAsyncComponent(
-    () => import('~/assets/images/readme/lucid.svg')
-)
-const Mention = defineAsyncComponent(
-    () => import('~/assets/images/readme/mention.svg')
-)
-const DBDiagram = defineAsyncComponent(
-    () => import('~/assets/images/readme/dbdiagram.svg')
-)
-const MicrosoftWord = defineAsyncComponent(
-    () => import('~/assets/images/readme/microsoftWord.svg')
-)
-const MicrosoftExcel = defineAsyncComponent(
-    () => import('~/assets/images/readme/microsoftExcel.svg')
-)
-const MicrosoftPowerpoint = defineAsyncComponent(
-    () => import('~/assets/images/readme/microsoftPowerpoint.svg')
-)
-const Equation = defineAsyncComponent(
-    () => import('~/assets/images/readme/equation.svg')
-)
+import Running from '~/assets/images/icons/running.svg'
+import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
+import Refresh from '~/assets/images/icons/Refresh.svg'
+import PlusWhite from '~/assets/images/icons/plus-white.svg'
 
-const Running = defineAsyncComponent(
-    () => import('~/assets/images/icons/running.svg')
-)
-const ExclaimCircle = defineAsyncComponent(
-    () => import('~/assets/images/icons/exclaimCircle.svg')
-)
-const Refresh = defineAsyncComponent(
-    () => import('~/assets/images/icons/Refresh.svg')
-)
-const PlusWhite = defineAsyncComponent(
-    () => import('~/assets/images/icons/plus-white.svg')
-)
-const WFEmptyTab = defineAsyncComponent(
-    () => import('~/assets/images/workflows/empty-tab.svg')
-)
-const CreateWF = defineAsyncComponent(
-    () => import('~/assets/images/workflows/createWF.svg')
-)
-const NoRuns = defineAsyncComponent(
-    () => import('~/assets/images/workflows/noRuns.svg')
-)
+import Error from '~/assets/images/error.svg'
+import Warning from '~/assets/images/warning.svg'
+import WarningIcon from '~/assets/images/icons/warning.svg'
 
-const Error = defineAsyncComponent(() => import('~/assets/images/error.svg'))
-const Warning = defineAsyncComponent(
-    () => import('~/assets/images/warning.svg')
-)
-const ErrorLogs = defineAsyncComponent(
-    () => import('~/assets/images/workflows/error-logs-state.svg')
-)
-const EmptyLogs = defineAsyncComponent(
-    () => import('~/assets/images/workflows/empty-logs-state.svg')
-)
-const WarningIcon = defineAsyncComponent(
-    () => import('~/assets/images/icons/warning.svg')
-)
+import Download from '~/assets/images/icons/download.svg'
+import Upload from '~/assets/images/icons/upload2.svg'
+import Enum from '~/assets/images/icons/label.svg'
+import Boolean from '~/assets/images/dataType/boolean.svg'
+import String from '~/assets/images/dataType/string.svg'
+import MoveItem from '~/assets/images/icons/move-item.svg'
+import DateTime from '~/assets/images/icons/datetime.svg'
+import Number from '~/assets/images/dataType/number.svg'
+import Struct from '~/assets/images/dataType/struct.svg'
+import Geography from '~/assets/images/dataType/geography.svg'
 
-const Download = defineAsyncComponent(
-    () => import('~/assets/images/icons/download.svg')
-)
-const Upload = defineAsyncComponent(
-    () => import('~/assets/images/icons/upload2.svg')
-)
-const Enum = defineAsyncComponent(
-    () => import('~/assets/images/icons/label.svg')
-)
-const Boolean = defineAsyncComponent(
-    () => import('~/assets/images/dataType/boolean.svg')
-)
-const String = defineAsyncComponent(
-    () => import('~/assets/images/dataType/string.svg')
-)
-const MoveItem = defineAsyncComponent(
-    () => import('~/assets/images/icons/move-item.svg')
-)
-const DateTime = defineAsyncComponent(
-    () => import('~/assets/images/icons/datetime.svg')
-)
-const Number = defineAsyncComponent(
-    () => import('~/assets/images/dataType/number.svg')
-)
-const Struct = defineAsyncComponent(
-    () => import('~/assets/images/dataType/struct.svg')
-)
-const Geography = defineAsyncComponent(
-    () => import('~/assets/images/dataType/geography.svg')
-)
+import NoAvatar from '~/assets/images/icons/no-avatar.svg'
+import Enter from '~/assets/images/icons/enter.svg'
+import EnterProfile from '~/assets/images/icons/enter_profile.svg'
+import Times from '~/assets/images/icons/times.svg'
+import NoLinkedAssets from '~/assets/images/icons/no-linked-assets.svg'
+import NoRequestFound from '~/assets/images/icons/no-request-found.svg'
+import GlossaryGettingStarted from '~/assets/images/icons/glossary-getting-started.svg'
+import BulkUpload from '~/assets/images/icons/bulk-upload.svg'
+import SSO from '~/assets/images/icons/sso.svg'
+import SMTP from '~/assets/images/icons/smtp.svg'
+import APIKey from '~/assets/images/icons/apikey.svg'
+import Camera from '~/assets/images/icons/camera.svg'
+import Image from '~/assets/images/icons/image.svg'
+import FormatText from '~/assets/images/icons/formatText.svg'
+import BeautifySql from '~/assets/images/icons/beautifySql.svg'
 
-const NoAvatar = defineAsyncComponent(
-    () => import('~/assets/images/icons/no-avatar.svg')
-)
-const Enter = defineAsyncComponent(
-    () => import('~/assets/images/icons/enter.svg')
-)
-const EnterProfile = defineAsyncComponent(
-    () => import('~/assets/images/icons/enter_profile.svg')
-)
-const Times = defineAsyncComponent(
-    () => import('~/assets/images/icons/times.svg')
-)
-const NoLinkedAssets = defineAsyncComponent(
-    () => import('~/assets/images/icons/no-linked-assets.svg')
-)
-const NoRequestFound = defineAsyncComponent(
-    () => import('~/assets/images/icons/no-request-found.svg')
-)
-const GlossaryGettingStarted = defineAsyncComponent(
-    () => import('~/assets/images/icons/glossary-getting-started.svg')
-)
-const BulkUpload = defineAsyncComponent(
-    () => import('~/assets/images/icons/bulk-upload.svg')
-)
-const SSO = defineAsyncComponent(() => import('~/assets/images/icons/sso.svg'))
-const SMTP = defineAsyncComponent(
-    () => import('~/assets/images/icons/smtp.svg')
-)
-const APIKey = defineAsyncComponent(
-    () => import('~/assets/images/icons/apikey.svg')
-)
-const Camera = defineAsyncComponent(
-    () => import('~/assets/images/icons/camera.svg')
-)
-const Image = defineAsyncComponent(
-    () => import('~/assets/images/icons/image.svg')
-)
-const FormatText = defineAsyncComponent(
-    () => import('~/assets/images/icons/formatText.svg')
-)
-const BeautifySql = defineAsyncComponent(
-    () => import('~/assets/images/icons/beautifySql.svg')
-)
-const NoUsers = defineAsyncComponent(
-    () => import('~/assets/images/illustrations/no-users.svg')
-)
-const NoGroups = defineAsyncComponent(
-    () => import('~/assets/images/illustrations/no-groups.svg')
-)
-const CreateGroups = defineAsyncComponent(
-    () => import('~/assets/images/illustrations/create-groups.svg')
-)
-const EmptyCollections = defineAsyncComponent(
-    () => import('~/assets/images/illustrations/empty-collections.svg')
-)
-const CustomSaml = defineAsyncComponent(
-    () => import('~/assets/images/icons/customSaml.svg')
-)
-const GlowFlash = defineAsyncComponent(
-    () => import('~/assets/images/icons/glow-flash.svg')
-)
-const CheckCurrentColor = defineAsyncComponent(
-    () => import('~/assets/images/icons/check-current-color.svg')
-)
-const AddColumn = defineAsyncComponent(
-    () => import('~/assets/images/icons/add-column.svg')
-)
+import CustomSaml from '~/assets/images/icons/customSaml.svg'
+import GlowFlash from '~/assets/images/icons/glow-flash.svg'
+import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
+import AddColumn from '~/assets/images/icons/add-column.svg'
 
-const ClassificationShield = defineAsyncComponent(
-    () => import('~/assets/images/classifications/shield.svg')
-)
-const ClassificationAtlan = defineAsyncComponent(
-    () => import('~/assets/images/classifications/atlan.svg')
-)
-const ClassificationPropagated = defineAsyncComponent(
-    () => import('~/assets/images/classifications/propagated.svg')
-)
+import ClassificationShield from '~/assets/images/classifications/shield.svg'
+import ClassificationAtlan from '~/assets/images/classifications/atlan.svg'
+import ClassificationPropagated from '~/assets/images/classifications/propagated.svg'
 
 // source list
-const NoWf = defineAsyncComponent(
-    () => import('~/assets/images/icons/no-wf.svg')
-)
-const Column = defineAsyncComponent(
-    () => import('~/assets/images/icons/column.svg')
-)
-const GovernanceCenter = defineAsyncComponent(
-    () => import('~/assets/images/icons/governance-center.svg')
-)
+import NoWf from '~/assets/images/icons/no-wf.svg'
+import Column from '~/assets/images/icons/column.svg'
+import GovernanceCenter from '~/assets/images/icons/governance-center.svg'
 
-const Schema2Active = defineAsyncComponent(
-    () => import('~/assets/images/icons/schema2Active.svg')
-)
-const QueriesActive = defineAsyncComponent(
-    () => import('~/assets/images/icons/queriesActive.svg')
-)
-const Close = defineAsyncComponent(
-    () => import('~/assets/images/icons/close.svg')
-)
+import Schema2Active from '~/assets/images/icons/schema2Active.svg'
+import QueriesActive from '~/assets/images/icons/queriesActive.svg'
+import Close from '~/assets/images/icons/close.svg'
 
-const ShieldCheck = defineAsyncComponent(
-    () => import('~/assets/images/icons/shield-check.svg')
-)
-const CustomVariable = defineAsyncComponent(
-    () => import('~/assets/images/icons/customVariable.svg')
-)
+import ShieldCheck from '~/assets/images/icons/shield-check.svg'
+import CustomVariable from '~/assets/images/icons/customVariable.svg'
 
-const FolderSearch = defineAsyncComponent(
-    () => import('~/assets/images/icons/folder-search.svg')
-)
-const FolderNav24 = defineAsyncComponent(
-    () => import('~/assets/images/icons/folder_closed_24.svg')
-)
-const FolderNav24Active = defineAsyncComponent(
-    () => import('~/assets/images/icons/folder_open_24.svg')
-)
-const Verified = defineAsyncComponent(
-    () => import('~/assets/images/status/verified.svg')
-)
-const Draft = defineAsyncComponent(
-    () => import('~/assets/images/status/draft.svg')
-)
-const Deprecated = defineAsyncComponent(
-    () => import('~/assets/images/status/deprecated.svg')
-)
-const Nostatus = defineAsyncComponent(
-    () => import('~/assets/images/status/nostatus.svg')
-)
-const ShieldBlank = defineAsyncComponent(
-    () => import('~/assets/images/icons/ShieldBlank.svg')
-)
-const Compass = defineAsyncComponent(
-    () => import('~/assets/images/icons/Compass.svg')
-)
-const Policies = defineAsyncComponent(
-    () => import('~/assets/images/icons/Policies.svg')
-)
+import FolderSearch from '~/assets/images/icons/folder-search.svg'
+import FolderNav24 from '~/assets/images/icons/folder_closed_24.svg'
+import FolderNav24Active from '~/assets/images/icons/folder_open_24.svg'
+import Verified from '~/assets/images/status/verified.svg'
+import Draft from '~/assets/images/status/draft.svg'
+import Deprecated from '~/assets/images/status/deprecated.svg'
+import Nostatus from '~/assets/images/status/nostatus.svg'
+import ShieldBlank from '~/assets/images/icons/ShieldBlank.svg'
+import Compass from '~/assets/images/icons/Compass.svg'
+import Policies from '~/assets/images/icons/Policies.svg'
 
-const InnerJoin = defineAsyncComponent(
-    () => import('~/assets/images/icons/InnerJoin.svg')
-)
-const LeftJoin = defineAsyncComponent(
-    () => import('~/assets/images/icons/LeftJoin.svg')
-)
-const RightJoin = defineAsyncComponent(
-    () => import('~/assets/images/icons/RightJoin.svg')
-)
-const OuterJoin = defineAsyncComponent(
-    () => import('~/assets/images/icons/OuterJoin.svg')
-)
-const TableSwap = defineAsyncComponent(
-    () => import('~/assets/images/icons/swapTable.svg')
-)
-const JoinHeader = defineAsyncComponent(
-    () => import('~/assets/images/icons/JoinHeader.svg')
-)
-const PublicCollection = defineAsyncComponent(
-    () => import('~/assets/images/icons/publicCollection.svg')
-)
-const PrivateCollection = defineAsyncComponent(
-    () => import('~/assets/images/icons/privateCollection.svg')
-)
-const NoSelectedAsset = defineAsyncComponent(
-    () => import('~/assets/images/icons/noSelectedAsset.svg')
-)
-const QueryGrey = defineAsyncComponent(
-    () => import('~/assets/images/icons/query-grey.svg')
-)
-const QueryDiscovery = defineAsyncComponent(
-    () => import('~/assets/images/icons/query_discovery.svg')
-)
-const NoResultIllustration = defineAsyncComponent(
-    () =>
-        import(
-            '~/assets/images/illustrations/Illustration_no_search_results.svg'
-        )
-)
-const NoSearchResultsQuery = defineAsyncComponent(
-    () =>
-        import(
-            '~/assets/images/illustrations/Illustration_no_search_results_query.svg'
-        )
-)
-const SetContext = defineAsyncComponent(
-    () => import('~/assets/images/icons/setContext.svg')
-)
-const CollectionHeader = defineAsyncComponent(
-    () => import('~/assets/images/insights/collection/header.svg')
-)
-const CollectionBody = defineAsyncComponent(
-    () => import('~/assets/images/insights/collection/body.svg')
-)
-const CollectionFooter = defineAsyncComponent(
-    () => import('~/assets/images/insights/collection/footer.svg')
-)
-const CollectionIconSmall = defineAsyncComponent(
-    () => import('~/assets/images/icons/collections_16.svg')
-)
-const CollectionIconLargeActive = defineAsyncComponent(
-    () => import('~/assets/images/icons/collections_24.svg')
-)
-const CollectionIconSmallGray = defineAsyncComponent(
-    () => import('~/assets/images/icons/collections_gray_16.svg')
-)
-const CollectionIconLarge = defineAsyncComponent(
-    () => import('~/assets/images/icons/collections_gray_24.svg')
-)
-const EmptyCM = defineAsyncComponent(
-    () => import('~/assets/images/illustrations/empty-custom-metadata.svg')
-)
-const EnumType = defineAsyncComponent(
-    () => import('~/assets/images/dataType/enum.svg')
-)
-const Float = defineAsyncComponent(
-    () => import('~/assets/images/dataType/float.svg')
-)
-const Array = defineAsyncComponent(
-    () => import('~/assets/images/dataType/array.svg')
-)
-const primaryKey = defineAsyncComponent(
-    () => import('~/assets/images/icons/primaryKey.svg')
-)
-const Revoke = defineAsyncComponent(
-    () => import('~/assets/images/icons/Revoke.svg')
-)
-const Query24 = defineAsyncComponent(
-    () => import('~/assets/images/icons/query_24.svg')
-)
-const Vqb24 = defineAsyncComponent(
-    () => import('~/assets/images/icons/vqb_24.svg')
-)
-const SidebarSwitch = defineAsyncComponent(
-    () => import('~/assets/images/icons/sidebar.svg')
+import InnerJoin from '~/assets/images/icons/InnerJoin.svg'
+import LeftJoin from '~/assets/images/icons/LeftJoin.svg'
+import RightJoin from '~/assets/images/icons/RightJoin.svg'
+import OuterJoin from '~/assets/images/icons/OuterJoin.svg'
+import TableSwap from '~/assets/images/icons/swapTable.svg'
+import JoinHeader from '~/assets/images/icons/JoinHeader.svg'
+import PublicCollection from '~/assets/images/icons/publicCollection.svg'
+import PrivateCollection from '~/assets/images/icons/privateCollection.svg'
+import NoSelectedAsset from '~/assets/images/icons/noSelectedAsset.svg'
+import QueryGrey from '~/assets/images/icons/query-grey.svg'
+import QueryDiscovery from '~/assets/images/icons/query_discovery.svg'
+
+import SetContext from '~/assets/images/icons/setContext.svg'
+import CollectionIconSmall from '~/assets/images/icons/collections_16.svg'
+import CollectionIconLargeActive from '~/assets/images/icons/collections_24.svg'
+import CollectionIconSmallGray from '~/assets/images/icons/collections_gray_16.svg'
+import CollectionIconLarge from '~/assets/images/icons/collections_gray_24.svg'
+import EnumType from '~/assets/images/dataType/enum.svg'
+import Float from '~/assets/images/dataType/float.svg'
+import Array from '~/assets/images/dataType/array.svg'
+import primaryKey from '~/assets/images/icons/primaryKey.svg'
+import Revoke from '~/assets/images/icons/Revoke.svg'
+import Query24 from '~/assets/images/icons/query_24.svg'
+import Vqb24 from '~/assets/images/icons/vqb_24.svg'
+import SidebarSwitch from '~/assets/images/icons/sidebar.svg'
+
+import Vqb from '~/assets/images/icons/Vqb.svg'
+import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
+import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
+import VqbDraft from '~/assets/images/icons/VqbDraft.svg'
+import Clock from '~/assets/images/icons/clock.svg'
+import ClockStart from '~/assets/images/icons/clock-start.svg'
+import ClockStop from '~/assets/images/icons/clock-stop.svg'
+import Mail from '~/assets/images/icons/mail.svg'
+import Collapsed from '~/assets/images/icons/Collapsed.svg'
+
+import Quotes2 from '~/assets/images/icons/Quotes.svg'
+import OpenPreview from '~/assets/images/icons/open-preview.svg'
+import Message from '~/assets/images/icons/message.svg'
+import MessageSuccess from '~/assets/images/icons/MessageSuccess.svg'
+import CrossCircle from '~/assets/images/icons/CrossCircle.svg'
+import MessageCross from '~/assets/images/icons/MessageCross.svg'
+import Atlan from '~/assets/images/icons/atlan.svg'
+import Gear from '~/assets/images/icons/gear.svg'
+import SafariLock from '~/assets/images/icons/safari-lock.svg'
+
+import Integrations from '~/assets/images/icons/integrations.svg'
+import IntegrationsActive from '~/assets/images/icons/integrations-active.svg'
+import QueryTime from '~/assets/images/icons/query_time.svg'
+import ThreeDots from '~/assets/images/icons/ThreeDots.svg'
+import Request from '~/assets/images/icons/Request.svg'
+import RequestActive from '~/assets/images/icons/RequestActive.svg'
+import FilterFunnelDot from '~/assets/images/icons/filterFunnelDot.svg'
+import Comment from '~/assets/images/icons/Comment.svg'
+
+import RunningQuery from '~/assets/images/icons/tabs/Running.svg'
+import FailedQuery from '~/assets/images/icons/tabs/Error.svg'
+
+import SuccessQuery from '~/assets/images/icons/tabs/success-check.svg'
+import QuestionRound from '~/assets/images/icons/question-round.svg'
+import QuestionRoundSmall from '~/assets/images/icons/question-round-small.svg'
+import Documentation from '~/assets/images/icons/documentation.svg'
+import Logout from '~/assets/images/icons/logout.svg'
+import TrendUp from '~/assets/images/icons/trendUp.svg'
+import NoAllow from '~/assets/images/icons/no-allow.svg'
+
+import ThreeDotsAlt from '~/assets/images/icons/3-dots-alt.svg'
+import TrashAlt from '~/assets/images/icons/Trash-alt.svg'
+import Schedule24 from '~/assets/images/icons/schedule-24.svg'
+
+import Chat from '~/assets/images/icons/chat.svg'
+import NotificationNoDot from '~/assets/images/icons/notification-no-dot.svg'
+import Workflow from '~/assets/images/icons/workflows.svg'
+import Package from '~/assets/images/icons/package.svg'
+
+import Display from '~/assets/images/icons/display.svg'
+import FullScreenSquare from '~/assets/images/icons/full_screen_sqaure.svg'
+import QueryOutputSuccess from '~/assets/images/icons/query_output_success.svg'
+import QueryMetadata from '~/assets/images/icons/query_metadata.svg'
+import QueryOutputFail from '~/assets/images/icons/query_output_fail.svg'
+import QueryOutputNeutral from '~/assets/images/icons/query_output_neutral.svg'
+import PreviewQuery from '~/assets/images/icons/preview.svg'
+import Trident from '~/assets/images/icons/trident.svg'
+import EmptyUploads from '~/assets/images/icons/empty-uploads.svg'
+
+import CSVLogo from '~/assets/images/icons/csv-logo.svg'
+import PaperClip from '~/assets/images/icons/paper-clip.svg'
+import FlaskIcon from '~/assets/images/icons/flask.svg'
+
+// Illustrations - keeping them Async
+const NoAssetsFound = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/no_assets_to_show.svg')
 )
 const InteractiveVariableIllustration = defineAsyncComponent(
     () =>
@@ -1222,32 +498,6 @@ const IllustrationPersonaDemo = defineAsyncComponent(
 const IllustrationPurposeDemo = defineAsyncComponent(
     () => import('~/assets/images/illustrations/illustration-purpose-demo.svg')
 )
-const Vqb = defineAsyncComponent(() => import('~/assets/images/icons/Vqb.svg'))
-const VqbVerified = defineAsyncComponent(
-    () => import('~/assets/images/icons/VqbVerified.svg')
-)
-const VqbDeprecated = defineAsyncComponent(
-    () => import('~/assets/images/icons/VqbDeprecated.svg')
-)
-const VqbDraft = defineAsyncComponent(
-    () => import('~/assets/images/icons/VqbDraft.svg')
-)
-const Clock = defineAsyncComponent(
-    () => import('~/assets/images/icons/clock.svg')
-)
-const ClockStart = defineAsyncComponent(
-    () => import('~/assets/images/icons/clock-start.svg')
-)
-const ClockStop = defineAsyncComponent(
-    () => import('~/assets/images/icons/clock-stop.svg')
-)
-const Mail = defineAsyncComponent(
-    () => import('~/assets/images/icons/mail.svg')
-)
-const Collapsed = defineAsyncComponent(
-    () => import('~/assets/images/icons/Collapsed.svg')
-)
-
 const InnerJoinInfo = defineAsyncComponent(
     () => import('~/assets/images/illustrations/InnerJoinInfo.svg')
 )
@@ -1264,149 +514,64 @@ const OuterJoinInfo = defineAsyncComponent(
 const LockedFile = defineAsyncComponent(
     () => import('~/assets/images/illustrations/lockedFile.svg')
 )
-const Quotes2 = defineAsyncComponent(
-    () => import('~/assets/images/icons/Quotes.svg')
-)
-const OpenPreview = defineAsyncComponent(
-    () => import('~/assets/images/icons/open-preview.svg')
-)
-const Message = defineAsyncComponent(
-    () => import('~/assets/images/icons/message.svg')
-)
-const MessageSuccess = defineAsyncComponent(
-    () => import('~/assets/images/icons/MessageSuccess.svg')
-)
-const CrossCircle = defineAsyncComponent(
-    () => import('~/assets/images/icons/CrossCircle.svg')
-)
-const MessageCross = defineAsyncComponent(
-    () => import('~/assets/images/icons/MessageCross.svg')
-)
-const Atlan = defineAsyncComponent(
-    () => import('~/assets/images/icons/atlan.svg')
-)
-const Gear = defineAsyncComponent(
-    () => import('~/assets/images/icons/gear.svg')
-)
-const SafariLock = defineAsyncComponent(
-    () => import('~/assets/images/icons/safari-lock.svg')
-)
-const SlackToken = defineAsyncComponent(
-    () => import('~/assets/images/admin/integrations/slackToken.svg')
-)
-const SlackAddApp = defineAsyncComponent(
-    () => import('~/assets/images/admin/integrations/SlackAddApp.svg')
-)
-const Integrations = defineAsyncComponent(
-    () => import('~/assets/images/icons/integrations.svg')
-)
-const IntegrationsActive = defineAsyncComponent(
-    () => import('~/assets/images/icons/integrations-active.svg')
-)
-const QueryTime = defineAsyncComponent(
-    () => import('~/assets/images/icons/query_time.svg')
-)
-const ThreeDots = defineAsyncComponent(
-    () => import('~/assets/images/icons/ThreeDots.svg')
-)
-const Request = defineAsyncComponent(
-    () => import('~/assets/images/icons/Request.svg')
-)
-const RequestActive = defineAsyncComponent(
-    () => import('~/assets/images/icons/RequestActive.svg')
-)
-const FilterFunnelDot = defineAsyncComponent(
-    () => import('~/assets/images/icons/filterFunnelDot.svg')
-)
-const Comment = defineAsyncComponent(
-    () => import('~/assets/images/icons/Comment.svg')
-)
 const Resources2 = defineAsyncComponent(
     () => import('~/assets/images/illustrations/resources/resources.svg')
-)
-const RunningQuery = defineAsyncComponent(
-    () => import('~/assets/images/icons/tabs/Running.svg')
-)
-const FailedQuery = defineAsyncComponent(
-    () => import('~/assets/images/icons/tabs/Error.svg')
 )
 const SlackTabEmpty = defineAsyncComponent(
     () => import('~/assets/images/illustrations/empty_slack_tab.svg')
 )
-const SuccessQuery = defineAsyncComponent(
-    () => import('~/assets/images/icons/tabs/success-check.svg')
+const EmptyLineage = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty_lineage.svg')
 )
-const QuestionRound = defineAsyncComponent(
-    () => import('~/assets/images/icons/question-round.svg')
+const EmptyLineageTab = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty_lineage_tab.svg')
 )
-const QuestionRoundSmall = defineAsyncComponent(
-    () => import('~/assets/images/icons/question-round-small.svg')
+const NoUsers = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/no-users.svg')
 )
-const Documentation = defineAsyncComponent(
-    () => import('~/assets/images/icons/documentation.svg')
+const NoGroups = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/no-groups.svg')
 )
-const Logout = defineAsyncComponent(
-    () => import('~/assets/images/icons/logout.svg')
+const CreateGroups = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/create-groups.svg')
 )
-const TrendUp = defineAsyncComponent(
-    () => import('~/assets/images/icons/trendUp.svg')
+const EmptyCollections = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty-collections.svg')
 )
-const NoAllow = defineAsyncComponent(
-    () => import('~/assets/images/icons/no-allow.svg')
+const NoResultIllustration = defineAsyncComponent(
+    () =>
+        import(
+            '~/assets/images/illustrations/Illustration_no_search_results.svg'
+        )
 )
-
-const ThreeDotsAlt = defineAsyncComponent(
-    () => import('~/assets/images/icons/3-dots-alt.svg')
+const NoSearchResultsQuery = defineAsyncComponent(
+    () =>
+        import(
+            '~/assets/images/illustrations/Illustration_no_search_results_query.svg'
+        )
 )
-const NoProperty = defineAsyncComponent(
-    () => import('~/assets/images/admin/customMetadata/empty-property.svg')
+const EmptyCM = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty-custom-metadata.svg')
 )
-const TrashAlt = defineAsyncComponent(
-    () => import('~/assets/images/icons/Trash-alt.svg')
+const EmptySampleData = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty_sample_data.svg')
 )
-const Schedule24 = defineAsyncComponent(
-    () => import('~/assets/images/icons/schedule-24.svg')
+const ErrorSampleData = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/error_sample_data.svg')
 )
-
-const Chat = defineAsyncComponent(
-    () => import('~/assets/images/icons/chat.svg')
+const EmptyQueriesTab = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty_queries_tab.svg')
 )
-const NotificationNoDot = defineAsyncComponent(
-    () => import('~/assets/images/icons/notification-no-dot.svg')
-)
-const Workflow = defineAsyncComponent(
-    () => import('~/assets/images/icons/workflows.svg')
-)
-const Package = defineAsyncComponent(
-    () => import('~/assets/images/icons/package.svg')
+const EmptyDiscover = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty_discover.svg')
 )
 
-const Display = defineAsyncComponent(
-    () => import('~/assets/images/icons/display.svg')
+// Error States
+const queryErorrIllus = defineAsyncComponent(
+    () => import('~/assets/images/icons/queryError.svg')
 )
-const FullScreenSquare = defineAsyncComponent(
-    () => import('~/assets/images/icons/full_screen_sqaure.svg')
-)
-const QueryOutputSuccess = defineAsyncComponent(
-    () => import('~/assets/images/icons/query_output_success.svg')
-)
-const QueryMetadata = defineAsyncComponent(
-    () => import('~/assets/images/icons/query_metadata.svg')
-)
-const QueryOutputFail = defineAsyncComponent(
-    () => import('~/assets/images/icons/query_output_fail.svg')
-)
-const QueryOutputNeutral = defineAsyncComponent(
-    () => import('~/assets/images/icons/query_output_neutral.svg')
-)
-const PreviewQuery = defineAsyncComponent(
-    () => import('~/assets/images/icons/preview.svg')
-)
-const Trident = defineAsyncComponent(
-    () => import('~/assets/images/icons/trident.svg')
-)
-const EmptyUploads = defineAsyncComponent(
-    () => import('~/assets/images/icons/empty-uploads.svg')
+const ErrorLogs = defineAsyncComponent(
+    () => import('~/assets/images/workflows/error-logs-state.svg')
 )
 const CommonError1 = defineAsyncComponent(
     () => import('~/assets/images/icons/common-error-1.svg')
@@ -1420,14 +585,50 @@ const CommonError3 = defineAsyncComponent(
 const CommonError4 = defineAsyncComponent(
     () => import('~/assets/images/icons/common-error-4.svg')
 )
-const CSVLogo = defineAsyncComponent(
-    () => import('~/assets/images/icons/csv-logo.svg')
+const CollectionHeader = defineAsyncComponent(
+    () => import('~/assets/images/insights/collection/header.svg')
 )
-const PaperClip = defineAsyncComponent(
-    () => import('~/assets/images/icons/paper-clip.svg')
+const CollectionBody = defineAsyncComponent(
+    () => import('~/assets/images/insights/collection/body.svg')
 )
-const FlaskIcon = defineAsyncComponent(
-    () => import('~/assets/images/icons/flask.svg')
+const CollectionFooter = defineAsyncComponent(
+    () => import('~/assets/images/insights/collection/footer.svg')
+)
+const EmptyResultJira = defineAsyncComponent(
+    () => import('~/assets/images/admin/integrations/emptyResultJira.svg')
+)
+const EmptyJira = defineAsyncComponent(
+    () => import('~/assets/images/admin/integrations/emptyJira.svg')
+)
+const Teams = defineAsyncComponent(
+    () => import('~/assets/images/admin/integrations/teams.svg')
+)
+const Gdoc = defineAsyncComponent(
+    () => import('~/assets/images/admin/integrations/gDoc.svg')
+)
+const SlackToken = defineAsyncComponent(
+    () => import('~/assets/images/admin/integrations/slackToken.svg')
+)
+const SlackAddApp = defineAsyncComponent(
+    () => import('~/assets/images/admin/integrations/SlackAddApp.svg')
+)
+const NoProperty = defineAsyncComponent(
+    () => import('~/assets/images/admin/customMetadata/empty-property.svg')
+)
+const AddQuery = defineAsyncComponent(
+    () => import('~/assets/images/icons/add-query.svg')
+)
+const WFEmptyTab = defineAsyncComponent(
+    () => import('~/assets/images/workflows/empty-tab.svg')
+)
+const CreateWF = defineAsyncComponent(
+    () => import('~/assets/images/workflows/createWF.svg')
+)
+const NoRuns = defineAsyncComponent(
+    () => import('~/assets/images/workflows/noRuns.svg')
+)
+const EmptyLogs = defineAsyncComponent(
+    () => import('~/assets/images/workflows/empty-logs-state.svg')
 )
 
 export default {
@@ -1460,6 +661,7 @@ export default {
     LegendDimensionGroups,
     Schedule24,
     Mail,
+    Collapsed,
     EmptyJira,
     TrashAlt,
     NoProperty,

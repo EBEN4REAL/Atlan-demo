@@ -126,6 +126,10 @@
             const defaultOperator = ref(operators[operatorDataType.value])
             const localOperator = ref(condition.operator)
 
+            if(attribute.value.name === "rowCount" || attribute.value.name === 'columnCount' || attribute.value.name === 'sizeBytes') {
+                localCondition.value.operator = 'greaterThan'
+            }
+
             if (!localCondition.value.operator) {
                 if (defaultOperator.value?.length > 0) {
                     localCondition.value.operator = defaultOperator.value[0].id

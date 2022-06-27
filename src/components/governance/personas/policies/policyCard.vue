@@ -240,11 +240,13 @@
                     </a-tooltip>
                     <span
                         v-if="
-                            (computedActions && type !== 'data') || maskComputed
+                            (computedActions && type !== 'data') ||
+                            (maskComputed && policy.allow)
                         "
                         class="text-gray-300 mx-1.5"
-                        >•</span
                     >
+                        •
+                    </span>
                     <a-tooltip
                         v-if="computedActions && type !== 'data'"
                         placement="top"
@@ -281,7 +283,10 @@
                             }}
                         </div>
                     </a-tooltip>
-                    <a-tooltip v-if="maskComputed" placement="top">
+                    <a-tooltip
+                        v-if="maskComputed && policy.allow"
+                        placement="top"
+                    >
                         <template #title>
                             {{ maskComputed }}
                         </template>

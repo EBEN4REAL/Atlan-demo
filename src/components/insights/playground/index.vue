@@ -378,17 +378,13 @@
                                 pushGuidToURL
                             )
                         }
-                        debugger
                     } else {
-                        debugger
                         inlineTabRemove(
                             targetKey as string,
                             tabs,
                             activeInlineTabKey,
                             pushGuidToURL
                         )
-
-                        debugger
                     }
                 }
             }
@@ -713,7 +709,7 @@
     }
     .inline_tab {
         min-width: 50px;
-        width: 120px;
+        width: 110px;
         max-width: 150px;
         height: 28px !important;
         // min-width: 3rem

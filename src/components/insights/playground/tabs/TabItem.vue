@@ -177,10 +177,16 @@
                     v-else
                     class="pt-1 w-4"
                 >
-                    <div class="flex rounded-sm my-0.5 h-4 close-hover" @click.stop="callOnEdit">
+                    <div 
+                        class="flex rounded-sm my-0.5 h-4 " 
+                        :class="{
+                            'close-hover': length >= 2
+                        }"
+                    >
                         <AtlanIcon
                             v-if="length >= 2"
                             icon="Close"
+                            @click.stop="callOnEdit"
                         />
                     </div>
                 </div>
@@ -207,7 +213,7 @@
         }
     }
     .tab-inner-title{
-        width: 100px;
+        width: 90px;
     }
     .inner-box {
         display: flex;

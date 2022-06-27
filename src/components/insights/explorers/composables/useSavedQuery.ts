@@ -716,10 +716,31 @@ export function useSavedQuery(
         let visualBuilderSchemaBase64 = undefined
         let isVisualQuery = false
         if (isVQB && limitRows?.value) {
-            visualBuilderSchemaBase64 = serializeQuery(
-                activeInlineTab.value?.playground.vqb
-            )
-            rawQuery = generateSQLQuery(activeInlineTab.value, limitRows.value)
+            visualBuilderSchemaBase64 = {
+                selectedTables: [],
+                panels: [
+                    {
+                        order: 1,
+                        id: 'columns',
+                        hide: true,
+                        subpanels: [
+                            {
+                                id: '1',
+                                tableQualifiedName: undefined,
+                                tableData: {
+                                    certificateStatus: undefined,
+                                    assetType: undefined,
+                                    item: {},
+                                },
+                                columns: ['all'],
+                                columnsData: [],
+                            },
+                        ],
+                        expand: true,
+                    },
+                ],
+            }
+            rawQuery = ''
             isVisualQuery = true
         }
 

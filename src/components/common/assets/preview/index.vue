@@ -114,6 +114,7 @@
                                 'column',
                                 'schema',
                                 'query',
+                                'datastudioasset',
                             ].includes(selectedAsset.typeName?.toLowerCase())
                         "
                         placement="left"
@@ -173,6 +174,14 @@
                                 ) && isPublished(selectedAsset)
                             "
                             >(Published)</span
+                        >
+                        <span
+                            v-if="
+                                ['DataStudioAsset'].includes(
+                                    selectedAsset.typeName
+                                ) && dataStudioAssetType(selectedAsset)
+                            "
+                            >({{ dataStudioAssetType(selectedAsset) }})</span
                         >
                     </div>
                 </div>
@@ -543,6 +552,7 @@
                 links,
                 allowQuery,
                 connectionQualifiedName,
+                dataStudioAssetType,
             } = useAssetInfo()
 
             const { getConnection } = useConnectionData()
@@ -869,6 +879,7 @@
                 handleTabClick,
                 allowQuery,
                 parentConnection,
+                dataStudioAssetType,
             }
         },
     })

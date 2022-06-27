@@ -76,8 +76,7 @@ export const Metadata: WidgetData[] = [
     },
     {
         id: 'new-assets',
-        label: 'New assets distribution',
-
+        label: 'Newly crawled assets',
         showHeader: true,
         class: 'col-span-8 h-64',
         component: 'graph',
@@ -175,6 +174,10 @@ export const Metadata: WidgetData[] = [
                         ),
                         time_zone:
                             Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        extended_bounds: {
+                            max: filters?.dateRange?.lt,
+                            min: filters?.dateRange?.gt,
+                        },
                     },
                     'group_by_date'
                 )

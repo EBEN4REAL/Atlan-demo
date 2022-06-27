@@ -7,59 +7,74 @@
     >
         <a-collapse-panel key="open" :show-arrow="false">
             <template #header>
-                <div
-                    class="flex items-center justify-between w-full border-new-gray-200"
-                    :class="{ 'border-b pb-4': activeKey }"
-                >
-                    <div>
-                        <span class="text-base font-bold text-new-gray-800"
-                            >Permission checks</span
-                        >
-                        <div
-                            class="flex items-center text-new-gray-600 gap-x-1"
-                        >
-                            <AtlanIcon
-                                class="h-4 mb-0.5"
-                                :icon="
-                                    getIconByStatus(getStatusByStep(idx + 1))
-                                "
-                            />
-                            <span class="text-sm font-medium"
-                                >{{ currentStepMessage }}
-                            </span>
-                            •
-                            <span
-                                class="text-sm cursor-pointer hover:text-new-blue-500 hover:underline"
+                <div class="flex flex-col w-full">
+                    <div
+                        class="flex items-center justify-between w-full px-1 pt-1"
+                    >
+                        <div class="overflow-hidden">
+                            <span class="text-base font-bold text-new-gray-800"
+                                >Permission checks</span
                             >
-                                Show {{ activeKey ? 'less' : 'more' }}
-                            </span>
+                            <div
+                                class="flex items-center text-new-gray-600 gap-x-2"
+                            >
+                                <AtlanIcon
+                                    class="h-4 mb-0.5"
+                                    :icon="
+                                        getIconByStatus(
+                                            getStatusByStep(idx + 1)
+                                        )
+                                    "
+                                />
+                                <span class="text-sm font-medium truncate"
+                                    >{{ currentStepMessage }}
+                                </span>
+                            </div>
                         </div>
+                        <AtlanButton2
+                            :label="isCheckRunning ? 'Abort' : 'Check'"
+                            :class="
+                                isCheckRunning
+                                    ? 'text-new-red-500'
+                                    : 'text-new-green-500'
+                            "
+                            bold
+                            color="link"
+                            class="ml-auto"
+                            @click.stop="handleCheckButton"
+                        />
                     </div>
-                    <AtlanButton2
-                        :label="isCheckRunning ? 'Abort' : 'Check'"
-                        :class="
-                            isCheckRunning
-                                ? 'text-new-red-500'
-                                : 'text-new-green-500'
-                        "
-                        bold
-                        color="link"
-                        class="ml-auto"
-                        @click.stop="handleCheckButton"
-                    />
+                    <div>
+                        <span v-if="!activeKey" class="mt-1 ml-1 expand-text">
+                            Show details
+                        </span>
+                    </div>
                 </div>
             </template>
-            <div class="px-4 py-1 space-y-2">
-                <div
-                    v-for="(step, idx) in steps"
-                    :key="step.name"
-                    class="flex items-center gap-x-2"
-                >
-                    <AtlanIcon
-                        class="h-5 mb-0.5"
-                        :icon="getIconByStatus(getStatusByStep(idx + 1))"
-                    />
-                    <span> {{ step.title }} {{ getSuffixText(idx + 1) }} </span>
+            <div class="pt-3 mx-4 space-y-1.5 border-t border-new-gray-200">
+                <div v-for="(step, idx) in steps" :key="step.name">
+                    <div class="flex items-center gap-x-2 text-new-gray-700">
+                        <AtlanIcon
+                            class="h-4 mb-0.5"
+                            :icon="getIconByStatus(getStatusByStep(idx + 1))"
+                        />
+                        <span>
+                            {{ step.title }} {{ getSuffixText(idx + 1) }}
+                        </span>
+                    </div>
+                    <div
+                        v-if="idx + 1 === currentStep"
+                        class="ml-6 overflow-y-auto text-new-gray-600 max-h-14"
+                    >
+                        <p>
+                            {{ currentStepMessage }}
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <span class="expand-text" @click="activeKey = undefined">
+                        Hide details
+                    </span>
                 </div>
             </div>
         </a-collapse-panel>
@@ -272,5 +287,9 @@
 <style scoped>
     .custom-shadow {
         box-shadow: 0px 1px 4px 0px #0000001f;
+    }
+    .expand-text {
+        @apply text-sm cursor-pointer text-new-gray-600;
+        @apply border-b border-dashed border-new-gray-600;
     }
 </style>

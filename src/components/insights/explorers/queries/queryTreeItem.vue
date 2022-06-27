@@ -820,7 +820,7 @@
                     el2.classList.remove('opacity-100')
                 }
             }
-            const renameFolder = () => {
+            const rename = () => {
                 removeBackground()
                 const orignalName = item.value.attributes.name
                 const parentNode = document.getElementsByClassName(
@@ -949,6 +949,14 @@
                                             : 'Folder'
                                     } renamed successfully`,
                                 })
+                                useAddEvent(
+                                    'insights',
+                                    item.value.typeName === 'Query'
+                                        ? 'query'
+                                        : 'folder',
+                                    'renamed',
+                                    undefined
+                                )
                                 updateNode.value({
                                     guid: entity.guid,
                                     entity: entity,
@@ -1028,14 +1036,6 @@
                                     }
                                 }
 
-                                useAddEvent(
-                                    'insights',
-                                    item.value.typeName === 'Query'
-                                        ? 'query'
-                                        : 'folder',
-                                    'renamed',
-                                    undefined
-                                )
                                 // }, 200)
                             })
                         }
@@ -1095,6 +1095,14 @@
                                             : 'Folder'
                                     } renamed successfully`,
                                 })
+                                useAddEvent(
+                                    'insights',
+                                    item.value.typeName === 'Query'
+                                        ? 'query'
+                                        : 'folder',
+                                    'renamed',
+                                    undefined
+                                )
                                 updateNode.value({
                                     guid: entity.guid,
                                     entity: entity,
@@ -1171,13 +1179,6 @@
                                         ].assetSidebar.assetInfo.displayText = newName
                                     }
                                 }
-
-                                useAddEvent(
-                                    'insights',
-                                    'folder',
-                                    'renamed',
-                                    undefined
-                                )
                             }
                             // }, 200)
                         })
@@ -1589,7 +1590,7 @@
                     class: '',
                     component: MenuItem,
                     disabled: false,
-                    handleClick: renameFolder,
+                    handleClick: rename,
                 },
                 {
                     title: 'Edit',
@@ -1644,7 +1645,7 @@
                     class: '',
                     disabled: false,
                     component: MenuItem,
-                    handleClick: renameFolder,
+                    handleClick: rename,
                 },
                 {
                     title: 'Move folder',
@@ -1734,7 +1735,7 @@
                 permissions,
                 canUserDeleteFolder,
                 certificateStatus,
-                renameFolder,
+                rename,
                 delteItem,
                 newQuery,
                 newVisualQuery,

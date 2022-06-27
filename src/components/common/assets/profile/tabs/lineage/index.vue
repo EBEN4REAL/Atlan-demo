@@ -3,7 +3,7 @@
         <div
             v-if="initialLoad || isLoading || error"
             class="absolute flex items-center justify-center w-full bg-white"
-            style="height: 80vh"
+            :style="isFullscreen ? 'height: 100vh' : 'height: 82vh'"
         >
             <div
                 v-if="isLoading || initialLoad"
@@ -21,7 +21,14 @@
             </div>
         </div>
 
-        <div v-if="isReady" class="absolute w-full h-full">
+        <div
+            v-if="isReady"
+            class="absolute h-full"
+            :class="[
+                selectedAsset?.guid ? 'max-collapsed-width' : 'max-full-width',
+                isFullscreen ? 'isFullscreen' : '',
+            ]"
+        >
             <div
                 v-if="!Object.keys(lineage.guidEntityMap).length"
                 class="relative bg-white"
@@ -50,7 +57,7 @@
         onMounted,
     } from 'vue'
     import { useRoute } from 'vue-router'
-    import { whenever } from '@vueuse/core'
+    import { whenever, useFullscreen } from '@vueuse/core'
 
     /** PACKAGES */
     import { message } from 'ant-design-vue'
@@ -77,6 +84,7 @@
             const route = useRoute()
             const assetStore = useAssetStore()
             const { useFetchLineage } = useLineageService()
+            const { isFullscreen } = useFullscreen()
 
             /** DATA */
             const lineage: any = ref({})
@@ -117,7 +125,7 @@
             })
 
             // Control
-            const control = (type, item = null) => {
+            const control = (type, item = '') => {
                 if (type === 'selectedAsset') selectedAsset.value = item
             }
 
@@ -148,7 +156,27 @@
                 isReady,
                 error,
                 emit,
+                selectedAsset,
+                isFullscreen,
             }
         },
     })
 </script>
+
+<style lang="less" scoped>
+    .max-collapsed-width {
+        max-width: calc(100vw - 480px) !important;
+
+        &.isFullscreen {
+            max-width: calc(100vw - 420px) !important;
+        }
+    }
+
+    .max-full-width {
+        max-width: calc(100vw - 60px) !important;
+
+        &.isFullscreen {
+            max-width: 100vw !important;
+        }
+    }
+</style>

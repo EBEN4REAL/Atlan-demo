@@ -5,6 +5,9 @@
         data-test-id="datamasking-select"
         @update:value="$emit('update:maskType', $event)"
     >
+        <template #suffixIcon>
+            <AtlanIcon icon="CaretDown" />
+        </template>
         <a-select-option
             v-for="opt in maskingOptions"
             :key="opt.value"

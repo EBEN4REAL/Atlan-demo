@@ -22,7 +22,7 @@ import {
     autosuggestionResponse,
 } from '~/types/insights/autosuggestionEntity.interface'
 import axios from 'axios'
-import TurndownService from 'turndown'
+import { getEntityMetadataUsingQualifiedName } from './autoSuggestionUtils'
 export interface suggestionKeywordInterface {
     label: string
     detail: string
@@ -75,67 +75,6 @@ function getAssetProfileURL(entity: any) {
         entity.metadata.guid
     }/overview`
     return URL
-}
-
-function generateMarkdown(
-    turndownService: any,
-    entity: any,
-    assetType: string
-) {
-    let qualifiedName = entity?.attributes?.qualifiedName?.split('/')
-    let db = qualifiedName[3]
-    let schema = qualifiedName[4]
-    let table = qualifiedName[5]
-    let name = entity?.attributes?.name
-    let description =
-        entity.attributes.userDescription || entity.attributes.description
-
-    let certificateStatus = entity?.attributes?.certificateStatus
-        ? entity?.attributes?.certificateStatus
-        : 'no_certificate'
-    let descriptionHTML = `<div></p><h6>Description:</h6></br>${description}</p></div>`
-    let typeHTML = `<div><h5>${name}</h5></div><div>Status: <h5>${certificateStatus}</h5></div>`
-    let ownerString = entity.attributes.ownerUsers.join(', ')
-    let ownersHTML = `<div></p> Owned by: <h5>${ownerString}<h5></p></div>`
-    // console.log('asset here: ', entity)
-
-    let rowCount, columnCount, rowCountHTML, isPrimaryHTML
-
-    if (assetType === 'TABLE') {
-        rowCount = entity?.attributes?.rowCount
-        columnCount = entity?.attributes?.columnCount
-
-        rowCountHTML = `<div>
-            <h5>${db} / ${schema}</h5><h5>${rowCount} Rows / ${columnCount} Columns</h5>
-        </div>`
-    } else {
-        rowCountHTML = `<div>
-            <h5>${db} / ${schema} / ${table}</h5>
-        </div>`
-
-        isPrimaryHTML = `<div>
-            <div>isPrimary: <h5>${
-                entity?.attributes?.isPrimary
-                    ? entity?.attributes?.isPrimary
-                    : 'false'
-            }</h5></div>
-        </div>`
-    }
-
-    return turndownService.turndown(
-        `
-        <div>
-        ${typeHTML}
-        ${description ? descriptionHTML : ''}
-        ${ownerString ? ownersHTML : ''}
-        ${rowCountHTML}
-        ${assetType === 'COLUMN' ? isPrimaryHTML : ''}
-        </div>
-        
-        `
-    )
-
-    // return `![bears](http://placebear.com/200/200) The end ...`
 }
 
 export function getContext(
@@ -225,7 +164,6 @@ export function entitiesToEditorKeyword(
     )
 
     const sqlKeywords = getSqlKeywords()
-    const turndownService = new TurndownService()
     return new Promise((resolve) => {
         response.then((res) => {
             let entities = res.entities ?? []
@@ -303,11 +241,6 @@ export function entitiesToEditorKeyword(
                                 kind ||
                                 monaco.languages.CompletionItemKind.Field,
                             documentation: {
-                                value: generateMarkdown(
-                                    turndownService,
-                                    entities[i],
-                                    `${type}`
-                                ),
                                 entity: entities[i],
                             },
                             insertText: insertText,
@@ -339,11 +272,6 @@ export function entitiesToEditorKeyword(
                                 kind ||
                                 monaco.languages.CompletionItemKind.Field,
                             documentation: {
-                                value: generateMarkdown(
-                                    turndownService,
-                                    entities[i],
-                                    `${type}`
-                                ),
                                 entity: entities[i],
                             },
                             sortText: sortString,
@@ -599,6 +527,30 @@ const refreshBody = () => {
     }
 }
 
+function inlcudeQualifiedNameAccType(
+    body,
+    qualifiedNames,
+    type: 'tableQualifiedName' | 'viewQualifiedName'
+) {
+    body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
+        terms: {
+            [type]: qualifiedNames,
+        },
+    })
+
+    // function_score boost
+    qualifiedNames.forEach((tableQualifiedName) => {
+        body.value.dsl.query.function_score.functions.push({
+            filter: {
+                match: {
+                    [type]: tableQualifiedName,
+                },
+            },
+            weight: 15,
+        })
+    })
+}
+
 async function getSuggestionsUsingType(
     type: string = 'TABLE',
     token: string,
@@ -742,29 +694,32 @@ async function getSuggestionsUsingType(
                             }) as any
                     }
                 }
-
-                body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
-                    {
-                        terms: {
-                            tableQualifiedName: tableQualifiedNames.filter(
-                                (e) => typeof e === 'string'
-                            ),
-                        },
-                    }
+                const _tableQualifiedNames = tableQualifiedNames.filter(
+                    (e) => typeof e === 'string'
                 )
-                // function_score boost
-                tableQualifiedNames
-                    .filter((e) => typeof e === 'string')
-                    .forEach((tableQualifiedName) => {
-                        body.value.dsl.query.function_score.functions.push({
-                            filter: {
-                                match: {
-                                    tableQualifiedName: tableQualifiedName,
-                                },
-                            },
-                            weight: 15,
-                        })
-                    })
+                // seprate view QualifiedName & tableQualifiedName
+                // taking the first el as refernce for fetching the columns, to prevent multiple network req
+                if (_tableQualifiedNames.length) {
+                    const entities = await getEntityMetadataUsingQualifiedName(
+                        _tableQualifiedNames[0]
+                    )
+                    if (entities?.entities.length > 0) {
+                        const entity = entities?.entities[0]
+                        if (entity?.typeName?.toLowerCase() === 'table') {
+                            inlcudeQualifiedNameAccType(
+                                body,
+                                _tableQualifiedNames,
+                                'tableQualifiedName'
+                            )
+                        } else {
+                            inlcudeQualifiedNameAccType(
+                                body,
+                                _tableQualifiedNames,
+                                'viewQualifiedName'
+                            )
+                        }
+                    }
+                }
             }
 
             if (cancelTokenSource.value !== undefined) {
@@ -875,10 +830,9 @@ export async function useAutoSuggestions(
     /////////////ALIASES/////////////////
 
     aliasesMap.value = createAliasesMap(editorText)
-
     // trimming [dot]s if any
     const _tempTokens = editorTextTillCursorPos
-        .split(' ')
+        .split(/[\n ]+/)
         .filter((e) => e !== '')
     let currAliasWord = _tempTokens[_tempTokens.length - 1]
     let _currWord = currAliasWord,
@@ -965,7 +919,7 @@ export async function useAutoSuggestions(
         }
         return _str
     }
-    debugger
+    // debugger
 
     let leftSideStringFromCurPos = removeSubQueries(
         editorTextTillCursorPos.replace(/\"/g, '')

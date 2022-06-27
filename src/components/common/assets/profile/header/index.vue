@@ -307,7 +307,8 @@
                         !isSaasAsset(item) &&
                         !isObjectAsset(item) &&
                         assetType(item) !== 'Connection' &&
-                        connectorName(item) !== 'glue'
+                        connectorName(item) !== 'glue' &&
+                        connectorName(item) !== 'netsuite'
                     "
                     title=""
                 >
@@ -323,6 +324,7 @@
                         >
                             <template #button>
                                 <a-button
+                                    v-if="allowQuery(parentConnection)"
                                     class="flex items-center justify-center p-2"
                                 >
                                     <div class="flex items-center">
@@ -460,6 +462,7 @@
         featureEnabledMap,
         INSIGHT_WORKSPACE_LEVEL_TAB,
     } from '~/composables/labs/labFeatureList'
+    import useConnectionData from '~/composables/connection/useConnectionData'
 
     export default defineComponent({
         name: 'AssetHeader',
@@ -526,7 +529,15 @@
                 assetPermission,
                 databaseQualifiedName,
                 schemaQualifiedName,
+                allowQuery,
+                connectionQualifiedName,
             } = useAssetInfo()
+
+            const { getConnection } = useConnectionData()
+
+            const parentConnection = ref(
+                getConnection(connectionQualifiedName(item.value))
+            )
 
             const entityTitle = ref(title(item.value))
             const router = useRouter()
@@ -702,6 +713,8 @@
                 qfToFetch,
                 handleCloseDrawer,
                 drawerActiveKey,
+                allowQuery,
+                parentConnection,
             }
         },
     })

@@ -40,7 +40,7 @@
                     :classes="
                         isScrubbed(selectedAsset)
                             ? 'mb-0 font-semibold text-gray-500 opacity-80 '
-                            : 'font-bold mb-0 text-gray-500 '
+                            : 'font-bold mb-0 text-gray-700 '
                     "
                 />
                 <Tooltip
@@ -207,6 +207,7 @@
                             v-if="
                                 showCTA('query') &&
                                 connectorName(selectedAsset) !== 'glue' &&
+                                connectorName(selectedAsset) !== 'netsuite' &&
                                 (assetType(selectedAsset) === 'Table' ||
                                     assetType(selectedAsset) === 'View' ||
                                     assetType(selectedAsset) ===
@@ -218,6 +219,7 @@
                         >
                             <template #button>
                                 <a-button
+                                    v-if="allowQuery(parentConnection)"
                                     class="flex items-center justify-center p-2"
                                 >
                                     <AtlanIcon
@@ -416,6 +418,7 @@
         INSIGHT_WORKSPACE_LEVEL_TAB,
     } from '~/composables/labs/labFeatureList'
     import { getDomain } from '~/utils/url'
+    import useConnectionData from '~/composables/connection/useConnectionData'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -538,7 +541,15 @@
                 isCustom,
                 isPublished,
                 links,
+                allowQuery,
+                connectionQualifiedName,
             } = useAssetInfo()
+
+            const { getConnection } = useConnectionData()
+
+            const parentConnection = computed(() =>
+                getConnection(connectionQualifiedName(selectedAsset.value))
+            )
 
             const activeKey = ref(0)
             const activeLabel = ref<string>('Overview')
@@ -856,6 +867,8 @@
                 slackResourceCount,
                 switchTab,
                 handleTabClick,
+                allowQuery,
+                parentConnection,
             }
         },
     })

@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "2.81.4",
+  "version": "2.88.0",
   "scripts": {
     "dev": "vite --port 3333 --open",
     "build-dev": "vite build --mode development",
@@ -83,7 +83,6 @@
     "swrv": "^1.0.0-beta.8",
     "tailwind-safelist-generator": "^0.1.3",
     "tippy.js": "^6.3.7",
-    "turndown": "^7.1.1",
     "userflow.js": "^2.3.0",
     "vue": "^3.2.30",
     "vue-axios": "^3.4.1",
@@ -93,7 +92,6 @@
     "vue-linkify": "^1.0.1",
     "vue-plugin-load-script": "^2.1.1",
     "vue-router": "^4.0.12",
-    "vue-sse": "^2.5.0",
     "vue3-dnd": "^2.0.0",
     "vue3-json-editor": "^1.1.4",
     "vue3-timepicker": "^1.0.0-beta.2"
@@ -213,7 +211,6 @@
         "swrv",
         "swrv/dist/cache/adapters/localStorage",
         "tippy.js",
-        "turndown",
         "userflow.js",
         "vue",
         "vue-axios",
@@ -223,7 +220,6 @@
         "vue-linkify",
         "vue-plugin-load-script",
         "vue-router",
-        "vue-sse",
         "vue3-dnd",
         "vue3-json-editor"
       ]

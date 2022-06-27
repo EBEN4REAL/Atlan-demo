@@ -181,7 +181,7 @@
             },
         },
         // emits: ['update:selectedAsset'],
-        emits: ['change', 'update:modelValue', 'popoverActive'],
+        emits: ['change', 'update:modelValue', 'popoverActive', 'popoverClose'],
         setup(props, { emit }) {
             const { selectedAsset } = toRefs(props)
             const { modelValue } = useVModels(props, emit)
@@ -211,6 +211,7 @@
                     if (props.editPermission) emit('change', localValue.value)
                     hasBeenEdited.value = false
                 }
+                emit('popoverClose')
             }
 
             const onCheck = (checkedNodes) => {

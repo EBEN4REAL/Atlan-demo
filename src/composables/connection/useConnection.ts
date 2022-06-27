@@ -43,7 +43,6 @@ export function useConnection() {
                                     must_not: {
                                         terms: {
                                             '__typeName.keyword': [
-                                                'Process',
                                                 'ColumnProcess',
                                             ],
                                         },

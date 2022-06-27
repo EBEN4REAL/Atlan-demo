@@ -1,5 +1,5 @@
 <template>
-    <a-dropdown :trigger="['click']">
+    <a-dropdown :trigger="['click']" @visibleChange="visibleChange">
         <div
             class="flex items-center w-6 h-6 p-1 ml-1 rounded hover:bg-new-gray-300"
         >
@@ -12,7 +12,7 @@
             />
         </div>
         <template #overlay>
-            <a-menu>
+            <a-menu @click="() => visibleChange(false)">
                 <!-- <a-menu-item
                         :class="[
                             readOnly
@@ -124,7 +124,8 @@
                 default: () => [],
             },
         },
-        setup(props) {
+        emits: ['visibleChange'],
+        setup(props, { emit }) {
             const { item, treeData } = toRefs(props)
             const activeInlineTab = inject(
                 'activeInlineTab'
@@ -376,7 +377,12 @@
                 if (!canJoinTablePanel.value) return
                 addJoin(activeInlineTab, item)
             }
+            const visibleChange = (visible) => {
+                debugger
+                emit('visibleChange', visible)
+            }
             return {
+                visibleChange,
                 joinTablePanel,
                 canAddOtherPanels,
                 canJoinTablePanel,

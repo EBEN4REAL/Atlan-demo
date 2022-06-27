@@ -1,5 +1,35 @@
 import { defineAsyncComponent } from 'vue'
 
+// source list
+import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
+import Tableau from '~/assets/images/source/svg/Tableau.svg'
+import Redshift from '~/assets/images/source/svg/Redshift.svg'
+import Postgres from '~/assets/images/source/svg/postgres.svg'
+import Athena from '~/assets/images/source/svg/Athena.svg'
+import Databricks from '~/assets/images/source/svg/Databricks.svg'
+import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
+import BigQuery from '~/assets/images/source/svg/Bigquery.svg'
+import Looker from '~/assets/images/source/svg/Looker.svg'
+import Salesforce from '~/assets/images/source/svg/Salesforce.svg'
+import MySQL from '~/assets/images/source/svg/MySQL.svg'
+import Glue from '~/assets/images/source/svg/glue.svg'
+import Netsuite from '~/assets/images/source/svg/netsuite.svg'
+import S3 from '~/assets/images/source/svg/s3.svg'
+import GDS from '~/assets/images/source/svg/gds.svg'
+//
+
+import Legend from '~/assets/images/lineage/legend.svg'
+import LegendProcess from '~/assets/images/lineage/legendProcess.svg'
+import LegendProcessDefault from '~/assets/images/lineage/legendProcessDefault.svg'
+import LegendProcessHighlighted from '~/assets/images/lineage/legendProcessHighlighted.svg'
+import LegendProcessAnomaly from '~/assets/images/lineage/legendProcessAnomaly.svg'
+import LegendCalculatedField from '~/assets/images/lineage/legendCalculatedField.svg'
+import LegendField from '~/assets/images/lineage/legendField.svg'
+import LegendMeasures from '~/assets/images/lineage/legendMeasures.svg'
+import LegendDimension from '~/assets/images/lineage/legendDimension.svg'
+import LegendDimensionGroups from '~/assets/images/lineage/legendDimensionGroups.svg'
+import AssociatedTerm from '~/assets/images/icons/associated-term-blue.svg'
+
 const LegendExpand = defineAsyncComponent(
     () => import('~/assets/images/lineage/legendExpand.svg')
 )
@@ -1033,50 +1063,6 @@ const GovernanceCenter = defineAsyncComponent(
     () => import('~/assets/images/icons/governance-center.svg')
 )
 
-// source list
-const Snowflake = defineAsyncComponent(
-    () => import('~/assets/images/source/svg/Snowflake.svg')
-)
-const Tableau = defineAsyncComponent(
-    () => import('~/assets/images/source/svg/Tableau.svg')
-)
-const Redshift = defineAsyncComponent(
-    () => import('~/assets/images/source/svg/Redshift.svg')
-)
-const Postgres = defineAsyncComponent(
-    () => import('~/assets/images/source/svg/postgres.svg')
-)
-const Athena = defineAsyncComponent(
-    () => import('~/assets/images/source/svg/Athena.svg')
-)
-const Databricks = defineAsyncComponent(
-    () => import('~/assets/images/source/svg/Databricks.svg')
-)
-const PowerBI = defineAsyncComponent(
-    () => import('~/assets/images/source/svg/PowerBI.svg')
-)
-const BigQuery = defineAsyncComponent(
-    () => import('~/assets/images/source/svg/Bigquery.svg')
-)
-const Looker = defineAsyncComponent(
-    () => import('~/assets/images/source/svg/Looker.svg')
-)
-const Salesforce = defineAsyncComponent(
-    () => import('~/assets/images/source/svg/Salesforce.svg')
-)
-const MySQL = defineAsyncComponent(
-    () => import('~/assets/images/source/svg/MySQL.svg')
-)
-const Glue = defineAsyncComponent(
-    () => import('~/assets/images/source/svg/glue.svg')
-)
-const S3 = defineAsyncComponent(
-    () => import('~/assets/images/source/svg/s3.svg')
-)
-const GDS = defineAsyncComponent(
-    () => import('~/assets/images/source/svg/gds.svg')
-)
-
 const Schema2Active = defineAsyncComponent(
     () => import('~/assets/images/icons/schema2Active.svg')
 )
@@ -1457,11 +1443,21 @@ export default {
     QueryMetadata,
     QueryOutputSuccess,
     FullScreenSquare,
+    Legend,
     LegendExpand,
     LegendCollapse,
     LegendAnomaly,
     LegendSelected,
     LegendHighlighted,
+    LegendProcess,
+    LegendProcessDefault,
+    LegendProcessHighlighted,
+    LegendProcessAnomaly,
+    LegendCalculatedField,
+    LegendField,
+    LegendMeasures,
+    LegendDimension,
+    LegendDimensionGroups,
     Schedule24,
     Mail,
     EmptyJira,
@@ -1906,6 +1902,7 @@ export default {
     Mysql: MySQL,
     NoAllow,
     Glue,
+    Netsuite,
     Bigquery: BigQuery,
     Workflow,
     Package,
@@ -1921,4 +1918,5 @@ export default {
     IllustrationPersonaDemo,
     IllustrationPurposeDemo,
     FlaskIcon,
+    AssociatedTerm,
 }

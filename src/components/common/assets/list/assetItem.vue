@@ -1,12 +1,12 @@
 <!-- TODO: remove hardcoded prop classes and make component generic -->
 <template>
-    <ContextMenu :asset="item">
+    <ContextMenu :asset="item" :enable-sidebar-drawer="enableSidebarDrawer">
         <template #content>
             <div
                 class="transition duration-100 hover:border-primary"
                 :class="{
                     'border-primary  shadow border bg-primary-menu': isSelected,
-                    'cursor-pointer': enableSidebarDrawer,
+                    'cursor-pointer ': enableSidebarDrawer,
                     'opacity-80': isLoading,
                     'my-1.5 rounded-lg': page === 'assets',
                 }"
@@ -83,9 +83,12 @@
                                                     type="dashed"
                                                     v-if="page === 'assets'"
                                                     @click="
-                                                        handleSwitchTabLineage(
-                                                            item
-                                                        )
+                                                        (e) => {
+                                                            e.stopPropagation()
+                                                            handleSwitchTabLineage(
+                                                                item
+                                                            )
+                                                        }
                                                     "
                                                     ><AtlanIcon
                                                         icon="Search"
@@ -536,6 +539,7 @@
                                     <a-tooltip
                                         placement="bottomLeft"
                                         :mouseEnterDelay="0.3"
+                                        overlay-class-name="min-w-max"
                                     >
                                         <div
                                             v-if="databaseName(item)"
@@ -552,9 +556,7 @@
                                             </div>
                                         </div>
                                         <template #title>
-                                            <div
-                                                class="flex items-center justify-between"
-                                            >
+                                            <div class="flex items-center">
                                                 <div class="flex flex-col">
                                                     <div class="text-xs">
                                                         Database
@@ -564,7 +566,7 @@
                                                 </div>
                                                 <div
                                                     v-if="page === 'assets'"
-                                                    class="pl-3 font-bold"
+                                                    class="ml-3 font-bold"
                                                 >
                                                     <a-button
                                                         shape="circle"
@@ -582,7 +584,11 @@
                                             </div>
                                         </template>
                                     </a-tooltip>
-                                    <a-tooltip placement="bottomLeft">
+                                    <a-tooltip
+                                        placement="bottomLeft"
+                                        overlay-class-name="min-w-max"
+                                        :mouseEnterDelay="0.3"
+                                    >
                                         <div
                                             v-if="schemaName(item)"
                                             class="flex items-center text-gray-500"
@@ -598,9 +604,7 @@
                                             </div>
                                         </div>
                                         <template #title>
-                                            <div
-                                                class="flex items-center justify-between"
-                                            >
+                                            <div class="flex items-center">
                                                 <div class="flex flex-col">
                                                     <div class="text-xs">
                                                         Schema
@@ -610,7 +614,7 @@
                                                 </div>
                                                 <div
                                                     v-if="page === 'assets'"
-                                                    class="pl-3 font-bold"
+                                                    class="ml-3 font-bold"
                                                 >
                                                     <a-button
                                                         shape="circle"
@@ -1304,7 +1308,7 @@
                                     <template
                                         v-for="classification in clsfList"
                                         :key="classification.guid"
-                                    > 
+                                    >
                                         <PopoverClassification
                                             :classification="classification"
                                             :entity-guid="item.guid"
@@ -1493,12 +1497,14 @@
                     "
                 />
 
-                <AssetDrawer
-                    :guid="selectedAssetDrawerGuid"
-                    :show-drawer="showAssetSidebarDrawer"
-                    @closeDrawer="handleCloseDrawer"
-                    @update="handleListUpdate"
-                />
+                <div v-if="enableSidebarDrawer">
+                    <AssetDrawer
+                        :guid="selectedAssetDrawerGuid"
+                        :show-drawer="showAssetSidebarDrawer"
+                        @closeDrawer="handleCloseDrawer"
+                        @update="handleListUpdate"
+                    />
+                </div>
             </div>
         </template>
     </ContextMenu>
@@ -1523,7 +1529,7 @@
     import useGlossaryData from '~/composables/glossary2/useGlossaryData'
     import { useMouseEnterDelay } from '~/composables/classification/useMouseEnterDelay'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
-    import {groupClassifications} from "~/utils/groupClassifications"
+    import { groupClassifications } from '~/utils/groupClassifications'
     import AssetTitle from '@/common/assets/list/assetTitle.vue'
 
     export default defineComponent({
@@ -1721,6 +1727,7 @@
                 powerBITableMeasureCount,
                 powerBIColumnDataType,
                 powerBIColumnDataTypeImage,
+                selectedAsset,
             } = useAssetInfo()
 
             const icon = computed(() => {
@@ -1743,19 +1750,29 @@
                 if (enableSidebarDrawer.value === true) {
                     showAssetSidebarDrawer.value = true
                     selectedAssetDrawerGuid.value = item?.guid
+                    console.log(item?.guid)
                 } else {
                     emit('preview', item, itemIndex.value)
                 }
             }
 
-            const handleSwitchTabLineage = (item) => {
-                handlePreview(item)
-                emit('switch', { asset: item, tab: 'Lineage' })
+            const handleSwitchTabLineage = (asset) => {
+                if (selectedAsset.value?.guid !== asset.guid) {
+                    handlePreview(asset)
+                    setTimeout(() => {
+                        emit('switch', { asset, tab: 'Lineage' })
+                    }, 300)
+                } else {
+                    emit('switch', { asset, tab: 'Lineage' })
+                }
             }
 
             const handleCloseDrawer = () => {
                 selectedAssetDrawerGuid.value = ''
                 showAssetSidebarDrawer.value = false
+            }
+            const handleUpdateDrawer = (guid) => {
+                selectedAssetDrawerGuid.value = guid
             }
 
             const handleListUpdate = (asset) => {
@@ -1782,7 +1799,10 @@
                     'name',
                     'typeName'
                 )
-                const groupedClassifications = groupClassifications(matchingIdsResult, isPropagated)
+                const groupedClassifications = groupClassifications(
+                    matchingIdsResult,
+                    isPropagated
+                )
                 return groupedClassifications
             })
 
@@ -1940,6 +1960,7 @@
                 parentView,
                 parentBucket,
                 s3BucketName,
+                handleUpdateDrawer,
                 hasLineage,
                 handleSwitchTabLineage,
                 dataStudioAssetType,

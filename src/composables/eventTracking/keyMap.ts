@@ -207,6 +207,24 @@ const keyMap = {
                     count: props.count,
                 }),
             },
+            recommended_terms_updated: {
+                action: 'discovery_metadata_recommended_terms_updated',
+                properties: (props) => ({
+                    count: props.count,
+                }),
+            },
+            antonym_terms_updated: {
+                action: 'discovery_metadata_antonym_terms_updated',
+                properties: (props) => ({
+                    count: props.count,
+                }),
+            },
+            synonym_terms_updated: {
+                action: 'discovery_metadata_synonym_terms_updated',
+                properties: (props) => ({
+                    count: props.count,
+                }),
+            },
             suggestion_applied: {
                 action: 'discovery_metadata_suggestion_applied',
                 properties: (props) => ({

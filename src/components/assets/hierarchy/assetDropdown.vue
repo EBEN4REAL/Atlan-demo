@@ -179,7 +179,7 @@
                             .filter('term', '__state', 'ACTIVE')
                             .filter('term', '__typeName.keyword', typeName)
                             .sort('name.keyword', 'asc')
-                            .size(100)
+                            .size(300)
                             .build()
                     }
                 }
@@ -215,7 +215,7 @@
                             return q
                         })
                         .sort('name.keyword', 'asc')
-                        .size(100)
+                        .size(300)
                         .build()
                 }
             }

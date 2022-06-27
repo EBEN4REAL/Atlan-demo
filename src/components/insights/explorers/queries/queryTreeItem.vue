@@ -1226,6 +1226,12 @@
                     isDeleteLoading.value = isLoading.value
                     console.log('delete: ', isLoading.value)
                     if (newData && !newError) {
+                        useAddEvent(
+                            'insights',
+                            type === 'Query' ? 'query' : 'folder',
+                            'deleted',
+                            undefined
+                        )
                         showDeletePopover.value = false
 
                         inlineTabRemove(
@@ -1254,7 +1260,7 @@
                         message.success({
                             content: `${item.value?.attributes?.name} deleted!`,
                         })
-                        useAddEvent('insights', 'folder', 'deleted', undefined)
+
                         // refetchParentNode(
                         //     props.item.guid,
                         //     type === 'Query' ? 'query' : 'Folder',

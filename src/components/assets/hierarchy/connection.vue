@@ -34,7 +34,7 @@
                         />
                     </div>
                     <span v-if="showCount" class="text-xs text-gray-500"
-                        >{{ item.assetCount }} assets</span
+                        >{{ getCountString(item.assetCount)}} assets</span
                     >
                 </div>
             </a-select-option>
@@ -59,6 +59,7 @@
     import { usePersonaStore } from '~/store/persona'
     import { useConnection } from '~/composables/connection/useConnection'
     import useConnectionData from '~/composables/connection/useConnectionData'
+    import { getCountString } from '~/utils/number'
 
     export default defineComponent({
         components: { Tooltip },
@@ -236,6 +237,7 @@
                 adminGroups,
                 adminUsers,
                 isAdminConnection,
+                getCountString
             }
         },
     })

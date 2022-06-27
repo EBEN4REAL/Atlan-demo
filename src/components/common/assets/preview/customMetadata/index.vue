@@ -52,7 +52,7 @@
                     </div>
                 </a-tooltip>
             </span>
-            <div v-if="role !== 'Guest' && !viewOnly">
+            <div v-if="(role !== 'Guest' || hasEditPermission) && !viewOnly">
                 <div
                     v-if="
                         readOnly &&
@@ -276,7 +276,12 @@
                                     :paragraph="{ rows: 2 }"
                                 />
                             </div>
-                            <template v-else-if="role !== 'Guest' && !viewOnly">
+                            <template
+                                v-else-if="
+                                    (role !== 'Guest' || hasEditPermission) &&
+                                    !viewOnly
+                                "
+                            >
                                 <PropertyPopover
                                     :applicable-list="applicableList"
                                 />
@@ -291,7 +296,10 @@
                             </template>
                         </div>
                         <AtlanButton2
-                            v-if="role !== 'Guest' && !viewOnly"
+                            v-if="
+                                (role !== 'Guest' || hasEditPermission) &&
+                                !viewOnly
+                            "
                             label="Start Editing"
                             prefixIcon="Edit"
                             @click="() => (readOnly = false)"

@@ -27,6 +27,115 @@ import { useActiveTab } from '~/components/insights/common/composables/useActive
 import { useRouter, useRoute } from 'vue-router'
 import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData'
 
+export const getNewTabFromSavedQuery = (
+    savedQuery: SavedQuery,
+    activeInlineTab
+) => {
+    const { generateNewActiveTab } = useActiveTab()
+    const { getConnectorsDataFromQualifiedNamesAll } = useConnector()
+
+    const decodedVariables = decodeBase64Data(
+        savedQuery?.attributes?.variablesSchemaBase64
+    ) as CustomVaribaleInterface[]
+
+    const defaultSchemaQualifiedName =
+        savedQuery?.attributes?.defaultSchemaQualifiedName
+    const { connectionQualifiedName } = savedQuery.attributes
+
+    const defaultDatabaseQualifiedName =
+        savedQuery?.attributes?.defaultDatabaseQualifiedName
+
+    const connectors = getConnectorsDataFromQualifiedNamesAll(
+        connectionQualifiedName,
+        defaultSchemaQualifiedName,
+        defaultDatabaseQualifiedName
+    )
+    const visualBuilderSchemaBase64 =
+        savedQuery?.attributes?.visualBuilderSchemaBase64
+    const isVisualQuery = savedQuery?.attributes?.isVisualQuery
+
+    const decodedVQB = decodeBase64Data(visualBuilderSchemaBase64)
+
+    let newTab = generateNewActiveTab({
+        activeInlineTab,
+        label: savedQuery?.attributes?.name ?? '',
+        assetInfo: savedQuery,
+        editorText: savedQuery?.attributes?.rawQuery
+            ? savedQuery?.attributes?.rawQuery
+            : '',
+    })
+
+    newTab = {
+        ...newTab,
+        // status: savedQuery?.attributes.certificateStatus,
+        attributes: savedQuery?.attributes,
+        key: savedQuery?.guid,
+        isSaved: true,
+        queryId: savedQuery?.guid,
+        updateTime:
+            savedQuery?.updateTime ??
+            savedQuery.attributes.__modificationTimestamp,
+        updatedBy: savedQuery?.updatedBy ?? savedQuery.attributes.__modifiedBy,
+        connectionId: savedQuery.attributes.connectionId,
+        description: savedQuery.attributes.description as string,
+        qualifiedName: savedQuery.attributes.qualifiedName,
+        parentGuid: savedQuery.attributes?.parent?.guid,
+        parentQualifiedName: savedQuery.attributes.parentQualifiedName,
+        isSQLSnippet: savedQuery.attributes.isSnippet as boolean,
+        status: savedQuery.attributes.certificateStatus as string,
+        savedQueryParentFolderTitle: savedQuery?.parentTitle,
+        collectionQualifiedName:
+            savedQuery?.attributes?.collectionQualifiedName,
+        explorer: {
+            schema: {
+                connectors,
+            },
+            queries: {
+                connectors: {
+                    connector: savedQuery.attributes.connectorName,
+                },
+                collection: {
+                    // copy from last tab
+                    guid: activeInlineTab?.value?.explorer?.queries?.collection
+                        ?.guid,
+                    qualifiedName:
+                        savedQuery?.attributes?.collectionQualifiedName,
+                    parentQualifiedName: undefined,
+                },
+            },
+        },
+        playground: {
+            ...newTab.playground,
+            isVQB: !!isVisualQuery,
+            vqb:
+                isVisualQuery && decodedVQB
+                    ? decodedVQB
+                    : inlineTabsDemoData[0].playground.vqb,
+            editor: {
+                text: savedQuery?.attributes?.rawQuery
+                    ? savedQuery?.attributes?.rawQuery
+                    : '',
+                dataList: [],
+                columnList: [],
+                variables: Array.isArray(decodedVariables)
+                    ? decodedVariables
+                    : [],
+                savedVariables: Array.isArray(decodedVariables)
+                    ? decodedVariables
+                    : [],
+                limitRows: {
+                    checked: false,
+                    rowsCount: -1,
+                },
+                context: {
+                    ...connectors,
+                },
+            },
+        },
+    }
+    return newTab
+}
+
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
     activeInlineTab: ComputedRef<activeInlineTabInterface>,
@@ -81,111 +190,7 @@ export function useSavedQuery(
 
         return false
     }
-    const getNewTabFromSavedQuery = (savedQuery: SavedQuery) => {
-        const { generateNewActiveTab } = useActiveTab()
-        let decodedVariables = decodeBase64Data(
-            savedQuery?.attributes?.variablesSchemaBase64
-        ) as CustomVaribaleInterface[]
 
-        const defaultSchemaQualifiedName =
-            savedQuery?.attributes?.defaultSchemaQualifiedName
-        const connectionQualifiedName =
-            savedQuery.attributes.connectionQualifiedName
-
-        const defaultDatabaseQualifiedName =
-            savedQuery?.attributes?.defaultDatabaseQualifiedName
-
-        const connectors = getConnectorsDataFromQualifiedNamesAll(
-            connectionQualifiedName,
-            defaultSchemaQualifiedName,
-            defaultDatabaseQualifiedName
-        )
-        const visualBuilderSchemaBase64 =
-            savedQuery?.attributes?.visualBuilderSchemaBase64
-        const isVisualQuery = savedQuery?.attributes?.isVisualQuery
-
-        let decodedVQB = decodeBase64Data(visualBuilderSchemaBase64)
-
-        let newTab = generateNewActiveTab({
-            activeInlineTab,
-            label: savedQuery?.attributes?.name ?? '',
-            assetInfo: savedQuery,
-            editorText: savedQuery?.attributes?.rawQuery
-                ? savedQuery?.attributes?.rawQuery
-                : '',
-        })
-
-        newTab = {
-            ...newTab,
-            status: savedQuery?.attributes.certificateStatus,
-            attributes: savedQuery?.attributes,
-            key: savedQuery?.guid,
-            isSaved: true,
-            queryId: savedQuery?.guid,
-            updateTime:
-                savedQuery?.updateTime ??
-                savedQuery.attributes.__modificationTimestamp,
-            updatedBy:
-                savedQuery?.updatedBy ?? savedQuery.attributes.__modifiedBy,
-            connectionId: savedQuery.attributes.connectionId,
-            description: savedQuery.attributes.description as string,
-            qualifiedName: savedQuery.attributes.qualifiedName,
-            parentGuid: savedQuery.attributes?.parent?.guid,
-            parentQualifiedName: savedQuery.attributes.parentQualifiedName,
-            isSQLSnippet: savedQuery.attributes.isSnippet as boolean,
-            savedQueryParentFolderTitle: savedQuery?.parentTitle,
-            collectionQualifiedName:
-                savedQuery?.attributes?.collectionQualifiedName,
-            classifications: savedQuery?.classifications,
-            explorer: {
-                schema: {
-                    connectors: connectors,
-                },
-                queries: {
-                    connectors: {
-                        connector: savedQuery.attributes.connectorName,
-                    },
-                    collection: {
-                        // copy from last tab
-                        guid: activeInlineTab?.value?.explorer?.queries
-                            ?.collection?.guid,
-                        qualifiedName:
-                            savedQuery?.attributes?.collectionQualifiedName,
-                        parentQualifiedName: undefined,
-                    },
-                },
-            },
-            playground: {
-                ...newTab.playground,
-                isVQB: isVisualQuery ? true : false,
-                vqb:
-                    isVisualQuery && decodedVQB
-                        ? decodedVQB
-                        : inlineTabsDemoData[0].playground.vqb,
-                editor: {
-                    text: savedQuery?.attributes?.rawQuery
-                        ? savedQuery?.attributes?.rawQuery
-                        : '',
-                    dataList: [],
-                    columnList: [],
-                    variables: Array.isArray(decodedVariables)
-                        ? decodedVariables
-                        : [],
-                    savedVariables: Array.isArray(decodedVariables)
-                        ? decodedVariables
-                        : [],
-                    limitRows: {
-                        checked: false,
-                        rowsCount: -1,
-                    },
-                    context: {
-                        ...connectors,
-                    },
-                },
-            },
-        }
-        return newTab
-    }
     const duplicateSavedQuery = (savedQuery) => {
         // get new tab from saved query
         const newTab = {

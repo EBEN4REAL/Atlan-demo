@@ -161,29 +161,7 @@ export function useSavedQuery(
                 vqb:
                     isVisualQuery && decodedVQB
                         ? decodedVQB
-                        : {
-                              selectedTables: [],
-                              panels: [
-                                  {
-                                      order: 1,
-                                      id: 'columns',
-                                      hide: true,
-                                      subpanels: [
-                                          {
-                                              id: '1',
-                                              columns: ['all'],
-                                              tableData: {
-                                                  certificateStatus: undefined,
-                                                  assetType: undefined,
-                                                  item: {},
-                                              },
-                                              columnsData: [],
-                                          },
-                                      ],
-                                      expand: true,
-                                  },
-                              ],
-                          },
+                        : inlineTabsDemoData[0].playground.vqb,
                 editor: {
                     text: savedQuery?.attributes?.rawQuery
                         ? savedQuery?.attributes?.rawQuery

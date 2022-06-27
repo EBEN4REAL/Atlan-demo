@@ -122,12 +122,14 @@
                 :style="{ 'padding-top': 1 }"
                 role="Box"
             >
-                <Tooltip
-                    clamp-percentage="100%"
-                    :tooltip-text="title"
-                    :rows="1"
-                    class="p-1 pt-1.5"
-                />
+                <div class="tab-inner-title">
+                    <Tooltip
+                        clamp-percentage="100%"
+                        :tooltip-text="title"
+                        :rows="1"
+                        class="p-1 pt-1.5"
+                    />
+                </div>
                 <div
                     v-if="tabHover!==index"
                     class="w-4 py-1 px-0.5"
@@ -204,9 +206,10 @@
           opacity: 0.1;
         }
     }
+    .tab-inner-title{
+        width: 100px;
+    }
     .inner-box {
-        width: 110px;
-        min-width: 50px;
         display: flex;
     }
     .box-outside-hover {

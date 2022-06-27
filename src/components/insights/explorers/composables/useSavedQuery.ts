@@ -25,6 +25,7 @@ import updateAsset from '~/composables/discovery/updateAsset'
 import { generateSQLQuery } from '~/components/insights/playground/editor/vqb/composables/generateSQLQuery'
 import { useActiveTab } from '~/components/insights/common/composables/useActiveTab'
 import { useRouter, useRoute } from 'vue-router'
+import { inlineTabsDemoData } from '~/components/insights/common/dummyData/demoInlineTabData.ts'
 
 export function useSavedQuery(
     tabsArray: Ref<activeInlineTabInterface[]>,
@@ -716,30 +717,7 @@ export function useSavedQuery(
         let visualBuilderSchemaBase64 = undefined
         let isVisualQuery = false
         if (isVQB && limitRows?.value) {
-            visualBuilderSchemaBase64 = {
-                selectedTables: [],
-                panels: [
-                    {
-                        order: 1,
-                        id: 'columns',
-                        hide: true,
-                        subpanels: [
-                            {
-                                id: '1',
-                                tableQualifiedName: undefined,
-                                tableData: {
-                                    certificateStatus: undefined,
-                                    assetType: undefined,
-                                    item: {},
-                                },
-                                columns: ['all'],
-                                columnsData: [],
-                            },
-                        ],
-                        expand: true,
-                    },
-                ],
-            }
+            visualBuilderSchemaBase64 = inlineTabsDemoData[0].playground.vqb
             rawQuery = ''
             isVisualQuery = true
         }

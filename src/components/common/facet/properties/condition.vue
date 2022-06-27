@@ -126,10 +126,9 @@
 
             const defaultOperator = ref(operators[operatorDataType.value])
             const localOperator = ref(condition.operator)
-            
 
-            if(attribute.value.name === "name.keyword" || attribute.value.name === 'description.keyword') {
-                localCondition.value.operator = 'contains'
+            if(attribute.value?.defaultOperator) {
+                localCondition.value.operator = attribute.value?.defaultOperator
             }
 
             if (!localCondition.value.operator) {

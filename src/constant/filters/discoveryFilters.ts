@@ -76,6 +76,7 @@ export const discoveryFilters = [
                 typeName: 'string',
                 description: 'Name of the asset',
                 isMandatory: true,
+                defaultOperator: 'contains'
             },
             {
                 name: 'description.keyword',
@@ -83,6 +84,7 @@ export const discoveryFilters = [
                 typeName: 'string',
                 description: 'Description of the asset on Atlan/Source',
                 isMandatory: false,
+                defaultOperator: 'contains'
             },
             // {
             //     name: 'userDescription.keyword',

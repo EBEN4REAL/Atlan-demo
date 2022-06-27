@@ -193,12 +193,14 @@ export function useSavedQuery(
 
     const duplicateSavedQuery = (savedQuery) => {
         // get new tab from saved query
-        const newTab = {
+        let newTab = {
             ...(getNewTabFromSavedQuery(
                 { ...(savedQuery?.value ?? {}) },
                 activeInlineTab
             ) || {}),
         }
+        newTab = JSON.parse(JSON.stringify(newTab))
+        debugger
         const label = `Copy ${newTab.label}`
         // reset attributes
         newTab.label = label

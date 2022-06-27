@@ -4,7 +4,7 @@
 
 <script lang="ts">
     import { defineComponent, onMounted, PropType, toRefs, watch } from 'vue'
-    import { Bar } from '@antv/g2plot'
+    import { Area } from '@antv/g2plot'
 
     export default defineComponent({
         name: 'AreaChart',
@@ -20,15 +20,15 @@
             const { options, data } = toRefs(props)
 
             onMounted(() => {
-                const bar = new Bar(`viz-${options.value.id}`, {
+                const area = new Area(`viz-${options.value.id}`, {
                     data: data.value,
                     ...options.value.componentData.graphConfig,
                 })
 
-                bar.render()
+                area.render()
 
                 watch(data, () => {
-                    bar.changeData(data.value)
+                    area.changeData(data.value)
                 })
             })
         },

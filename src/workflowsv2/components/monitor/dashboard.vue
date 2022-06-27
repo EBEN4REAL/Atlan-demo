@@ -13,7 +13,7 @@
 <script lang="ts">
     import { defineComponent, PropType, toRefs } from 'vue'
     import { WidgetData } from '~/workflowsv2/constants/widgets'
-    import WidgetComponent from './widget.vue'
+    import WidgetComponent from './widgets/widget.vue'
 
     export default defineComponent({
         name: 'MonitorDashboard',

@@ -84,60 +84,22 @@ export const Metadata: WidgetData[] = [
             query: {
                 size: 0,
             },
-            graphType: 'line',
-            graphOptions: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false,
-                    },
-                    title: {
-                        display: false,
-                    },
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            display: false,
-                            borderColor: '#EFF1F5',
-                        },
-                        title: {
-                            display: false,
-                            text: 'Date',
-                        },
-                        ticks: {
-                            maxTicksLimit: 12,
-                            maxRotation: 5,
-                        },
-                    },
-                    y: {
-                        grid: {
-                            display: true,
-                            drawBorder: false,
-                            borderColor: '#EFF1F5',
-                            color: '#EFF1F5',
-                        },
-                        ticks: {
-                            maxTicksLimit: 5,
-                            display: true,
+            graphType: 'area',
+            graphConfig: {
+                yField: 'count',
+                xField: 'timestamp',
+                yAxis: {
+                    tickCount: 4,
+                    grid: {
+                        line: {
+                            style: { stroke: '#F2F4F7' },
                         },
                     },
                 },
-                datasets: {},
-                elements: {
-                    line: {
-                        borderColor: '#225BD2',
-                        backgroundColor: '#4A7ADF22',
-                        borderWidth: 2,
-                        fill: true,
-                    },
-                    point: { pointRadius: 0 },
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'index',
-                },
+                areaStyle: () => ({
+                    fill: 'l(270) 0:#4A7ADF00 1:#4A7ADFFF',
+                }),
+                smooth: true,
             },
             dataOptions: {
                 aggregationKey: 'group_by_date',
@@ -207,72 +169,10 @@ export const Metadata: WidgetData[] = [
                 },
             },
             graphType: 'bar',
-            graphOptions: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false,
-                    },
-                    datalabels: {
-                        backgroundColor: '#fff',
-
-                        borderColor: '#f4f6fd',
-                        borderRadius: 25,
-                        borderWidth: 0.5,
-                        color: '#5277d7',
-                        // backgroundColor: function (context) {
-                        //     return context.dataset.backgroundColor
-                        // },
-
-                        clamp: true,
-                        padding: {
-                            top: 0,
-                            bottom: 0,
-                        },
-
-                        formatter: Math.round,
-                        offset: 20,
-
-                        anchor: 'center',
-                    },
-                    title: {
-                        display: false,
-                    },
-                },
-                elements: {
-                    bar: {
-                        borderRadius: 4,
-                        backgroundColor: '#3C71DF',
-                    },
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            display: true,
-                            drawBorder: false,
-                            borderColor: '#EFF1F5',
-                            color: '#EFF1F5',
-                        },
-                        title: {
-                            display: false,
-                        },
-                        ticks: {
-                            display: true,
-                            maxTicksLimit: 5,
-                        },
-                    },
-                    y: {
-                        grid: {
-                            display: false,
-                            borderColor: '#EFF1F5',
-                        },
-                        ticks: {
-                            display: true,
-                        },
-                    },
-                },
+            graphConfig: {
+                xField: 'doc_count',
+                yField: 'key',
+                seriesField: 'key',
             },
             dataOptions: {
                 aggregationKey: 'group_by_connector',

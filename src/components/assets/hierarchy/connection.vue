@@ -227,7 +227,7 @@
 
             return {
                 list,
-                filteredList,
+                filteredList: filteredList.value.sort((a,b) => a.attributes.name > b.attributes.name ? 1 : -1),
                 selectedValue,
                 handleChange,
                 handleSearch,

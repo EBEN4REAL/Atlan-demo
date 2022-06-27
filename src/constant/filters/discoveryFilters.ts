@@ -129,6 +129,7 @@ export const discoveryFilters = [
                 displayName: 'Unique identifier',
                 description: 'Unique Id for the asset',
                 typeName: 'string',
+                subTypeName: 'guid',
                 isMandatory: true,
             },
             {

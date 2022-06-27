@@ -123,14 +123,10 @@
                 return keys.join('_')
             })
 
-           
+
             const defaultOperator = ref(operators[operatorDataType.value])
             const localOperator = ref(condition.operator)
             
-            
-            if(attribute.value.name === "__guid") {
-                defaultOperator.value = defaultOperator.value.slice(0,2)
-            }
 
             if(attribute.value.name === "name.keyword" || attribute.value.name === 'description.keyword') {
                 localCondition.value.operator = 'contains'

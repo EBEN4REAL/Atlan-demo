@@ -141,7 +141,8 @@
                         v-if="
                             type === 'data' &&
                             policy?.mask &&
-                            policy?.mask != 'null'
+                            policy?.mask != 'null' &&
+                            policy.allow
                         "
                     >
                         <span class="text-gray-300 mx-1.5">•</span>

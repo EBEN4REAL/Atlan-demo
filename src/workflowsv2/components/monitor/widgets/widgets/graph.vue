@@ -28,10 +28,6 @@
         loader: () => import('../graph/bar.vue'),
     })
 
-    const Line = defineAsyncComponent({
-        loader: () => import('../graph/line.vue'),
-    })
-
     const Area = defineAsyncComponent({
         loader: () => import('../graph/area.vue'),
     })
@@ -39,7 +35,6 @@
     export default defineComponent({
         components: {
             Bar,
-            Line,
             Area,
         },
         props: {

@@ -312,14 +312,14 @@
                                     :selected="policy.allow"
                                     heading="Allow Query"
                                     icon-name="QueryOutputSuccess"
-                                    sub-heading="Users will be allowed query on assets in this Purpose."
+                                    sub-heading="Allowed query for assets present in this Purpose."
                                     @click="policy.allow = true"
                                 />
                                 <ToggleOption
                                     :selected="!policy.allow"
                                     heading="Deny Query"
                                     icon-name="QueryOutputFail"
-                                    sub-heading="Users will be denied query on assets in this Purpose."
+                                    sub-heading="Denied query for assets present in this Purpose."
                                     @click="policy.allow = false"
                                 />
                             </div>

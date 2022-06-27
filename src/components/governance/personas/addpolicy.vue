@@ -468,7 +468,7 @@
                                         :selected="policy.allow"
                                         heading="Allow query on selected assets"
                                         icon-name="QueryOutputSuccess"
-                                        sub-heading="Users will be allowed query on assets in this Persona."
+                                        sub-heading="Allowed query for assets present in this Persona."
                                         @click="policy.allow = true"
                                     />
                                     <ToggleOption
@@ -476,7 +476,7 @@
                                         :selected="!policy.allow"
                                         heading="Deny query on selected assets"
                                         icon-name="QueryOutputFail"
-                                        sub-heading="Users will be denied query on assets in this Persona."
+                                        sub-heading="Denied query for assets present in this Persona."
                                         @click="policy.allow = false"
                                     />
                                 </div>

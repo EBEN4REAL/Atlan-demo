@@ -194,8 +194,10 @@ export function useSavedQuery(
     const duplicateSavedQuery = (savedQuery) => {
         // get new tab from saved query
         const newTab = {
-            ...(getNewTabFromSavedQuery({ ...(savedQuery?.value ?? {}) }) ||
-                {}),
+            ...(getNewTabFromSavedQuery(
+                { ...(savedQuery?.value ?? {}) },
+                activeInlineTab
+            ) || {}),
         }
         const label = `Copy ${newTab.label}`
         // reset attributes
@@ -217,7 +219,9 @@ export function useSavedQuery(
     }
 
     const openSavedQueryInNewTab = async (savedQuery: SavedQuery) => {
-        const newTab = { ...(getNewTabFromSavedQuery(savedQuery) || {}) }
+        const newTab = {
+            ...(getNewTabFromSavedQuery(savedQuery, activeInlineTab) || {}),
+        }
         const check = isInlineTabAlreadyOpened(newTab, tabsArray)
         if (!check) {
             // console.log('saved query tab not opened')
@@ -701,6 +705,7 @@ export function useSavedQuery(
         let isVisualQuery = false
         if (isVQB && limitRows?.value) {
             visualBuilderSchemaBase64 = inlineTabsDemoData[0].playground.vqb
+            debugger
             rawQuery = ''
             isVisualQuery = true
         }

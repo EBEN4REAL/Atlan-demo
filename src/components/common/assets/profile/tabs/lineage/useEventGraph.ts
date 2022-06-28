@@ -1792,17 +1792,6 @@ export default function useEventGraph({
             return
         }
 
-        // Handle Event - lineage_node_clicked
-        const nodeEntity = node?.store?.data?.entity
-
-        if (nodeEntity) {
-            sendNodeClickedEvent(
-                nodeEntity.typeName,
-                nodeEntity.attributes?.qualifiedName?.split('/')[1],
-                node.id
-            )
-        }
-
         if (node.id.includes('vpNode')) {
             if (selectedNodeId.value) controlSelectedNodeAction(node, null)
             else if (selectedNodeEdgeId.value)
@@ -1814,6 +1803,17 @@ export default function useEventGraph({
             }
 
             return
+        }
+
+        // Handle Event - lineage_node_clicked
+        const nodeEntity = node?.store?.data?.entity
+
+        if (nodeEntity) {
+            sendNodeClickedEvent(
+                nodeEntity.typeName,
+                nodeEntity.attributes?.qualifiedName?.split('/')[1],
+                node.id
+            )
         }
 
         if (node.id === selectedNodeId.value) {

@@ -511,11 +511,6 @@
             ])
 
             watch(isReady, () => {
-                console.log(
-                    'LineageImpactModal Assets List Count:',
-                    downstreamAssets.value.length
-                )
-
                 if (downstreamAssets.value.length > 200)
                     promptDownload.value = true
 

@@ -192,6 +192,13 @@
                 })
             }, 600)
 
+            // ImpactAnalysisReportClickedEvent - Analytics Events
+            const sendImpactAnalysisClickedEvent = useDebounceFn((node_id) => {
+                useAddEvent('lineage', 'impact_analysis_report', 'clicked', {
+                    node_id,
+                })
+            }, 400)
+
             // setQuery
             const setQuery = (e) => {
                 // Handle Event - lineage_search_changed
@@ -253,6 +260,13 @@
             // controlImpactedAssets
             const controlImpactedAssets = () => {
                 showImpactedAssets.value = !showImpactedAssets.value
+
+                if (showImpactedAssets.value) {
+                    // Handle Event - lineage_impact_analysis_report_clicked
+                    sendImpactAnalysisClickedEvent(
+                        selectedNodeId.value || baseEntityGuid.value
+                    )
+                }
             }
 
             /** WATCHERS */

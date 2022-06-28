@@ -459,6 +459,14 @@ const keyMap = {
                 action: 'lineage_control_panel_mini_map_changed',
             },
         },
+        impact_analysis_report: {
+            clicked: {
+                action: 'lineage_impact_analysis_report_clicked',
+                properties: (props) => ({
+                    node_id: props?.node_id,
+                }),
+            },
+        },
     },
     gtc: {
         term: {

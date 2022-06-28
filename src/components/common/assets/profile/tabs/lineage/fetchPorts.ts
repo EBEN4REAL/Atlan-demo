@@ -72,6 +72,8 @@ export default function fetchPorts(typeName, qualifiedName, offset, limit = 5) {
                 'View',
                 'MaterialisedView',
                 'PowerBITable',
+                'LookerExplore',
+                'LookerView',
             ].includes(typeName)
                 ? 'term'
                 : 'match_phrase_prefix',

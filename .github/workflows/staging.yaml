@@ -141,4 +141,4 @@ jobs:
         with:
           application-id: ${{ secrets.MABL_APPLICATION_ID }}
           environment-id: ${{ secrets.MABL_ENVIRONMENT_ID }}
-          plan-labels: assets_2
+          plan-labels: assets,glossary,admin-center

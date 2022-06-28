@@ -356,6 +356,12 @@ export const summaryVariants = [
         includes: ['LookerTile'],
     },
     {
+        id: 'lookerView',
+        label: 'View',
+        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        includes: ['LookerView'],
+    },
+    {
         id: 'salesforceOrganization',
         label: 'Organization',
         components: ['Connection', 'SourceCreated', 'SourceUpdated'],

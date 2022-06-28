@@ -656,6 +656,18 @@ export const assetTypeList: {
         groupOrder: 5,
     },
     {
+        id: 'LookerView',
+        label: 'View',
+        fullLabel: 'Looker View',
+        isDiscoverable: true,
+        image: 'Looker',
+        source: 'Looker',
+        parents: [],
+        categoryType: 'BI',
+        relationships: [],
+        groupOrder: 5,
+    },
+    {
         id: 'SalesforceOrganization',
         label: 'Organization',
         fullLabel: 'Salesforce Organization',

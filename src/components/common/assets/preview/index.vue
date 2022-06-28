@@ -114,6 +114,7 @@
                                 'column',
                                 'schema',
                                 'query',
+                                'datastudioasset',
                             ].includes(selectedAsset.typeName?.toLowerCase())
                         "
                         placement="left"
@@ -174,6 +175,14 @@
                             "
                             >(Published)</span
                         >
+                        <span
+                            v-if="
+                                ['DataStudioAsset'].includes(
+                                    selectedAsset.typeName
+                                ) && dataStudioAssetType(selectedAsset)
+                            "
+                            >({{ dataStudioAssetType(selectedAsset) }})</span
+                        >
                     </div>
                 </div>
                 <a-button-group>
@@ -219,6 +228,7 @@
                         >
                             <template #button>
                                 <a-button
+                                    v-if="allowQuery(parentConnection)"
                                     class="flex items-center justify-center p-2"
                                 >
                                     <AtlanIcon
@@ -417,6 +427,7 @@
         INSIGHT_WORKSPACE_LEVEL_TAB,
     } from '~/composables/labs/labFeatureList'
     import { getDomain } from '~/utils/url'
+    import useConnectionData from '~/composables/connection/useConnectionData'
 
     export default defineComponent({
         name: 'AssetPreview',
@@ -539,7 +550,16 @@
                 isCustom,
                 isPublished,
                 links,
+                allowQuery,
+                connectionQualifiedName,
+                dataStudioAssetType,
             } = useAssetInfo()
+
+            const { getConnection } = useConnectionData()
+
+            const parentConnection = computed(() =>
+                getConnection(connectionQualifiedName(selectedAsset.value))
+            )
 
             const activeKey = ref(0)
             const activeLabel = ref<string>('Overview')
@@ -857,6 +877,9 @@
                 slackResourceCount,
                 switchTab,
                 handleTabClick,
+                allowQuery,
+                parentConnection,
+                dataStudioAssetType,
             }
         },
     })

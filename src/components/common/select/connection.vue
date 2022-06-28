@@ -50,11 +50,13 @@
     import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import whoami from '~/composables/user/whoami'
+    import { useAuthStore } from '~/store/auth'
     import { usePersonaStore } from '~/store/persona'
     import { useConnection } from '~/composables/connection/useConnection'
     import useConnectionData from '~/composables/connection/useConnectionData'
 
     export default defineComponent({
+        name: 'ConnectionSelector',
         components: { Tooltip },
         props: {
             modelValue: {
@@ -98,6 +100,7 @@
             const { connector, showCount, persona, isAdmin } = toRefs(props)
 
             const personaStore = usePersonaStore()
+            const authStore = useAuthStore()
 
             const { modelValue } = useVModels(props, emit)
             const selectedValue = ref(modelValue.value)
@@ -118,18 +121,10 @@
                 return found?.metadataPolicies.map((i) => i.connectionId) || []
             })
 
-            const isAdminConnection = (item) => {
-                if (
-                    createdBy(item) === username.value ||
-                    adminUsers(item).includes(username.value) ||
-                    adminGroups(item).some((group) =>
-                        groups.value.includes(group)
-                    )
-                ) {
-                    return true
-                }
-                return false
-            }
+            const isAdminConnection = (item) =>
+                !!authStore.decentralizedRoles.find(
+                    (role) => role.roleId === item.guid
+                )
 
             const filteredList = computed(() =>
                 list
@@ -159,10 +154,7 @@
                     })
                     .filter((item) => {
                         if (isAdmin.value) {
-                            if (isAdminConnection(item)) {
-                                return true
-                            }
-                            return false
+                            return isAdminConnection(item)
                         }
                         if (persona.value) {
                             return applicableConnectionArray.value.includes(

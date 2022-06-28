@@ -101,11 +101,7 @@
             )
 
             const handleClick = (id) => {
-                if (activeProperty.value === id) {
-                    activeProperty.value = 'id'
-                } else {
-                    activeProperty.value = id
-                }
+                activeProperty.value = id
             }
 
             const handleChange = (property, currentChange, allValues) => {

@@ -336,10 +336,8 @@ export const metadataLinkedAssetsAttributes = [
     'connectorName',
     'connectionName',
     'dataType',
-    'certificateUpdatedAt'
+    'certificateUpdatedAt',
 ]
-
-
 
 export const BasicSearchAttributes = [
     '__timestamp',

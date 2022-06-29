@@ -664,7 +664,7 @@ export const assetTypeList: {
         source: 'Looker',
         parents: [],
         categoryType: 'BI',
-        relationships: [],
+        relationships: ['project', 'fields'],
         groupOrder: 5,
     },
     {

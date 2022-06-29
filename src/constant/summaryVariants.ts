@@ -358,7 +358,12 @@ export const summaryVariants = [
     {
         id: 'lookerView',
         label: 'View',
-        components: ['Connection', 'SourceCreated', 'SourceUpdated'],
+        components: [
+            'ParentContext',
+            'Connection',
+            'SourceCreated',
+            'SourceUpdated',
+        ],
         includes: ['LookerView'],
     },
     {

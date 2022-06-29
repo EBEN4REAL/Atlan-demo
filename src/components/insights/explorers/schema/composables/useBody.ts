@@ -2,40 +2,83 @@
 import bodybuilder from 'bodybuilder'
 
 function addQueryTextFilter(base: any, queryText) {
-    base.orQuery('match', 'name', {
-        query: queryText,
-        boost: 40,
-        analyzer: 'search_synonyms',
-    })
-    base.orQuery('match', 'name', {
-        query: queryText,
-        boost: 40,
-    })
+    //FIXME: Use a common function for this in discovery
+    if (queryText) {
+        let tempQuery = queryText
+        if (
+            (queryText[0] === "'" && queryText[queryText.length - 1] === "'") ||
+            (queryText[0] === '"' && queryText[queryText.length - 1] === '"')
+        ) {
+            base.query('query_string', {
+                fields: [
+                    'name.*',
+                    'description',
+                    'userDescription',
+                    '__meaningsText',
+                    '__guid',
+                ],
+                query: queryText,
+            })
+        } else {
+            if (queryText.includes('.')) {
+                const split = queryText.split('.')
+                if (split.length === 2) {
+                    base.filter('term', 'schemaName.keyword', split[0])
+                    tempQuery = split[1]
+                }
+            }
 
-    base.orQuery('match', 'name', {
-        query: queryText,
-        operator: 'AND',
-        boost: 40,
-    })
-    base.orQuery('match', 'name.keyword', {
-        query: queryText,
-        boost: 100,
-    })
-    base.orQuery('match_phrase', 'name', {
-        query: queryText,
-        boost: 70,
-    })
-    base.orQuery('wildcard', 'name.keyword', {
-        value: `${queryText}*`,
-    })
-    // base.orQuery('match', 'description', {
-    //     query: queryText,
-    // })
-    // base.orQuery('match', 'userDescription', {
-    //     query: queryText,
-    // })
-    base.orQuery('match', 'name.stemmed', { query: queryText })
-    base.queryMinimumShouldMatch(1)
+            // Synonym
+            base.orQuery('match', 'name', {
+                query: tempQuery.toLowerCase(),
+                boost: 40,
+                analyzer: 'search_synonyms',
+            })
+
+            base.orQuery('match', 'name', {
+                query: tempQuery,
+                boost: 40,
+            })
+
+            base.orQuery('match', 'name', {
+                query: tempQuery,
+                operator: 'AND',
+                boost: 40,
+            })
+
+            base.orQuery('match', 'name.keyword', {
+                query: tempQuery,
+                boost: 120,
+            })
+
+            base.orQuery('match_phrase', 'name', {
+                query: tempQuery,
+                boost: 70,
+            })
+            base.orQuery('wildcard', 'name', {
+                value: `${tempQuery.toLowerCase()}*`,
+            })
+            base.orQuery('match', 'description', {
+                query: tempQuery,
+            })
+            base.orQuery('match', 'userDescription', {
+                query: tempQuery,
+            })
+            base.orQuery('match', 'sql', {
+                query: tempQuery,
+                boost: 40,
+            })
+            base.orQuery('match', '__meaningsText', {
+                query: tempQuery,
+                boost: 20,
+            })
+
+            base.orQuery('match', 'name.stemmed', {
+                query: tempQuery.toLowerCase(),
+            })
+            base.queryMinimumShouldMatch(1)
+        }
+    }
 }
 export function useBody(
     sort: any,

@@ -49,10 +49,9 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref, toRefs, watch } from 'vue'
-    import { certificateList } from '~/constant/certification'
-
+    import { defineComponent, ref, watch } from 'vue'
     import { useVModels } from '@vueuse/core'
+    import { certificateList } from '~/constant/certification'
 
     export default defineComponent({
         props: {
@@ -60,10 +59,9 @@
                 required: false,
             },
             isRadio: {
+                type: Boolean,
                 required: false,
-                default() {
-                    return false
-                },
+                default: false,
             },
         },
         emits: ['change', 'update:modelValue'],
@@ -74,8 +72,6 @@
                 localValue.value = newModelValue
             })
 
-            const { isRadio } = toRefs(props)
-
             const handleChange = () => {
                 modelValue.value = localValue.value
                 emit('change')
@@ -84,7 +80,6 @@
             return {
                 certificateList,
                 localValue,
-                isRadio,
                 handleChange,
             }
         },

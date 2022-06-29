@@ -137,7 +137,6 @@
     import CertificateFacet from '@/common/facet/certificate/index.vue'
     import whoami from '~/composables/user/whoami'
     import Shortcut from '@/common/popover/shortcut.vue'
-    import CertificateBadge from '@common/badge/certificate/index.vue'
 
     export default defineComponent({
         name: 'CertificateWidget',
@@ -145,7 +144,6 @@
             CertificatePill,
             CertificateFacet,
             Shortcut,
-            CertificateBadge,
             AdminList: defineAsyncComponent(
                 () => import('@/common/info/adminList.vue')
             ),
@@ -176,9 +174,7 @@
             showMessage: {
                 type: Boolean,
                 required: false,
-                default: () => {
-                    return false
-                },
+                default: false,
             },
             showAddBtn: {
                 type: Boolean,

@@ -4,19 +4,19 @@
         class="flex flex-row items-center justify-between w-full h-full bg-new-gray-100"
         v-if="isQueryRunning === '' && isQueryAborted"
     >
-        <div class="error-img text-right pr-5">
-            <AtlanIcon icon="queryAbortIllus" class="w-36 h-36" />
+        <div class="error-img text-right pr-9 abort-icon">
+            <AtlanIcon icon="queryAbortIllus" class="h-full" />
         </div>
 
         <div
             class="flex flex-col error-message text-left"
         >
             <p
-                class="mb-0 text-lg font-bold text-new-gray-700"
+                class="mb-0 text-xl font-bold text-new-gray-700"
             >
                 Whoops! Query was aborted.
             </p>
-            <div class="text-gray-500 text-base error-desc">
+            <div class="text-gray-500 text-base error-desc mt-1">
                 Looks like you pulled the plug. That’s alright, you can always run it again :)
             </div>
         </div>
@@ -60,6 +60,9 @@
     })
 </script>
 <style lang="less" scoped>
+    .abort-icon {
+        height: 148px;
+    }
     .error-img {
         flex: 2;
     }

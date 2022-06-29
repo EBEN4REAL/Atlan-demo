@@ -10,16 +10,16 @@
                 v-if="httpErrorCode(queryErrorObj?.errorCode)==='403'"
                 class="error-img text-right"
             >
-                <AtlanIcon icon="queryNoAccessIllus" class="w-36 h-36 mr-10" />
+                <AtlanIcon icon="queryNoAccessIllus" class="h-full mr-12" />
             </div>
             <div
                 v-else-if="queryErrorObj?.errorCode==='000'"
                 class="error-img text-right"
             >
-                <AtlanIcon icon="queryNoInternetIllus" class="w-36 h-36 mr-10" />
+                <AtlanIcon icon="queryNoInternetIllus" class="h-full mr-10" />
             </div>
             <div v-else class="error-img text-right">
-                <AtlanIcon icon="queryErrorIllus" class="w-36 h-36 mr-10" />
+                <AtlanIcon icon="queryErrorIllus" class="h-full mr-12" />
             </div>
 
             <div class="error-message text-left">
@@ -27,7 +27,7 @@
                 <!-- Which error -->
                 <p
                     v-if="queryErrorObj?.errorCode"
-                    class="mb-0 text-lg font-bold text-new-gray-700"
+                    class="mb-1 text-xl font-bold text-new-gray-700"
                 >
                     {{ errorMessage(queryErrorObj) }}
                 </p>
@@ -197,6 +197,7 @@
 </script>
 <style lang="less" scoped>
     .error-img {
+        height: 148px;
         flex: 2;
     }
     .error-message {
@@ -204,6 +205,14 @@
     }
     .error-desc {
         max-width: 460px;
+    }
+    .no-access-icon {
+        height: 148px;
+        width: 148px;
+    }
+    .no-internet-icon {
+        height: 148px;
+        width: 188px;
     }
 </style>
 <style lang="less" module>

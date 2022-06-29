@@ -44,7 +44,7 @@
         @change="handleInputChange"
     ></a-input>
     <a-input
-        v-else-if="['string', 'text', 'SQL'].includes(dataType)"
+        v-else-if="['string', 'text', 'SQL'].includes(dataType) || dataType === 'guid'"
         v-model:value="localValue"
         :maxlength="max || 50"
         placeholder="Type..."

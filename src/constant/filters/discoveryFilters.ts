@@ -133,6 +133,7 @@ export const discoveryFilters = [
                 typeName: 'string',
                 subTypeName: 'guid',
                 isMandatory: true,
+                defaultOperator: 'equals'
             },
             {
                 name: 'qualifiedName',

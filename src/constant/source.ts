@@ -14,9 +14,8 @@ import S3 from '~/assets/images/source/svg/s3.svg?url'
 import Presto from '~/assets/images/source/svg/presto.svg?url'
 import Trino from '~/assets/images/source/svg/trino.svg?url'
 import GDS from '~/assets/images/source/svg/gds.svg?url'
-
-// FIXME: Add an SVG for glue
 import Glue from '~/assets/images/source/svg/glue.svg?url'
+import Netsuite from '~/assets/images/source/svg/netsuite.svg?url'
 
 export const SourceList = [
     {
@@ -692,5 +691,44 @@ export const SourceList = [
             'Query',
             'Folder',
         ],
+    },
+    {
+        id: 'netsuite',
+        label: 'Netsuite',
+        image: Netsuite,
+        filterMaxLevel: 2,
+        hierarchy: [
+            {
+                typeName: 'Database',
+                name: 'Database',
+                parent: '',
+                attribute: 'databaseQualifiedName',
+                level: 1,
+                image: 'Database',
+            },
+            {
+                typeName: 'Schema',
+                name: 'Schema',
+                parent: 'Database',
+                attribute: 'schemaQualifiedName',
+                level: 2,
+                image: 'Schema',
+            },
+            {
+                typeName: 'Table',
+                name: 'Table',
+                parent: 'Schema',
+                attribute: 'tableQualifiedName',
+                level: 3,
+            },
+            {
+                typeName: 'View',
+                name: 'View',
+                parent: 'Schema',
+                attribute: 'viewQualifiedName',
+                level: 3,
+            },
+        ],
+        types: ['Database', 'Schema', 'Table', 'Column', 'View'],
     },
 ]

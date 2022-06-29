@@ -1,4 +1,10 @@
 export const actions = {
+    setDimension(width, height) {
+        this.dimension = { width, height }
+    },
+    setSidebar(state) {
+        this.sidebar = state
+    },
     setSelectedNodeId(nodeId) {
         this.selectedNodeId = nodeId
     },

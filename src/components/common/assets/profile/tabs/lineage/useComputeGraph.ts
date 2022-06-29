@@ -36,13 +36,8 @@ export default async function useComputeGraph({
     lineageStore.mergedLineageData = {}
     lineageStore.nodesPortsList = {}
     lineageStore.portLineage = {}
-    lineageStore.preferences = {
-        showArrow: true,
-        showSchema: true,
-        showDatabase: true,
-        showAnnouncement: true,
-        showLegend: false,
-    }
+    lineageStore.fullScreen = false
+    lineageStore.sidebar = false
 
     const model = ref(null)
     const edges = ref([])

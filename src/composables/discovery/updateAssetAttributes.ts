@@ -10,6 +10,7 @@ import { generateUUID } from '~/utils/helper/generator'
 import { Entity } from '~/services/meta/entity/index'
 import { assetInterface } from '~/types/assets/asset.interface'
 import useAddEvent from '~/composables/eventTracking/useAddEvent'
+import { useConnectionStore } from '~/store/connection'
 
 export default function updateAssetAttributes(
     selectedAsset,
@@ -567,7 +568,7 @@ export default function updateAssetAttributes(
         mutate()
     }
     const handleAssetsToUpdate = inject('handleAssetsToUpdate')
-   const handleSeeAlsoUpdate = () => {
+    const handleSeeAlsoUpdate = () => {
         entity.value = {
             ...entity.value,
             relationshipAttributes: {
@@ -611,7 +612,7 @@ export default function updateAssetAttributes(
         body.value.entities = [entity.value]
         currentMessage.value = 'Antonyms have been updated'
         // TODO: change event name to be more specific ?
-        sendMetadataTrackEvent('antonyms_updated', {
+        sendMetadataTrackEvent('antonym_terms_updated', {
             count: localAntonyms.value?.length,
         })
         mutate()
@@ -624,7 +625,6 @@ export default function updateAssetAttributes(
             )
         )
         handleAssetsToUpdate(difference)
- 
     }
     const handleSynonymsUpdate = () => {
         console.log(localSynonyms.value)
@@ -641,7 +641,7 @@ export default function updateAssetAttributes(
         body.value.entities = [entity.value]
         currentMessage.value = 'Synonyms have been updated'
         // TODO: change event name to be more specific ?
-        sendMetadataTrackEvent('synonyms_updated', {
+        sendMetadataTrackEvent('synonym_terms_updated', {
             count: localSynonyms.value?.length,
         })
         mutate()
@@ -654,9 +654,8 @@ export default function updateAssetAttributes(
             )
         )
         handleAssetsToUpdate(difference)
- 
     }
- 
+
     const handlePreferredTermsUpdate = () => {
         console.log(localPreferredTerms.value)
         entity.value = {
@@ -670,22 +669,25 @@ export default function updateAssetAttributes(
             },
         }
         body.value.entities = [entity.value]
-        currentMessage.value = 'Preferred Terms have been updated'
+        currentMessage.value = 'Recommended Terms have been updated'
         // TODO: change event name to be more specific ?
-        sendMetadataTrackEvent('preferred_terms_updated', {
+        sendMetadataTrackEvent('recommended_terms_updated', {
             count: localPreferredTerms.value?.length,
         })
         mutate()
-        const localPreferredTermsGuids = localPreferredTerms.value?.map((el) => el?.guid)
+        const localPreferredTermsGuids = localPreferredTerms.value?.map(
+            (el) => el?.guid
+        )
         const assetPreferredTermsGuids =
-            selectedAsset?.value?.attributes?.preferredTerms?.map((el) => el?.guid)
+            selectedAsset?.value?.attributes?.preferredTerms?.map(
+                (el) => el?.guid
+            )
         const difference = localPreferredTermsGuids.concat(
             assetPreferredTermsGuids.filter(
                 (x: string) => !localPreferredTermsGuids.includes(x)
             )
         )
         handleAssetsToUpdate(difference)
- 
     }
 
     const handleParentCategoryUpdate = () => {
@@ -890,7 +892,7 @@ export default function updateAssetAttributes(
         if (synonyms(selectedAsset?.value) !== localSynonyms.value) {
             localSynonyms.value = synonyms(selectedAsset.value)
         }
- 
+
         if (
             preferredTerms(selectedAsset?.value) !== localPreferredTerms.value
         ) {
@@ -919,6 +921,8 @@ export default function updateAssetAttributes(
     const updateDrawerList = inject('updateDrawerList')
     const updateColumnList = inject('updateColumnList')
 
+    const connectionStore = useConnectionStore()
+
     whenever(isUpdateReady, () => {
         if (!isDrawer && !isColumnList && updateList) {
             updateList(asset.value)
@@ -933,6 +937,9 @@ export default function updateAssetAttributes(
             }
         }
         isConfetti.value = false
+        if (asset.value?.typeName === 'Connection') {
+            connectionStore.updateConnectionList(asset.value)
+        }
     })
 
     const classificationBody = ref({

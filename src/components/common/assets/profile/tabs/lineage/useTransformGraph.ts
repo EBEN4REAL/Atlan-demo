@@ -1,3 +1,6 @@
+/** STORE */
+import useLineageStore from '~/store/lineage'
+
 /**
  * It takes a graph and an event emitter as input, and returns a set of functions that can be used to transform the graph
  * @param graph - The graph object.
@@ -5,6 +8,8 @@
  * @returns The `useTransformGraph` function returns an object with three properties: `zoom`, `fit`, and `fullscreen`.
  */
 export default function useTransformGraph(graph, emit) {
+    const lineageStore = useLineageStore()
+
     // Zoom
     const zoom = (factor) => {
         graph.value.zoom(factor)
@@ -18,15 +23,27 @@ export default function useTransformGraph(graph, emit) {
         graph.value.scrollToCell(cellToFit, { animation: { duration: 600 } })
     }
 
-    // Fullscreen
-    const fullscreen = (targetEle) => {
-        if (document.fullscreenElement) document.exitFullscreen()
-        else targetEle.value.requestFullscreen()
+    // controlDimensions
+    const controlDimensions = (fs) => {
+        const { isSidebar } = lineageStore
+        const sb = isSidebar()
+        const dWidth = window.outerWidth - 60
+        const fsWidth = window.outerWidth
+        const sbWidth = fs ? window.outerWidth - 420 : window.outerWidth - 480
+
+        // eslint-disable-next-line no-nested-ternary
+        const width = sb ? sbWidth : fs ? fsWidth : dWidth
+        const height = fs
+            ? window.outerHeight / 1.01
+            : window.outerHeight / 1.35
+
+        lineageStore.setDimension(width, height)
+        graph.value.resize(width, height)
     }
 
     return {
         zoom,
         fit,
-        fullscreen,
+        controlDimensions,
     }
 }

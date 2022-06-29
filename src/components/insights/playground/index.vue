@@ -72,13 +72,7 @@
                                 "
                             >
                                 <div
-                                    class="flex items-center inline_tab"
-                                    :style="{
-                                        width:
-                                            tabs.length == 1 ? '89px' : '73px',
-                                        'max-width':
-                                            tabs.length == 1 ? '89px' : '73px',
-                                    }"
+                                    class="inline_tab"
                                     @mouseenter="setTabHover(tab)"
                                     @mouseleave="setTabHover(null)"
                                     @contextmenu.prevent="showContextMenu"
@@ -158,8 +152,8 @@
 
         <ResultPaneFooter
             v-if="
-                activeInlineTabKey &&
-                activeInlineTab.playground.resultsPane.outputPaneSize > 0
+                (columnsCount > 0 && isQueryRunning === 'success') ||
+                insights_Store.previewTabs.length
             "
         />
 
@@ -384,17 +378,13 @@
                                 pushGuidToURL
                             )
                         }
-                        debugger
                     } else {
-                        debugger
                         inlineTabRemove(
                             targetKey as string,
                             tabs,
                             activeInlineTabKey,
                             pushGuidToURL
                         )
-
-                        debugger
                     }
                 }
             }
@@ -561,7 +551,40 @@
                 tabs.value.splice(dropIndex, 0, content)
             }
 
+            const columnsCount = computed(() => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    const _index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                    if (_index < 0) return 0
+                    return insights_Store.previewTabs[_index].columns.length
+                } else {
+                    return (
+                        activeInlineTab.value.playground.resultsPane.result
+                            .totalRowsCount >= 0 &&
+                        activeInlineTab.value.playground.editor.columnList
+                            .length > 0
+                    )
+                }
+            })
+            const isQueryRunning = computed(() => {
+                if (insights_Store.activePreviewGuid !== undefined) {
+                    const _index = insights_Store.previewTabs.findIndex(
+                        (el) =>
+                            el.asset.guid === insights_Store.activePreviewGuid
+                    )
+                    return insights_Store.previewTabs[_index].isQueryRunning
+                } else {
+                    return activeInlineTab.value?.playground?.resultsPane
+                        ?.result?.isQueryRunning
+                }
+            })
+
             return {
+                insights_Store,
+                columnsCount,
+                isQueryRunning,
                 queryExecutionTime,
                 onHorizontalResize,
                 horizontalPaneResize,
@@ -718,10 +741,9 @@
         height: calc(100vh - 19rem);
     }
     .inline_tab {
-        max-width: 110px;
+        min-width: 50px;
         width: 110px;
-        min-width: 100px;
-        overflow: hidden;
+        max-width: 150px;
         height: 28px !important;
         // min-width: 3rem
     }
@@ -730,10 +752,6 @@
         // height: 16px;
         background: #ededed;
         // border-radius: 2px;
-    }
-    .inline_tab_label {
-        max-width: 78px;
-        // overflow: hidden;
     }
     .playground-height {
         // @apply bg-gray-light !important;

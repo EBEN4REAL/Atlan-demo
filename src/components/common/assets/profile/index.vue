@@ -1,9 +1,13 @@
 <template>
     <div class="flex flex-col w-full h-full">
-        <AssetHeader :item="asset" />
+        <AssetHeader v-if="!isFullscreen" :item="asset" />
         <a-tabs
             v-model:activeKey="activeKey"
-            :class="$style.profiletab"
+            :class="[
+                $style.profiletab,
+                activeKey,
+                isFullscreen ? 'isFullscreen' : '',
+            ]"
             class="flex-1"
             :destroy-inactive-tab-pane="true"
         >
@@ -60,6 +64,7 @@
         watch,
         inject,
     } from 'vue'
+    import { useFullscreen } from '@vueuse/core'
     import { useRoute, useRouter } from 'vue-router'
 
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -117,6 +122,7 @@
         },
         emits: ['preview'],
         setup(props) {
+            const { isFullscreen } = useFullscreen()
             const { asset, page } = toRefs(props)
             const { getAllowedActions } = useAssetEvaluate()
             const actions = computed(() => getAllowedActions(asset.value))
@@ -150,7 +156,10 @@
             watch(
                 activeKey,
                 () => {
-                    if (activeKey.value === 'columns') {
+                    if (
+                        activeKey.value === 'columns' ||
+                        activeKey.value === 'lineage'
+                    ) {
                         handlePreviewVisibility(false)
                     } else {
                         handlePreviewVisibility(true)
@@ -164,6 +173,7 @@
                 activeKey,
                 isScrubbed,
                 columnCount,
+                isFullscreen,
             }
         },
     })
@@ -195,6 +205,19 @@ meta:
         }
         :global(.ant-tabs-content) {
             @apply min-h-full !important;
+        }
+    }
+</style>
+
+<style lang="less">
+    .lineage {
+        .ant-tabs-content-holder {
+            background-color: #f6f7f9 !important;
+        }
+    }
+    .isFullscreen {
+        .ant-tabs-nav {
+            display: none !important;
         }
     }
 </style>

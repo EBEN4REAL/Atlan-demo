@@ -10,6 +10,7 @@
                 maxWidth: '10%',
             }"
             overlayClassName="dropdown-overlay"
+            :get-popup-container="getContainerElement"
             :trigger="['click']"
             destroyPopupOnHide="true"
             @visibleChange="onDropdownIsVisibleChange($event)"
@@ -400,15 +401,19 @@
         ref,
         Ref,
         toRefs,
+        inject,
         watch,
     } from 'vue'
     import { capitalizeFirstLetter } from '~/utils/string'
     import { List } from '~/constant/status'
     import { useConnectionStore } from '~/store/connection'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import AssetDropdownNewDatabase from '~/components/common/dropdown/assetDropdownNewDatabase.vue'
     import AssetDropdownNewSchema from '~/components/common/dropdown/assetDropdownNewSchema.vue'
-
+    import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
+    import { useUtils } from '~/components/insights/common/composables/useUtils'
+    import { watchAtMost } from '@vueuse/core'
+    import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
     import Tooltip from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
@@ -424,11 +429,6 @@
                     attributeValue: string
                 }>,
                 required: true,
-            },
-            filterSourceIds: {
-                type: Object as PropType<string[]>,
-                required: false,
-                default: () => [],
             },
             disabled: {
                 type: Boolean,
@@ -446,9 +446,13 @@
         },
         emits: ['change', 'update:data', 'blur', 'changeConnector'],
         setup(props, { emit }) {
+            const { getFirstQueryConnection } = useUtils()
+            const activeInlineTab = inject(
+                'activeInlineTab'
+            ) as Ref<activeInlineTabInterface>
             const treeSelectRef = ref()
             const { getConnectorName } = useAssetInfo()
-            const { data, filterSourceIds } = toRefs(props)
+            const { data } = toRefs(props)
             const searchValue = ref('')
             const clearStateDB = ref(false)
             const clearStateSchema = ref(false)
@@ -486,13 +490,48 @@
             }
 
             const store = useConnectionStore()
+
             // console.log(store.get(), 'sourceMap')
             /* Checking if filterSourceIds passed -> whitelist the sourcelist
                 else fetch all the sourcelist from store */
-            const filteredList = computed(() =>
-                filterSourceIds.value.length > 0
-                    ? filterSourceList(filterSourceIds.value)
+            const filteredList = ref(
+                getBISourceTypes(store).length > 0
+                    ? filterSourceList(getBISourceTypes(store))
                     : store.getSourceList
+            )
+            // IMP: If user lands directly on insights on conenctions fetch done, we need to refresh the filteredList once it is loaded
+            watchAtMost(
+                () => store.list,
+                () => {
+                    filteredList.value =
+                        getBISourceTypes(store).length > 0
+                            ? filterSourceList(getBISourceTypes(store))
+                            : store.getSourceList
+
+                    if (
+                        !activeInlineTab.value.explorer.schema?.connectors
+                            ?.attributeName
+                    ) {
+                        const firstConnection = getFirstQueryConnection()
+                        if (
+                            firstConnection &&
+                            firstConnection?.attributes?.name
+                        ) {
+                            activeInlineTab.value.explorer.schema.connectors.attributeName =
+                                'connectionQualifiedName'
+                            activeInlineTab.value.explorer.schema.connectors.attributeValue =
+                                firstConnection?.attributes?.qualifiedName
+
+                            activeInlineTab.value.playground.editor.context.attributeName =
+                                'connectionQualifiedName'
+                            activeInlineTab.value.playground.editor.context.attributeValue =
+                                firstConnection?.attributes?.qualifiedName
+                        }
+                    }
+                },
+                {
+                    count: 2,
+                }
             )
             const getImage = (id: string) => store.getImage(id)
             const list = computed(() => List)
@@ -861,9 +900,11 @@
                 SchemaPopoverVisible.value = e
             }
 
+            const getContainerElement = () =>
+                document.getElementById('fullScreenId')
+
             return {
                 treeSelectRef,
-                filterSourceIds,
                 expandedKeys,
                 selectNode,
                 handleChange,
@@ -902,6 +943,7 @@
                 SchemaPopoverVisible,
                 onDBPopoverVisibleChange,
                 onSchemaPopoverVisibleChange,
+                getContainerElement,
             }
         },
     })

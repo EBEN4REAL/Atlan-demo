@@ -332,7 +332,7 @@
     import useTypedefData from '~/composables/typedefs/useTypedefData'
     import useLineageService from '~/services/meta/lineage/lineage_service'
     import { LineageImpactedAssetsAttributes } from '~/constant/projection'
-    import useCustomMetadata from '@/common/assets/preview/lineage/useCustomMetadata'
+    import useCustomMetadata from '@/common/assets/profile/tabs/lineage/useCustomMetadata'
 
     /** UTILS */
     import {

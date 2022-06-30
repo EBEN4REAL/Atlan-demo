@@ -124,7 +124,7 @@
             const localValue = ref(modelValue.value)
 
             const { start } = useTimeoutFn(() => {
-                searchBar.value?.focus()
+                if (autofocus.value) searchBar.value?.focus()
             }, 100)
 
             const forceFocus = () => {

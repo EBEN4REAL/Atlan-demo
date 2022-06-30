@@ -10,12 +10,12 @@ export const discoverySorting = [
     {
         id: 'name.keyword-asc',
         label: 'Name',
-        suffix: '(a-z)',
+        suffix: '(A-Z)',
     },
     {
         id: 'name.keyword-desc',
         label: 'Name',
-        suffix: '(z-a)',
+        suffix: '(Z-A)',
     },
     {
         id: '__modificationTimestamp-desc',

@@ -39,7 +39,7 @@
             <div class="px-4 mb-4" v-if="!isShare">
                 <span class="text-sm font-normal text-gray-700">Name</span>
                 <a-input
-                    :ref="titleBarRef"
+                    ref="titleBarRef"
                     v-model:value="title"
                     class="w-full mt-1 text-red-200 border-gray-300 rounded-lg focus:border-primary-focus focus:border-2 focus:outline-none"
                     :class="$style.inputBox"
@@ -336,7 +336,7 @@
             const description: Ref<string | undefined> = ref(
                 isCreate.value ? '' : item?.value?.attributes.description
             )
-            const titleBarRef: Ref<null | HTMLInputElement> = ref(null)
+            const titleBarRef: Ref<null | HTMLInputElement> = ref()
             const refetchQueryCollection = inject(
                 'refetchQueryCollection'
             ) as Ref<Function>

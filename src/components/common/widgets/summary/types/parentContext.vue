@@ -86,6 +86,7 @@
                     'LookerModel',
                     'LookerExplore',
                     'LookerField',
+                    'LookerView',
                 ].includes(asset?.typeName) && parentProject(asset)?.guid
             "
             class="flex flex-col text-sm"

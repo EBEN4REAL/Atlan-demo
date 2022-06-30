@@ -45,6 +45,7 @@
         provideDataInterface,
     } from '~/components/insights/common/composables/useProvide'
     import { useVQB } from '~/components/insights/playground/editor/vqb/composables/useVQB'
+    import useAddEvent from '~/composables/eventTracking/useAddEvent'
 
     export default defineComponent({
         name: 'VQB',
@@ -97,6 +98,10 @@
                     activeInlineTabKey,
                     inlineTabs
                 )
+                // useAddEvent('insights', 'query', 'panel_add', {
+                //     panel_type: panel.id,
+                //     panel_source: 'plus_icon',
+                // })
             }
 
             /* Accesss */

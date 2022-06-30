@@ -479,6 +479,11 @@ import CSVLogo from '~/assets/images/icons/csv-logo.svg'
 import PaperClip from '~/assets/images/icons/paper-clip.svg'
 import FlaskIcon from '~/assets/images/icons/flask.svg'
 
+import Disable from '~/assets/images/icons/disable.svg'
+import CheckFailed from '~/assets/images/icons/check-failed.svg'
+import CheckProgress from '~/assets/images/icons/check-in-progress.svg'
+import CheckPending from '~/assets/images/icons/check-pending.svg'
+
 // Illustrations - keeping them Async
 const NoAssetsFound = defineAsyncComponent(
     () => import('~/assets/images/illustrations/no_assets_to_show.svg')
@@ -1121,4 +1126,8 @@ export default {
     IllustrationPurposeDemo,
     FlaskIcon,
     AssociatedTerm,
+    Disable,
+    CheckFailed,
+    CheckProgress,
+    CheckPending,
 }

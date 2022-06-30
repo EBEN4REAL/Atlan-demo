@@ -108,7 +108,7 @@
     >
         <span
             :ref="drag"
-            class="w-full text-sm truncate inline_tab_label"
+            class="text-sm truncate inline_tab_label"
             :class="{
                 'box-dragging': isDragging,
                 'bg-new-gray-100': !isSelected && !isOutsideHover,
@@ -118,89 +118,90 @@
             :style="{ opacity }"
         >
             <div
-                class="inner-box justify-between"
+                class="flex justify-between inner-box"
                 :style="{ 'padding-top': 1 }"
                 role="Box"
             >
-                <Tooltip
-                    clamp-percentage="99%"
-                    :tooltip-text="title"
-                    :rows="1"
-                />
-                <AtlanIcon
-                    v-if="
-                        tab.playground.resultsPane.result
-                            .isQueryRunning === 'error' &&
-                        index !== activeInlineTabKey
-                    "
-                    icon="FailedQuery"
-                    class="absolute w-4 h-4 right-1 top-1.5"
-                    :class="{
-                        'unsaved-dot': tabHover===index
-                    }"
-                />
-
-                <AtlanIcon
-                    v-else-if="
-                        tab.playground.resultsPane.result
-                            .isQueryRunning === 'loading'
-                    "
-                    icon="RunningQuery"
-                    class="w-4 h-4 animate-spin absolute right-1 top-1.5"
-                    :class="{
-                        'unsaved-dot': tabHover===index
-                    }"
-                />
-                <AtlanIcon
-                    v-else-if="
-                        tab.playground.resultsPane.result
-                            .isQueryRunning === 'success' &&
-                        index !== activeInlineTabKey
-                    "
-                    icon="SuccessQuery"
-                    class="w-3 h-3 absolute right-2 top-2"
-                    :class="{
-                        'unsaved-dot': tabHover===index
-                    }"
-                />
-                <div
-                    v-else-if="!tab.isSaved"
-                    class="flex items-center cross-hover"
-                    :class="{
-                        'unsaved-dot': tabHover===index
-                    }"
-                >
-                    <div
-                        v-if="
-                            tab?.playground?.editor?.text?.length >
-                                0 || tab?.queryId
-                        "
-                        class="w-1.5 h-1.5 rounded-full bg-primary absolute right-2 top-2.5"
-                    ></div>
-                </div>
-                <div @click.stop="callOnEdit">
-                    <AtlanIcon
-                        v-if="length >= 2"
-                        icon="Close"
-                        class="w-4 h-4 absolute right-1 top-1.5 rounded-sm cross-hover"
-                        :style="{
-                            opacity: tabHover === index ? 1 : 0,
-                        }"
+                <div class="tab-inner-title">
+                    <Tooltip
+                        clamp-percentage="100%"
+                        :tooltip-text="title"
+                        :rows="1"
+                        class="p-1 pt-1.5"
                     />
+                </div>
+                <div
+                    v-if="tabHover!==index"
+                    class="w-4 py-1 px-0.5"
+                >
+                    <AtlanIcon
+                        v-if="
+                            tab.playground.resultsPane.result
+                                .isQueryRunning === 'error' &&
+                            index !== activeInlineTabKey
+                        "
+                        icon="FailedQuery"
+                        class="w-4 h-4"
+                    />
+
+                    <AtlanIcon
+                        v-else-if="
+                            tab.playground.resultsPane.result
+                                .isQueryRunning === 'loading'
+                        "
+                        icon="RunningQuery"
+                        class="w-4 h-4 animate-spin"
+                    />
+                    <AtlanIcon
+                        v-else-if="
+                            tab.playground.resultsPane.result
+                                .isQueryRunning === 'success' &&
+                            index !== activeInlineTabKey
+                        "
+                        icon="SuccessQuery"
+                        class="w-4 h-3"
+                    />
+                    <div
+                        v-else-if="!tab.isSaved"
+                    >
+                        <div
+                            v-if="
+                                tab?.playground?.editor?.text?.length >
+                                    0 || tab?.queryId
+                            "
+                            class="text-primary unsaved-dot text-base"
+                        >•</div>
+                    </div>
+                </div>
+                <div 
+                    v-else
+                    class="pt-1 w-4"
+                >
+                    <div 
+                        class="flex rounded-sm my-0.5 h-4 " 
+                        :class="{
+                            'close-hover': length >= 2
+                        }"
+                    >
+                        <AtlanIcon
+                            v-if="length >= 2"
+                            icon="Close"
+                            @click.stop="callOnEdit"
+                        />
+                    </div>
                 </div>
             </div>
         </span>
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="less">
     .drop-container {
         color: white;
         text-align: center;
         float: left;
     }
     .inline_tab_label {
-        max-width: 110px;
         padding-right: 5px;
     }
     .box {
@@ -211,9 +212,10 @@
           opacity: 0.1;
         }
     }
+    .tab-inner-title{
+        width: 90px;
+    }
     .inner-box {
-        padding: 5px 0px 5px 5px;  
-        width: 85px;
         display: flex;
     }
     .box-outside-hover {
@@ -232,13 +234,14 @@
         border-left: 2px solid rgb(82, 119, 215);
     }
     .unsaved-dot {
-        visibility: hidden !important;
+        width: 16;
+        margin: 1px
     }
-    .cross-hover {
-        margin-left: 2px;
+    .close-hover {
         z-index: 4;
+        padding: 0.5px ;
     }
-    .cross-hover:hover {
-        background: #ededed;
+    .close-hover:hover {
+        background-color: #ededed !important;
     }
 </style>

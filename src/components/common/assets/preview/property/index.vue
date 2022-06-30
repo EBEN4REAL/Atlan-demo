@@ -218,6 +218,15 @@
                 class="flex flex-col w-full gap-y-5"
             >
                 <div class="flex flex-col text-sm">
+                    <span class="mb-1 text-gray-500"
+                        >Trashed Data Studio Asset</span
+                    >
+
+                    <span class="text-gray-700">{{
+                        isTrashedDataStudioAsset(selectedAsset) ? 'Yes' : 'No'
+                    }}</span>
+                </div>
+                <div class="flex flex-col text-sm">
                     <span class="mb-1 text-gray-500">Google Service</span>
 
                     <span class="text-gray-700">{{
@@ -586,6 +595,7 @@
                 googleProjectName,
                 googleProjectId,
                 googleProjectNumber,
+                isTrashedDataStudioAsset,
             } = useAssetInfo()
 
             const { role } = whoami()
@@ -645,6 +655,7 @@
                 googleProjectName,
                 googleProjectId,
                 googleProjectNumber,
+                isTrashedDataStudioAsset,
                 map,
                 role,
             }

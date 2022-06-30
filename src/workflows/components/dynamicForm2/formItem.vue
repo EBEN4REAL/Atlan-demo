@@ -106,6 +106,7 @@
     import CombinedUserSelector from './widget/combinedUserSelector.vue'
     import Alias from './widget/alias.vue'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
+    import Sage from './widget/authCheck.vue'
     import { useRoute } from 'vue-router'
 
     export default defineComponent({
@@ -134,6 +135,7 @@
             Datetime,
             Apitree,
             Date,
+            Sage,
             CombinedUserSelector,
         },
         props: {

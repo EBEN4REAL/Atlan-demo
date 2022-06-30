@@ -97,9 +97,9 @@ export function addFilter(
         }
         activeInlineTab.value.playground.vqb.panels.push(panel)
     }
-    // useAddEvent('insights', 'query', 'panelAdd', {
+    // useAddEvent('insights', 'query', 'panel_add', {
     //     panel_type: 'filter',
-    //     panel_source: 'schema explorer',
+    //     panel_source: 'schema_explorer',
     // })
 }
 
@@ -189,9 +189,9 @@ export function addAggregate(
         }
         activeInlineTab.value.playground.vqb.panels.push(panel)
     }
-    // useAddEvent('insights', 'query', 'panelAdd', {
+    // useAddEvent('insights', 'query', 'panel_add', {
     //     panel_type: 'aggregate',
-    //     panel_source: 'schema explorer',
+    //     panel_source: 'schema_explorer',
     // })
 }
 
@@ -278,9 +278,9 @@ export function addGroup(
         }
         activeInlineTab.value.playground.vqb.panels.push(panel)
     }
-    // useAddEvent('insights', 'query', 'panelAdd', {
+    // useAddEvent('insights', 'query', 'panel_add', {
     //     panel_type: 'group',
-    //     panel_source: 'schema explorer',
+    //     panel_source: 'schema_explorer',
     // })
 }
 export function addTable(

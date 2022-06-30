@@ -99,7 +99,6 @@
                                 />
 
                                 <CertificateBadge
-                                    v-if="certificateStatus(record.item)"
                                     :status="certificateStatus(record.item)"
                                     :username="
                                         certificateUpdatedBy(record.item)
@@ -204,10 +203,10 @@
                 <AtlanIcon icon="CaretRight" />
             </AtlanBtn>
         </div>
-
         <AssetDrawer
             :guid="selectedRowGuid"
             :show-drawer="showColumnSidebar"
+            :watch-guid="true"
             @closeDrawer="handleCloseColumnSidebar"
             @update="handleListUpdate"
         />
@@ -424,13 +423,15 @@
             }
 
             const handleListUpdate = (asset: any) => {
-                const index = list.value.findIndex((i) => i.guid === asset.guid)
+                const index = list.value?.findIndex(
+                    (i) => i?.guid === asset?.guid
+                )
                 if (index > -1) {
                     list.value[index] = asset
                 }
 
                 // In case column from url was updated instead of the other list (20 items)
-                if (asset.guid === columnFromUrl.value[0]?.guid) {
+                if (asset?.guid === columnFromUrl.value[0]?.guid) {
                     columnFromUrl.value[0] = asset
                 }
 

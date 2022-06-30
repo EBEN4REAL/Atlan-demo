@@ -61,7 +61,7 @@
             <EmptyView
                 empty-screen="NoAssetsFound"
                 image-class="h-44"
-                desc="No columns found"
+                :desc="`No columns found ${queryText.length > 0 ? 'with ' + queryText : ''}`"
             ></EmptyView>
         </div>
         <div

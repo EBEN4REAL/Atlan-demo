@@ -123,6 +123,7 @@
                 return keys.join('_')
             })
 
+
             const defaultOperator = ref(operators[operatorDataType.value])
             const localOperator = ref(condition.operator)
 

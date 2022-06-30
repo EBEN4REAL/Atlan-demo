@@ -996,6 +996,7 @@
                                             'lookermodel',
                                             'lookerexplore',
                                             'lookerfield',
+                                            'lookerview',
                                         ].includes(item.typeName?.toLowerCase())
                                     "
                                     class="flex flex-wrap text-sm text-gray-500 gap-x-2"

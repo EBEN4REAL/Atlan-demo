@@ -1,15 +1,7 @@
 <template>
     <div class="flex items-center">
-        <!-- <PreviewTabsIcon -->
-        <!--     :displayMode="true" -->
-        <!--     :image="found.options.imageId" -->
-        <!--     :emoji="found.options.emoji" -->
-        <!--     :is-active="false" -->
-        <!--     :is-scrubbed="false" -->
-        <!--     class="mr-1" -->
-        <!-- /> -->
         <span>
-            <b> {{ found?.displayName }} </b> was updated</span
+            <b> {{ found?.displayName || found?.name }} </b> was updated</span
         >
     </div>
 
@@ -25,7 +17,7 @@
                         getAttribute(found, attributeName)?.name
                     }}
                 </div>
-                <div>{{ value }}</div>
+                <div class="mb-2 mt-1">{{ value }}</div>
             </div>
         </div>
     </div>
@@ -55,15 +47,14 @@
 
             const { customMetadataList } = useTypedefData()
 
-            const found = computed(() => {
-                return customMetadataList.value.find(
+            const found = computed(() =>
+                customMetadataList.value.find(
                     (item) => item.name === data.value?.value.typeName
                 )
-            })
+            )
 
-            const getAttribute = (foundCM, name) => {
-                return foundCM?.attributeDefs?.find((attr) => attr?.name === name)
-            }
+            const getAttribute = (foundCM, name) =>
+                foundCM?.attributeDefs?.find((attr) => attr?.name === name)
 
             return { data, customMetadataList, found, getAttribute }
         },

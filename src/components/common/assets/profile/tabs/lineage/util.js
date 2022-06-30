@@ -28,6 +28,7 @@ import {
     salesforce,
     s3,
     presto,
+    netsuite,
 } from './icons'
 
 const lineageStore = useLineageStore()
@@ -104,6 +105,7 @@ export const getNodeSourceImage = {
     salesforce,
     s3,
     presto,
+    netsuite,
 }
 
 /* A list of the types of ports that we are interested in. */

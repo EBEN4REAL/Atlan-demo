@@ -152,6 +152,7 @@
   "vite": {
     "optimizeDeps": {
       "include": [
+        "@antv/g2plot",
         "@antv/layout",
         "@antv/x6",
         "@tiptap/core",

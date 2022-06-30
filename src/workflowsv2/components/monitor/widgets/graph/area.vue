@@ -22,6 +22,7 @@
             onMounted(() => {
                 const area = new Area(`viz-${options.value.id}`, {
                     data: data.value,
+                    renderer: 'svg',
                     ...options.value.componentData.graphConfig,
                 })
 

@@ -799,6 +799,10 @@ export function useSavedQuery(
                         },
                         'Query'
                     )
+                    useAddEvent('insights', 'query', 'saved', {
+                        variables_count: getVariableCount(),
+                        visual_query: isVQB,
+                    })
 
                     const savedQuery = data.value.mutatedEntities.CREATE[0]
 

@@ -23,8 +23,8 @@
                 const bar = new Bar(`viz-${options.value.id}`, {
                     data: data.value,
                     renderer: 'svg',
-                    minBarWidth: 24,
-                    maxBarWidth: 24,
+                    minBarWidth: 20,
+                    maxBarWidth: 20,
                     barStyle: {
                         radius: [4, 4, 0, 0],
                     },

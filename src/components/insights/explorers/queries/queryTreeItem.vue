@@ -1226,6 +1226,14 @@
                     isDeleteLoading.value = isLoading.value
                     console.log('delete: ', isLoading.value)
                     if (newData && !newError) {
+                        if (type.toLowerCase() === 'query') {
+                            inlineTabRemove(
+                                key,
+                                inlineTabs,
+                                activeInlineTabKey,
+                                pushGuidToURL
+                            )
+                        }
                         useAddEvent(
                             'insights',
                             type === 'Query' ? 'query' : 'folder',
@@ -1233,13 +1241,6 @@
                             undefined
                         )
                         showDeletePopover.value = false
-
-                        inlineTabRemove(
-                            key,
-                            inlineTabs,
-                            activeInlineTabKey,
-                            pushGuidToURL
-                        )
 
                         // find the parent of the deleted node
                         // filter the children of the parent where key != deleted node's key

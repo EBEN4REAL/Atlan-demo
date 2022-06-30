@@ -162,13 +162,20 @@ export default function useEventGraph({
     )
 
     // getNodeQN
-    const getNodeQN = (portQN) => {
-        if (!portQN) return null
-        const qnArr = portQN.split('/')
-        qnArr.pop()
-        const parentName = qnArr.join('/')
-
-        return parentName
+    const getNodeQN = (portAttr) => {
+        const parentNodeQualifiedNames = [
+            'lookerExploreQualifiedName',
+            'lookerViewQualifiedName',
+            'powerBITableQualifiedName',
+            'datasourceQualifiedName',
+            'viewQualifiedName',
+            'tableQualifiedName',
+        ]
+        const item =
+            Object.keys(portAttr).find((x) =>
+                parentNodeQualifiedNames.includes(x)
+            ) || ''
+        return portAttr[item]
     }
 
     // getPortLabel
@@ -853,7 +860,7 @@ export default function useEventGraph({
 
         Object.entries(guidEntityMap).forEach(([k, v]) => {
             if (isPortTypeName(v.typeName) && k !== portId) {
-                const parentName = getNodeQN(v?.attributes?.qualifiedName)
+                const parentName = getNodeQN(v?.attributes)
                 const parentNode = Object.values(
                     mergedLineageData.value.guidEntityMap
                 ).find((x) => x.attributes.qualifiedName === parentName)
@@ -1883,7 +1890,7 @@ export default function useEventGraph({
 
             resetState()
 
-            const parentName = getNodeQN(newVal.attributes.qualifiedName)
+            const parentName = getNodeQN(newVal?.attributes)
             const parentNode = graph.value
                 .getNodes()
                 .find(

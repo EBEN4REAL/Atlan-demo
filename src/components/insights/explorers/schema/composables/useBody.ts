@@ -473,39 +473,92 @@ export function useBody(
     base.filterMinimumShouldMatch(1)
 
     const tempQuery = base.build()
-    if (typeName !== 'Column') return tempQuery
+    const functionArrayNonColumns = [
+        {
+            filter: {
+                match: {
+                    certificateStatus: 'VERIFIED',
+                },
+            },
+            weight: 5,
+        },
+        {
+            filter: {
+                match: {
+                    certificateStatus: 'DRAFT',
+                },
+            },
+            weight: 4,
+        },
+        {
+            filter: {
+                match: {
+                    __typeName: 'Table',
+                },
+            },
+            weight: 5,
+        },
+        {
+            filter: {
+                match: {
+                    __typeName: 'View',
+                },
+            },
+            weight: 5,
+        },
+        {
+            filter: {
+                match: {
+                    __typeName: 'Column',
+                },
+            },
+            weight: 3,
+        },
+        {
+            filter: {
+                match: {
+                    __typeName: 'AtlasGlossaryTerm',
+                },
+            },
+            weight: 4,
+        },
+    ]
 
+    const functionsForColumn = [
+        {
+            filter: {
+                match: {
+                    isPrimary: true,
+                },
+            },
+            weight: 5,
+        },
+        {
+            filter: {
+                match: {
+                    isForeign: true,
+                },
+            },
+            weight: 4,
+        },
+        {
+            filter: {
+                match: {
+                    isPartition: true,
+                },
+            },
+            weight: 3,
+        },
+    ]
     const query = {
         ...tempQuery,
         query: {
             function_score: {
                 query: tempQuery.query,
-                functions: [
-                    {
-                        filter: {
-                            match: {
-                                isPrimary: true,
-                            },
-                        },
-                        weight: 5,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                isForeign: true,
-                            },
-                        },
-                        weight: 4,
-                    },
-                    {
-                        filter: {
-                            match: {
-                                isPartition: true,
-                            },
-                        },
-                        weight: 3,
-                    },
-                ],
+                functions:
+                    typeName !== 'Column'
+                        ? functionArrayNonColumns
+                        : functionsForColumn,
                 boost_mode: 'sum',
                 score_mode: 'sum',
             },

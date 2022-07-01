@@ -74,6 +74,9 @@ export default async function useComputeGraph({
         return z.map((x) => x.guid)
     })
 
+    const isProcessEntity = (typeName) =>
+        ['Process', 'ColumnProcess'].includes(typeName)
+
     const createNodesFromEntityMap = (data, hasBase = true) => {
         const lineageData = { ...data }
         const { relations, baseEntityGuid } = lineageData
@@ -174,7 +177,7 @@ export default async function useComputeGraph({
         guidEntityMapValues.forEach((entity) => {
             const ent = { ...entity }
             const { typeName, guid } = ent
-
+            if (isProcessEntity(typeName)) return
             if (isNodeExist(guid)?.id) return
             if (allTargetsHiddenIds.value.includes(entity.guid)) return
             if (allSourcesHiddenIds.value.includes(entity.guid)) return

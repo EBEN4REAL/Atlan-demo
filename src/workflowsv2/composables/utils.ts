@@ -25,7 +25,7 @@ export const getIntervalString = (gt: number, lt: number) => {
     const interval = findIntervalByDate(gt, lt, true)
 
     const relative = !lt // if there is no less than date, treat it as if starts from today
-    const days = Math.floor((lt || Date.now() - gt) / (1000 * 60 * 60 * 24)) // ms * seconds * minutes * hours
+    const days = Math.round((lt || Date.now() - gt) / (1000 * 60 * 60 * 24)) // ms * seconds * minutes * hours
 
     // if (dayjs(gt).isToday()) return 'Today'
     // if (dayjs(gt).isYesterday() && dayjs(lt).isToday()) return 'Yesterday'

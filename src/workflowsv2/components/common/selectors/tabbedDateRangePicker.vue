@@ -61,7 +61,7 @@
 
             // Select today by default
             handleSelect('Last 24H', {
-                gt: dayjs().subtract(1, 'day').valueOf(),
+                gt: dayjs().subtract(1, 'day').add(30, 'minute').valueOf(),
             })
 
             whenever(

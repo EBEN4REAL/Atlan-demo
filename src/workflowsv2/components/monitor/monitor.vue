@@ -15,7 +15,7 @@
 
     import FilterStrip from './filterStrip.vue'
     import RunHistoryTable from './runHistoryTable.vue'
-    import DashboardComponent from './widgets/dashboard.vue'
+    import DashboardComponent from './dashboard.vue'
 
     export default defineComponent({
         name: 'MonitorWorkflows',

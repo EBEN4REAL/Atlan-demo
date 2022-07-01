@@ -7,35 +7,29 @@
                 :style="displayStyle"
                 @select="handleSelect"
                 @setup="handleSetup"
-                @sandbox="handleSandbox"
             ></PackageDiscoveryList>
         </keep-alive>
 
-        <WorkflowPreview
+        <PackageSidebar
             v-if="selectedPackage"
             class="h-full bg-white border-l border-gray-200 asset-preview-container"
             :item="selectedPackage"
             mode="package"
         />
-        <!-- <PackagePreview :selectedPackage="selectedPackage"></PackagePreview> -->
     </div>
 </template>
 
 <script lang="ts">
     import { computed, defineComponent, ref } from 'vue'
     import { useRoute, useRouter } from 'vue-router'
-    import WorkflowPreview from '~/workflows/components/workflows/preview/index.vue'
-
-    import PackageDiscoveryList from '~/workflows/components/packages/index.vue'
-
-    // import Sandbox from '~/workflows/components/packages/preview/sandbox.vue'
+    import PackageSidebar from '~/workflowsv2/migrated/packageSidebar.vue'
+    import PackageDiscoveryList from '~/workflowsv2/migrated/packages/index.vue'
 
     export default defineComponent({
         name: 'AtlanMarketplace',
         components: {
             PackageDiscoveryList,
-            // Sandbox,
-            WorkflowPreview,
+            PackageSidebar,
         },
         setup(props, { emit }) {
             const selectedPackage = ref(null)
@@ -58,15 +52,6 @@
                 selectedPackage.value = item
             }
 
-            const handleSandbox = (item: any) => {
-                selectedPackage.value = item
-                const url = selectedPackage.value.metadata.name
-                router.push({
-                    path: `/workflows/setup/${url}`,
-                    query: { sandbox: 'true' },
-                })
-            }
-
             const displayStyle = computed(() => {
                 if (isItem.value) {
                     return {
@@ -78,7 +63,6 @@
 
             return {
                 handleSetup,
-                handleSandbox,
                 selectedPackage,
                 isItem,
                 handleSelect,

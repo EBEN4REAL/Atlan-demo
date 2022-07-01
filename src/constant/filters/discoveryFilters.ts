@@ -76,7 +76,7 @@ export const discoveryFilters = [
                 typeName: 'string',
                 description: 'Name of the asset',
                 isMandatory: true,
-                defaultOperator: 'contains'
+                defaultOperator: 'contains',
             },
             {
                 name: 'description.keyword',
@@ -84,7 +84,7 @@ export const discoveryFilters = [
                 typeName: 'string',
                 description: 'Description of the asset on Atlan/Source',
                 isMandatory: false,
-                defaultOperator: 'contains'
+                defaultOperator: 'contains',
             },
             // {
             //     name: 'userDescription.keyword',
@@ -133,7 +133,7 @@ export const discoveryFilters = [
                 typeName: 'string',
                 subTypeName: 'guid',
                 isMandatory: true,
-                defaultOperator: 'equals'
+                defaultOperator: 'equals',
             },
             {
                 name: 'qualifiedName',
@@ -141,6 +141,7 @@ export const discoveryFilters = [
                 description: 'Unique name for the asset',
                 typeName: 'string',
                 isMandatory: true,
+                defaultOperator: 'startsWith',
             },
             {
                 name: '__createdBy',

@@ -101,8 +101,8 @@
     import { message } from 'ant-design-vue'
     import { watchOnce, until } from '@vueuse/core'
 
-    import WorkflowPreview from '~/workflows/components/workflows/preview/index.vue'
-    import DynamicForm from '~/workflows/components/dynamicForm2/index.vue'
+    import WorkflowPreview from '~/workflowsv2/migrated/packageSidebar.vue'
+    import DynamicForm from '~/workflowsv2/components/dynamicForm2/index.vue'
     import Schedule from '~/workflowsv2/components/marketplace/setup/schedule.vue'
 
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'

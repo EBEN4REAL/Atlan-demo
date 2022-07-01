@@ -1,8 +1,5 @@
 <template>
-    <div
-        v-if="featureEnabledMap[WORKFLOW_CENTER_V2]"
-        class="flex flex-col w-full h-full"
-    >
+    <div class="flex flex-col w-full h-full">
         <a-tabs
             v-model:activeKey="activeKey"
             :class="$style.profiletab"
@@ -31,13 +28,8 @@
 <script lang="ts">
     import { computed, defineComponent, defineAsyncComponent } from 'vue'
     import { useHead } from '@vueuse/head'
-    import { whenever } from '@vueuse/core'
     import { useRoute, useRouter } from 'vue-router'
     import { mainTabs } from '~/workflowsv2/constants/tabs'
-    import {
-        featureEnabledMap,
-        WORKFLOW_CENTER_V2,
-    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'WorkflowV2Tabs',
@@ -72,14 +64,12 @@
                 }
             }
 
-            if (featureEnabledMap.value[WORKFLOW_CENTER_V2]) {
-                if ((route.params.tab?.length || 0) > 17) {
-                    const newRoute = route.fullPath.replace(
-                        '/workflows/',
-                        '/workflows/profile/'
-                    )
-                    router.replace(newRoute)
-                }
+            if ((route.params.tab?.length || 0) > 17) {
+                const newRoute = route.fullPath.replace(
+                    '/workflows/',
+                    '/workflows/profile/'
+                )
+                router.replace(newRoute)
             }
 
             const activeKey = computed({
@@ -96,8 +86,6 @@
             return {
                 activeKey,
                 mainTabs,
-                featureEnabledMap,
-                WORKFLOW_CENTER_V2,
             }
         },
     })

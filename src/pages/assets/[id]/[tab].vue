@@ -14,7 +14,12 @@
             button-icon-class="mr-1 transform rotate-180"
             button-color="secondary"
             button-class="w-56 mt-5 font-bold"
-            @event="() => router.push('/assets')"
+            @event="
+                () => {
+                    router.push('/assets')
+                    showEmptyState = false
+                }
+            "
         ></EmptyView>
     </div>
     <AssetProfile
@@ -92,6 +97,7 @@
             const offset = ref(0)
             const facets = ref({
                 guid: id.value,
+                stateList: true,
             })
             const fetchKey = computed(() => {
                 if (

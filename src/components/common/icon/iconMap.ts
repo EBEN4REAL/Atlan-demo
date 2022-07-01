@@ -1,9 +1,24 @@
+import { defineAsyncComponent } from 'vue'
+
+// source list
+import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
+import Tableau from '~/assets/images/source/svg/Tableau.svg'
+import Redshift from '~/assets/images/source/svg/Redshift.svg'
+import Postgres from '~/assets/images/source/svg/postgres.svg'
+import Athena from '~/assets/images/source/svg/Athena.svg'
+import Databricks from '~/assets/images/source/svg/Databricks.svg'
+import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
+import BigQuery from '~/assets/images/source/svg/Bigquery.svg'
+import Looker from '~/assets/images/source/svg/Looker.svg'
+import Salesforce from '~/assets/images/source/svg/Salesforce.svg'
+import MySQL from '~/assets/images/source/svg/MySQL.svg'
+import Glue from '~/assets/images/source/svg/glue.svg'
+import Netsuite from '~/assets/images/source/svg/netsuite.svg'
+import S3 from '~/assets/images/source/svg/s3.svg'
+import GDS from '~/assets/images/source/svg/gds.svg'
+//
+
 import Legend from '~/assets/images/lineage/legend.svg'
-import LegendExpand from '~/assets/images/lineage/legendExpand.svg'
-import LegendCollapse from '~/assets/images/lineage/legendCollapse.svg'
-import LegendAnomaly from '~/assets/images/lineage/legendAnomaly.svg'
-import LegendSelected from '~/assets/images/lineage/legendSelected.svg'
-import LegendHighlighted from '~/assets/images/lineage/legendHighlighted.svg'
 import LegendProcess from '~/assets/images/lineage/legendProcess.svg'
 import LegendProcessDefault from '~/assets/images/lineage/legendProcessDefault.svg'
 import LegendProcessHighlighted from '~/assets/images/lineage/legendProcessHighlighted.svg'
@@ -13,6 +28,13 @@ import LegendField from '~/assets/images/lineage/legendField.svg'
 import LegendMeasures from '~/assets/images/lineage/legendMeasures.svg'
 import LegendDimension from '~/assets/images/lineage/legendDimension.svg'
 import LegendDimensionGroups from '~/assets/images/lineage/legendDimensionGroups.svg'
+import AssociatedTerm from '~/assets/images/icons/associated-term-blue.svg'
+
+import LegendExpand from '~/assets/images/lineage/legendExpand.svg'
+import LegendCollapse from '~/assets/images/lineage/legendCollapse.svg'
+import LegendAnomaly from '~/assets/images/lineage/legendAnomaly.svg'
+import LegendSelected from '~/assets/images/lineage/legendSelected.svg'
+import LegendHighlighted from '~/assets/images/lineage/legendHighlighted.svg'
 import Time from '~/assets/images/icons/time.svg'
 import BookmarkFilled from '~/assets/images/icons/bookmark-filled.svg'
 import Bookmark from '~/assets/images/icons/bookmark.svg'
@@ -27,9 +49,6 @@ import ForeignKey from '~/assets/images/icons/foreign.svg'
 import partitionKey from '~/assets/images/icons/partitionKey.svg'
 import AssetIcon from '~/assets/images/home/asset.svg'
 import InsightsIcon from '~/assets/images/home/Insights.svg'
-import MorningIcon from '~/assets/images/home/Morning.svg'
-import EveningIcon from '~/assets/images/home/Evening.svg'
-import AfternoonIcon from '~/assets/images/home/Afternoon.svg'
 import WorkflowsIcon from '~/assets/images/home/Workflows.svg'
 import AdminCenterIcon from '~/assets/images/home/AdminCenter.svg'
 import AtlanIcon from '~/assets/images/home/help/atlan.svg'
@@ -41,7 +60,7 @@ import Lock from '~/assets/images/icons/lock.svg'
 import Lock2 from '~/assets/images/icons/lock2.svg'
 import NoRelevantAsset from '~/assets/images/icons/no-relevant-assets.svg'
 import NoAssetOrganization from '~/assets/images/icons/no-assets-organization.svg'
-import NoAssetsFound from '~/assets/images/illustrations/no_assets_to_show.svg'
+
 import Share from '~/assets/images/icons/share.svg'
 import Filter from '~/assets/images/icons/filter.svg'
 import FilterDot from '~/assets/images/icons/filter-dot.svg'
@@ -51,8 +70,7 @@ import Cancel from '~/assets/images/icons/cancel.svg'
 import Notification from '~/assets/images/icons/notification.svg'
 import NotificationDot from '~/assets/images/icons/notification-dot.svg'
 import Search from '~/assets/images/icons/search.svg'
-import EmptySampleData from '~/assets/images/illustrations/empty_sample_data.svg'
-import ErrorSampleData from '~/assets/images/illustrations/error_sample_data.svg'
+
 import Hash from '~/assets/images/icons/hash.svg'
 import ArrowDown from '~/assets/images/icons/arrow-down.svg'
 import Expand from '~/assets/images/icons/expand.svg'
@@ -85,7 +103,6 @@ import Link from '~/assets/images/icons/link.svg'
 import Add from '~/assets/images/icons/add.svg'
 import CircleLoader from '~/assets/images/icons/circle-loader.svg'
 import Term from '~/assets/images/icons/term.svg'
-import AssociatedTerm from '~/assets/images/icons/associated-term-blue.svg'
 import TermDeprecated from '~/assets/images/icons/term-deprecated.svg'
 import TermIssue from '~/assets/images/icons/term-issue.svg'
 import TermVerified from '~/assets/images/icons/term-verified.svg'
@@ -189,29 +206,21 @@ import SettingsOutlined from '~/assets/images/icons/settings_outlined.svg'
 import IssuesAnnouncement from '~/assets/images/status/issues.svg'
 import InformationAnnouncement from '~/assets/images/status/information.svg'
 import WarningAnnouncement from '~/assets/images/status/warning.svg'
-import EmptyResource from '~/assets/images/icons/empty-resources.svg'
-import EmptyResource2 from '~/assets/images/icons/empty-resource-2.svg'
 import EmptyClassifications from '~/assets/images/icons/empty-classifications.svg'
 import Delete from '~/assets/images/icons/delete.svg'
 import NoDataInsights from '~/assets/images/icons/results.svg'
 import SomethingWrong from '~/assets/images/icons/something-wrong.svg'
 import NoSavedQueriesPersonal from '~/assets/images/icons/saved-queries-personal.svg'
-import AddQuery from '~/assets/images/icons/add-query.svg'
 import NoSchema from '~/assets/images/icons/no-schema.svg'
 import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
-import queryAbortIllus from '~/assets/images/icons/queryAbort.svg'
-import queryErrorIllus from '~/assets/images/icons/queryError.svg'
-import queryNoAccessIllus from '~/assets/images/icons/queryNoAccess.svg'
-import queryNoInternetIllus from '~/assets/images/icons/queryNoInternet.svg'
 import queryInvalid from '~/assets/images/icons/queryInvalidError.svg'
 
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
-import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg'
+
 import Slack from '~/assets/images/admin/integrations/slack.svg'
 import Jira from '~/assets/images/admin/integrations/jira.svg'
-import EmptyResultJira from '~/assets/images/admin/integrations/emptyResultJira.svg'
-import EmptyJira from '~/assets/images/admin/integrations/emptyJira.svg'
-import Teams from '~/assets/images/admin/integrations/teams.svg'
+import Gift from '~/assets/images/admin/integrations/gift.svg'
+
 import ExplorerTrigger from '~/assets/images/icons/explorer-panel-trigger-outline.svg'
 import ExplorerTriggerFilled from '~/assets/images/icons/explorer-trigger-filled.svg'
 import EmptySearchQuery from '~/assets/images/icons/empty_search_query.svg'
@@ -246,10 +255,9 @@ import TableVerified from '~/assets/images/icons/table_verified.svg'
 import Policy from '~/assets/images/icons/policy.svg'
 import PolicyAlt from '~/assets/images/icons/policy-alt.svg'
 import Key from '~/assets/images/icons/key.svg'
-import EmptyDiscover from '~/assets/images/illustrations/empty_discover.svg'
+
 import EmptyAssetProfile from '~/assets/images/icons/empty_asset_profile.svg'
-import EmptyLineage from '~/assets/images/illustrations/empty_lineage.svg'
-import EmptyLineageTab from '~/assets/images/illustrations/empty_lineage_tab.svg'
+
 import Property from '~/assets/images/icons/property.svg'
 import PropertyActive from '~/assets/images/icons/property_active.svg'
 import Query from '~/assets/images/icons/query.svg'
@@ -267,8 +275,6 @@ import Function from '~/assets/images/insights/autocomplete/function.svg'
 import Nut from '~/assets/images/insights/autocomplete/nut.svg'
 import Snippet from '~/assets/images/insights/autocomplete/snippet.svg'
 
-import Gdoc from '~/assets/images/admin/integrations/gDoc.svg'
-
 import NoResultsFound from '~/assets/images/icons/no-results-found.svg'
 import StarCircled from '~/assets/images/icons/star-circled.svg'
 import ResendInvite from '~/assets/images/icons/invite.svg'
@@ -276,7 +282,6 @@ import Flash from '~/assets/images/icons/flash.svg'
 import FlashColor from '~/assets/images/icons/flash-color.svg'
 import DisableUser from '~/assets/images/icons/disabled-user.svg'
 import ImpactedAssets from '~/assets/images/icons/impacted-assets.svg'
-import Gift from '~/assets/images/admin/integrations/gift.svg'
 
 import Code from '~/assets/images/readme/code.svg'
 import Underline from '~/assets/images/readme/text-underline.svg'
@@ -317,14 +322,9 @@ import Running from '~/assets/images/icons/running.svg'
 import ExclaimCircle from '~/assets/images/icons/exclaimCircle.svg'
 import Refresh from '~/assets/images/icons/Refresh.svg'
 import PlusWhite from '~/assets/images/icons/plus-white.svg'
-import WFEmptyTab from '~/assets/images/workflows/empty-tab.svg'
-import CreateWF from '~/assets/images/workflows/createWF.svg'
-import NoRuns from '~/assets/images/workflows/noRuns.svg'
 
 import Error from '~/assets/images/error.svg'
 import Warning from '~/assets/images/warning.svg'
-import ErrorLogs from '~/assets/images/workflows/error-logs-state.svg'
-import EmptyLogs from '~/assets/images/workflows/empty-logs-state.svg'
 import WarningIcon from '~/assets/images/icons/warning.svg'
 
 import Download from '~/assets/images/icons/download.svg'
@@ -353,10 +353,7 @@ import Camera from '~/assets/images/icons/camera.svg'
 import Image from '~/assets/images/icons/image.svg'
 import FormatText from '~/assets/images/icons/formatText.svg'
 import BeautifySql from '~/assets/images/icons/beautifySql.svg'
-import NoUsers from '~/assets/images/illustrations/no-users.svg'
-import NoGroups from '~/assets/images/illustrations/no-groups.svg'
-import CreateGroups from '~/assets/images/illustrations/create-groups.svg'
-import EmptyCollections from '~/assets/images/illustrations/empty-collections.svg'
+
 import CustomSaml from '~/assets/images/icons/customSaml.svg'
 import GlowFlash from '~/assets/images/icons/glow-flash.svg'
 import CheckCurrentColor from '~/assets/images/icons/check-current-color.svg'
@@ -370,23 +367,6 @@ import ClassificationPropagated from '~/assets/images/classifications/propagated
 import NoWf from '~/assets/images/icons/no-wf.svg'
 import Column from '~/assets/images/icons/column.svg'
 import GovernanceCenter from '~/assets/images/icons/governance-center.svg'
-
-// source list
-import Snowflake from '~/assets/images/source/svg/Snowflake.svg'
-import Tableau from '~/assets/images/source/svg/Tableau.svg'
-import Redshift from '~/assets/images/source/svg/Redshift.svg'
-import Postgres from '~/assets/images/source/svg/postgres.svg'
-import Athena from '~/assets/images/source/svg/Athena.svg'
-import Databricks from '~/assets/images/source/svg/Databricks.svg'
-import PowerBI from '~/assets/images/source/svg/PowerBI.svg'
-import BigQuery from '~/assets/images/source/svg/Bigquery.svg'
-import Looker from '~/assets/images/source/svg/Looker.svg'
-import Salesforce from '~/assets/images/source/svg/Salesforce.svg'
-import MySQL from '~/assets/images/source/svg/MySQL.svg'
-import Glue from '~/assets/images/source/svg/glue.svg'
-import Netsuite from '~/assets/images/source/svg/netsuite.svg'
-import S3 from '~/assets/images/source/svg/s3.svg'
-import GDS from '~/assets/images/source/svg/gds.svg'
 
 import Schema2Active from '~/assets/images/icons/schema2Active.svg'
 import QueriesActive from '~/assets/images/icons/queriesActive.svg'
@@ -417,17 +397,12 @@ import PrivateCollection from '~/assets/images/icons/privateCollection.svg'
 import NoSelectedAsset from '~/assets/images/icons/noSelectedAsset.svg'
 import QueryGrey from '~/assets/images/icons/query-grey.svg'
 import QueryDiscovery from '~/assets/images/icons/query_discovery.svg'
-import NoResultIllustration from '~/assets/images/illustrations/Illustration_no_search_results.svg'
-import NoSearchResultsQuery from '~/assets/images/illustrations/Illustration_no_search_results_query.svg'
+
 import SetContext from '~/assets/images/icons/setContext.svg'
-import CollectionHeader from '~/assets/images/insights/collection/header.svg'
-import CollectionBody from '~/assets/images/insights/collection/body.svg'
-import CollectionFooter from '~/assets/images/insights/collection/footer.svg'
 import CollectionIconSmall from '~/assets/images/icons/collections_16.svg'
 import CollectionIconLargeActive from '~/assets/images/icons/collections_24.svg'
 import CollectionIconSmallGray from '~/assets/images/icons/collections_gray_16.svg'
 import CollectionIconLarge from '~/assets/images/icons/collections_gray_24.svg'
-import EmptyCM from '~/assets/images/illustrations/empty-custom-metadata.svg'
 import EnumType from '~/assets/images/dataType/enum.svg'
 import Float from '~/assets/images/dataType/float.svg'
 import Array from '~/assets/images/dataType/array.svg'
@@ -436,10 +411,7 @@ import Revoke from '~/assets/images/icons/Revoke.svg'
 import Query24 from '~/assets/images/icons/query_24.svg'
 import Vqb24 from '~/assets/images/icons/vqb_24.svg'
 import SidebarSwitch from '~/assets/images/icons/sidebar.svg'
-import InteractiveVariableIllustration from '~/assets/images/illustrations/illustration-interactive-param.svg'
-import EmptyRequest from '~/assets/images/illustrations/empty-request.svg'
-import IllustrationPersonaDemo from '~/assets/images/illustrations/illustration-persona-demo.svg'
-import IllustrationPurposeDemo from '~/assets/images/illustrations/illustration-purpose-demo.svg'
+
 import Vqb from '~/assets/images/icons/Vqb.svg'
 import VqbVerified from '~/assets/images/icons/VqbVerified.svg'
 import VqbDeprecated from '~/assets/images/icons/VqbDeprecated.svg'
@@ -450,12 +422,6 @@ import ClockStop from '~/assets/images/icons/clock-stop.svg'
 import Mail from '~/assets/images/icons/mail.svg'
 import Collapsed from '~/assets/images/icons/Collapsed.svg'
 
-import InnerJoinInfo from '~/assets/images/illustrations/InnerJoinInfo.svg'
-import LeftJoinInfo from '~/assets/images/illustrations/LeftJoinInfo.svg'
-import RightJoinInfo from '~/assets/images/illustrations/RightJoinInfo.svg'
-import OuterJoinInfo from '~/assets/images/illustrations/OuterJoinInfo.svg'
-
-import LockedFile from '~/assets/images/illustrations/lockedFile.svg'
 import Quotes2 from '~/assets/images/icons/Quotes.svg'
 import OpenPreview from '~/assets/images/icons/open-preview.svg'
 import Message from '~/assets/images/icons/message.svg'
@@ -465,8 +431,7 @@ import MessageCross from '~/assets/images/icons/MessageCross.svg'
 import Atlan from '~/assets/images/icons/atlan.svg'
 import Gear from '~/assets/images/icons/gear.svg'
 import SafariLock from '~/assets/images/icons/safari-lock.svg'
-import SlackToken from '~/assets/images/admin/integrations/slackToken.svg'
-import SlackAddApp from '~/assets/images/admin/integrations/SlackAddApp.svg'
+
 import Integrations from '~/assets/images/icons/integrations.svg'
 import IntegrationsActive from '~/assets/images/icons/integrations-active.svg'
 import QueryTime from '~/assets/images/icons/query_time.svg'
@@ -475,10 +440,10 @@ import Request from '~/assets/images/icons/Request.svg'
 import RequestActive from '~/assets/images/icons/RequestActive.svg'
 import FilterFunnelDot from '~/assets/images/icons/filterFunnelDot.svg'
 import Comment from '~/assets/images/icons/Comment.svg'
-import Resources2 from '~/assets/images/illustrations/resources/resources.svg'
+
 import RunningQuery from '~/assets/images/icons/tabs/Running.svg'
 import FailedQuery from '~/assets/images/icons/tabs/Error.svg'
-import SlackTabEmpty from '~/assets/images/illustrations/empty_slack_tab.svg'
+
 import SuccessQuery from '~/assets/images/icons/tabs/success-check.svg'
 import QuestionRound from '~/assets/images/icons/question-round.svg'
 import QuestionRoundSmall from '~/assets/images/icons/question-round-small.svg'
@@ -488,7 +453,6 @@ import TrendUp from '~/assets/images/icons/trendUp.svg'
 import NoAllow from '~/assets/images/icons/no-allow.svg'
 
 import ThreeDotsAlt from '~/assets/images/icons/3-dots-alt.svg'
-import NoProperty from '~/assets/images/admin/customMetadata/empty-property.svg'
 import TrashAlt from '~/assets/images/icons/Trash-alt.svg'
 import Schedule24 from '~/assets/images/icons/schedule-24.svg'
 
@@ -506,10 +470,7 @@ import QueryOutputNeutral from '~/assets/images/icons/query_output_neutral.svg'
 import PreviewQuery from '~/assets/images/icons/preview.svg'
 import Trident from '~/assets/images/icons/trident.svg'
 import EmptyUploads from '~/assets/images/icons/empty-uploads.svg'
-import CommonError1 from '~/assets/images/icons/common-error-1.svg'
-import CommonError2 from '~/assets/images/icons/common-error-2.svg'
-import CommonError3 from '~/assets/images/icons/common-error-3.svg'
-import CommonError4 from '~/assets/images/icons/common-error-4.svg'
+
 import CSVLogo from '~/assets/images/icons/csv-logo.svg'
 import PaperClip from '~/assets/images/icons/paper-clip.svg'
 import FlaskIcon from '~/assets/images/icons/flask.svg'
@@ -518,6 +479,183 @@ import Disable from '~/assets/images/icons/disable.svg'
 import CheckFailed from '~/assets/images/icons/check-failed.svg'
 import CheckProgress from '~/assets/images/icons/check-in-progress.svg'
 import CheckPending from '~/assets/images/icons/check-pending.svg'
+
+// Illustrations - keeping them Async
+const NoAssetsFound = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/no_assets_to_show.svg')
+)
+const InteractiveVariableIllustration = defineAsyncComponent(
+    () =>
+        import(
+            '~/assets/images/illustrations/illustration-interactive-param.svg'
+        )
+)
+const EmptyRequest = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty-request.svg')
+)
+const IllustrationPersonaDemo = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/illustration-persona-demo.svg')
+)
+const IllustrationPurposeDemo = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/illustration-purpose-demo.svg')
+)
+const InnerJoinInfo = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/InnerJoinInfo.svg')
+)
+const LeftJoinInfo = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/LeftJoinInfo.svg')
+)
+const RightJoinInfo = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/RightJoinInfo.svg')
+)
+const OuterJoinInfo = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/OuterJoinInfo.svg')
+)
+
+const LockedFile = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/lockedFile.svg')
+)
+const Resources2 = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/resources/resources.svg')
+)
+const SlackTabEmpty = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty_slack_tab.svg')
+)
+const EmptyLineage = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty_lineage.svg')
+)
+const EmptyLineageTab = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty_lineage_tab.svg')
+)
+const NoUsers = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/no-users.svg')
+)
+const NoGroups = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/no-groups.svg')
+)
+const CreateGroups = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/create-groups.svg')
+)
+const EmptyCollections = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty-collections.svg')
+)
+const NoResultIllustration = defineAsyncComponent(
+    () =>
+        import(
+            '~/assets/images/illustrations/Illustration_no_search_results.svg'
+        )
+)
+const NoSearchResultsQuery = defineAsyncComponent(
+    () =>
+        import(
+            '~/assets/images/illustrations/Illustration_no_search_results_query.svg'
+        )
+)
+const EmptyCM = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty-custom-metadata.svg')
+)
+const EmptySampleData = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty_sample_data.svg')
+)
+const ErrorSampleData = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/error_sample_data.svg')
+)
+const EmptyQueriesTab = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty_queries_tab.svg')
+)
+const EmptyDiscover = defineAsyncComponent(
+    () => import('~/assets/images/illustrations/empty_discover.svg')
+)
+
+// Error States
+const queryErrorIllus = defineAsyncComponent(
+    () => import('~/assets/images/icons/queryError.svg')
+)
+const ErrorLogs = defineAsyncComponent(
+    () => import('~/assets/images/workflows/error-logs-state.svg')
+)
+const CommonError1 = defineAsyncComponent(
+    () => import('~/assets/images/icons/common-error-1.svg')
+)
+const CommonError2 = defineAsyncComponent(
+    () => import('~/assets/images/icons/common-error-2.svg')
+)
+const CommonError3 = defineAsyncComponent(
+    () => import('~/assets/images/icons/common-error-3.svg')
+)
+const CommonError4 = defineAsyncComponent(
+    () => import('~/assets/images/icons/common-error-4.svg')
+)
+const CollectionHeader = defineAsyncComponent(
+    () => import('~/assets/images/insights/collection/header.svg')
+)
+const CollectionBody = defineAsyncComponent(
+    () => import('~/assets/images/insights/collection/body.svg')
+)
+const CollectionFooter = defineAsyncComponent(
+    () => import('~/assets/images/insights/collection/footer.svg')
+)
+const EmptyResultJira = defineAsyncComponent(
+    () => import('~/assets/images/admin/integrations/emptyResultJira.svg')
+)
+const EmptyJira = defineAsyncComponent(
+    () => import('~/assets/images/admin/integrations/emptyJira.svg')
+)
+const Teams = defineAsyncComponent(
+    () => import('~/assets/images/admin/integrations/teams.svg')
+)
+const Gdoc = defineAsyncComponent(
+    () => import('~/assets/images/admin/integrations/gDoc.svg')
+)
+const SlackToken = defineAsyncComponent(
+    () => import('~/assets/images/admin/integrations/slackToken.svg')
+)
+const SlackAddApp = defineAsyncComponent(
+    () => import('~/assets/images/admin/integrations/SlackAddApp.svg')
+)
+const NoProperty = defineAsyncComponent(
+    () => import('~/assets/images/admin/customMetadata/empty-property.svg')
+)
+const AddQuery = defineAsyncComponent(
+    () => import('~/assets/images/icons/add-query.svg')
+)
+const WFEmptyTab = defineAsyncComponent(
+    () => import('~/assets/images/workflows/empty-tab.svg')
+)
+const CreateWF = defineAsyncComponent(
+    () => import('~/assets/images/workflows/createWF.svg')
+)
+const NoRuns = defineAsyncComponent(
+    () => import('~/assets/images/workflows/noRuns.svg')
+)
+const EmptyLogs = defineAsyncComponent(
+    () => import('~/assets/images/workflows/empty-logs-state.svg')
+)
+const queryAbortIllus = defineAsyncComponent(
+    () => import('~/assets/images/icons/queryAbort.svg')
+)
+const queryNoAccessIllus = defineAsyncComponent(
+    () => import('~/assets/images/icons/queryNoAccess.svg')
+)
+const queryNoInternetIllus = defineAsyncComponent(
+    () => import('~/assets/images/icons/queryNoInternet.svg')
+)
+const EmptyResource = defineAsyncComponent(
+    () => import('~/assets/images/icons/empty-resources.svg')
+)
+const EmptyResource2 = defineAsyncComponent(
+    () => import('~/assets/images/icons/empty-resource-2.svg')
+)
+
+const MorningIcon = defineAsyncComponent(
+    () => import('~/assets/images/home/Morning.svg')
+)
+const EveningIcon = defineAsyncComponent(
+    () => import('~/assets/images/home/Evening.svg')
+)
+const AfternoonIcon = defineAsyncComponent(
+    () => import('~/assets/images/home/Afternoon.svg')
+)
 
 export default {
     Function,
@@ -549,6 +687,7 @@ export default {
     LegendDimensionGroups,
     Schedule24,
     Mail,
+    Collapsed,
     EmptyJira,
     TrashAlt,
     NoProperty,

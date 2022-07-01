@@ -16,33 +16,11 @@
     import { defineComponent } from 'vue'
     import { useRouter, onBeforeRouteUpdate, useRoute } from 'vue-router'
 
-    import {
-        featureEnabledMap,
-        WORKFLOW_CENTER_V2,
-    } from '~/composables/labs/labFeatureList'
-
     export default defineComponent({
         name: 'WorkflowV2Wrapper',
         setup() {
             const router = useRouter()
             const route = useRoute()
-
-            if (!featureEnabledMap.value[WORKFLOW_CENTER_V2]) {
-                if (route.fullPath === '/workflows/marketplace') {
-                    router.replace('/workflowsv1/setup')
-                    return
-                }
-                if (route.fullPath.includes('/workflows/monitor')) {
-                    router.replace('/workflowsv1')
-                    return
-                }
-                const newRoute = route.fullPath.replace(
-                    '/workflows',
-                    '/workflowsv1'
-                )
-                router.replace(newRoute)
-                return
-            }
 
             if (!route.params?.tab && !route.params?.id)
                 router.replace('/workflows/monitor')

@@ -22,11 +22,13 @@
         v-if="assetState(asset) === 'deleted'"
         :clamp-percentage="assetNameTruncatePercentage"
         :tooltip-text="`${title(asset)} (deleted)`"
+        :route-to="getProfilePath(asset)"
         :classes="
             isScrubbed(asset)
-                ? 'mb-0 font-semibold text-gray-500 opacity-80 tracking-wide'
-                : 'font-bold mb-0 text-gray-500 tracking-wide'
+                ? 'mb-0 font-semibold text-gray-500 opacity-80 tracking-wide hover:underline'
+                : 'font-bold mb-0 text-gray-500 tracking-wide hover:underline'
         "
+        @click="(e) => e.stopPropagation()"
     />
     <Tooltip
         v-else-if="

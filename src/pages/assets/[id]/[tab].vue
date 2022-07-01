@@ -92,6 +92,7 @@
             const offset = ref(0)
             const facets = ref({
                 guid: id.value,
+                stateList: true,
             })
             const fetchKey = computed(() => {
                 if (

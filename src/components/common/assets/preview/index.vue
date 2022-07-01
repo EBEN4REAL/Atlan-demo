@@ -31,7 +31,19 @@
                     />
                 </div>
                 <Tooltip
-                    v-if="
+                    v-if="assetState(selectedAsset) === 'deleted'"
+                    :tooltip-text="`${title(selectedAsset)} (deleted)`"
+                    :route-to="getProfilePath(selectedAsset)"
+                    :classes="
+                        isScrubbed(selectedAsset)
+                            ? 'mb-0  font-semibold cursor-pointer text-gray-500 hover:underline opacity-80 '
+                            : 'font-bold mb-0 cursor-pointer text-gray-500 hover:underline '
+                    "
+                    :should-open-in-new-tab="true"
+                    @click="() => $emit('closeDrawer')"
+                />
+                <Tooltip
+                    v-else-if="
                         ['process', 'columnprocess', 'biprocess'].includes(
                             selectedAsset.typeName?.toLowerCase()
                         )
@@ -553,6 +565,7 @@
                 allowQuery,
                 connectionQualifiedName,
                 dataStudioAssetType,
+                assetState,
             } = useAssetInfo()
 
             const { getConnection } = useConnectionData()
@@ -880,6 +893,7 @@
                 allowQuery,
                 parentConnection,
                 dataStudioAssetType,
+                assetState,
             }
         },
     })

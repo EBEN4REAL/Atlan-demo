@@ -6,30 +6,40 @@ export function useError() {
     // msg: null meaning take msg from error Object from Heka
     // data: true means we have to user extra data coming from heka
 
-    const LINE_ERROR_NAMES = ['VALIDATION_ERROR', 'QUERY_PARSING_ERROR']
-    const SOURCE_ACCESS_ERROR_NAMES = ['FORBIDDEN']
+    const LINE_ERROR_NAMES = ['VALIDATION_ERROR', 'QUERY_PARSING_ERROR'];
+    const SOURCE_ACCESS_ERROR_NAMES = [
+        'FORBIDDEN',
+        'NO_QUERY_ACCESS_CONNECTION_RESTRICTED',
+        'NO_QUERY_ACCESS_CONNECTION_DENY_POLICY',
+        'NO_PREVIEW_ACCESS_CONNECTION_RESTRICTED'
+    ];
 
     const hekaErrorMap = {
         '000': {
             action: null,
-            msg: null,
+            msg: 'Cannot connect to the Internet.',
+            desc: 'Sorry, we don’t have the dino game, check your internet connection and try again :('
         },
         '400': {
             '001': {
                 action: 'copy',
-                msg: 'Bad request',
+                msg: 'Snap! Bad request :/',
+                desc: 'Looks like something broke on our end. Contact Atlan support to raise a support request.'
             },
             '002': {
                 action: 'copy',
-                msg: 'Missing information in the request',
+                msg: 'Snap! Bad request :/',
+                desc: 'Missing information in the request'
             },
             '003': {
                 action: 'copy',
-                msg: 'Missing a mandatory attribute in the request body/parameter',
+                msg: 'Snap! Bad request :/',
+                desc: 'Missing a mandatory attribute in the request body/parameter',
             },
             '004': {
                 action: 'copy',
-                msg: 'Command not supported',
+                msg: 'Snap! Bad request :/',
+                desc: 'Command not supported',
             },
         },
         '401': {
@@ -40,8 +50,32 @@ export function useError() {
         },
         '403': {
             '001': {
-                action: 'copy',
-                msg: 'No query access',
+                action: null,
+                msg: 'No query access :(',
+                data: true,
+            },
+            '002': {
+                action: null,
+                msg: 'No query access :(',
+                helperText: 'Request admins to enable query access on this connection, or use a different connection.',
+                data: true,
+            },
+            '003': {
+                action: null,
+                msg: 'No query access :(',
+                helperText: 'Request admins to enable query access on this connection, or use a different connection.',
+                data: true,
+            },
+            '004': {
+                action: null,
+                msg: 'No query access :(',
+                helperText: 'Request admins to make changes to the data policy.',
+                data: true,
+            },
+            '005': {
+                action: null,
+                msg: 'No query access :(',
+                helperText: 'Request admins to make changes to the data policy.',
                 data: true,
             },
         },
@@ -91,22 +125,31 @@ export function useError() {
         }
         if (isNumber(errorCode)) {
             return String(errorCode)
-        } else {
-            let code = errorCode.split('-')
+        }
+
+        if (errorCode.includes('-')) {
+            const code = errorCode.split('-');
+
             return code[1]
         }
+
+        return '000';
     }
 
     const hekaErrorCode = (errorCode) => {
-        let code = String(errorCode)?.split('-')
-        if (Array.isArray(code)) return code[3]
-        else return undefined
+        const code = String(errorCode)?.split('-')
+
+        if (Array.isArray(code))
+            return code[3]
+
+        return undefined
     }
 
     const hasErrorAction = (queryErrorObj) => {
-        let http = httpErrorCode(queryErrorObj?.errorCode)
-        let heka = hekaErrorCode(queryErrorObj?.errorCode)
+        const http = httpErrorCode(queryErrorObj?.errorCode)
+        const heka = hekaErrorCode(queryErrorObj?.errorCode)
         let errorData
+
         if (http !== undefined) {
             if (heka !== undefined) errorData = hekaErrorMap[http][heka]
         }
@@ -114,34 +157,58 @@ export function useError() {
         return errorData?.action // return action string or null
     }
 
-    const hasErrorData = (queryErrorObj) => {
-        let http = httpErrorCode(queryErrorObj?.errorCode)
-        let heka = hekaErrorCode(queryErrorObj?.errorCode)
+    const hasHelperText = (queryErrorObj) => {
+        const http = httpErrorCode(queryErrorObj?.errorCode)
+        const heka = hekaErrorCode(queryErrorObj?.errorCode)
         let errorData
+
         if (http !== undefined) {
             if (heka !== undefined) errorData = hekaErrorMap[http][heka]
         }
 
-        return errorData?.data ? true : false // return if we have data
+        return errorData?.helperText // return action string or null
+    }
+
+    const hasErrorData = (queryErrorObj) => {
+        const http = httpErrorCode(queryErrorObj?.errorCode)
+        const heka = hekaErrorCode(queryErrorObj?.errorCode)
+        let errorData
+
+        if (http !== undefined) {
+            if (heka !== undefined) errorData = hekaErrorMap[http][heka]
+        }
+
+        return errorData?.data // return if we have data
     }
 
     const errorMessage = (queryErrorObj) => {
-        let http = httpErrorCode(queryErrorObj?.errorCode)
-        let heka = hekaErrorCode(queryErrorObj?.errorCode)
+        const http = httpErrorCode(queryErrorObj?.errorCode)
+        const heka = hekaErrorCode(queryErrorObj?.errorCode)
         let errorData
+
         if (http !== undefined) {
-            if (heka !== undefined) errorData = hekaErrorMap[http][heka]
+            if (heka !== undefined)
+                errorData = hekaErrorMap[http][heka]
+            else {
+                errorData = hekaErrorMap[http];
+            }
         }
 
         return errorData?.msg ? errorData?.msg : queryErrorObj?.errorMessage
     }
 
     const errorDescription = (queryErrorObj) => {
-        let http = httpErrorCode(queryErrorObj?.errorCode)
-        let heka = hekaErrorCode(queryErrorObj?.errorCode)
+        const http = httpErrorCode(queryErrorObj?.errorCode)
+        const heka = hekaErrorCode(queryErrorObj?.errorCode)
         let errorData
+
         if (http !== undefined) {
-            if (heka !== undefined) errorData = hekaErrorMap[http][heka]
+            if (heka !== undefined) {
+                errorData = hekaErrorMap[http][heka];
+            }
+            else {
+                errorData = hekaErrorMap[http];
+            }
         }
 
         return errorData?.desc
@@ -220,6 +287,7 @@ export function useError() {
         hekaErrorCode,
         errorMessage,
         hasErrorData,
+        hasHelperText,
         hasErrorAction,
         LINE_ERROR_NAMES,
         SOURCE_ACCESS_ERROR_NAMES,

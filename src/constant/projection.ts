@@ -445,6 +445,12 @@ export const LineageAttributesPortLevel = [
     'view',
     // BI
     'powerBIColumnDataType',
+    'lookerExploreQualifiedName',
+    'lookerViewQualifiedName',
+    'powerBITableQualifiedName',
+    'datasourceQualifiedName',
+    'viewQualifiedName',
+    'tableQualifiedName',
 ]
 
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

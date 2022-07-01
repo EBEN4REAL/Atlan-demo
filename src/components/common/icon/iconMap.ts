@@ -49,9 +49,6 @@ import ForeignKey from '~/assets/images/icons/foreign.svg'
 import partitionKey from '~/assets/images/icons/partitionKey.svg'
 import AssetIcon from '~/assets/images/home/asset.svg'
 import InsightsIcon from '~/assets/images/home/Insights.svg'
-import MorningIcon from '~/assets/images/home/Morning.svg'
-import EveningIcon from '~/assets/images/home/Evening.svg'
-import AfternoonIcon from '~/assets/images/home/Afternoon.svg'
 import WorkflowsIcon from '~/assets/images/home/Workflows.svg'
 import AdminCenterIcon from '~/assets/images/home/AdminCenter.svg'
 import AtlanIcon from '~/assets/images/home/help/atlan.svg'
@@ -209,8 +206,6 @@ import SettingsOutlined from '~/assets/images/icons/settings_outlined.svg'
 import IssuesAnnouncement from '~/assets/images/status/issues.svg'
 import InformationAnnouncement from '~/assets/images/status/information.svg'
 import WarningAnnouncement from '~/assets/images/status/warning.svg'
-import EmptyResource from '~/assets/images/icons/empty-resources.svg'
-import EmptyResource2 from '~/assets/images/icons/empty-resource-2.svg'
 import EmptyClassifications from '~/assets/images/icons/empty-classifications.svg'
 import Delete from '~/assets/images/icons/delete.svg'
 import NoDataInsights from '~/assets/images/icons/results.svg'
@@ -218,6 +213,7 @@ import SomethingWrong from '~/assets/images/icons/something-wrong.svg'
 import NoSavedQueriesPersonal from '~/assets/images/icons/saved-queries-personal.svg'
 import NoSchema from '~/assets/images/icons/no-schema.svg'
 import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
+import queryInvalid from '~/assets/images/icons/queryInvalidError.svg'
 
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 
@@ -572,7 +568,7 @@ const EmptyDiscover = defineAsyncComponent(
 )
 
 // Error States
-const queryErorrIllus = defineAsyncComponent(
+const queryErrorIllus = defineAsyncComponent(
     () => import('~/assets/images/icons/queryError.svg')
 )
 const ErrorLogs = defineAsyncComponent(
@@ -634,6 +630,31 @@ const NoRuns = defineAsyncComponent(
 )
 const EmptyLogs = defineAsyncComponent(
     () => import('~/assets/images/workflows/empty-logs-state.svg')
+)
+const queryAbortIllus = defineAsyncComponent(
+    () => import('~/assets/images/icons/queryAbort.svg')
+)
+const queryNoAccessIllus = defineAsyncComponent(
+    () => import('~/assets/images/icons/queryNoAccess.svg')
+)
+const queryNoInternetIllus = defineAsyncComponent(
+    () => import('~/assets/images/icons/queryNoInternet.svg')
+)
+const EmptyResource = defineAsyncComponent(
+    () => import('~/assets/images/icons/empty-resources.svg')
+)
+const EmptyResource2 = defineAsyncComponent(
+    () => import('~/assets/images/icons/empty-resource-2.svg')
+)
+
+const MorningIcon = defineAsyncComponent(
+    () => import('~/assets/images/home/Morning.svg')
+)
+const EveningIcon = defineAsyncComponent(
+    () => import('~/assets/images/home/Evening.svg')
+)
+const AfternoonIcon = defineAsyncComponent(
+    () => import('~/assets/images/home/Afternoon.svg')
 )
 
 export default {
@@ -743,7 +764,11 @@ export default {
     ExplorerTrigger,
     MaterialisedView,
     TablePartition,
-    queryErorrIllus,
+    queryAbortIllus,
+    queryErrorIllus,
+    queryInvalid,
+    queryNoAccessIllus,
+    queryNoInternetIllus,
     NoSavedQueriesAll,
     NoSchema,
     NoDataInsights,

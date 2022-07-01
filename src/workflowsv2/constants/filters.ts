@@ -82,9 +82,10 @@ export const runStatuses = [
 export const dateRanges = [
     {
         label: 'Last 24H',
-        value: { gt: dayjs().subtract(1, 'day').valueOf() },
+        value: { gt: dayjs().subtract(1, 'day').add(30, 'minute').valueOf() },
         hint: `Runs created since/${dayjs()
             .subtract(1, 'day')
+            .add(30, 'minute')
             .format('D MMM YYYY HH:mm [(GMT] Z[)]')}`,
     },
     {

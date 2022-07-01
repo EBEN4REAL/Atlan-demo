@@ -1,11 +1,6 @@
 <template>
     <AtlanLoader v-if="isLoading" class="h-10 my-auto" />
-    <component
-        :is="componentType"
-        v-else
-        :data="testData"
-        :options="data?.componentData.graphOptions"
-    />
+    <component :is="componentType" v-else :data="graphData" :options="data" />
 </template>
 
 <script lang="ts">
@@ -23,21 +18,7 @@
     import timezone from 'dayjs/plugin/timezone'
     import advanced from 'dayjs/plugin/advancedFormat'
 
-    import { Chart, registerables } from 'chart.js'
-
-    import ChartDataLabels from 'chartjs-plugin-datalabels'
-
-    import { formatDateTime } from '~/utils/date'
     import useIndexSearch from '~/workflowsv2/composables/useIndexSearch'
-
-    Chart.register(...registerables)
-    // Chart.register(ChartDataLabels)
-
-    // import useLogSearch from '~/composables/reporting/useLogSearch'
-
-    // Setting defaults
-    Chart.defaults.backgroundColor = '#4A7ADF22'
-    Chart.defaults.borderColor = '#225BD2'
 
     dayjs.extend(utc)
     dayjs.extend(timezone)
@@ -47,14 +28,14 @@
         loader: () => import('../graph/bar.vue'),
     })
 
-    const Line = defineAsyncComponent({
-        loader: () => import('../graph/line.vue'),
+    const Area = defineAsyncComponent({
+        loader: () => import('../graph/area.vue'),
     })
 
     export default defineComponent({
         components: {
             Bar,
-            Line,
+            Area,
         },
         props: {
             data: {
@@ -62,7 +43,7 @@
                 default: () => ({}),
             },
         },
-        setup(props, { emit }) {
+        setup(props) {
             const { data } = toRefs(props)
             const filters = inject<Ref<Record<string, any>>>('monitorFilters')!
 
@@ -74,31 +55,25 @@
             }))
 
             const componentType = computed(() => {
-                if (
-                    data.value?.componentData.graphType &&
-                    data.value?.component !== ''
-                ) {
+                if (data.value?.componentData.graphType)
                     return data.value.componentData.graphType
-                }
+
                 return 'default'
             })
 
             const { aggregations, refresh, isLoading } = useIndexSearch(body)
 
-            const testData = computed(() => {
-                const agg =
-                    aggregations.value[
-                        data.value?.componentData.dataOptions?.aggregationKey
-                    ]
-                const buckets = agg?.buckets as any[]
-                const keyMap: string[] = []
+            const graphData = computed(() => {
+                const buckets = aggregations.value[
+                    data.value?.componentData.dataOptions?.aggregationKey
+                ]?.buckets as any[]
 
                 if (
                     data.value.componentData.dataOptions.keyConfig?.type?.toUpperCase() ===
                     'DATE'
                 ) {
                     const days = Math.round(
-                        (buckets[buckets.length - 1]?.key - buckets[0]?.key) /
+                        (buckets[buckets.length - 1].key - buckets[0].key) /
                             (1000 * 60 * 60 * 24)
                     ) // ms * seconds * minutes * hours
 
@@ -108,31 +83,20 @@
                     else if (days < 20) formatter = 'MMM D'
                     else formatter = 'MMM D'
 
-                    buckets?.forEach((i) =>
-                        keyMap.push(
-                            dayjs.tz(i.key, dayjs.tz.guess()).format(formatter)
-                        )
-                    )
-                } else {
-                    buckets?.forEach((i) => keyMap.push(i.key))
+                    return buckets?.map((bucket) => ({
+                        timestamp: dayjs
+                            .tz(bucket.key, dayjs.tz.guess())
+                            .format(formatter),
+                        count: bucket.doc_count,
+                    })) as Record<string, any>[]
                 }
 
-                const valueMap = buckets?.map((i) => i.doc_count)
-
-                return {
-                    labels: keyMap,
-                    datasets: [
-                        {
-                            data: valueMap,
-                            // borderWidth: 2,
-                        },
-                    ],
-                }
+                return buckets
             })
 
             watch(filters, () => refresh(), { deep: true })
 
-            return { data, componentType, testData, isLoading }
+            return { componentType, graphData, isLoading }
         },
     })
 </script>

@@ -35,7 +35,7 @@
                     </div>
                     <Tooltip
                         v-if="assetState(item) === 'deleted'"
-                        :tooltip-text="`${entityTitle} (deleted)`"
+                        :tooltip-text="`${entityTitle} (archived)`"
                         classes="text-base font-bold text-gray-500  mb-0"
                     />
                     <Tooltip

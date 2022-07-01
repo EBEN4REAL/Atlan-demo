@@ -21,7 +21,7 @@
     <Tooltip
         v-if="assetState(asset) === 'deleted'"
         :clamp-percentage="assetNameTruncatePercentage"
-        :tooltip-text="`${title(asset)} (deleted)`"
+        :tooltip-text="`${title(asset)} (archived)`"
         :route-to="getProfilePath(asset)"
         :classes="
             isScrubbed(asset)

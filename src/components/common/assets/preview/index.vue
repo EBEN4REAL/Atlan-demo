@@ -32,7 +32,7 @@
                 </div>
                 <Tooltip
                     v-if="assetState(selectedAsset) === 'deleted'"
-                    :tooltip-text="`${title(selectedAsset)} (deleted)`"
+                    :tooltip-text="`${title(selectedAsset)} (archived)`"
                     :route-to="getProfilePath(selectedAsset)"
                     :classes="
                         isScrubbed(selectedAsset)

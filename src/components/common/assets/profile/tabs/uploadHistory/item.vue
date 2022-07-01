@@ -1,19 +1,19 @@
 <template>
     <div class="w-full my-4 bg-gray-100 rounded-lg shadow-md">
-        <div class="flex p-4 items-center w-full">
+        <div class="flex items-center w-full p-4">
             <div
-                class="p-2 rounded-lg flex items-center justify-center m-1 bg-white mr-2"
+                class="flex items-center justify-center p-2 m-1 mr-2 bg-white rounded-lg"
             >
                 <atlan-icon :icon="WFIcon" class="h-5" />
             </div>
             <div class="w-full">
-                <div class="flex justify-between items-center w-full">
+                <div class="flex items-center justify-between w-full">
                     <div class="flex items-center space-x-2">
                         <span class="font-bold text-gray-500 font-base">{{
                             runName
                         }}</span>
                         <span
-                            class="status-badge text-xs mb-1"
+                            class="mb-1 text-xs status-badge"
                             style="padding: 7px 12px 5px"
                             :class="[getCustomClassesByPhase(run)]"
                         >
@@ -43,7 +43,7 @@
                         class="items-center justify-end"
                     >
                         <div
-                            class="border border-gray-200 bg-white cursor-pointer rounded-lg px-2 py-1"
+                            class="px-2 py-1 bg-white border border-gray-200 rounded-lg cursor-pointer"
                             @click="handleDownloadArtifacts"
                         >
                             <atlan-icon icon="Download" class="mx-1" />
@@ -65,17 +65,17 @@
 
                         {{ creatorUsername(run) }}
                     </span>
-                    <span class="text-gray-500 text-xs">{{
+                    <span class="text-xs text-gray-500">{{
                         startedAt(run, true)
                     }}</span>
                     <span
                         v-if="!['Running', 'Pending'].includes(phase(run))"
-                        class="text-gray-500 text-xs mx-2"
+                        class="mx-2 text-xs text-gray-500"
                         >|</span
                     >
                     <span
                         v-if="!['Running', 'Pending'].includes(phase(run))"
-                        class="text-gray-500 text-xs"
+                        class="text-xs text-gray-500"
                         >Completed in {{ duration(run) }}</span
                     >
                 </div>
@@ -85,7 +85,7 @@
             <!--     <template #title>Retry Run</template> -->
             <!--     <div -->
             <!--         v-if="['Failed'].includes(phase(run))" -->
-            <!--         class="border bg-white mr-2 rounded-lg p-1 px-2 cursor-pointer" -->
+            <!--         class="p-1 px-2 mr-2 bg-white border rounded-lg cursor-pointer" -->
             <!--         @click="handleRetry" -->
             <!--     > -->
             <!--         <atlan-icon icon="Retry" class="h-4" /> -->
@@ -97,16 +97,16 @@
                 finalStatus?.terms?.total_count ||
                 finalStatus?.categories?.total_count
             "
-            class="bg-white p-4 px-0 rounded-b-lg border-t"
+            class="p-4 px-0 bg-white border-t rounded-b-lg"
         >
             <div
                 v-if="finalStatus?.terms?.total_count"
-                class="flex items-center space-x-2 px-4"
+                class="flex items-center px-4 space-x-2"
             >
                 <atlan-icon icon="Term" class="mb-0.5" />
                 <span
                     v-if="finalStatus?.terms?.updated_count"
-                    class="text-gray-500 text-sm"
+                    class="text-sm text-gray-500"
                     >{{ finalStatus?.terms?.updated_count }} updated</span
                 >
                 <div
@@ -114,11 +114,11 @@
                         finalStatus?.terms?.created_count &&
                         finalStatus?.terms?.updated_count
                     "
-                    class="w-1 rounded-full bg-gray-400 h-1"
+                    class="w-1 h-1 bg-gray-400 rounded-full"
                 ></div>
                 <span
                     v-if="finalStatus?.terms?.created_count"
-                    class="text-gray-500 text-sm"
+                    class="text-sm text-gray-500"
                     >{{ finalStatus?.terms?.created_count }} created</span
                 >
                 <div
@@ -127,22 +127,22 @@
                         (finalStatus?.terms?.created_count ||
                             finalStatus?.terms?.updated_count)
                     "
-                    class="w-1 rounded-full bg-gray-400 h-1"
+                    class="w-1 h-1 bg-gray-400 rounded-full"
                 ></div>
                 <span
                     v-if="finalStatus?.terms?.error_count"
-                    class="text-error text-sm"
+                    class="text-sm text-error"
                     >{{ finalStatus?.terms?.error_count }} failed</span
                 >
             </div>
             <div
                 v-if="finalStatus?.categories?.total_count"
-                class="flex items-center space-x-2 mt-2 px-4"
+                class="flex items-center px-4 mt-2 space-x-2"
             >
                 <atlan-icon icon="Category" class="mb-0.5" />
                 <span
                     v-if="finalStatus?.categories?.created_count"
-                    class="text-gray-500 text-sm"
+                    class="text-sm text-gray-500"
                     >{{ finalStatus?.categories?.created_count }} created</span
                 >
                 <div
@@ -150,11 +150,11 @@
                         finalStatus?.categories?.error_count &&
                         finalStatus?.categories?.created_count
                     "
-                    class="w-1 rounded-full bg-gray-400 h-1"
+                    class="w-1 h-1 bg-gray-400 rounded-full"
                 ></div>
                 <span
                     v-if="finalStatus?.categories?.error_count"
-                    class="text-error text-sm"
+                    class="text-sm text-error"
                     >{{ finalStatus?.categories?.error_count }} failed</span
                 >
             </div>
@@ -164,28 +164,29 @@
                         runStatusMap[run.status.phase]?.label
                     )?.toLowerCase() === 'needs attention'
                 "
-                class="mt-2 pt-2 border-t text-gray-500"
+                class="pt-2 mt-2 text-gray-500 border-t"
             >
-                <atlan-icon icon="Info" class="mr-1 h-4 ml-4" />
+                <atlan-icon icon="Info" class="h-4 ml-4 mr-1" />
                 Re-upload the updated file to successfully resolve the errors.
             </div>
         </div>
         <div
             v-if="['Running', 'Failed', 'Pending'].includes(phase(run))"
-            class="flex py-2 bg-white flex-col rounded-b-lg"
+            class="flex flex-col py-2 bg-white rounded-b-lg"
         >
             <span
                 v-if="phase(run) === 'Running'"
-                class="text-gray-500 border-b pt-1 pb-2 px-4"
+                class="px-4 pt-1 pb-2 text-gray-500 border-b"
                 >This upload will take some time, please check back later.</span
             >
             <span
                 v-if="phase(run) === 'Failed'"
-                class="text-gray-500 border-b pt-1 pb-2 px-4"
-                >Sorry, we've encountered an error while processing your file.</span
+                class="px-4 pt-1 pb-2 text-gray-500 border-b"
+                >Sorry, we've encountered an error while processing your
+                file.</span
             >
             <span
-                class="text-primary flex items-center space-x-1 cursor-pointer pt-2 px-4 parent"
+                class="flex items-center px-4 pt-2 space-x-1 cursor-pointer text-primary parent"
                 @click="handleRedirectToWF"
             >
                 View upload details here
@@ -219,10 +220,6 @@
     import { downloadFile } from '~/utils/library/download'
     // components
     import Avatar from '~/components/common/avatar/index.vue'
-    import {
-        featureEnabledMap,
-        WORKFLOW_CENTER_V2,
-    } from '~/composables/labs/labFeatureList'
 
     export default defineComponent({
         name: 'UploadHistoryItem',
@@ -380,10 +377,7 @@
                     props.run
                 )}/runs?name=${name(props.run)}`
 
-                if (!featureEnabledMap.value[WORKFLOW_CENTER_V2]) {
-                    const newRoute = url.replace('/workflows/profile', '/workflowsv1')
-                    router.push(newRoute)
-                } else router.push(url)
+                router.push(url)
             }
 
             const getCustomClassesByPhase = (run) => {

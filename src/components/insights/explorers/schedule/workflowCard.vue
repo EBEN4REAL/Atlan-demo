@@ -135,17 +135,18 @@
     import Tooltip from '@common/ellipsis/index.vue'
     import parser from 'cron-parser'
     import dayjs from 'dayjs'
-    import RunWidget from '~/workflows/components/workflows/preview/workflows/run.vue'
+    import { useVModels } from '@vueuse/core'
+    import { MenuItem } from 'ant-design-vue'
+
+    import RunWidget from '~/workflowsv2/migrated/workflows/preview/workflows/run.vue'
     import Ellipsis from '@/common/ellipsis/index.vue'
     import getEntityStatusIcon from '~/utils/getEntityStatusIcon'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
-    import { useVModels } from '@vueuse/core'
     import ThreeDotMenu from './threeDotMenu.vue'
     import ScheduleQuery from '~/components/insights/explorers/queries/schedule/index.vue'
     import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import { getCronFrequency } from '~/components/insights/explorers/queries/schedule/composables/useSchedule'
     import InsightsThreeDotMenu from '~/components/insights/common/dropdown/index.vue'
-    import { MenuItem } from 'ant-design-vue'
 
     export default defineComponent({
         components: {

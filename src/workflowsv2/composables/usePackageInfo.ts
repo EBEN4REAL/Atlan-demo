@@ -15,6 +15,8 @@ export function usePackageInfo() {
     const source = (pkg) => labels(pkg)?.['orchestration.atlan.com/source']
     const version = (pkg) => labels(pkg)?.['package.argoproj.io/version']
 
+    const getTemplateName = (item) => item?.name
+
     return {
         metadata,
         annotations,
@@ -28,5 +30,6 @@ export function usePackageInfo() {
         type,
         version,
         source,
+        getTemplateName,
     }
 }

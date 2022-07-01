@@ -72,8 +72,7 @@ export default function useWorkflowInfo() {
 
     const allowSchedule = (item: any) => {
         if (
-            item?.metadata?.annotations &&
-            item?.metadata?.annotations[
+            item?.metadata?.annotations?.[
                 'orchestration.atlan.com/allowSchedule'
             ] === 'false'
         ) {
@@ -337,22 +336,15 @@ export default function useWorkflowInfo() {
         item?.metadata?.labels['orchestration.atlan.com/type']
 
     const packageName = (item) =>
-        item?.metadata?.annotations &&
         item?.metadata?.annotations?.['package.argoproj.io/name']
 
-    const useCases = (item) => {
-        let temp =
-            item?.metadata?.annotations &&
-            item?.metadata?.annotations[
-                'orchestration.atlan.com/usecases'
-            ]?.split(',')
+    const useCases = (item) =>
+        item?.metadata?.annotations?.['orchestration.atlan.com/usecases']
+            ?.split(',')
+            ?.map((i) => i.trim()) || []
 
-        return temp?.map((i) => i.trim()) || []
-    }
-
-    const supportLink = (item) =>
-        item?.metadata?.annotations &&
-        item?.metadata?.annotations['orchestration.atlan.com/supportLink']
+    const docsUrl = (item) =>
+        item?.metadata?.annotations?.['orchestration.atlan.com/docsUrl']
 
     const connectorStore = useConnectionStore()
 
@@ -471,7 +463,7 @@ export default function useWorkflowInfo() {
         nextRunRelativeTime,
         getGlobalArguments,
         useCases,
-        supportLink,
+        docsUrl,
         formatDate,
         difference,
         getRunClassByPhase,

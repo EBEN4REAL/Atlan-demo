@@ -1,13 +1,12 @@
 <script lang="ts">
     import { defineComponent } from 'vue'
-    import { useRouter, useRoute } from 'vue-router'
+    import { useRouter } from 'vue-router'
 
     export default defineComponent({
         name: 'WorkflowV1SetupRedirector',
         setup() {
             const router = useRouter()
-            const route = useRoute()
-            router.replace(`/workflows/setup/${route.params.id}`)
+            router.replace('/workflows/marketplace')
         },
     })
 </script>

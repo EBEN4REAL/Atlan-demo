@@ -786,16 +786,17 @@
 
             const duplicateQuery = () => {
                 const { generateNewActiveTab } = useActiveTab()
+                const newTab = JSON.parse(
+                    JSON.stringify(toRaw(activeInlineTab.value))
+                )
                 const inlineTabData = generateNewActiveTab({
                     activeInlineTab,
-                    label: `Copy ${activeInlineTab.value.label}`,
-                    editorText: activeInlineTab.value.playground.editor.text,
-                    isVQB: activeInlineTab.value.playground.isVQB,
-                    vqb: activeInlineTab.value.playground.vqb,
-                    savedVariables:
-                        activeInlineTab.value.playground.editor.savedVariables,
-                    variables:
-                        activeInlineTab.value.playground.editor.variables,
+                    label: `Copy ${newTab.label}`,
+                    editorText: newTab.playground.editor.text,
+                    isVQB: newTab.playground.isVQB,
+                    vqb: newTab.playground.vqb,
+                    savedVariables: newTab.playground.editor.savedVariables,
+                    variables: newTab.playground.editor.variables,
                 })
 
                 inlineTabAdd(inlineTabData, tabsArray, activeInlineTabKey)

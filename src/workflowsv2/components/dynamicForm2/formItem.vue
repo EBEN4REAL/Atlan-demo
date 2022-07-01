@@ -79,6 +79,7 @@
         onMounted,
     } from 'vue'
     import { useVModels } from '@vueuse/core'
+    import { useRoute } from 'vue-router'
 
     import Input from './widget/input.vue'
     import TextInput from './widget/textarea.vue'
@@ -106,7 +107,7 @@
     import CombinedUserSelector from './widget/combinedUserSelector.vue'
     import Alias from './widget/alias.vue'
     import AtlanIcon from '@/common/icon/atlanIcon.vue'
-    import { useRoute } from 'vue-router'
+    import Sage from './widget/authCheck.vue'
 
     export default defineComponent({
         name: 'DynamicForm',
@@ -134,6 +135,7 @@
             Datetime,
             Apitree,
             Date,
+            Sage,
             CombinedUserSelector,
         },
         props: {

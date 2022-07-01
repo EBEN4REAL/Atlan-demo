@@ -148,11 +148,12 @@
 
             const renameQuery = () => {
                 renameLoading.value = true
-                queryData.value.attributes.name = name.value
+                const _queryData = JSON.parse(JSON.stringify(queryData.value))
+                _queryData.attributes.name = name.value
                 const { data, error, isLoading } = Insights.CreateQueryFolder(
                     {
                         entity: {
-                            attributes: queryData.value.attributes,
+                            attributes: _queryData.attributes,
                             typeName: 'Query',
                         },
                     },
@@ -169,6 +170,7 @@
                             if (error.value === undefined) {
                             } else {
                                 message.error('Query rename failed')
+                                name.value = _queryData.attributes.name
                                 closeModal()
                             }
                         }
@@ -177,10 +179,12 @@
                 )
 
                 watch(data, () => {
+                    debugger
+                    if (error.value) return
                     message.success('Query renamed successfully')
                     if (data.value !== undefined) {
                         updateAssetCheck.value = true
-                        let parentGuid = queryData.value.attributes.parent.guid
+                        let parentGuid = _queryData.attributes.parent.guid
 
                         refreshQueryTree(parentGuid, 'query')
 

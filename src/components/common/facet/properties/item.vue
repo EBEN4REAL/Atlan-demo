@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-    import { computed } from 'vue'
+    import { computed} from 'vue'
     import { defineComponent, toRefs } from 'vue'
     import Truncate from '@/common/ellipsis/index.vue'
 
@@ -46,18 +46,28 @@
                     return []
                 },
             },
+            popoverVisibility: {
+                required: false,
+                default: Boolean,
+            },
         },
         setup(props, { emit }) {
-            const { attribute, activeProperty, condition } = toRefs(props)
+            const { attribute, activeProperty, condition, popoverVisibility } = toRefs(props)
 
             const isApplied = computed(() => {
+                for(const obj of condition.value) {
+                    if(Object.values(obj).includes('isNotNull') || Object.values(obj).includes('isNull')) {
+                        return true
+                    }
+                }
                 return !!condition.value?.find(
                     (i) => i.operand === attribute.value.name && i.value
                 )
             })
 
+
             const selectedClass = computed(() => {
-                if (activeProperty.value === attribute.value.name)
+                if (activeProperty.value === attribute.value.name && popoverVisibility.value)
                     return 'outline-primary bg-primary-menu'
                 if (isApplied.value) return 'bg-primary-menu'
                 return ''
@@ -78,6 +88,7 @@
                 isApplied,
                 selectedClass,
                 appliedClasses,
+                popoverVisibility
             }
         },
     })

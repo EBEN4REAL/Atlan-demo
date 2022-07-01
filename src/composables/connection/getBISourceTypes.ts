@@ -1,7 +1,11 @@
 import { useConnectionStore } from '~/store/connection'
 
-export function getBISourceTypes() {
-    const store = useConnectionStore()
+export function getBISourceTypes(paramStore?: any) {
+    let store = paramStore
+    if (!paramStore) {
+        store = useConnectionStore()
+    }
+
     const BItypes = new Set()
     store.getList.forEach((item) => {
         if (item?.attributes) {

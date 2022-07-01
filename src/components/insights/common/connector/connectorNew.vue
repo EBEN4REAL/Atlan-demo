@@ -10,6 +10,7 @@
                 maxWidth: '10%',
             }"
             overlayClassName="dropdown-overlay"
+            :get-popup-container="getContainerElement"
             :trigger="['click']"
             destroyPopupOnHide="true"
             @visibleChange="onDropdownIsVisibleChange($event)"
@@ -406,13 +407,13 @@
     import { capitalizeFirstLetter } from '~/utils/string'
     import { List } from '~/constant/status'
     import { useConnectionStore } from '~/store/connection'
-    import useAssetInfo from '~/composables/asset/useAssetInfo'
+    import useAssetInfo from '~/composables/discovery/useAssetInfo'
     import AssetDropdownNewDatabase from '~/components/common/dropdown/assetDropdownNewDatabase.vue'
     import AssetDropdownNewSchema from '~/components/common/dropdown/assetDropdownNewSchema.vue'
     import { activeInlineTabInterface } from '~/types/insights/activeInlineTab.interface'
     import { useUtils } from '~/components/insights/common/composables/useUtils'
     import { watchAtMost } from '@vueuse/core'
-
+    import { getBISourceTypes } from '~/composables/connection/getBISourceTypes'
     import Tooltip from '@/common/ellipsis/index.vue'
 
     export default defineComponent({
@@ -489,25 +490,6 @@
             }
 
             const store = useConnectionStore()
-
-            function getBISourceTypes(store: any) {
-                const BItypes = new Set()
-                store.getList.forEach((item) => {
-                    if (item?.attributes) {
-                        if (
-                            item.attributes?.category?.toLowerCase() === 'bi' ||
-                            item.attributes?.connectorName?.toLowerCase() ===
-                                'salesforce' ||
-                            item.attributes?.connectorName?.toLowerCase() ===
-                                's3' ||
-                            item.attributes?.connectorName?.toLowerCase() ===
-                                'glue'
-                        )
-                            BItypes.add(item.attributes?.connectorName)
-                    }
-                })
-                return Array.from(BItypes)
-            }
 
             // console.log(store.get(), 'sourceMap')
             /* Checking if filterSourceIds passed -> whitelist the sourcelist
@@ -918,6 +900,9 @@
                 SchemaPopoverVisible.value = e
             }
 
+            const getContainerElement = () =>
+                document.getElementById('fullScreenId')
+
             return {
                 treeSelectRef,
                 expandedKeys,
@@ -958,6 +943,7 @@
                 SchemaPopoverVisible,
                 onDBPopoverVisibleChange,
                 onSchemaPopoverVisibleChange,
+                getContainerElement,
             }
         },
     })

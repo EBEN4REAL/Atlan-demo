@@ -277,6 +277,16 @@ export const operators = {
             label: 'Pattern',
         },
     ],
+    string_guid_mandatory: [
+        {
+            id: 'equals',
+            label: 'Equals(=)',
+        },
+        {
+            id: 'notEquals',
+            label: 'Not Equals(!=)',
+        }
+    ],
     date_mandatory,
     dateTime_mandatory: [...date_mandatory],
     date,

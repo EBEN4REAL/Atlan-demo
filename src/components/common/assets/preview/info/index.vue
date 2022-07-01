@@ -99,14 +99,18 @@
                         <span class="font-semibold text-primary">SQL</span>
                     </div>
                     <template #action>
-                        <a-button
-                            size="small"
-                            block
-                            @click="switchTab(selectedAsset, 'Lineage')"
-                            >View Lineage</a-button
+                        <div
+                            class="flex items-center pt-4 place-content-center"
                         >
+                            <a-button
+                                block
+                                @click="switchTab(selectedAsset, 'Lineage')"
+                                >View Lineage</a-button
+                            >
+                        </div>
                     </template>
                 </SQL>
+
                 <!-- <RowInfoHoverCard
                 v-if="
                     selectedAsset.typeName == 'Table' ||
@@ -630,38 +634,13 @@
 
             <div
                 v-if="['DataStudioAsset'].includes(selectedAsset.typeName)"
-                class="flex flex-col px-5 gap-y-4"
+                class="flex flex-col px-5 text-sm"
             >
-                <div class="flex flex-col text-sm">
-                    <span class="mb-1 text-gray-500">Asset Type</span>
+                <span class="mb-1 text-gray-500">Asset Type</span>
 
-                    <span class="text-gray-700">{{
-                        dataStudioAssetType(selectedAsset)
-                    }}</span>
-                </div>
-                <div class="flex flex-col text-sm">
-                    <span class="mb-1 text-gray-500">Asset Title</span>
-
-                    <span class="text-gray-700">{{
-                        dataStudioAssetTitle(selectedAsset)
-                    }}</span>
-                </div>
-                <div class="flex flex-col text-sm">
-                    <span class="mb-1 text-gray-500">Asset Owner</span>
-
-                    <span class="text-gray-700">{{
-                        dataStudioAssetOwner(selectedAsset)
-                    }}</span>
-                </div>
-                <div class="flex flex-col text-sm">
-                    <span class="mb-1 text-gray-500"
-                        >Trashed Data Studio Asset</span
-                    >
-
-                    <span class="text-gray-700">{{
-                        isTrashedDataStudioAsset(selectedAsset) ? 'Yes' : 'No'
-                    }}</span>
-                </div>
+                <span class="text-gray-700">{{
+                    dataStudioAssetType(selectedAsset)
+                }}</span>
             </div>
 
             <div
@@ -1155,7 +1134,10 @@
                                 Related terms which should be used instead of
                                 this one
                             </template>
-                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                            <atlan-icon
+                                icon="Info"
+                                class="h-3 cursor-pointer"
+                            />
                         </a-tooltip>
                     </span>
                 </p>
@@ -1173,7 +1155,7 @@
                 <!-- Synonyms widget -->
                 <p
                     v-if="showSynonyms"
-                    class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4"
+                    class="flex items-center px-5 mt-4 mb-1 text-sm text-gray-500"
                 >
                     Synonyms
                     <span class="mx-2">
@@ -1182,7 +1164,10 @@
                                 Interchangeable terms. Example: "customer" and
                                 "client"
                             </template>
-                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                            <atlan-icon
+                                icon="Info"
+                                class="h-3 cursor-pointer"
+                            />
                         </a-tooltip>
                     </span>
                 </p>
@@ -1201,7 +1186,7 @@
                 <!-- Antonyms widget -->
                 <p
                     v-if="showAntonyms"
-                    class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4"
+                    class="flex items-center px-5 mt-4 mb-1 text-sm text-gray-500"
                 >
                     Antonyms
                     <span class="mx-2">
@@ -1210,7 +1195,10 @@
                                 Opposite of this term. Example: For term
                                 "profit", the related term "loss" is an antonym
                             </template>
-                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                            <atlan-icon
+                                icon="Info"
+                                class="h-3 cursor-pointer"
+                            />
                         </a-tooltip>
                     </span>
                 </p>
@@ -1226,7 +1214,9 @@
                 >
                 </RelatedTerms>
 
-                <p class="flex items-center px-5 mb-1 text-sm text-gray-500 mt-4">
+                <p
+                    class="flex items-center px-5 mt-4 mb-1 text-sm text-gray-500"
+                >
                     Related Terms
 
                     <span class="mx-2">
@@ -1235,7 +1225,10 @@
                                 Associated terms. Example: For term "customer",
                                 the related term "account" may be added
                             </template>
-                            <atlan-icon icon="Info" class="h-3 cursor-pointer" />
+                            <atlan-icon
+                                icon="Info"
+                                class="h-3 cursor-pointer"
+                            />
                         </a-tooltip>
                     </span>
                 </p>
@@ -1499,9 +1492,6 @@
                 s3ObjectContentType,
                 readmeGuid,
                 dataStudioAssetType,
-                dataStudioAssetTitle,
-                dataStudioAssetOwner,
-                isTrashedDataStudioAsset,
                 powerBIMeasureExpression,
                 powerBIColumnDataType,
                 powerBIColumnDataTypeImage,
@@ -1574,11 +1564,6 @@
                 quickChange()
             }
 
-            getColumnCountWithLineage(
-                selectedAsset.value,
-                columnWithLineageCount
-            )
-
             const isSelectedAssetHaveRowsAndColumns = (selectedAsset) => {
                 if (
                     selectedAsset.typeName === 'View' ||
@@ -1591,6 +1576,12 @@
 
                 return false
             }
+
+            if (isSelectedAssetHaveRowsAndColumns(selectedAsset.value))
+                getColumnCountWithLineage(
+                    selectedAsset.value,
+                    columnWithLineageCount
+                )
 
             const showSampleDataModal = () => {
                 if (!isProfile.value) {
@@ -1748,9 +1739,6 @@
                 handleApplySuggestion,
                 readmeGuid,
                 dataStudioAssetType,
-                dataStudioAssetTitle,
-                dataStudioAssetOwner,
-                isTrashedDataStudioAsset,
                 powerBIMeasureExpression,
                 powerBIColumnDataType,
                 powerBIColumnDataTypeImage,

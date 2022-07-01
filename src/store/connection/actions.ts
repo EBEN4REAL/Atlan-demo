@@ -3,6 +3,7 @@ import { State } from './state'
 export interface Actions extends State {
     setList(value: any): void
     setAssetCount(value: any): void
+    updateConnectionList(value: any): void
 }
 
 export const actions: Actions = {
@@ -19,6 +20,12 @@ export const actions: Actions = {
             } else {
                 element.assetCount = 0 + 1
             }
+        })
+    },
+    updateConnectionList(value) {
+        this.list.forEach((element) => {
+            if (element?.guid === value?.guid)
+                element.attributes = value?.attributes // attributes changing after new value is received
         })
     },
 }

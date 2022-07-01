@@ -11,12 +11,11 @@
 <script>
     import { defineComponent, toRefs, computed, ref } from 'vue'
 
-    import Connection from '@common/select/connection.vue'
     import { useVModels } from '@vueuse/core'
-    import whoami from '~/composables/user/whoami'
+    import Connection from '@/common/select/connection.vue'
 
     export default defineComponent({
-        name: 'FormBuilder',
+        name: 'ConnectionSelectorWrapper',
         components: {
             Connection,
         },
@@ -24,7 +23,7 @@
             property: {
                 required: false,
                 type: Object,
-                default: () => {},
+                default: () => ({}),
             },
             modelValue: {
                 required: false,

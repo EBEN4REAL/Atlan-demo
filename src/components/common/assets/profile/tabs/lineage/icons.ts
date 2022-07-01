@@ -468,3 +468,17 @@ export const presto = `<svg width="16" height="16" viewBox="0 0 16 16" fill="non
 <path d="M3.25115 3.7153C3.25115 3.93765 3.07097 4.11401 2.85244 4.11401C2.63009 4.11401 2.45374 3.93382 2.45374 3.7153C2.45374 3.49294 2.63392 3.31659 2.85244 3.31659C3.07097 3.31659 3.25115 3.49678 3.25115 3.7153Z" fill="white"/>
 </svg>
 `
+
+export const netsuite = `<svg width="16" height="16" viewBox="0 0.2 150 150" xmlns="http://www.w3.org/2000/svg"
+>
+    <path d="M0 .2h150v150H0z" fill="none" />
+    <path
+        d="M20.1 47.7h23.7V104h11.8v22H20.1zm109.7 51.8h-23.7V43.2H94.3v-22h35.5z"
+        fill="#baccdb"
+    />
+    <path
+        d="M14.6 15.8h74.9v64.3L60.7 43H14.6zm120.6 115.7H60.3V67.2l28.8 37.1h46.1"
+        fill="#125580"
+    />
+</svg>
+`

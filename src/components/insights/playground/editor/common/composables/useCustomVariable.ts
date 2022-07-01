@@ -220,9 +220,24 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
                     variable,
                 ]
 
-                editorInstance.trigger('keyboard', 'type', {
-                    text: `{{${variable.name}}}`,
-                })
+                const editorPosition =
+                    editorInstance?.getPosition() as monaco.IPosition
+                // edit the word at the position calculated above
+                editorInstance?.getModel()?.pushEditOperations(
+                    [],
+                    [
+                        {
+                            range: {
+                                endColumn: editorPosition?.column,
+                                startColumn: editorPosition?.column,
+                                startLineNumber: editorPosition.lineNumber,
+                                endLineNumber: editorPosition.lineNumber,
+                            },
+                            text: `{{${variable.name}}}`,
+                        },
+                    ],
+                    () => null
+                )
             } else {
                 activeInlineTabCopy.playground.editor.variables = [
                     ...activeInlineTabCopy.playground.editor.variables,
@@ -230,9 +245,24 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
                         index
                     ],
                 ]
-                editorInstance.trigger('keyboard', 'type', {
-                    text: `{{${activeInlineTab.value.playground.editor.savedVariables[index].name}}}`,
-                })
+                const editorPosition =
+                    editorInstance?.getPosition() as monaco.IPosition
+                // edit the word at the position calculated above
+                editorInstance?.getModel()?.pushEditOperations(
+                    [],
+                    [
+                        {
+                            range: {
+                                endColumn: editorPosition?.column,
+                                startColumn: editorPosition?.column,
+                                startLineNumber: editorPosition.lineNumber,
+                                endLineNumber: editorPosition.lineNumber,
+                            },
+                            text: `{{${activeInlineTab.value.playground.editor.savedVariables[index].name}}}`,
+                        },
+                    ],
+                    () => null
+                )
             }
         } else {
             activeInlineTabCopy.playground.editor.variables = [
@@ -455,9 +485,24 @@ export function useCustomVariable(editorInstance?: any, monacoInstance?: any) {
             ...activeInlineTabCopy.playground.editor.variables,
             new_variable,
         ]
-        editorInstance.trigger('keyboard', 'type', {
-            text: `{{variable${len}}}`,
-        })
+
+        const editorPosition = editorInstance?.getPosition() as monaco.IPosition
+        // edit the word at the position calculated above
+        editorInstance?.getModel()?.pushEditOperations(
+            [],
+            [
+                {
+                    range: {
+                        endColumn: editorPosition?.column,
+                        startColumn: editorPosition?.column,
+                        startLineNumber: editorPosition.lineNumber,
+                        endLineNumber: editorPosition.lineNumber,
+                    },
+                    text: `{{variable${len}}}`,
+                },
+            ],
+            () => null
+        )
 
         modifyActiveInlineTabEditor(activeInlineTabCopy, tabs)
     }

@@ -28,6 +28,7 @@ import {
     salesforce,
     s3,
     presto,
+    netsuite,
 } from './icons'
 
 const lineageStore = useLineageStore()
@@ -104,6 +105,7 @@ export const getNodeSourceImage = {
     salesforce,
     s3,
     presto,
+    netsuite,
 }
 
 /* A list of the types of ports that we are interested in. */
@@ -197,7 +199,7 @@ export const getDatabase = (entity) => {
 export const getColumnCountWithLineage = (asset, columnWithLineageCount) => {
     const { typeName, attributes: attr } = asset
     const { qualifiedName } = attr
-    const { count } = fetchPorts(typeName, qualifiedName, 0, 999999999)
+    const { count } = fetchPorts(typeName, qualifiedName, 0, 0)
     watchOnce(count, (newVal) => {
         columnWithLineageCount.value = newVal
     })

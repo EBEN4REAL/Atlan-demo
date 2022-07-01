@@ -50,7 +50,7 @@
                                         selectedAsset,
                                         isDrawer,
                                         'ENTITY_UPDATE_BUSINESS_METADATA'
-                                    )
+                                    ) || role !== 'Guest'
                                         ? 'text-primary hover:underline mr-0.5 font-semibold'
                                         : 'mr-0.5 line-clamp-1'
                                 "
@@ -64,7 +64,7 @@
                                         selectedAsset,
                                         isDrawer,
                                         'ENTITY_UPDATE_BUSINESS_METADATA'
-                                    )
+                                    ) || role !== 'Guest'
                                         ? 'text-primary mr-1 font-semibold'
                                         : 'mr-1'
                                 "
@@ -87,11 +87,12 @@
                         <div class="flex items-center">
                             <div
                                 v-if="
-                                    selectedAssetUpdatePermission(
+                                    (selectedAssetUpdatePermission(
                                         selectedAsset,
                                         isDrawer,
                                         'ENTITY_UPDATE_BUSINESS_METADATA'
-                                    ) &&
+                                    ) ||
+                                        role !== 'Guest') &&
                                     !viewOnly &&
                                     showEditButton
                                 "
@@ -202,6 +203,7 @@
     import useAuth from '~/composables/auth/useAuth'
     import InternalCMBanner from '@/common/customMetadata/internalCMBanner.vue'
     import PreviewTabsIcon from '~/components/common/icon/previewTabsIcon.vue'
+    import whoami from '~/composables/user/whoami'
 
     export default defineComponent({
         name: 'CustomMetadata',
@@ -254,6 +256,8 @@
             const { checkAccess } = useAuth()
 
             const showEditButton = ref(false)
+
+            const { role } = whoami()
 
             const isEvaluating = inject('isEvaluating')
 
@@ -385,6 +389,7 @@
                 isEvaluating,
                 showEditButton,
                 handleActiveKeyChange,
+                role,
             }
         },
     })

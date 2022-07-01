@@ -3,49 +3,32 @@
         <AtlanIcon icon="Add" class="text-gray-700" />
     </div>
     <div class="bg-gray-100 add-policy-container">
-        <div>
-            <div class="relative p-4 bg-white border-b border-gray-300">
-                <div class="flex items-center">
-                    <div
-                        class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light -mt-0.5"
-                    >
-                        <AtlanIcon
-                            v-if="policyType === 'meta'"
-                            icon="Policies"
-                            class="icon-blue"
-                        />
-                        <AtlanIcon
-                            v-if="policyType === 'data'"
-                            icon="QueryGrey"
-                            class="icon-blue-stroke"
-                        />
-                    </div>
-                    <span class="ml-1 text-base font-bold"
-                        >{{
-                            policyType === 'meta'
-                                ? 'Metadata Policy'
-                                : 'Data Policy'
-                        }}
-                    </span>
-                    <!-- <div class="ml-1 font-semibold">
-                        {{ isEdit ? selectedPolicy.name : 'New policy' }}
-                    </div> -->
+        <div class="relative p-4 bg-white border-b border-gray-300">
+            <div class="flex items-center">
+                <div
+                    class="flex items-center justify-center w-8 h-8 mr-2 rounded-full bg-primary-light -mt-0.5"
+                >
+                    <AtlanIcon
+                        v-if="policyType === 'meta'"
+                        icon="Policies"
+                        class="icon-blue"
+                    />
+                    <AtlanIcon
+                        v-if="policyType === 'data'"
+                        icon="QueryGrey"
+                        class="icon-blue-stroke"
+                    />
                 </div>
-                <!-- <div class="flex items-center">
-                    <AtlanIcon icon="Policies" class="mr-1" />
-                    <span class="mr-1 text-neutral-600"
-                        >{{
-                            policyType === 'meta'
-                                ? 'Metadata Policy'
-                                : 'Data Policy'
-                        }}
-                    </span>
-                    <div class="ml-1 mr-1 dot" />
-                    <span class="text-neutral-600">
-                        {{ persona?.displayName }}
-                    </span>
-                </div> -->
+                <span class="ml-1 text-base font-bold"
+                    >{{
+                        policyType === 'meta'
+                            ? 'Metadata Policy'
+                            : 'Data Policy'
+                    }}
+                </span>
             </div>
+        </div>
+        <div class="flex-grow overflow-auto">
             <div
                 v-if="policy.updatedBy || policy.createdBy"
                 class="flex items-center px-6 py-4 text-sm text-gray-700 bg-gray-200"
@@ -82,7 +65,7 @@
                     {{ useTimeAgo(policy.updatedAt || policy.createdAt).value }}
                 </div>
             </div>
-            <div class="mt-4">
+            <div class="my-4">
                 <div class="px-4">
                     <div class="relative mt-2 bg-white shadow-section">
                         <div
@@ -118,7 +101,6 @@
                                     "
                                 />
                             </div>
-                            <!-- <div v-else>{{ policy.name }}</div> -->
                             <div
                                 v-if="rules.policyName.show"
                                 class="mt-1 text-xs text-red-500"
@@ -205,7 +187,8 @@
                         </div>
                     </div>
                     <div class="mt-4 bg-white shadow-section">
-                        <div v-if="policyType === 'meta'">
+                        <!-- meta policy  -->
+                        <template v-if="policyType === 'meta'">
                             <div
                                 class="flex items-center justify-between p-3 pb-2"
                             >
@@ -226,24 +209,7 @@
                                     />
                                 </a-button>
                             </div>
-                            <!-- <div class="flex justify-between">
-                        <div class="text-gray-500">
-                            Permissions <span class="text-red-500">*</span>
-                        </div>
-                        <AtlanBtn
-                            class="flex-none"
-                            size="sm"
-                            color="minimal"
-                            padding="compact"
-                            @click="handleToggleManage"
-                        >
-                            <span class="text-primary"> Manage </span>
-                            <AtlanIcon
-                                icon="ArrowRight"
-                                class="ml-1 text-primary"
-                            />
-                        </AtlanBtn>
-                        </div> -->
+
                             <div
                                 class="flex items-center p-3 border border-gray-200 border-dashed rounded border-bottom"
                             >
@@ -293,108 +259,86 @@
                             >
                                 {{ rules.metadata.text }}
                             </div>
-                        </div>
+                            <!-- /// deny permission -->
+                            <div class="p-3 bg-gray-100 rounded">
+                                <div class="flex">
+                                    <div>
+                                        <span>Deny Permissions</span>
+                                        <a-tooltip
+                                            placement="top"
+                                            color="white"
+                                        >
+                                            <AtlanIcon
+                                                icon="Overview"
+                                                class="mx-2"
+                                            />
+                                            <template #title>
+                                                <p class="m-3 text-gray">
+                                                    This will deny the
+                                                    permissions you have
+                                                    selected above, for all the
+                                                    users in the persona, even
+                                                    if they had access to those
+                                                    permissions via some other
+                                                    persona or purpose.
+                                                </p>
+                                            </template>
+                                        </a-tooltip>
+                                    </div>
+                                    <a-switch
+                                        :class="
+                                            policy.allow ? `` : 'bg-red-600'
+                                        "
+                                        data-test-id="toggle-switch"
+                                        class="ml-3"
+                                        :checked="!policy.allow"
+                                        style="width: 40px !important"
+                                        @update:checked="policy.allow = !$event"
+                                    />
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- for data policy only -->
                         <div v-if="policyType === 'data'">
                             <div
                                 class="p-3 text-sm font-bold text-gray-700 border-b"
                             >
-                                Configure permissions
+                                Querying Permissions
                             </div>
-                            <div class="p-3">
+
+                            <div class="p-4 space-y-2">
+                                <ToggleOption
+                                    :selected="policy.allow"
+                                    heading="Allow Query"
+                                    icon-name="QueryOutputSuccess"
+                                    sub-heading="Allowed query for assets present in this Purpose."
+                                    @click="policy.allow = true"
+                                />
+                                <ToggleOption
+                                    :selected="!policy.allow"
+                                    heading="Deny Query"
+                                    icon-name="QueryOutputFail"
+                                    sub-heading="Denied query for assets present in this Purpose."
+                                    @click="policy.allow = false"
+                                />
+                            </div>
+
+                            <div v-if="policy.allow" class="p-4 border-t">
                                 <div class="flex items-center mb-2 gap-x-1">
-                                    <span class="text-sm text-gray-500"
-                                        >Masking(Optional)</span
-                                    >
+                                    <span class="text-sm text-gray-500">
+                                        Masking (Optional)
+                                    </span>
                                 </div>
 
                                 <DataMaskingSelector
                                     v-model:maskType="policy.mask"
-                                    class="w-80"
                                     :type="'purpose'"
-                                />
-                            </div>
-                        </div>
-                        <div class="p-3 bg-gray-100 rounded">
-                            <div class="flex">
-                                <div>
-                                    <span>Deny Permissions</span>
-                                    <a-tooltip placement="top" color="white">
-                                        <AtlanIcon
-                                            icon="Overview"
-                                            class="mx-2"
-                                        />
-                                        <template #title>
-                                            <p class="m-3 text-gray">
-                                                This will deny the permissions
-                                                you have selected above, for all
-                                                the users in the persona, even
-                                                if they had access to those
-                                                permissions via some other
-                                                persona or purpose.
-                                            </p>
-                                        </template>
-                                    </a-tooltip>
-                                </div>
-                                <a-switch
-                                    :class="policy.allow ? `` : 'bg-red-600'"
-                                    data-test-id="toggle-switch"
-                                    class="ml-3"
-                                    :checked="!policy.allow"
-                                    style="width: 40px !important"
-                                    @update:checked="policy.allow = !$event"
+                                    class="w-80"
                                 />
                             </div>
                         </div>
                     </div>
-                    <!-- <div v-else>
-                    <div class="flex flex-col mt-7 gap-y-2">
-                        <div class="flex gap-1">
-                            <AtlanIcon class="text-gray-500" icon="Lock" />
-                            <span class="text-sm text-gray-500"
-                                >Query permissions</span
-                            >
-                            <span class="text-red-500">*</span>
-                        </div>
-                        <div class="flex gap-1">
-                            <AtlanIcon
-                                class="h-3 mt-1 text-gray-500"
-                                icon="RunSuccess"
-                            />
-                            <span class="text-sm text-gray-500"
-                                >Query access allowed by default</span
-                            >
-                        </div>
-                    </div>
-                    <div class="flex items-center mb-2 gap-x-1 mt-7">
-                        <span class="text-sm text-gray-500">Masking</span>
-                    </div>
-
-                    <DataMaskingSelector
-                        v-model:maskType="policy.mask"
-                        class="mb-6 w-80"
-                        :type="'purpose'"
-                    />
-                </div> -->
-
-                    <!-- <div
-                    v-if="!policy.allow"
-                    class="flex items-center justify-between"
-                >
-                    <div class="mt-4">
-                        <span class="text-error">Denied Permissions</span>
-                        <a-tooltip placement="top" color="white">
-                            <AtlanIcon icon="Overview" class="mx-2" />
-                            <template #title>
-                                <p class="m-3 text-gray">
-                                    The above permissions have been overidden
-                                    for all the users in the persona, even if
-                                    they have access to those permissions via
-                                    some other persona or purpose
-                                </p>
-                            </template>
-                        </a-tooltip>
-                    </div>
-                </div> -->
 
                     <a-drawer
                         placement="right"
@@ -437,15 +381,6 @@
                 {{ isLoading ? 'Saving' : isEdit ? 'Update' : 'Save' }}
             </AtlanBtn>
         </div>
-        <!-- <div v-else-if="isEdit && !canEdit">
-            <div class="flex p-3 m-4 rounded bg-primary-light text-primary">
-                <AtlanIcon icon="Overview" class="mt-1 mr-1"></AtlanIcon>
-                <div>
-                    You can only edit policies for connections in which you're
-                    added as a owner.
-                </div>
-            </div>
-        </div> -->
     </div>
 </template>
 
@@ -465,15 +400,15 @@
     import ManagePermission from './policies/managePermission.vue'
     import DataMaskingSelector from '~/components/governance/personas/policies/dataMaskingSelector.vue'
     import useScopeService from '../personas/composables/useScopeService'
-    // import DataMaskingSelector from './policies/dataMaskingSelector.vue'
     import { IPersona } from '~/types/accessPolicies/personas'
-    // import useScopeService from './composables/useScopeService'
     import Avatar from '~/components/common/avatar/index.vue'
+    import ToggleOption from '@/governance/shared/customToggleOption.vue'
 
     export default defineComponent({
         name: 'AddPolicy',
         components: {
             AtlanBtn,
+            ToggleOption,
             ManagePermission,
             DataMaskingSelector,
             Owners,
@@ -821,7 +756,6 @@
         height: 100vh;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
         .icon-blue {
             path {
                 fill: #5277d7 !important;

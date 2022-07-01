@@ -22,6 +22,7 @@ import {
     autosuggestionResponse,
 } from '~/types/insights/autosuggestionEntity.interface'
 import axios from 'axios'
+import { getEntityMetadataUsingQualifiedName } from './autoSuggestionUtils'
 export interface suggestionKeywordInterface {
     label: string
     detail: string
@@ -526,6 +527,30 @@ const refreshBody = () => {
     }
 }
 
+function inlcudeQualifiedNameAccType(
+    body,
+    qualifiedNames,
+    type: 'tableQualifiedName' | 'viewQualifiedName'
+) {
+    body.value.dsl.query.function_score.query.bool.filter.bool.must.push({
+        terms: {
+            [type]: qualifiedNames,
+        },
+    })
+
+    // function_score boost
+    qualifiedNames.forEach((tableQualifiedName) => {
+        body.value.dsl.query.function_score.functions.push({
+            filter: {
+                match: {
+                    [type]: tableQualifiedName,
+                },
+            },
+            weight: 15,
+        })
+    })
+}
+
 async function getSuggestionsUsingType(
     type: string = 'TABLE',
     token: string,
@@ -669,29 +694,32 @@ async function getSuggestionsUsingType(
                             }) as any
                     }
                 }
-
-                body.value.dsl.query.function_score.query.bool.filter.bool.must.push(
-                    {
-                        terms: {
-                            tableQualifiedName: tableQualifiedNames.filter(
-                                (e) => typeof e === 'string'
-                            ),
-                        },
-                    }
+                const _tableQualifiedNames = tableQualifiedNames.filter(
+                    (e) => typeof e === 'string'
                 )
-                // function_score boost
-                tableQualifiedNames
-                    .filter((e) => typeof e === 'string')
-                    .forEach((tableQualifiedName) => {
-                        body.value.dsl.query.function_score.functions.push({
-                            filter: {
-                                match: {
-                                    tableQualifiedName: tableQualifiedName,
-                                },
-                            },
-                            weight: 15,
-                        })
-                    })
+                // seprate view QualifiedName & tableQualifiedName
+                // taking the first el as refernce for fetching the columns, to prevent multiple network req
+                if (_tableQualifiedNames.length) {
+                    const entities = await getEntityMetadataUsingQualifiedName(
+                        _tableQualifiedNames[0]
+                    )
+                    if (entities?.entities.length > 0) {
+                        const entity = entities?.entities[0]
+                        if (entity?.typeName?.toLowerCase() === 'table') {
+                            inlcudeQualifiedNameAccType(
+                                body,
+                                _tableQualifiedNames,
+                                'tableQualifiedName'
+                            )
+                        } else {
+                            inlcudeQualifiedNameAccType(
+                                body,
+                                _tableQualifiedNames,
+                                'viewQualifiedName'
+                            )
+                        }
+                    }
+                }
             }
 
             if (cancelTokenSource.value !== undefined) {
@@ -802,10 +830,9 @@ export async function useAutoSuggestions(
     /////////////ALIASES/////////////////
 
     aliasesMap.value = createAliasesMap(editorText)
-
     // trimming [dot]s if any
     const _tempTokens = editorTextTillCursorPos
-        .split(' ')
+        .split(/[\n ]+/)
         .filter((e) => e !== '')
     let currAliasWord = _tempTokens[_tempTokens.length - 1]
     let _currWord = currAliasWord,
@@ -852,7 +879,7 @@ export async function useAutoSuggestions(
                 }
         }
     }
-    debugger
+    // debugger
     if (subquery) {
         ///////////////////////////////////////////////////////////
         let subQueryleftSideStringFromCurPos = editorText
@@ -892,7 +919,7 @@ export async function useAutoSuggestions(
         }
         return _str
     }
-    debugger
+    // debugger
 
     let leftSideStringFromCurPos = removeSubQueries(
         editorTextTillCursorPos.replace(/\"/g, '')
@@ -937,7 +964,7 @@ export async function useAutoSuggestions(
         t = !token.match(/[-[\]{};/\n()*+?'"\\/^$|#\s\t]/g) && token !== ''
         return t
     })
-    debugger
+    // debugger
     // tokens.push(' ')
     let exceptionCase = false // when used as "table"."columnName"
     let currentWord = tokens[tokens.length - 1]
@@ -1222,7 +1249,7 @@ export async function useAutoSuggestions(
                     )
                     return new Promise((resolve, reject) => {
                         suggestionsPromise.then((value) => {
-                            debugger
+                            // debugger
                             const AliasesKeys: string[] = []
                             Object.keys(aliasesMap.value).forEach(
                                 (key: any) => {

@@ -57,9 +57,36 @@ export const useTrackPage = (category, name, props = {}) => {
 const addDelay = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms))
 
+let licenseType = ''
+let salesforceAccountId = ''
+
+const fetchLicense = async () => {
+    await addDelay(2000)
+    console.log('fetchLicense called')
+    try {
+        const { data, isReady, error, isLoading } = Replicated.getLicense()
+        watchOnce(
+            isLoading,
+            (value) => {
+                console.log('fetchLicense loading over', data.value)
+                if (!value) {
+                    licenseType = data?.value?.license || ''
+                    salesforceAccountId = data?.value?.salesforceAccountId || ''
+                }
+            },
+            { immediate: false }
+        )
+    } catch (error) {
+        console.error('error fetching license', error)
+    }
+}
+
+fetchLicense()
+
 export const identifyUser = async () => {
-    await addDelay(1800)
+    await addDelay(3800)
     const authStore = useAuthStore()
+    const tenantStore = useTenantStore()
     if ((window as any).analytics) {
         if ((window as any).analytics.identify) {
             const roleNames = authStore.roles.map((roleObj) => roleObj?.name)
@@ -67,6 +94,13 @@ export const identifyUser = async () => {
                 roles: roleNames,
                 defaultRoles: authStore.defaultRoles,
             })
+
+            const { createdAt: tenantCreatedAt } =
+                tenantStore.tenantRaw.attributes || '  '
+            const tenantCreatedAtIso = `${tenantCreatedAt.split(' ')[0]}T${
+                tenantCreatedAt.split(' ')[1]
+            }Z`
+
             const detailsObj = {
                 name: authStore.name || '',
                 firstName: authStore.firstName,
@@ -82,6 +116,11 @@ export const identifyUser = async () => {
                     ? authStore.purposes.length
                     : 0,
                 created_at: authStore.createdAt ? authStore.createdAt : '',
+                tenant_created_at: tenantCreatedAtIso,
+                license_type: licenseType,
+                salesforce_account_id: salesforceAccountId,
+                res_width: window.screen.availWidth,
+                res_height: window.screen.availHeight,
             }
             ;(window as any).analytics.identify(authStore?.id, detailsObj, {
                 integrations: {
@@ -94,7 +133,7 @@ export const identifyUser = async () => {
 }
 
 export const identifyGroup = async () => {
-    await addDelay(1800)
+    await addDelay(3800)
     console.log('identifyGroup called', featureEnabledMap.value)
     if (window?.analytics) {
         const tenantStore = useTenantStore()
@@ -132,10 +171,17 @@ export const identifyGroup = async () => {
             connection_count: (connectionStore?.list || []).length,
             glossary_count: (glossaryStore?.list || []).length,
             labs: featureEnabledMap.value,
+            license_type: licenseType,
+            salesforce_account_id: salesforceAccountId,
+            configured_connectors:
+                connectionStore.getSourceList.map((i) => i.id) || [],
             // is_logo added or not
             // user count
             // assets count
             // smtp enabled
+        }
+        if (window?.analytics?.group) {
+            window?.analytics?.group(groupId, groupBody)
         }
         // group
         // if (window?.analytics?.group) {
@@ -147,30 +193,6 @@ export const identifyGroup = async () => {
         //     })
         // }
         // const groupTraits = window?.analytics?.group()?.traits()
-        try {
-            const { data, isReady, error, isLoading } = Replicated.getLicense()
-            watchOnce(
-                isLoading,
-                (value) => {
-                    if (!value) {
-                        // console.log('replicated value loaded', data.value)
-                        groupBody.license_type = data?.value?.license || ''
-                        groupBody.salesforce_account_id =
-                            data?.value?.salesforceAccountId || ''
-                        // group
-                        if (window?.analytics?.group) {
-                            window?.analytics?.group(groupId, groupBody)
-                        }
-                    }
-                },
-                { immediate: false }
-            )
-        } catch (error) {
-            console.error('group identify error', error)
-            if (window?.analytics?.group) {
-                window?.analytics?.group(groupId, groupBody)
-            }
-        }
     }
 }
 

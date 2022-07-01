@@ -34,6 +34,12 @@
                         />
                     </div>
                     <Tooltip
+                        v-if="assetState(item) === 'deleted'"
+                        :tooltip-text="`${entityTitle} (archived)`"
+                        classes="text-base font-bold text-gray-500  mb-0"
+                    />
+                    <Tooltip
+                        v-else
                         :tooltip-text="entityTitle"
                         classes="text-base font-bold text-gray-700  mb-0"
                     />
@@ -531,6 +537,7 @@
                 schemaQualifiedName,
                 allowQuery,
                 connectionQualifiedName,
+                assetState,
             } = useAssetInfo()
 
             const { getConnection } = useConnectionData()
@@ -715,6 +722,7 @@
                 drawerActiveKey,
                 allowQuery,
                 parentConnection,
+                assetState,
             }
         },
     })

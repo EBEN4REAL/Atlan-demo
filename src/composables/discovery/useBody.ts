@@ -534,9 +534,7 @@ export function useBody(
                 break
             }
             case 'stateList': {
-                // if (filterObject) {
-                //     base.filter('terms', '__state', filterObject)
-                // }
+                // To fetch all entities - ACTIVE and DELETED both
                 state.value = null
                 break
             }

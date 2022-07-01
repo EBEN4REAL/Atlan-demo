@@ -5,11 +5,11 @@ export const insightsSorting = [
     // },
     {
         id: 'name.keyword-asc',
-        label: 'Name(a-z)',
+        label: 'Name(A-Z)',
     },
     {
         id: 'name.keyword-desc',
-        label: 'Name(z-a)',
+        label: 'Name(Z-A)',
     },
     {
         id: 'order-asc',

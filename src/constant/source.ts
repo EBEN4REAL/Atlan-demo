@@ -547,6 +547,7 @@ export const SourceList = [
             'LookerProject',
             'LookerQuery',
             'LookerTile',
+            'LookerView',
         ],
     },
     {

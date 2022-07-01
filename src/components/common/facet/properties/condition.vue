@@ -123,8 +123,13 @@
                 return keys.join('_')
             })
 
+
             const defaultOperator = ref(operators[operatorDataType.value])
             const localOperator = ref(condition.operator)
+
+            if(attribute.value?.defaultOperator) {
+                localCondition.value.operator = attribute.value?.defaultOperator
+            }
 
             if (!localCondition.value.operator) {
                 if (defaultOperator.value?.length > 0) {

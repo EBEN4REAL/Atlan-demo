@@ -54,9 +54,86 @@ const searchQueries = (
     const refreshBody = () => {
         base = bodybuilder()
         base.sort('name.keyword', { order: 'asc' })
-        base.filter('regexp', 'name.keyword', `${query.value}.*`)
         base.filter('term', '__state', 'ACTIVE')
 
+        if (query.value) {
+            let tempQuery = query.value
+            if (
+                (query.value[0] === "'" &&
+                    query.value[query.value.length - 1] === "'") ||
+                (query.value[0] === '"' &&
+                    query.value[query.value.length - 1] === '"')
+            ) {
+                base.query('query_string', {
+                    fields: [
+                        'name.*',
+                        'description',
+                        'userDescription',
+                        '__meaningsText',
+                        '__guid',
+                    ],
+                    query: query.value,
+                })
+            } else {
+                if (query.value.includes('.')) {
+                    const split = query.value.split('.')
+                    if (split.length === 2) {
+                        base.filter('term', 'schemaName.keyword', split[0])
+                        tempQuery = split[1]
+                    }
+                }
+
+                // Synonym
+                base.orQuery('match', 'name', {
+                    query: tempQuery.toLowerCase(),
+                    boost: 40,
+                    analyzer: 'search_synonyms',
+                })
+
+                base.orQuery('match', 'name', {
+                    query: tempQuery,
+                    boost: 40,
+                })
+
+                base.orQuery('match', 'name', {
+                    query: tempQuery,
+                    operator: 'AND',
+                    boost: 40,
+                })
+
+                base.orQuery('match', 'name.keyword', {
+                    query: tempQuery,
+                    boost: 120,
+                })
+
+                base.orQuery('match_phrase', 'name', {
+                    query: tempQuery,
+                    boost: 70,
+                })
+                base.orQuery('wildcard', 'name', {
+                    value: `${tempQuery.toLowerCase()}*`,
+                })
+                base.orQuery('match', 'description', {
+                    query: tempQuery,
+                })
+                base.orQuery('match', 'userDescription', {
+                    query: tempQuery,
+                })
+                base.orQuery('match', 'sql', {
+                    query: tempQuery,
+                    boost: 40,
+                })
+                base.orQuery('match', '__meaningsText', {
+                    query: tempQuery,
+                    boost: 20,
+                })
+
+                base.orQuery('match', 'name.stemmed', {
+                    query: tempQuery.toLowerCase(),
+                })
+                base.queryMinimumShouldMatch(1)
+            }
+        }
         if (facets.value && Object.keys(facets.value ?? {}).length > 0) {
             Object.keys(facets.value ?? {}).forEach((mkey) => {
                 const filterObject = facets?.value[mkey]

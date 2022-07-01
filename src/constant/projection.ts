@@ -174,8 +174,6 @@ export const AssetAttributes = [
     'googleProjectId',
     'googleProjectNumber',
     'dataStudioAssetType',
-    'dataStudioAssetTitle',
-    'dataStudioAssetOwner',
     'isTrashedDataStudioAsset',
     'powerBITableColumnCount',
     'powerBITableMeasureCount',
@@ -336,10 +334,8 @@ export const metadataLinkedAssetsAttributes = [
     'connectorName',
     'connectionName',
     'dataType',
-    'certificateUpdatedAt'
+    'certificateUpdatedAt',
 ]
-
-
 
 export const BasicSearchAttributes = [
     '__timestamp',
@@ -449,6 +445,12 @@ export const LineageAttributesPortLevel = [
     'view',
     // BI
     'powerBIColumnDataType',
+    'lookerExploreQualifiedName',
+    'lookerViewQualifiedName',
+    'powerBITableQualifiedName',
+    'datasourceQualifiedName',
+    'viewQualifiedName',
+    'tableQualifiedName',
 ]
 
 export const ConnectionAttriibutes = [...InternalAttributes, ...AssetAttributes]

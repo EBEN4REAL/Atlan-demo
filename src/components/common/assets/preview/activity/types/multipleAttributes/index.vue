@@ -1,13 +1,27 @@
 <template>
     <div v-if="showLabel" class="mb-0">Asset was <b>updated</b></div>
     <div class="border rounded-lg mt-2 p-2">
-        <div v-for="el in attributesData" :key="el?.component" class="p-2">
-            <component
-                :is="el.component"
-                v-if="el?.component"
-                :data="el"
-                :typeName="data.typeName"
-            />
+        <div v-if="attributesData?.length">
+            <div v-for="el in attributesData" :key="el?.component" class="p-2">
+                <component
+                    :is="el.component"
+                    v-if="el?.component"
+                    :data="el"
+                    :typeName="data.typeName"
+                />
+            </div>
+        </div>
+        <div v-else>
+            <div v-if="attributesDataFallback?.length" >
+                <div v-for="el in attributesDataFallback" class="flex flex-col">
+                    <span class="text-gray-500 ">
+                        {{ el?.key }}
+                    </span>
+                    <span class="text-gray-700 mt-1 mb-2">
+                        {{ el?.value }}
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -64,6 +78,7 @@
                 description: 'Description',
             }
             const attributesData = ref<[]>([])
+            const attributesDataFallback = ref<[]>([])
             const contructAttributesData = () => {
                 if (props?.data?.value) {
                     const { attributes } = props.data.value
@@ -77,7 +92,6 @@
                                 if (
                                     ['ownerUsers', 'ownerGroups'].includes(el)
                                 ) {
-                                    console.log('dheet')
                                     const data = { value: {} }
                                     if (attributes?.ownerUsers) {
                                         data.value.ownerUsers =
@@ -106,6 +120,11 @@
                                         component: componentMap[el],
                                         value: attributes[el],
                                     })
+                            } else {
+                                attributesDataFallback.value.push({
+                                    key: el,
+                                    value: attributes[el],
+                                })
                             }
                         })
                 }
@@ -114,6 +133,7 @@
             return {
                 attributesToDisplay,
                 attributesData,
+                attributesDataFallback,
             }
         },
     })

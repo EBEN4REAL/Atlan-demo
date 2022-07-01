@@ -199,7 +199,12 @@ import NoSavedQueriesPersonal from '~/assets/images/icons/saved-queries-personal
 import AddQuery from '~/assets/images/icons/add-query.svg'
 import NoSchema from '~/assets/images/icons/no-schema.svg'
 import IssuesFilled from '~/assets/images/icons/issues-filled.svg'
-import queryErorrIllus from '~/assets/images/icons/queryError.svg'
+import queryAbortIllus from '~/assets/images/icons/queryAbort.svg'
+import queryErrorIllus from '~/assets/images/icons/queryError.svg'
+import queryNoAccessIllus from '~/assets/images/icons/queryNoAccess.svg'
+import queryNoInternetIllus from '~/assets/images/icons/queryNoInternet.svg'
+import queryInvalid from '~/assets/images/icons/queryInvalidError.svg'
+
 import NoSavedQueriesAll from '~/assets/images/icons/saved-queries-all.svg'
 import EmptyQueriesTab from '~/assets/images/illustrations/empty_queries_tab.svg'
 import Slack from '~/assets/images/admin/integrations/slack.svg'
@@ -509,6 +514,11 @@ import CSVLogo from '~/assets/images/icons/csv-logo.svg'
 import PaperClip from '~/assets/images/icons/paper-clip.svg'
 import FlaskIcon from '~/assets/images/icons/flask.svg'
 
+import Disable from '~/assets/images/icons/disable.svg'
+import CheckFailed from '~/assets/images/icons/check-failed.svg'
+import CheckProgress from '~/assets/images/icons/check-in-progress.svg'
+import CheckPending from '~/assets/images/icons/check-pending.svg'
+
 export default {
     Function,
     Nut,
@@ -615,7 +625,11 @@ export default {
     ExplorerTrigger,
     MaterialisedView,
     TablePartition,
-    queryErorrIllus,
+    queryAbortIllus,
+    queryErrorIllus,
+    queryInvalid,
+    queryNoAccessIllus,
+    queryNoInternetIllus,
     NoSavedQueriesAll,
     NoSchema,
     NoDataInsights,
@@ -998,4 +1012,8 @@ export default {
     IllustrationPurposeDemo,
     FlaskIcon,
     AssociatedTerm,
+    Disable,
+    CheckFailed,
+    CheckProgress,
+    CheckPending,
 }

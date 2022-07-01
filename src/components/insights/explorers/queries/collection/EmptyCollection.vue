@@ -16,22 +16,23 @@
                 Enrich your collection with Folders and Queries
             </p>
         </div>
-        <div class="flex flex-col items-center w-full">
+        <div class="flex flex-col items-center w-full pb-12">
             <img :src="Footer" alt="" class="w-7/12 mt-6" />
 
             <p style="max-width: 18rem" class="text-sm font-bold text-center">
                 Share collections with your team
             </p>
         </div>
-
-        <AtlanButton2
-            class="w-56 mt-6 font-bold"
-            size="large"
-            label="Create a collection"
-            suffixIcon="ArrowRight"
-            bold
-            @click="handleClick"
-        />
+        <div class="bottom-0 absolute p-2">
+            <AtlanButton2
+                class="w-56 font-bold"
+                size="large"
+                label="Create a collection"
+                suffixIcon="ArrowRight"
+                bold
+                @click="handleClick"
+            />
+        </div>
     </div>
 </template>
 

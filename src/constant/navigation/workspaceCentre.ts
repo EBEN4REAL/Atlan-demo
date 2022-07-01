@@ -2,16 +2,9 @@
 import { computed } from 'vue'
 import page from '~/constant/accessControl/page'
 
-import {
-    featureEnabledMap,
-    WORKFLOW_CENTER_V2,
-} from '~/composables/labs/labFeatureList'
-
 export const workspaceCentreList = computed(() => [
     {
-        path: featureEnabledMap.value[WORKFLOW_CENTER_V2]
-            ? '/workflows'
-            : '/workflowsv1',
+        path: '/workflows',
         icon: 'WorkflowsActive',
         label: 'Workflow',
         isActive: true,

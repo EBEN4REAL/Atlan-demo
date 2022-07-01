@@ -23,15 +23,16 @@
         provide,
     } from 'vue'
 
-    import Loader from '@/common/loaders/page.vue'
-    import ErrorView from '@common/error/discover.vue'
-    import PackagesSetup from '~/workflowsv2/components/marketplace/setup/setup.vue'
-
-    import { usePackageByName } from '~/workflows/composables/package/usePackageByName'
-    import { usePackageInfo } from '~/workflows/composables/package/usePackageInfo'
-    import { useRoute, useRouter } from 'vue-router'
-    import { useConfigMapByName } from '~/workflows/composables/package/useConfigMapByName'
     import { useHead } from '@vueuse/head'
+    import { useRoute, useRouter } from 'vue-router'
+
+    import Loader from '@/common/loaders/page.vue'
+    import ErrorView from '@/common/error/discover.vue'
+
+    import PackagesSetup from '~/workflowsv2/components/marketplace/setup/setup.vue'
+    import { usePackageByName } from '~/workflowsv2/composables/usePackageByName'
+    import { usePackageInfo } from '~/workflowsv2/composables/usePackageInfo'
+    import { useConfigMapByName } from '~/workflowsv2/composables/useConfigMapByName'
 
     export default defineComponent({
         name: 'WorkflowSetupPage',

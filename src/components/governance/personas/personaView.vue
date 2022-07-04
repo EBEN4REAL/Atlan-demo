@@ -242,6 +242,7 @@
     import NewPolicyIllustration from '~/assets/images/illustrations/new_policy.svg'
     import useAddEvent from '~/composables/eventTracking/useAddEvent'
     import useAssetStore from '~/store/asset'
+
     export default defineComponent({
         name: 'PersonaView',
         components: {
@@ -297,9 +298,7 @@
                 drawerFilter.value = !drawerFilter.value
             }
 
-            const handleFilterChange = () => {
-                console.log('facets.value', facets.value)
-            }
+            const handleFilterChange = () => {}
             const handleResetEvent = () => {
                 facets.value = {}
                 searchTerm.value = ''

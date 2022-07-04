@@ -21,7 +21,7 @@ interface useSSEParams {
     method?: string
 }
 
-interface useSSEReturnObj {
+export interface useSSEReturnObj {
     getSource: Function | null
     close: Function | null
     onError: ((handler: (e?: any) => void) => any) | null
@@ -31,7 +31,7 @@ interface useSSEReturnObj {
     unsubscribe: ((event: any) => void) | null
 }
 
-interface eventSrcObj {
+export interface eventSrcObj {
     close: Function
     url: any
     withCredentials: boolean
@@ -90,7 +90,7 @@ export function useSSE({
     pathVariables = {},
     body = {},
     method = 'POST',
-}: useSSEParams): any {
+}: useSSEParams) {
     const keycloack = appInstance.config.globalProperties.$keycloak
     const { token } = keycloack
     const intialState = {
@@ -134,14 +134,14 @@ export function useSSE({
                 headers: reqHeaders,
                 method,
                 withCredentials: cfg.withCredentials,
-                heartbeatTimeout: heartbeatTimeout,
+                heartbeatTimeout,
             })
         } else {
             eventSource.value = new EventSourcePolyfill(URL, {
                 headers: reqHeaders,
                 method,
                 withCredentials: cfg.withCredentials,
-                heartbeatTimeout: heartbeatTimeout,
+                heartbeatTimeout,
                 body,
             })
         }
@@ -179,7 +179,7 @@ export function useSSE({
                             if (
                                 typeof eventSource.value.onerror === 'function'
                             ) {
-                                console.log('subscribe error')
+                                console.log('subscribe error', err)
                             }
                         }
                         handler(data, e)
@@ -226,12 +226,13 @@ export function useSSE({
         }
     })
     // Variable to check if the promise has been executed atleast once
-    let isExecuted = ref(false)
+    const isExecuted = ref(false)
 
     const { state, isReady } = useAsyncState(() => {
         isExecuted.value = true
         return promise
     }, intialState)
+
     const isLoading = computed(
         () => isExecuted.value && !isReady.value && !error.value
     )
@@ -239,7 +240,7 @@ export function useSSE({
     return {
         eventSource,
         data: state,
-        isLoading: isLoading,
+        isLoading,
         error,
     }
 }

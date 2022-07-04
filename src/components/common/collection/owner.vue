@@ -14,7 +14,7 @@
                     :placeholder="placeholder"
                     :allow-clear="true"
                     size="minimal"
-                    :noBorder="true"
+                    :no-border="true"
                     :autofocus="false"
                 >
                     <template #tab>
@@ -83,32 +83,33 @@
                             ref="usersRef"
                             v-model="modelValue.ownerUsers"
                             v-model:disabledKeys="disabledModalValue.ownerUsers"
+                            v-model:selectedRecords="selectedRecords"
                             :query-text="queryText"
                             :select-user-key="selectUserKey"
-                            @change="handleChange"
                             :show-avatar="true"
                             list-class="h-52"
                             checkbox-list-class="h-48 py-2"
                             list-item-class="h-8 my-0.5"
-                            :showLoggedInUser="true"
-                            v-model:selectedRecords="selectedRecords"
-                            :excludeMe="excludeMe"
+                            :show-logged-in-user="true"
+                            :exclude-me="excludeMe"
+                            @change="handleChange"
                         ></Users>
 
                         <Groups
                             v-if="componentType == 'groups'"
                             ref="groupRef"
+                            v-model:selectedRecordsGroup="selectedRecordsGroup"
                             v-model="modelValue.ownerGroups"
                             v-model:disabledKeys="
                                 disabledModalValue.ownerGroups
                             "
                             :query-text="queryText"
                             :select-group-key="selectGroupKey"
-                            @change="handleChange"
                             :show-avatar="true"
                             list-class="h-52"
                             checkbox-list-class="h-48 py-2"
                             list-item-class="h-8 my-0.5"
+                            @change="handleChange"
                         ></Groups>
                     </div>
                     <div v-if="showNone" class="px-4 pt-1">
@@ -140,12 +141,16 @@
         watch,
     } from 'vue'
 
-    import { useVModels, toRef, useTimeoutFn } from '@vueuse/core'
+    import {
+        useVModels,
+        toRef,
+        useTimeoutFn,
+        onClickOutside,
+    } from '@vueuse/core'
     import SearchAdvanced from '@/common/input/searchAdvanced.vue'
     import Users from '@/common/facet/owners/users.vue'
     import Groups from '@/common/facet/owners/groups.vue'
     import noStatus from '~/assets/images/status/nostatus.svg'
-    import { onClickOutside } from '@vueuse/core'
 
     export default defineComponent({
         name: 'OwnersFilter',
@@ -196,6 +201,11 @@
                 default: null,
                 required: false,
             },
+            selectedRecordsGroup: {
+                type: Object,
+                default: null,
+                required: false,
+            },
             dropdownStyleObject: {
                 type: Object,
                 default: { width: '330px' },
@@ -213,7 +223,9 @@
         },
         emits: ['change', 'update:modelValue'],
         setup(props, { emit }) {
-            const { modelValue, selectedRecords } = useVModels(props, emit)
+            const { modelValue, selectedRecords, selectedRecordsGroup } =
+                useVModels(props, emit)
+
             const localValue = ref(modelValue.value)
             const { showNone, enableTabs, selectUserKey, selectGroupKey } =
                 toRefs(props)
@@ -309,6 +321,7 @@
                 popoverVisible,
                 target,
                 selectedRecords,
+                selectedRecordsGroup,
                 // handleUserChange,
             }
         },

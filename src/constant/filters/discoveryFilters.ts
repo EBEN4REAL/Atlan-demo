@@ -215,16 +215,19 @@ export const discoveryFilters = [
                 name: 'rowCount',
                 displayName: 'Row Count',
                 typeName: 'long',
+                defaultOperator: 'greaterThan'
             },
             {
                 name: 'columnCount',
                 displayName: 'Column Count',
                 typeName: 'long',
+                defaultOperator: 'greaterThan'
             },
             {
                 name: 'sizeBytes',
                 displayName: 'Size (MB)',
                 typeName: 'long',
+                defaultOperator: 'greaterThan'
             },
         ],
         overallCondition: 'OR',

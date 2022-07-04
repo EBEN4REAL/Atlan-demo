@@ -131,6 +131,7 @@
                 localCondition.value.operator = attribute.value?.defaultOperator
             }
 
+
             if (!localCondition.value.operator) {
                 if (defaultOperator.value?.length > 0) {
                     localCondition.value.operator = defaultOperator.value[0].id

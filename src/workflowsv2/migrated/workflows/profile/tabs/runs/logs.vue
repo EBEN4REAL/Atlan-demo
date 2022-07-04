@@ -61,7 +61,7 @@
         onBeforeUnmount,
     } from 'vue'
     import useWorkflowLogsDownload from '~/workflows/composables/package/useWorkflowLogsDownload'
-    import useWorkflowLogsStream from '~/workflows/composables/package/useWorkflowLogsStream'
+    import useWorkflowLogsStream from '~/workflowsv2/composables/useWorkflowLogsStream'
     import VirtualList from '~/utils/library/virtualList/virtualList.vue'
 
     export default defineComponent({
@@ -85,18 +85,16 @@
         setup(props, { emit }) {
             const { selectedRun, selectedPod } = toRefs(props)
 
-            const { initClient, connect, logArray, status, error, disconnect } =
+            const {connect, logArray, status, error, disconnect } =
                 useWorkflowLogsStream()
 
-            // connect()
             watch(
                 selectedPod,
                 () => {
-                    initClient(
+                    connect(
                         selectedRun.value.metadata.name,
                         selectedPod.value.id
                     )
-                    connect()
                 },
                 {
                     immediate: true,

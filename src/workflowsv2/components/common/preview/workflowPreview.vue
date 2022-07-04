@@ -13,7 +13,7 @@
 
             <div class="flex items-center justify-between">
                 <router-link
-                    :to="`/workflows/profile/${wfName(workflow)}`"
+                    :to="`/workflows/profile/${refName(workflow)}`"
                     class="font-bold tracking-wide truncate cursor-pointer text-primary hover:underline"
                 >
                     {{ dName }}
@@ -22,7 +22,7 @@
                 <div class="flex items-center overflow-hidden border rounded">
                     <router-link
                         class="ml-auto border-r"
-                        :to="`/workflows/profile/${wfName(workflow)}`"
+                        :to="`/workflows/profile/${refName(workflow)}`"
                     >
                         <IconButton
                             icon="EnterProfile"
@@ -125,7 +125,7 @@
             const activeKey = ref(0)
 
             const { name, icon, emoji, type } = usePackageInfo()
-            const { displayName, name: wfName } = useWorkflowInfo()
+            const { displayName, name: wfName, refName } = useWorkflowInfo()
 
             const pkg = computed(
                 () =>
@@ -197,6 +197,7 @@
                 type,
                 dName,
                 wfName,
+                refName,
                 dropdownOptions,
                 archiveWorkflow,
             }

@@ -76,6 +76,7 @@
                 v-if="componentType == 'groups'"
                 ref="groupRef"
                 v-model="localValue.ownerGroups"
+                v-model:selectedRecordsGroup="selectedRecordsGroup"
                 :query-text="queryText"
                 :select-group-key="selectGroupKey"
                 :disabled-keys="disabledValues?.ownerGroups"
@@ -115,7 +116,6 @@
     import Users from '@/common/facet/owners/users.vue'
     import Groups from '@/common/facet/owners/groups.vue'
     import noStatus from '~/assets/images/status/nostatus.svg'
-    
 
     // import { Collapse } from '~/types'
 
@@ -174,6 +174,11 @@
                 default: null,
                 required: false,
             },
+            selectedRecordsGroup: {
+                type: Object,
+                default: null,
+                required: false,
+            },
             activeTab: {
                 type: String,
                 required: false,
@@ -193,9 +198,15 @@
                 required: false,
             },
         },
-        emits: ['change', 'update:modelValue', 'update:selectedRecords'],
+        emits: [
+            'change',
+            'update:modelValue',
+            'update:selectedRecords',
+            'update:selectedRecordsGroup',
+        ],
         setup(props, { emit }) {
-            const { modelValue, selectedRecords } = useVModels(props, emit)
+            const { modelValue, selectedRecords, selectedRecordsGroup } =
+                useVModels(props, emit)
             const localValue = ref(modelValue.value)
             const {
                 showNone,
@@ -209,7 +220,6 @@
             const usersRef = ref()
             const groupRef = ref()
 
-          
             if (enableTabs.value.length < 2) {
                 watch(
                     enableTabs,
@@ -307,6 +317,7 @@
                 handleChange,
                 groupId,
                 selectedRecords,
+                selectedRecordsGroup,
             }
         },
     })

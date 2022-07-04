@@ -3,7 +3,6 @@ import { computed, ref, Ref, watch } from 'vue'
 import { usePackageBody } from './usePackageBody'
 
 import usePackageIndexSearch from './usePackageIndexSearch'
-import { packageType } from '~/constant/packageType'
 
 interface DiscoverListParams {
     isCache?: boolean | false
@@ -173,7 +172,7 @@ export function usePackageDiscoverList({
     }
 
     const getAggregationByType = computed(() => {
-        return getAggregationList('by_type', packageType, false)
+        return getAggregationList('by_type', [], false)
     })
 
     const isLoadMore = computed(() => {

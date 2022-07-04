@@ -3,7 +3,6 @@ import { computed, ref, Ref, watch } from 'vue'
 import { usePackageBody } from './usePackageBody'
 
 import usePackageIndexSearch from './usePackageIndexSearch'
-import { packageType } from '~/constant/packageType'
 
 interface DiscoverListParams {
     queryText?: Ref<any>
@@ -101,7 +100,7 @@ export function usePackageDiscoverList({
             aggregationMap(aggregationKey).forEach((element) => {
                 temp.push({
                     id: element.key,
-                    label: element.key,
+                    label: element.key.split(' ').map(w => w[0].toUpperCase() + w.substring(1).toLowerCase()).join(' '),
                     count: element.doc_count,
                 })
             })
@@ -157,7 +156,7 @@ export function usePackageDiscoverList({
     }
 
     const getAggregationByType = computed(() =>
-        getAggregationList('by_type', packageType, false)
+        getAggregationList('by_type', [], false)
     )
 
     const isLoadMore = computed(() => {

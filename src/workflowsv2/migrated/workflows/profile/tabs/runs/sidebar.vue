@@ -319,7 +319,6 @@
 
     import useWorkflowRunRetry from '~/workflows/composables/package/useWorkflowRunRetry'
     import useWorkflowInfo from '~/workflowsv2/composables/useWorkflowInfo'
-    import useWorkflowLogsStream from '~/workflows/composables/package/useWorkflowLogsStream'
     import useWorkflowRunStop from '~/workflows/composables/package/useWorkflowRunStop'
     import { getDurationStringFromMilliSec } from '~/utils/time'
 

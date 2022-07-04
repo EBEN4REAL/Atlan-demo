@@ -134,8 +134,6 @@
         onBeforeUnmount,
     } from 'vue'
 
-    import useWorkflowLogsDownload from '~/workflows/composables/package/useWorkflowLogsDownload'
-    import useWorkflowLogsStream from '~/workflows/composables/package/useWorkflowLogsStream'
     import useWorkflowInfo from '~/workflows/composables/workflow/useWorkflowInfo'
     import WorkflowLogs from '../logs.vue'
 

@@ -89,7 +89,7 @@
             const selectedValue = ref(connection.value || connector.value)
 
             const treeData = computed(() => {
-                const mappedConnection = list.map((i) => ({
+                const mappedConnection = list.value.map((i) => ({
                     id: i.attributes.qualifiedName,
                     key: i.attributes.qualifiedName,
                     pId: i.attributes.connectorName,

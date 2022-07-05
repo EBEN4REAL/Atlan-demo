@@ -1,4 +1,5 @@
 import { useConnectionStore } from '~/store/connection'
+import { computed } from 'vue'
 
 export const MAX_CONNECTIONS = 100
 export const CONNECTION_ASSET_TYPE = 'Connection'
@@ -35,9 +36,11 @@ export default function useConnectionData() {
         return found
     }
 
+    const list = computed(() => connectionStore.list)
+
     return {
         getConnection,
-        list: connectionStore.list,
+        list,
         sourceFilteredList: connectionStore.getFilteredSourceList,
         sourceList: connectionStore.getSourceList,
     }

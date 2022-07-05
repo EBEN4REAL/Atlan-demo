@@ -34,7 +34,7 @@
                         />
                     </div>
                     <span v-if="showCount" class="text-xs text-gray-500"
-                        >{{ getCountString(item.assetCount)}} assets</span
+                        >{{ getCountString(item.assetCount) }} assets</span
                     >
                 </div>
             </a-select-option>
@@ -44,14 +44,7 @@
 
 <script lang="ts">
     import { useVModels } from '@vueuse/core'
-    import {
-        defineComponent,
-        ref,
-        toRefs,
-        computed,
-        onMounted,
-        watch,
-    } from 'vue'
+    import { defineComponent, ref, toRefs, computed, onMounted } from 'vue'
 
     import Tooltip from '@common/ellipsis/index.vue'
     import useAssetInfo from '~/composables/discovery/useAssetInfo'
@@ -153,7 +146,7 @@
             }
 
             const filteredList = computed(() =>
-                list
+                list.value
                     .filter((item) => {
                         if (queryText.value && connector.value) {
                             return (
@@ -193,11 +186,9 @@
 
                         return true
                     })
-                    .sort((a, b) => {
-                        if (a.assetCount > b.assetCount) return -1
-                        if (a.assetCount < b.assetCount) return 1
-                        return 0
-                    })
+                    .sort((a, b) =>
+                        a.attributes.name > b.attributes.name ? 1 : -1
+                    )
             )
 
             // console.log(filteredList.value)
@@ -227,7 +218,7 @@
 
             return {
                 list,
-                filteredList: filteredList.value.sort((a,b) => a.attributes.name > b.attributes.name ? 1 : -1),
+                filteredList,
                 selectedValue,
                 handleChange,
                 handleSearch,
@@ -237,7 +228,7 @@
                 adminGroups,
                 adminUsers,
                 isAdminConnection,
-                getCountString
+                getCountString,
             }
         },
     })

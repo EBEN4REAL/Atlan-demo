@@ -127,7 +127,7 @@
                 )
 
             const filteredList = computed(() =>
-                list
+                list.value
                     .filter((item) => {
                         if (queryText.value && connector.value) {
                             return (

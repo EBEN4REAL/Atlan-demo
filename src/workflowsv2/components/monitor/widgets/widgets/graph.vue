@@ -78,8 +78,8 @@
                     ) // ms * seconds * minutes * hours
 
                     let formatter = ''
-                    if (days < 2) formatter = 'h a'
-                    else if (days < 3) formatter = 'h a, ddd'
+
+                    if (days < 3) formatter = 'h a, ddd'
                     else if (days < 20) formatter = 'MMM D'
                     else formatter = 'MMM D'
 

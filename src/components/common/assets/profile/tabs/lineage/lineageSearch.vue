@@ -193,11 +193,21 @@
             }, 600)
 
             // ImpactAnalysisReportClickedEvent - Analytics Events
-            const sendImpactAnalysisClickedEvent = useDebounceFn((node_id) => {
-                useAddEvent('lineage', 'impact_analysis_report', 'clicked', {
-                    node_id,
-                })
-            }, 400)
+            const sendImpactAnalysisClickedEvent = useDebounceFn(
+                (node_id, asset_type, connector) => {
+                    useAddEvent(
+                        'lineage',
+                        'impact_analysis_report',
+                        'clicked',
+                        {
+                            node_id,
+                            asset_type,
+                            connector,
+                        }
+                    )
+                },
+                400
+            )
 
             // setQuery
             const setQuery = (e) => {
@@ -262,9 +272,16 @@
                 showImpactedAssets.value = !showImpactedAssets.value
 
                 if (showImpactedAssets.value) {
+                    const selectedNode =
+                        mergedLineageData.value.guidEntityMap[
+                            selectedNodeId.value || baseEntityGuid.value
+                        ]
+
                     // Handle Event - lineage_impact_analysis_report_clicked
                     sendImpactAnalysisClickedEvent(
-                        selectedNodeId.value || baseEntityGuid.value
+                        selectedNodeId.value || baseEntityGuid.value,
+                        selectedNode?.typeName,
+                        selectedNode?.attributes?.qualifiedName?.split('/')[1]
                     )
                 }
             }

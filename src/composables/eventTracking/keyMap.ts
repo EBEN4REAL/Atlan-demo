@@ -464,6 +464,8 @@ const keyMap = {
                 action: 'lineage_impact_analysis_report_clicked',
                 properties: (props) => ({
                     node_id: props?.node_id,
+                    asset_type: props?.asset_type,
+                    connector: props?.connector,
                 }),
             },
         },

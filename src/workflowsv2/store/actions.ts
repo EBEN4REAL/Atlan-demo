@@ -73,6 +73,9 @@ const actions = {
                 verified: true,
             }),
             limit: ref(300),
+            preference: ref({
+                sort: 'metadata.creationTimestamp-desc',
+            }),
         })
 
         await until(isLoading).toBe(false)

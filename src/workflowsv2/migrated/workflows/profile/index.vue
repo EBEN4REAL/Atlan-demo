@@ -42,7 +42,7 @@
     import { useRoute, useRouter } from 'vue-router'
 
     import WorkflowHeader from '~/workflowsv2/components/profile/header.vue'
-    import { workflowTabs } from '~/constant/workflowTabs'
+    import { workflowTabs } from '~/workflowsv2/constants/workflowTabs'
 
     export default defineComponent({
         name: 'WorkflowProfile',

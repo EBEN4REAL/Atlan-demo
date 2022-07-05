@@ -30,6 +30,14 @@ export function useConnection() {
         {
             dsl: {
                 size: MAX_CONNECTIONS,
+                sort: [
+                    {
+                        '__timestamp.date': {
+                            format: 'epoch_second',
+                            order: 'desc',
+                        },
+                    },
+                ],
                 query: {
                     bool: {
                         filter: [

@@ -695,28 +695,6 @@ export const menuData: MenuItem[] = [
         },
     },
     {
-        title: 'Align Center',
-        key: 'align-center',
-        helpText: '',
-        icon: 'TextCenter',
-        command: ({ editor }) => {
-            editor.chain().focus().setTextAlign('center').run()
-            useTrackEvent({
-                type: TYPE_OF_EVENTS.MARK,
-                name: NAME_OF_EVENTS.ALIGN_TEXT,
-                trigger: README_TRIGGERS.TIPPY_MENU,
-                properties: {
-                    alignment: 'center',
-                    assetType:
-                        editor.options?.editorProps?.attributes?.[
-                            'data-asset-type'
-                        ],
-                },
-            })
-        },
-    },
-
-    {
         title: 'Align Left',
         key: 'align-left',
         helpText: '',
@@ -729,6 +707,27 @@ export const menuData: MenuItem[] = [
                 trigger: README_TRIGGERS.TIPPY_MENU,
                 properties: {
                     alignment: 'left',
+                    assetType:
+                        editor.options?.editorProps?.attributes?.[
+                            'data-asset-type'
+                        ],
+                },
+            })
+        },
+    },
+    {
+        title: 'Align Center',
+        key: 'align-center',
+        helpText: '',
+        icon: 'TextCenter',
+        command: ({ editor }) => {
+            editor.chain().focus().setTextAlign('center').run()
+            useTrackEvent({
+                type: TYPE_OF_EVENTS.MARK,
+                name: NAME_OF_EVENTS.ALIGN_TEXT,
+                trigger: README_TRIGGERS.TIPPY_MENU,
+                properties: {
+                    alignment: 'center',
                     assetType:
                         editor.options?.editorProps?.attributes?.[
                             'data-asset-type'

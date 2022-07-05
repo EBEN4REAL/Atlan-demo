@@ -351,8 +351,8 @@ const keyMap = {
             clicked: {
                 action: 'lineage_process_clicked',
                 properties: (props) => ({
-                    is_group: !!props?.is_group,
                     is_cyclic: !!props?.is_cyclic,
+                    count: props?.count,
                     edge_id: props?.edge_id,
                 }),
             },
@@ -457,6 +457,16 @@ const keyMap = {
         control_panel_mini_map: {
             changed: {
                 action: 'lineage_control_panel_mini_map_changed',
+            },
+        },
+        impact_analysis_report: {
+            clicked: {
+                action: 'lineage_impact_analysis_report_clicked',
+                properties: (props) => ({
+                    node_id: props?.node_id,
+                    asset_type: props?.asset_type,
+                    connector: props?.connector,
+                }),
             },
         },
     },

@@ -135,10 +135,10 @@ export default function useEventGraph({
 
     // sendProcessClickedEvent - Analytics Events
     const sendProcessClickedEvent = useDebounceFn(
-        (is_group, is_cyclic, edge_id) => {
+        (is_cyclic, count, edge_id) => {
             useAddEvent('lineage', 'process', 'clicked', {
-                is_group,
                 is_cyclic,
+                count,
                 edge_id,
             })
         },
@@ -360,8 +360,13 @@ export default function useEventGraph({
 
         if (edge.id) selectedNodeEdgeId.value = edge.id
 
+        sendProcessClickedEvent(
+            !!isCyclicEdge,
+            processIds?.length || 1,
+            processId
+        )
+
         if (isCyclicEdge) {
-            sendProcessClickedEvent(!!isGroupEdge, !!isCyclicEdge, edge.id)
             return
         }
 
@@ -1113,12 +1118,17 @@ export default function useEventGraph({
 
     // selectPortEdge
     const selectPortEdge = (edge) => {
-        const { isCyclicEdge, isGroupEdge } = edge.getData()
-
-        // Handle Event - lineage_process_clicked
-        sendProcessClickedEvent(!!isGroupEdge, !!isCyclicEdge, edge.id)
+        const { isCyclicEdge, processIds } = edge.getData()
 
         const processId = edge.id.split('/')[1]
+
+        // Handle Event - lineage_process_clicked
+        sendProcessClickedEvent(
+            !!isCyclicEdge,
+            processIds?.length || 1,
+            processId
+        )
+
         onSelectAsset({ guid: processId })
 
         if (edge.id) selectedPortEdgeId.value = edge.id
@@ -1782,17 +1792,6 @@ export default function useEventGraph({
             return
         }
 
-        // Handle Event - lineage_node_clicked
-        const nodeEntity = node?.store?.data?.entity
-
-        if (nodeEntity) {
-            sendNodeClickedEvent(
-                nodeEntity.typeName,
-                nodeEntity.attributes?.qualifiedName?.split('/')[1],
-                node.id
-            )
-        }
-
         if (node.id.includes('vpNode')) {
             if (selectedNodeId.value) controlSelectedNodeAction(node, null)
             else if (selectedNodeEdgeId.value)
@@ -1804,6 +1803,17 @@ export default function useEventGraph({
             }
 
             return
+        }
+
+        // Handle Event - lineage_node_clicked
+        const nodeEntity = node?.store?.data?.entity
+
+        if (nodeEntity) {
+            sendNodeClickedEvent(
+                nodeEntity.typeName,
+                nodeEntity.attributes?.qualifiedName?.split('/')[1],
+                node.id
+            )
         }
 
         if (node.id === selectedNodeId.value) {

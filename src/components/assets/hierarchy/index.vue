@@ -40,7 +40,6 @@
     import GlossarySelect from './glossary.vue'
     import AssetDropdown from './assetDropdown.vue'
 
-    import useAssetStore from '~/store/asset'
     import { useConnectionStore } from '~/store/connection'
     const ANALYTICS_KEYS = {
         connection: 'connection',

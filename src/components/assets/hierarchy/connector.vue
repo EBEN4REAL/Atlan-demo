@@ -43,10 +43,9 @@
         computed,
         onMounted,
     } from 'vue'
-    import useConnectionData from '~/composables/connection/useConnectionData'
     import { useConnection } from '~/composables/connection/useConnection'
     import { usePersonaStore } from '~/store/persona'
-    import GlossaryIcon from '~/assets/images/home/Glossary.svg'
+    import { useConnectionStore } from '~/store/connection'
     import useGlossaryStore from '~/store/glossary'
 
     export default defineComponent({
@@ -77,10 +76,10 @@
         setup(props, { emit }) {
             const { showCount, persona } = toRefs(props)
             const personaStore = usePersonaStore()
-            const { sourceList, sourceFilteredList } = useConnectionData()
             const { modelValue } = useVModels(props, emit)
 
             const glossaryStore = useGlossaryStore()
+            const connectionStore = useConnectionStore()
 
             watch(persona, () => {
                 console.log('watch persona')
@@ -110,28 +109,17 @@
                 }
                 return assetList
             })
-            const list = computed(() => {
-                let coreList = []
 
+            const list = computed(() => {
                 if (persona.value) {
-                    coreList = sourceFilteredList(
+                    return connectionStore.getFilteredSourceList(
                         applicableConnectionArray.value
                     )
                 } else {
-                    coreList = sourceList
+                    return connectionStore.getSourceList
                 }
-
-                let temp = coreList
-
-                // temp = temp.concat({
-                //     id: '__glossary',
-                //     label: 'Glossary',
-                //     count: 0,
-                //     typeName: 'AtlasGlossary',
-                // })
-
-                return temp
             })
+
             watch(localValue, () => {
                 modelValue.value = localValue.value
 
@@ -143,10 +131,8 @@
             })
 
             return {
-                sourceList,
                 localValue,
                 list,
-                sourceFilteredList,
                 applicableConnectionArray,
                 glossaryStore,
                 persona,
